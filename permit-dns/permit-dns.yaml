@@ -1,0 +1,38 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-allow-dns-access
+spec:
+  validationFailureAction: audit
+  rules:
+  - name: default-allow-dns-access
+    match:
+      resources: 
+        kinds:
+        - Namespace
+    generate:
+      kind: NetworkPolicy
+      name: allow-dns-access
+      namespace: "{{request.object.metadata.name}}"
+      synchronize: false
+      data:
+        spec:
+          podSelector:
+            matchLabels: {}
+          policyTypes:
+          - Egress
+          egress:
+          - to:
+            - namespaceSelector:
+                matchLabels:
+                  name: kube-system
+            ports:
+            - protocol: UDP
+              port: 53
+            - protocol: TCP
+              port: 53
+          - to:
+            ports:
+            - protocol: UDP
+              port: 53
+            - protocol: TCP

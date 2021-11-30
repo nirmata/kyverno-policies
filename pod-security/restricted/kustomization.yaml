@@ -1,0 +1,8 @@
+bases:
+- ../default
+
+resources:
+- restrict-volume-types.yaml
+- deny-privilege-escalation.yaml
+- require-run-as-nonroot.yaml
+- restrict-seccomp.yaml

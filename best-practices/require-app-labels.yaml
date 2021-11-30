@@ -1,0 +1,27 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-labels
+  annotations:
+    policies.kyverno.io/category: "Best Practices"
+    policies.kyverno.io/description: >-
+      Kubernetes recommends a set of standard labels for applications. 
+      See https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+spec:
+  validationFailureAction: audit
+  rules:
+  - name: check-for-labels
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "The labels `app.kubernetes.io/name` and `app.kubernetes.io/instance` are recommended."
+      pattern:
+        metadata:
+          labels:
+            app.kubernetes.io/name: "?*"
+            app.kubernetes.io/instance: "?*"
+            # You can add more labels if you wish the policy to validate more 
+            # than just one is present. Uncomment the below line, or add new ones.
+            #app.kubernetes.io/component: "?*
