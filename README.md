@@ -24,7 +24,7 @@ kubectl apply -f multitenancy
 kubectl apply -f best-practices
 ```
 
-Onxe policies are installed, you can check if they are ready using the command:
+Once policies are installed, you can check if they are ready using the command:
 
 ```console
 kubectl get cpol
