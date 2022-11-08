@@ -1,0 +1,19 @@
+resources:
+  - check-node-for-cve-2022-0185.yaml
+#  - disallow-custom-snippets.yaml
+  - mitigate_log4shell.yaml
+  - prevent-cr8escape.yaml
+  - protect-node-taints.yaml
+#  - restrict-annotations.yaml
+#  - restrict-path.yaml
+  - restrict-service-external-ips.yaml
+  - restrict_node_label_changes.yaml
+
+
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/validationFailureAction
+        value: audit
+    target:
+      kind: ClusterPolicy

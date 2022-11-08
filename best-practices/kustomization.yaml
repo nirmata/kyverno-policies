@@ -1,0 +1,21 @@
+resources:
+  - disallow_cri_sock_mount/disallow_cri_sock_mount.yaml
+  - disallow_default_namespace/disallow_default_namespace.yaml
+  - disallow_helm_tiller/disallow_helm_tiller.yaml
+  - disallow_latest_tag/disallow_latest_tag.yaml
+  - require_labels/require_labels.yaml
+  - require_pod_requests_limits/require_pod_requests_limits.yaml
+  - require_probes/require_probes.yaml
+  - nginx-custom-snippets/disallow-custom-snippets.yaml
+  - require_drop_all/require_drop_all.yaml
+  - require_drop_cap_net_raw/require_drop_cap_net_raw.yaml
+  - add-ttl-jobs.yaml
+
+
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/validationFailureAction
+        value: audit
+    target:
+      kind: ClusterPolicy

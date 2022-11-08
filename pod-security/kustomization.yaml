@@ -1,0 +1,25 @@
+resources:
+  - baseline/disallow-capabilities/disallow-capabilities.yaml
+  - baseline/disallow-host-namespaces/disallow-host-namespaces.yaml
+  - baseline/disallow-host-path/disallow-host-path.yaml
+  - baseline/disallow-host-ports/disallow-host-ports.yaml
+  - baseline/disallow-host-process/disallow-host-process.yaml
+  - baseline/disallow-privileged-containers/disallow-privileged-containers.yaml
+  - baseline/disallow-proc-mount/disallow-proc-mount.yaml
+  - baseline/disallow-selinux/disallow-selinux.yaml
+  - baseline/restrict-apparmor-profiles/restrict-apparmor-profiles.yaml
+  - baseline/restrict-seccomp/restrict-seccomp.yaml
+  - baseline/restrict-sysctls/restrict-sysctls.yaml  
+  - restricted/disallow-privilege-escalation/disallow-privilege-escalation.yaml
+  - restricted/require-run-as-non-root-user/require-run-as-non-root-user.yaml
+  - restricted/require-run-as-nonroot/require-run-as-nonroot.yaml  
+  - restricted/restrict-volume-types/restrict-volume-types.yaml
+  
+  
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/validationFailureAction
+        value: audit
+    target:
+      kind: ClusterPolicy
