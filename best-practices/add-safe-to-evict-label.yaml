@@ -17,8 +17,8 @@ spec:
       resources: 
         kinds: 
         - Pod
-    mutate: 
-      overlay:
+    mutate:
+      patchStrategicMerge:
         metadata:
           annotations:
             +(cluster-autoscaler.kubernetes.io/safe-to-evict): "true"
@@ -31,7 +31,7 @@ spec:
         kinds: 
         - Pod
     mutate: 
-      overlay:
+      patchStrategicMerge:
         metadata:
           annotations:
             +(cluster-autoscaler.kubernetes.io/safe-to-evict): "true"
