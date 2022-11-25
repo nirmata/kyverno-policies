@@ -19,7 +19,7 @@ Install the policiies based on your requirements.
 
 ```console
 cd kyverno-policies
-kubectl apply -f pod-security
+kubectl apply -f pod-security --recursive
 kubectl apply -f multitenancy
 kubectl apply -f best-practices
 ```
