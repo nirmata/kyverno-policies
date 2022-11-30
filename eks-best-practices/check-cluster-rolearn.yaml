@@ -1,0 +1,27 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-cluster-rolearn
+  annotations:
+    policies.kyverno.io/title: Check Cluster Role ARN
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/description: >-
+      Incorrect cluster role ARN is used. Requires customization with your role ARN.
+spec:
+  validationFailureAction: audit
+  background: true
+  rules:
+    - name: check-cluster-role-arn
+      match:
+        any:
+        - resources:
+            kinds:
+              - AWSAdapterConfig
+      validate:
+        message: "Invalid cluster role ARN is being used. The field status.eksCluster.roleArn must be set to arn:aws:iam::844333597536:role/standard-eks-role."
+        pattern:
+          status:
+            eksCluster:
+              roleArn: arn:aws:iam::844333597536:role/standard-eks-role

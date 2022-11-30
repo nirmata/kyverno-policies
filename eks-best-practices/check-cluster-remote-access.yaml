@@ -1,0 +1,29 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-cluster-remote-access
+  annotations:
+    policies.kyverno.io/title: Check Cluster Remote Access
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/description: >-
+      Cluster remote access should be disabled.
+spec:
+  validationFailureAction: audit
+  background: true
+  rules:
+    - name: check-cluster-remote-access
+      match:
+        any:
+        - resources:
+            kinds:
+              - AWSAdapterConfig
+      validate:
+        message: "Remote access should be disabled. The field status.eksCluster.compute.nodeGroups must not define remoteAccessConfig."
+        pattern:
+          status:
+            eksCluster:
+              compute:
+                nodeGroups:
+                  - X(remoteAccessConfig): "null"

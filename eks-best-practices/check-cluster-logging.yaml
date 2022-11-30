@@ -1,0 +1,28 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-cluster-logging
+  annotations:
+    policies.kyverno.io/title: Check Cluster Logging
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/description: >-
+      Cluster logging should be enabled.
+spec:
+  validationFailureAction: audit
+  background: true
+  rules:
+    - name: check-cluster-audit-logging
+      match:
+        any:
+        - resources:
+            kinds:
+              - AWSAdapterConfig
+      validate:
+        message: "Audit logging should be enabled. The field status.eksCluster.logging.audit must equal true."
+        pattern:
+          status:
+            eksCluster:
+              logging:
+                audit: true

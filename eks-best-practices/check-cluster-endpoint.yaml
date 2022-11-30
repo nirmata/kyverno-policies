@@ -1,0 +1,29 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-cluster-endpoint
+  annotations:
+    policies.kyverno.io/title: Check Public Endpoint
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/description: >-
+      Cluster endpoint should not be public.
+spec:
+  validationFailureAction: audit
+  background: true
+  rules:
+    - name: check-cluster-endpoint
+      match:
+        any:
+        - resources:
+            kinds:
+              - AWSAdapterConfig
+      validate:
+        message: "The cluster endpoint should not be public. The field status.eksCluster.networking.vpc.endpointPublicAccess must equal false."
+        pattern:
+          status:
+            eksCluster:
+              networking:
+                vpc:
+                  endpointPublicAccess: "false"
