@@ -23,6 +23,6 @@ spec:
         message: "The `department` tag on the cluster is required. The field status.eksConfig.tags.department must exist with some value."
         pattern:
           status:
-            eksConfig:
+            eksCluster:
               tags:
                 department: "?*"
