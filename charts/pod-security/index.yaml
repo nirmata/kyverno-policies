@@ -1,0 +1,16 @@
+apiVersion: v1
+entries:
+  pod-security-policies:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2022-12-15T20:51:17.06978-04:00"
+    digest: 7cdc961ff49ea33f5c4d2a0b97cc13d85aee34136db7a0070ce0ae98ce15fa1b
+    maintainers:
+    - url: https://nirmata.com/
+      name: Nirmata
+    name: pod-security-policies
+    type: application
+    urls:
+    - pod-security-policies-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-12-15T20:51:17.068704-04:00"
