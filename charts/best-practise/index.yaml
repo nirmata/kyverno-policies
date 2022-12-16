@@ -6,8 +6,8 @@ entries:
     created: "2022-12-15T20:30:23.042508-04:00"
     digest: 4956303f3d501665537cc205afa32352eadf14905f3d227ef1e0e1665e112392
     maintainers:
-    - email: dolis@nirmata.com
-      name: dolis
+    - url: https://nirmata.com/
+      name: Nirmata
     name: policies
     type: application
     urls:
