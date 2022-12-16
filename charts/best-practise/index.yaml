@@ -1,0 +1,16 @@
+apiVersion: v1
+entries:
+  policies:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2022-12-15T20:30:23.042508-04:00"
+    digest: 4956303f3d501665537cc205afa32352eadf14905f3d227ef1e0e1665e112392
+    maintainers:
+    - email: dolis@nirmata.com
+      name: dolis
+    name: policies
+    type: application
+    urls:
+    - policies-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-12-15T20:30:23.041789-04:00"
