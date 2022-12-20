@@ -12,7 +12,7 @@ keywords:
   - nirmata
   - policy agent
   - validating webhook
-  - admissions controller
+  - admission controller
 
 home: https://nirmata.com/
 
