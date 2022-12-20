@@ -30,3 +30,4 @@ Once policies are installed, you can check if they are ready using the command:
 kubectl get cpol
 ```
 
+
