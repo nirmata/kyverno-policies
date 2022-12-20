@@ -3,19 +3,25 @@ kind: ClusterPolicy
 metadata:
   name: disallow-add-capabilities
   annotations:
-    policies.kyverno.io/category: Pod Security Standards (Default)
-    policies.kyverno.io/description: >-
+    policies.nirmata.com/title: Disallow Add Capabilities
+    policies.nirmata.com/category: Pod Security Standards (Baseline)
+    policies.nirmata.com/severity: medium
+    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kubernetes-version: "1.22-1.23"
+    policies.nirmata.com/subject: Pod
+    policies.nirmata.com/description: >-
       Capabilities permit privileged actions without giving full root access.
       Adding capabilities beyond the default set must not be allowed.
 spec:
   validationFailureAction: audit
   background: true
   rules:
-  - name: capabilities
+  - name: adding-capabilities
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: >-
         Adding of additional capabilities beyond the default set is not allowed.

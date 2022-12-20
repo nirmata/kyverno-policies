@@ -3,20 +3,26 @@ kind: ClusterPolicy
 metadata:
   name: disallow-host-path
   annotations:
-    policies.kyverno.io/category: Pod Security Standards (Default)
-    policies.kyverno.io/description: >-
+    policies.nirmata.com/title: Disallow hostPath
+    policies.nirmata.com/category: Pod Security Standards (Baseline)
+    policies.nirmata.com/severity: medium
+    policies.nirmata.com/subject: Pod,Volume
+    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kubernetes-version: "1.22-1.23"
+    policies.nirmata.com/description: >-
       HostPath volumes let pods use host directories and volumes in containers.
       Using host resources can be used to access shared data or escalate privileges
-      and should not be allowed.
+      and should not be allowed. This policy ensures no hostPath volumes are in use.
 spec:
   validationFailureAction: audit
   background: true
   rules:
   - name: host-path
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: >-
         HostPath volumes are forbidden. The fields spec.volumes[*].hostPath must not be set.

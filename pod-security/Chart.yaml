@@ -1,0 +1,23 @@
+apiVersion: v2
+name: pod-security-standard-policies
+description: A Helm chart for apply pod security best practices
+type: application
+version: v0.1.0
+appVersion: v1.8.4
+
+keywords:
+  - kyverno
+  - pod security
+  - best practices
+  - nirmata
+  - policy agent
+  - validating webhook
+  - admissions controller
+
+home: https://nirmata.com/
+
+maintainers:
+  - name: Nirmata
+    url: https://nirmata.com/
+
+kubeVersion: ">=1.16.0-0"
