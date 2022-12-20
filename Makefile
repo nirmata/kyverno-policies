@@ -11,5 +11,5 @@ codegen-helm-docs: ## Generate helm docs
 .PHONY: verify-helm-docs
 verify-helm-docs: codegen-helm-docs ## Check helm docs are up to date
 	@echo Checking helm docs are up to date... >&2
-	@git --no-pager diff charts
-	@git diff --quiet --exit-code charts
+	@git --no-pager diff ${PWD}
+	@git diff --quiet --exit-code ${PWD}
