@@ -39,7 +39,7 @@ These PSS policies presently have a minimum requirement of Enterprise Kyverno 1.
 $ helm repo add nirmata https://nirmata.github.io/kyverno-charts/
 
 ## Install the Pod Security Standards Helm chart
-$ helm install pss-policies --namespace nirmata-kyverno --create-namespace nirmata/pod-security-standard-policies
+$ helm install pss-policies -n nirmata-kyverno --create-namespace nirmata/pod-security-standard-policies
 ```
 
 ## Uninstalling the Chart

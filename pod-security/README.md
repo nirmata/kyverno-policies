@@ -1,8 +1,8 @@
 # pod-security-standard-policies
 
-A Helm chart for apply pod security best practices
+A Helm chart for applying Pod Security Standards as Kyverno policies
 
-![Version: v0.1.0](https://img.shields.io/badge/Version-v0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.8.4](https://img.shields.io/badge/AppVersion-v1.8.4-informational?style=flat-square)
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.8.4](https://img.shields.io/badge/AppVersion-v1.8.4-informational?style=flat-square)
 
 ## About
 
@@ -39,7 +39,7 @@ These PSS policies presently have a minimum requirement of Enterprise Kyverno 1.
 $ helm repo add nirmata https://nirmata.github.io/kyverno-charts/
 
 ## Install the Pod Security Standards Helm chart
-$ helm install pss-policies --namespace nirmata-kyverno --create-namespace nirmata/pod-security-standard-policies
+$ helm install pss-policies -n nirmata-kyverno --create-namespace nirmata/pod-security-standard-policies
 ```
 
 ## Uninstalling the Chart
