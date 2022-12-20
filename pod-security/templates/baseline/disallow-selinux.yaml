@@ -3,9 +3,13 @@ kind: ClusterPolicy
 metadata:
   name: disallow-selinux
   annotations:
-    policies.kyverno.io/title: Disallow SELinux
-    policies.kyverno.io/category: Pod Security Standards (Default)
-    policies.kyverno.io/description: >-
+    policies.nirmata.com/title: Disallow SELinux
+    policies.nirmata.com/category: Pod Security Standards (Baseline)
+    policies.nirmata.com/severity: medium
+    policies.nirmata.com/subject: Pod
+    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kubernetes-version: "1.22-1.23"
+    policies.nirmata.com/description: >-
       SELinux options can be used to escalate privileges and should not be allowed.
 spec:
   validationFailureAction: audit
@@ -13,9 +17,10 @@ spec:
   rules:
   - name: seLinux
     match:
-      resources:
-        kinds:
-        - Pod
+      any:
+      - resources:
+          kinds:
+          - Pod
     validate:
       message: >-
         Setting custom SELinux options is disallowed. The fields
@@ -25,6 +30,9 @@ spec:
         spec:
           =(securityContext):
             X(seLinuxOptions): "null"
+          =(ephemeralContainers):
+          - =(securityContext):
+              X(seLinuxOptions): "null"
           =(initContainers):
           - =(securityContext):
               X(seLinuxOptions): "null"
