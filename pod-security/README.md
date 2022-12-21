@@ -12,7 +12,7 @@ The following policies are included in each profile.
 
 **Baseline**
 
-* disallow-adding-capabilities
+* disallow-capabilities
 * disallow-host-namespaces
 * disallow-host-path
 * disallow-host-ports
@@ -21,13 +21,16 @@ The following policies are included in each profile.
 * disallow-proc-mount
 * disallow-selinux
 * restrict-apparmor-profiles
+* restrict-seccomp
 * restrict-sysctls
 
 **Restricted**
 
-* deny-privilege-escalation
+* disallow-capabilities-strict
+* disallow-privilege-escalation
+* require-run-as-non-root-user
 * require-run-as-nonroot
-* restrict-seccomp
+* restrict-seccomp-strict
 * restrict-volume-types
 
 ## Installing the Chart
@@ -51,6 +54,27 @@ $ helm delete -n nirmata-kyverno pss-policies
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
+
+## Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| podSecurityStandard | string | `"baseline"` | Pod Security Standard profile (`baseline`, `restricted`, `privileged`, `custom`). For more info https://kyverno.io/policies/pod-security. |
+| podSecuritySeverity | string | `"medium"` | Pod Security Standard (`low`, `medium`, `high`). |
+| podSecurityPolicies | list | `[]` | Policies to include when `podSecurityStandard` is `custom`. |
+| includeOtherPolicies | list | `[]` | Additional policies to include from `other`. |
+| includeRestrictedPolicies | list | `[]` | Additional policies to include from `restricted`. |
+| failurePolicy | string | `"Fail"` | API server behavior if the webhook fails to respond ('Ignore', 'Fail') For more info: https://kyverno.io/docs/writing-policies/policy-settings/ |
+| validationFailureAction | string | `"audit"` | Validation failure action (`audit`, `enforce`). For more info https://kyverno.io/docs/writing-policies/validate. |
+| validationFailureActionByPolicy | object | `{}` | Define validationFailureActionByPolicy for specific policies. Override the defined `validationFailureAction` with a individual validationFailureAction for individual Policies. |
+| validationFailureActionOverrides | object | `{"all":[]}` | Define validationFailureActionOverrides for specific policies. The overrides for `all` will apply to all policies. |
+| policyExclude | object | `{}` | Exclude resources from individual policies. Policies with multiple rules can have individual rules excluded by using the name of the rule as the key in the `policyExclude` map. |
+| policyPreconditions | object | `{}` | Add preconditions to individual policies. Policies with multiple rules can have individual rules excluded by using the name of the rule as the key in the `policyPreconditions` map. |
+| autogenControllers | string | `""` | Customize the target Pod controllers for the auto-generated rules. (Eg. `none`, `Deployment`, `DaemonSet,Deployment,StatefulSet`) For more info https://kyverno.io/docs/writing-policies/autogen/. |
+| nameOverride | string | `nil` | Name override. |
+| customLabels | object | `{}` | Additional labels. |
+| background | bool | `true` | Policies background mode |
+| kyvernoVersion | string | `"autodetect"` | Kyverno version The default of "autodetect" will try to determine the currently installed version from the deployment |
 
 ## Requirements
 

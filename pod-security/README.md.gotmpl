@@ -12,7 +12,7 @@ The following policies are included in each profile.
 
 **Baseline**
 
-* disallow-adding-capabilities
+* disallow-capabilities
 * disallow-host-namespaces
 * disallow-host-path
 * disallow-host-ports
@@ -21,13 +21,16 @@ The following policies are included in each profile.
 * disallow-proc-mount
 * disallow-selinux
 * restrict-apparmor-profiles
+* restrict-seccomp
 * restrict-sysctls
 
 **Restricted**
 
-* deny-privilege-escalation
+* disallow-capabilities-strict
+* disallow-privilege-escalation
+* require-run-as-non-root-user
 * require-run-as-nonroot
-* restrict-seccomp
+* restrict-seccomp-strict
 * restrict-volume-types
 
 ## Installing the Chart

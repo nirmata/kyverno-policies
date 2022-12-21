@@ -1,4 +1,4 @@
-{{- $name := "require-run-as-nonroot" }}
+{{- $name := "restrict-seccomp-strict" }}
 {{- if eq (include "pod-security-standard-policies.podSecurityRestricted" (merge (dict "name" $name) .)) "true" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -8,7 +8,7 @@ metadata:
     {{- with .Values.autogenControllers }}
     pod-policies.nirmata.com/autogen-controllers: {{ . }}
     {{- end }}
-    policies.nirmata.com/title: Require runAsNonRoot
+    policies.nirmata.com/title: Restrict Seccomp (Strict)
     policies.nirmata.com/category: Pod Security Standards (Restricted)
     {{- if .Values.podSecuritySeverity }}
     policies.nirmata.com/severity: {{ .Values.podSecuritySeverity | quote }}
@@ -17,8 +17,10 @@ metadata:
     kyverno.io/kyverno-version: 1.6.0
     kyverno.io/kubernetes-version: "1.22-1.23"
     policies.nirmata.com/description: >-
-      Containers must be required to run as non-root users. This policy ensures
-      `runAsNonRoot` is set to `true`. A known issue prevents a policy such as this
+      The seccomp profile in the Restricted group must not be explicitly set to Unconfined
+      but additionally must also not allow an unset value. This policy,
+      requiring Kubernetes v1.19 or later, ensures that seccomp is
+      set to `RuntimeDefault` or `Localhost`. A known issue prevents a policy such as this
       using `anyPattern` from being persisted properly in Kubernetes 1.23.0-1.23.2.
   labels: {{ include "pod-security-standard-policies.labels" . | nindent 4 }}
 spec:
@@ -33,7 +35,7 @@ spec:
   background: {{ .Values.background }}
   failurePolicy: {{ .Values.failurePolicy }}
   rules:
-    - name: run-as-non-root
+    - name: check-seccomp-strict
       match:
         any:
         - resources:
@@ -49,31 +51,40 @@ spec:
       {{- end }}
       validate:
         message: >-
-          Running as root is not allowed. Either the field spec.securityContext.runAsNonRoot
-          must be set to `true`, or the fields spec.containers[*].securityContext.runAsNonRoot,
-          spec.initContainers[*].securityContext.runAsNonRoot, and spec.ephemeralContainers[*].securityContext.runAsNonRoot
-          must be set to `true`.
+          Use of custom Seccomp profiles is disallowed. The fields
+          spec.securityContext.seccompProfile.type,
+          spec.containers[*].securityContext.seccompProfile.type,
+          spec.initContainers[*].securityContext.seccompProfile.type, and
+          spec.ephemeralContainers[*].securityContext.seccompProfile.type
+          must be set to `RuntimeDefault` or `Localhost`.
         anyPattern:
         - spec:
             securityContext:
-              runAsNonRoot: true
+              seccompProfile:
+                type: "RuntimeDefault | Localhost"
             =(ephemeralContainers):
             - =(securityContext):
-                =(runAsNonRoot): true
+                =(seccompProfile):
+                  =(type): "RuntimeDefault | Localhost"
             =(initContainers):
             - =(securityContext):
-                =(runAsNonRoot): true
+                =(seccompProfile):
+                  =(type): "RuntimeDefault | Localhost"
             containers:
             - =(securityContext):
-                =(runAsNonRoot): true
+                =(seccompProfile):
+                  =(type): "RuntimeDefault | Localhost"
         - spec:
             =(ephemeralContainers):
             - securityContext:
-                runAsNonRoot: true
+                seccompProfile:
+                  type: "RuntimeDefault | Localhost"
             =(initContainers):
             - securityContext:
-                runAsNonRoot: true
+                seccompProfile:
+                  type: "RuntimeDefault | Localhost"
             containers:
             - securityContext:
-                runAsNonRoot: true
+                seccompProfile:
+                  type: "RuntimeDefault | Localhost"
 {{- end }}

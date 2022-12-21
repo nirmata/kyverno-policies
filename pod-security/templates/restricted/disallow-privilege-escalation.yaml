@@ -1,6 +1,5 @@
-{{- $name := "restrict-volume-types" }}
+{{- $name := "disallow-privilege-escalation" }}
 {{- if eq (include "pod-security-standard-policies.podSecurityRestricted" (merge (dict "name" $name) .)) "true" }}
-{{- include "pod-security-standard-policies.supportedKyvernoCheck" (dict "top" . "ver" ">= 1.6.0-0") }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -9,19 +8,17 @@ metadata:
     {{- with .Values.autogenControllers }}
     pod-policies.nirmata.com/autogen-controllers: {{ . }}
     {{- end }}
-    policies.nirmata.com/title: Restrict Volume Types
+    policies.nirmata.com/title: Disallow Privilege Escalation
     policies.nirmata.com/category: Pod Security Standards (Restricted)
     {{- if .Values.podSecuritySeverity }}
     policies.nirmata.com/severity: {{ .Values.podSecuritySeverity | quote }}
     {{- end }}
-    policies.nirmata.com/subject: Pod,Volume
-    policies.nirmata.com/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.22-1.23"
+    policies.nirmata.com/subject: Pod
     kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kubernetes-version: "1.22-1.23"
     policies.nirmata.com/description: >-
-      In addition to restricting HostPath volumes, the restricted pod security profile
-      limits usage of non-core volume types to those defined through PersistentVolumes.
-      This policy blocks any other type of volume other than those in the allow list.
+      Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed.
+      This policy ensures the `allowPrivilegeEscalation` field is set to `false`.
   labels: {{ include "pod-security-standard-policies.labels" . | nindent 4 }}
 spec:
   {{- with index .Values "validationFailureActionByPolicy" $name }}
@@ -35,7 +32,7 @@ spec:
   background: {{ .Values.background }}
   failurePolicy: {{ .Values.failurePolicy }}
   rules:
-    - name: restricted-volumes
+    - name: privilege-escalation
       match:
         any:
         - resources:
@@ -51,22 +48,20 @@ spec:
       {{- end }}
       validate:
         message: >-
-          Only the following types of volumes may be used: configMap, csi, downwardAPI,
-          emptyDir, ephemeral, persistentVolumeClaim, projected, and secret.
-        deny:
-          conditions:
-            all:
-            - key: "{{`{{ request.object.spec.volumes[].keys(@)[] || '' }}`}}"
-              operator: AnyNotIn
-              value:
-              - name
-              - configMap
-              - csi
-              - downwardAPI
-              - emptyDir
-              - ephemeral
-              - persistentVolumeClaim
-              - projected
-              - secret
-              - ''
+          Privilege escalation is disallowed. The fields
+          spec.containers[*].securityContext.allowPrivilegeEscalation,
+          spec.initContainers[*].securityContext.allowPrivilegeEscalation,
+          and spec.ephemeralContainers[*].securityContext.allowPrivilegeEscalation
+          must be set to `false`.
+        pattern:
+          spec:
+            =(ephemeralContainers):
+            - securityContext:
+                allowPrivilegeEscalation: "false"
+            =(initContainers):
+            - securityContext:
+                allowPrivilegeEscalation: "false"
+            containers:
+            - securityContext:
+                allowPrivilegeEscalation: "false"
 {{- end }}

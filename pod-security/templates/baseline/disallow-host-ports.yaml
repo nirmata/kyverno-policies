@@ -1,11 +1,18 @@
+{{- $name := "disallow-host-ports" }}
+{{- if eq (include "pod-security-standard-policies.podSecurityBaseline" (merge (dict "name" $name) .)) "true" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: disallow-host-ports
+  name: {{ $name }}
   annotations:
+    {{- with .Values.autogenControllers }}
+    pod-policies.nirmata.com/autogen-controllers: {{ . }}
+    {{- end }}
     policies.nirmata.com/title: Disallow hostPorts
     policies.nirmata.com/category: Pod Security Standards (Baseline)
-    policies.nirmata.com/severity: medium
+    {{- if .Values.podSecuritySeverity }}
+    policies.nirmata.com/severity: {{ .Values.podSecuritySeverity }}
+    {{- end }}
     policies.nirmata.com/subject: Pod
     kyverno.io/kyverno-version: 1.6.0
     kyverno.io/kubernetes-version: "1.22-1.23"
@@ -13,29 +20,47 @@ metadata:
       Access to host ports allows potential snooping of network traffic and should not be
       allowed, or at minimum restricted to a known list. This policy ensures the `hostPort`
       field is unset or set to `0`.
+  labels: {{ include "pod-security-standard-policies.labels" . | nindent 4 }}
 spec:
-  validationFailureAction: audit
-  background: true
+  {{- with index .Values "validationFailureActionByPolicy" $name }}
+  validationFailureAction: {{ toYaml . }}
+  {{- else }}
+  validationFailureAction: {{ .Values.validationFailureAction }}
+  {{- end }}
+  {{- with concat (index .Values "validationFailureActionOverrides" "all") (default list (index .Values "validationFailureActionOverrides" $name)) }}
+  validationFailureActionOverrides: {{ toYaml . | nindent 4 }}
+  {{- end }}
+  background: {{ .Values.background }}
+  failurePolicy: {{ .Values.failurePolicy }}
   rules:
-  - name: host-ports
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      message: >-
-        Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort
-        , spec.initContainers[*].ports[*].hostPort, and spec.ephemeralContainers[*].ports[*].hostPort
-        must either be unset or set to `0`.
-      pattern:
-        spec:
-          =(ephemeralContainers):
-            - =(ports):
-                - =(hostPort): 0
-          =(initContainers):
-            - =(ports):
-                - =(hostPort): 0
-          containers:
-            - =(ports):
-                - =(hostPort): 0
+    - name: host-ports-none
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      {{- with index .Values "policyExclude" $name }}
+      exclude:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with index .Values "policyPreconditions" $name }}
+      preconditions:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      validate:
+        message: >-
+          Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort
+          , spec.initContainers[*].ports[*].hostPort, and spec.ephemeralContainers[*].ports[*].hostPort
+          must either be unset or set to `0`.
+        pattern:
+          spec:
+            =(ephemeralContainers):
+              - =(ports):
+                  - =(hostPort): 0
+            =(initContainers):
+              - =(ports):
+                  - =(hostPort): 0
+            containers:
+              - =(ports):
+                  - =(hostPort): 0
+{{- end }}

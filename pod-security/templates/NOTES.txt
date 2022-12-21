@@ -1,5 +1,8 @@
 Thank you for installing {{ .Chart.Name }} {{ .Chart.Version }} 😀
 
+
+We have installed the "{{ .Values.podSecurityStandard }}" profile of Pod Security Standards and set them in {{ .Values.validationFailureAction }} mode.
+
 Manage policies and governance at scale with the Nirmata Policy Manager to get a central view of the security and compliance posture of your cluster.
 
 Sign up for a Free Trial today - https://www.nirmata.io/security/signup.html
