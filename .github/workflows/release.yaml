@@ -1,0 +1,16 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Helm Chart Releaser
+        uses: helm/chart-releaser-action@v1.4.1
+        charts_repo_url: https://nirmata.github.io/kyverno-charts
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}" 
