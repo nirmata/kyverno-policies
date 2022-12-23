@@ -29,5 +29,7 @@ jobs:
         uses: helm/chart-testing-action@v2
       - name: Check docs are up to date
         run: make verify-helm-docs
-#      - name: Run chart-testing (lint)
-#        run: ct lint --target-branch=main --all --check-version-increment=false
+      - name: Run chart-testing (lint)
+        run: ct lint --target-branch=main --all --check-version-increment=false --chart-dirs=.
+#      - name: Run chart-testing (install)
+#        run: ct install --target-branch=main --all --chart-dirs=.
