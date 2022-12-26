@@ -1,0 +1,27 @@
+apiVersion: v1
+entries:
+  pod-security-standard-policies:
+  - apiVersion: v2
+    appVersion: v1.8.4
+    created: "2022-12-26T17:07:56.547846+05:30"
+    description: A Helm chart for applying Pod Security Standards as Kyverno policies
+    digest: 3ece19ecfdbb1025a91fcb679e3a7b8e84fca3a817a17be751d68378ae04c24e
+    home: https://nirmata.com/
+    keywords:
+    - kyverno
+    - pod security
+    - best practices
+    - nirmata
+    - policy agent
+    - validating webhook
+    - admission controller
+    kubeVersion: '>=1.16.0-0'
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: pod-security-standard-policies
+    type: application
+    urls:
+    - https://nirmata.github.io/kyverno-policies/pod-security-standard-policies-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-12-26T17:07:56.544376+05:30"
