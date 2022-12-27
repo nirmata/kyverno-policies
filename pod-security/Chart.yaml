@@ -2,7 +2,7 @@ apiVersion: v2
 name: pod-security-standard-policies
 description: A Helm chart for applying Pod Security Standards as Kyverno policies
 type: application
-version: 0.1.1
+version: 0.1.2
 appVersion: v1.8.4
 
 keywords:
