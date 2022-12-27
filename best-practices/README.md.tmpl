@@ -1,0 +1,40 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+{{ template "chart.description" . }}
+
+{{ template "chart.badgesSection" . }}
+
+## About
+
+This chart contains Enterprise Kyverno's implementation of the Kubernetes Best Practices
+
+## Installing the Chart
+
+These Best Practices policies presently have a minimum requirement of Enterprise Kyverno 1.6.0.
+
+```console
+## Add the Enterprise Kyverno Helm repository
+$ helm repo add nirmata-policies https://nirmata.github.io/kyverno-policies/ && helm repo update nirmata-policies
+
+## Install the Pod Security Standards Helm chart
+$ helm install best-practices-policies -n nirmata-kyverno --create-namespace nirmata-policies/best-practices-policies
+```
+
+## Uninstalling the Chart
+
+To uninstall/delete the `best-practices-policies` chart:
+
+```console
+$ helm delete -n nirmata-kyverno best-practices-policies
+```
+
+The command removes all the Kubernetes components associated with the chart and deletes the release.
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.maintainersSection" . }}
+

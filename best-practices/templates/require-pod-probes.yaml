@@ -1,0 +1,54 @@
+{{- $name := "require-pod-probes" }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: {{ $name }}
+  annotations:
+    {{- with .Values.autogenControllers }}
+    pod-policies.nirmata.com/autogen-controllers: {{ . }}
+    {{- end }}
+    policies.nirmata.com/title: "Require liveness and readiness probes"
+    policies.nirmata.com/category: "Best Practices"
+    kyverno.io/kyverno-version: 1.6.0
+    policies.nirmata.com/subject: Pod
+    policies.nirmata.com/description: >-
+      Liveness and readiness probes need to be configured to correctly manage a pods lifecycle 
+      during deployments, restarts, and upgrades. For each pod, a periodic `livenessProbe` is 
+      performed by the kubelet to determine if the pod's containers are running or need to be 
+      restarted. A `readinessProbe` is used by services and deployments to determine if the pod 
+      is ready to receive network traffic.
+spec:
+  {{- with index .Values "validationFailureActionByPolicy" $name }}
+  validationFailureAction: {{ toYaml . }}
+  {{- else }}
+  validationFailureAction: {{ .Values.validationFailureAction }}
+  {{- end }}
+  {{- with concat (index .Values "validationFailureActionOverrides" "all") (default list (index .Values "validationFailureActionOverrides" $name)) }}
+  validationFailureActionOverrides: {{ toYaml . | nindent 4 }}
+  {{- end }}
+  background: {{ .Values.background }}
+  failurePolicy: {{ .Values.failurePolicy }}
+  rules:
+  - name: validate-livenessProbe-readinessProbe
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    {{- with index .Values "policyExclude" $name }}
+    exclude:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with index .Values "policyPreconditions" $name }}
+    preconditions:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+    validate:
+      message: "Liveness and readiness probes are required"
+      pattern:
+        spec:
+          containers:
+          - livenessProbe:
+              periodSeconds: ">0"      
+            readinessProbe:
+              periodSeconds: ">0"

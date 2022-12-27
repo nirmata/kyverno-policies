@@ -1,0 +1,49 @@
+{{- $name := "restrict-node-port" }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: {{ $name }}
+  annotations:
+    {{- with .Values.autogenControllers }}
+    pod-policies.nirmata.com/autogen-controllers: {{ . }}
+    {{- end }}
+    policies.nirmata.com/title: Disallow Node Ports
+    policies.nirmata.com/category: Best Practice
+    kyverno.io/kyverno-version: 1.6.0
+    policies.nirmata.com/subject: Service
+    policies.nirmata.com/description: >-
+      A Kubernetes service of type NodePort uses a host port to receive traffic from 
+      any source. A 'NetworkPolicy' resource cannot be used to control traffic to host ports. 
+      Although 'NodePort' services can be useful, their use must be limited to services 
+      with additional upstream security checks.
+spec:
+  {{- with index .Values "validationFailureActionByPolicy" $name }}
+  validationFailureAction: {{ toYaml . }}
+  {{- else }}
+  validationFailureAction: {{ .Values.validationFailureAction }}
+  {{- end }}
+  {{- with concat (index .Values "validationFailureActionOverrides" "all") (default list (index .Values "validationFailureActionOverrides" $name)) }}
+  validationFailureActionOverrides: {{ toYaml . | nindent 4 }}
+  {{- end }}
+  background: {{ .Values.background }}
+  failurePolicy: {{ .Values.failurePolicy }}
+  rules:
+  - name: check-node-port
+    match:
+      any:
+      - resources:
+          kinds:
+          - Service
+    {{- with index .Values "policyExclude" $name }}
+    exclude:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with index .Values "policyPreconditions" $name }}
+    preconditions:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+    validate:
+      message: "Services of type NodePort are not allowed."
+      pattern: 
+        spec:
+          type: "!NodePort"

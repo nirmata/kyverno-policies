@@ -1,0 +1,22 @@
+policyExclude:
+  restrict-node-port:
+    any:
+      - resources:
+          kinds:
+            - Service
+          namespaces:
+            - fluent
+  require-ro-rootfs:
+    any:
+      - resources:
+          kinds:
+            - Pod
+          namespaces:
+            - fluent
+  require-labels:
+    any:
+      - resources:
+          kinds:
+            - Pod
+          namespaces:
+            - kube-system

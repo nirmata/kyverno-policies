@@ -1,0 +1,69 @@
+{{- $name := "disallow-latest-tag" }}
+apiVersion : kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: {{ $name }}
+  annotations:
+    {{- with .Values.autogenControllers }}
+    pod-policies.nirmata.com/autogen-controllers: {{ . }}
+    {{- end }}
+    policies.nirmata.com/title: "Disallow latest tag"
+    policies.nirmata.com/category: "Best Practices"
+    kyverno.io/kyverno-version: 1.6.0
+    policies.nirmata.com/subject: Pod
+    policies.nirmata.com/description: >-
+      The ':latest' tag is mutable and can lead to unexpected errors if the image changes. 
+      A best practice is to use an immutable tag (e.g. v2.3) that maps to a specific version 
+      of an application pod.
+spec:
+  {{- with index .Values "validationFailureActionByPolicy" $name }}
+  validationFailureAction: {{ toYaml . }}
+  {{- else }}
+  validationFailureAction: {{ .Values.validationFailureAction }}
+  {{- end }}
+  {{- with concat (index .Values "validationFailureActionOverrides" "all") (default list (index .Values "validationFailureActionOverrides" $name)) }}
+  validationFailureActionOverrides: {{ toYaml . | nindent 4 }}
+  {{- end }}
+  background: {{ .Values.background }}
+  failurePolicy: {{ .Values.failurePolicy }}
+  rules:
+  - name: require-image-tag
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    {{- with index .Values "policyExclude" $name }}
+    exclude:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with index .Values "policyPreconditions" $name }}
+    preconditions:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+    validate:
+      message: "An image tag is required."  
+      pattern:
+        spec:
+          containers:
+          - image: "*:*"
+  - name: validate-image-tag
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    {{- with index .Values "policyExclude" $name }}
+    exclude:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with index .Values "policyPreconditions" $name }}
+    preconditions:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+    validate:
+      message: "Using the ':latest' tag is not recommended."
+      pattern:
+        spec:
+          containers:
+          - image: "!*:latest"

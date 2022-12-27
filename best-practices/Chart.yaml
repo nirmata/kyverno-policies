@@ -1,0 +1,22 @@
+apiVersion: v2
+name: best-practices-policies
+description: A Helm chart for applying Kubernetes Best Practices as Kyverno policies
+type: application
+version: 0.1.0
+appVersion: v1.8.4
+
+keywords:
+  - kyverno
+  - best practices
+  - nirmata
+  - policy agent
+  - validating webhook
+  - admission controller
+
+home: https://nirmata.com/
+
+maintainers:
+  - name: Nirmata
+    url: https://nirmata.com/
+
+kubeVersion: ">=1.16.0-0"

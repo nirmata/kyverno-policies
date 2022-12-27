@@ -1,0 +1,26 @@
+validationFailureActionByPolicy:
+  disallow-latest-tag: enforce
+validationFailureActionOverrides:
+  all:
+    - action: audit
+      namespaces:
+        - ingress-nginx
+  require-pod-probes:
+    - action: audit
+      namespaces:
+        - fluent
+policyExclude:
+  require-pod-probes:
+    any:
+      - resources:
+          kinds:
+            - Pod
+          namespaces:
+            - fluent
+  disallow-latest-tag:
+    any:
+      - resources:
+          kinds:
+            - Pod
+          namespaces:
+            - fluent

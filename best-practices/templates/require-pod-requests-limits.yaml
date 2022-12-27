@@ -1,0 +1,56 @@
+{{- $name := "require-pod-requests-limits" }}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: {{ $name }}
+  annotations:
+    {{- with .Values.autogenControllers }}
+    pod-policies.nirmata.com/autogen-controllers: {{ . }}
+    {{- end }}
+    policies.nirmata.com/title: "Require pod requests and limits"
+    policies.nirmata.com/category: "Best Practices"
+    kyverno.io/kyverno-version: 1.6.0
+    policies.nirmata.com/subject: Pod
+    policies.nirmata.com/description: >-
+      As application workloads share cluster resources, it is important to limit resources 
+      requested and consumed by each pod. It is recommended to require 'resources.requests' 
+      and 'resources.limits' per pod. If a namespace level request or limit is specified, 
+      defaults will automatically be applied to each pod based on the 'LimitRange' 
+      configuration.
+spec:
+  {{- with index .Values "validationFailureActionByPolicy" $name }}
+  validationFailureAction: {{ toYaml . }}
+  {{- else }}
+  validationFailureAction: {{ .Values.validationFailureAction }}
+  {{- end }}
+  {{- with concat (index .Values "validationFailureActionOverrides" "all") (default list (index .Values "validationFailureActionOverrides" $name)) }}
+  validationFailureActionOverrides: {{ toYaml . | nindent 4 }}
+  {{- end }}
+  background: {{ .Values.background }}
+  failurePolicy: {{ .Values.failurePolicy }}
+  rules:
+  - name: validate-resources
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    {{- with index .Values "policyExclude" $name }}
+    exclude:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with index .Values "policyPreconditions" $name }}
+    preconditions:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+    validate:
+      message: "CPU and memory resource requests and limits are required"
+      pattern:
+        spec:
+          containers:
+          - resources:
+              requests:
+                memory: "?*"
+                cpu: "?*"
+              limits:
+                memory: "?*"
