@@ -28,5 +28,6 @@ jobs:
         uses: helm/chart-releaser-action@v1.3.0
         with:
           charts_dir: .
+          charts_repo_url: https://nirmata.github.io/kyverno-charts
         env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}" 
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
