@@ -3,14 +3,14 @@ kind: ClusterPolicy
 metadata:
   name: disallow-capabilities-strict
   annotations:
-    policies.kyverno.io/title: Disallow Capabilities (Strict)
-    policies.kyverno.io/category: Pod Security Standards (Restricted)
-    policies.kyverno.io/severity: medium
-    policies.kyverno.io/minversion: 1.6.0
+    policies.nirmata.io/title: Disallow Capabilities (Strict)
+    policies.nirmata.io/category: Pod Security Standards (Restricted)
+    policies.nirmata.io/severity: medium
+    policies.nirmata.io/minversion: 1.6.0
     kyverno.io/kyverno-version: 1.6.0
     kyverno.io/kubernetes-version: "1.22-1.23"
-    policies.kyverno.io/subject: Pod
-    policies.kyverno.io/description: >-
+    policies.nirmata.io/subject: Pod
+    policies.nirmata.io/description: >-
       Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition,
       all containers must explicitly drop `ALL` capabilities.
 spec:
