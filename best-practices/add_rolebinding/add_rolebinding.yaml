@@ -6,7 +6,7 @@ metadata:
     policies.nirmata.io/title: Add RoleBinding
     policies.nirmata.io/category: Multi-Tenancy
     policies.nirmata.io/subject: RoleBinding
-    policies.nirmata.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.6.0
     policies.nirmata.io/description: >-
       Typically in multi-tenancy and other use cases, when a new Namespace is created,
       users and other principals must be given some permissions to create and interact

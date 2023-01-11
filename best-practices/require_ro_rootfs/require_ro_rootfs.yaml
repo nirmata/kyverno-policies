@@ -7,7 +7,7 @@ metadata:
     policies.nirmata.io/category: Best Practices, EKS Best Practices
     policies.nirmata.io/severity: medium
     policies.nirmata.io/subject: Pod
-    policies.nirmata.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.6.0
     policies.nirmata.io/description: >-
       A read-only root file system helps to enforce an immutable infrastructure strategy;
       the container only needs to write on the mounted volume that persists the state.

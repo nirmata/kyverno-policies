@@ -7,7 +7,7 @@ metadata:
     policies.nirmata.io/category: Best Practices, EKS Best Practices
     policies.nirmata.io/severity: medium
     policies.nirmata.io/subject: Pod
-    policies.nirmata.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.6.0
     policies.nirmata.io/description: >-
       As application workloads share cluster resources, it is important to limit resources
       requested and consumed by each Pod. It is recommended to require resource requests and

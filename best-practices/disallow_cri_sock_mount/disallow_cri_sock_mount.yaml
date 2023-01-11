@@ -7,7 +7,7 @@ metadata:
     policies.nirmata.io/category: Best Practices, EKS Best Practices
     policies.nirmata.io/severity: medium
     policies.nirmata.io/subject: Pod
-    policies.nirmata.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.6.0
     policies.nirmata.io/description: >-
       Container daemon socket bind mounts allows access to the container engine on the
       node. This access can be used for privilege escalation and to manage containers

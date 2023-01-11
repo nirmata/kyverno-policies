@@ -6,7 +6,7 @@ metadata:
     policies.nirmata.io/title: Add Quota
     policies.nirmata.io/category: Multi-Tenancy, EKS Best Practices
     policies.nirmata.io/subject: ResourceQuota, LimitRange
-    policies.nirmata.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.6.0
     policies.nirmata.io/description: >-
       To better control the number of resources that can be created in a given
       Namespace and provide default resource consumption limits for Pods,
