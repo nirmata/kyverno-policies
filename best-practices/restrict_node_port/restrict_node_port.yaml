@@ -3,11 +3,11 @@ kind: ClusterPolicy
 metadata:
   name: restrict-nodeport
   annotations:
-    policies.nirmata.io/title: Disallow NodePort
-    policies.nirmata.io/category: Best Practices
-    policies.nirmata.io/severity: medium
-    policies.nirmata.io/subject: Service
-    policies.nirmata.io/description: >-
+    policies.kyverno.io/title: Disallow NodePort
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Service
+    policies.kyverno.io/description: >-
       A Kubernetes Service of type NodePort uses a host port to receive traffic from
       any source. A NetworkPolicy cannot be used to control traffic to host ports.
       Although NodePort Services can be useful, their use must be limited to Services

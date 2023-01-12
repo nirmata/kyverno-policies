@@ -3,11 +3,11 @@ kind: ClusterPolicy
 metadata:
   name: disallow-latest-tag
   annotations:
-    policies.nirmata.io/title: Disallow Latest Tag
-    policies.nirmata.io/category: Best Practices
-    policies.nirmata.io/severity: medium
-    policies.nirmata.io/subject: Pod
-    policies.nirmata.io/description: >-
+    policies.kyverno.io/title: Disallow Latest Tag
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
       The ':latest' tag is mutable and can lead to unexpected errors if the
       image changes. A best practice is to use an immutable tag that maps to
       a specific version of an application Pod. This policy validates that the image

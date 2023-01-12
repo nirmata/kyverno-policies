@@ -3,14 +3,14 @@ kind: ClusterPolicy
 metadata:
   name: disallow-host-ports-range
   annotations:
-    policies.nirmata.io/title: Disallow hostPorts Range (Alternate)
-    policies.nirmata.io/category: Pod Security Standards (Baseline)
-    policies.nirmata.io/severity: medium
-    policies.nirmata.io/subject: Pod
+    policies.kyverno.io/title: Disallow hostPorts Range (Alternate)
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.6.0
-    policies.nirmata.io/minversion: 1.6.0
+    policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kubernetes-version: "1.22-1.23"
-    policies.nirmata.io/description: >-
+    policies.kyverno.io/description: >-
       Access to host ports allows potential snooping of network traffic and should not be
       allowed, or at minimum restricted to a known list. This policy ensures the `hostPort`
       field is set to one in the designated list. 
