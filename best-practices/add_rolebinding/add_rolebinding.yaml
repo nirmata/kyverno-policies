@@ -3,11 +3,11 @@ kind: ClusterPolicy
 metadata:
   name: add-rolebinding
   annotations:
-    policies.nirmata.io/title: Add RoleBinding
-    policies.nirmata.io/category: Multi-Tenancy
-    policies.nirmata.io/subject: RoleBinding
+    policies.kyverno.io/title: Add RoleBinding
+    policies.kyverno.io/category: Multi-Tenancy
+    policies.kyverno.io/subject: RoleBinding
     policies.kyverno.io/minversion: 1.6.0
-    policies.nirmata.io/description: >-
+    policies.kyverno.io/description: >-
       Typically in multi-tenancy and other use cases, when a new Namespace is created,
       users and other principals must be given some permissions to create and interact
       with resources in the Namespace. Very commonly, Roles and RoleBindings are used to

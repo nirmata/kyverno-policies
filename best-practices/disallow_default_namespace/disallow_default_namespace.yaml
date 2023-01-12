@@ -3,13 +3,13 @@ kind: ClusterPolicy
 metadata:
   name: disallow-default-namespace
   annotations:
-    pod-policies.nirmata.io/autogen-controllers: none
-    policies.nirmata.io/title: Disallow Default Namespace
+    pod-policies.kyverno.io/autogen-controllers: none
+    policies.kyverno.io/title: Disallow Default Namespace
     policies.kyverno.io/minversion: 1.6.0
-    policies.nirmata.io/category: Multi-Tenancy
-    policies.nirmata.io/severity: medium
-    policies.nirmata.io/subject: Pod
-    policies.nirmata.io/description: >-
+    policies.kyverno.io/category: Multi-Tenancy
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
       Kubernetes Namespaces are an optional feature that provide a way to segment and
       isolate cluster resources across multiple applications and users. As a best
       practice, workloads should be isolated with Namespaces. Namespaces should be required

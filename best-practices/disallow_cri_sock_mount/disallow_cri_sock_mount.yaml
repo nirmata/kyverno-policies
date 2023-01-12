@@ -3,12 +3,12 @@ kind: ClusterPolicy
 metadata:
   name: disallow-container-sock-mounts
   annotations:
-    policies.nirmata.io/title: Disallow CRI socket mounts
-    policies.nirmata.io/category: Best Practices, EKS Best Practices
-    policies.nirmata.io/severity: medium
-    policies.nirmata.io/subject: Pod
+    policies.kyverno.io/title: Disallow CRI socket mounts
+    policies.kyverno.io/category: Best Practices, EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.6.0
-    policies.nirmata.io/description: >-
+    policies.kyverno.io/description: >-
       Container daemon socket bind mounts allows access to the container engine on the
       node. This access can be used for privilege escalation and to manage containers
       outside of Kubernetes, and hence should not be allowed. This policy validates that
