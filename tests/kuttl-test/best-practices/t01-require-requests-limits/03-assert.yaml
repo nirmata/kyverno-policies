@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: pod
+metadata:
+  name: ngnix-request-limit
+  namespace: new-test
+status:
+  phase: Running
