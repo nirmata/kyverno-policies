@@ -1,6 +1,6 @@
 # Kyverno Policies
 
-This repository contains a set of Kyverno policies curated and managed by the Nirmata team for use as policy groups within [Nirmata Enterprise Subscription](https://nirmata.com/kyverno-enterprise/), and [Nirmata Policy Manager](https://nirmata.com/nirmata-cloud-native-policy-manager/).
+This repository contains a set of Kyverno policies curated and managed by the Nirmata team for use as policy groups within [Nirmata Enterprise for Kyverno](https://nirmata.com/kyverno-enterprise/), and [Nirmata Policy Manager](https://nirmata.com/nirmata-cloud-native-policy-manager/).
 
 For more information, visit our website at [https://nirmata.com/](https://nirmata.com/).
 
