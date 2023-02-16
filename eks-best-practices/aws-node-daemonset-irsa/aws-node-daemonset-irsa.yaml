@@ -1,0 +1,35 @@
+# https://aws.github.io/aws-eks-best-practices/security/docs/iam/#update-the-aws-node-daemonset-to-use-irsa
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: aws-node-daemonset-irsa
+  annotations:
+    policies.kyverno.io/title: Check Access to Instance Profile
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/description: >-
+      At present, the aws-node daemonset is configured to use a role assigned to the EC2 instances to assign IPs to pods.
+      This role includes several AWS managed policies, e.g. AmazonEKS_CNI_Policy and EC2ContainerRegistryReadOnly that effectively allow all pods running on a node to attach/detach ENIs,
+      assign/unassign IP addresses, or pull images from ECR. Since this presents a risk to your cluster,
+      it is recommended that you update the aws-node daemonset to use IRSA.
+spec:
+  generateExistingOnPolicyUpdate: true
+  validationFailureAction: audit
+  background: true
+  rules:
+  - name: validate-node-daemonset-irsa
+    match:
+      any:
+      - resources:
+          kinds:
+          - DaemonSet
+        names: 
+        - aws-node
+        namespaces:
+        - kube-system
+    validate:
+      message: "Update the aws-node daemonset to use IRSA."
+      pattern:
+        spec:
+          serviceAccountName: "!aws-node"

@@ -1,0 +1,16 @@
+resources:
+  - add-psa-labels/add-psa-labels.yaml
+  - aws-node-daemonset-irsa/aws-node-daemonset-irsa.yaml
+  - check-amazon-inspector/check-amazon-inspector.yaml
+  - check-cluster-endpoint/check-cluster-endpoint.yaml
+  - check-cluster-logging/check-cluster-logging.yaml
+  - check-cluster-remote-access/check-cluster-remote-access.yaml
+  - check-cluster-rolearn/check-cluster-rolearn.yaml
+  - check-cluster-secrets-encryption/check-cluster-secrets-encryption.yaml
+  - check-cluster-tags/check-cluster-tags.yaml
+  - check-immutable-tags-ecr/check-immutable-tags-ecr.yaml
+  - check-instance-profile-access/check-instance-profile-access.yaml
+  - check-public-dns/check-public-dns.yaml
+  - check-vpc-flow-logs/check-vpc-flow-logs.yaml
+  - disallow-all-secrets/no-secrets.yaml
+  - disallow-secrets-from-env-vars/secrets-not-from-env-vars.yaml
