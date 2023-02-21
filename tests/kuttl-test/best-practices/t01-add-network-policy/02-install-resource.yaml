@@ -1,0 +1,7 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestStep
+apply:
+- ../../../../best-practices/add_network_policy/resource.yaml
+assert:
+- ../../../../best-practices/add_network_policy/generatedResource.yaml
+unitTest: false

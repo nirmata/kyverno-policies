@@ -1,0 +1,7 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestStep
+apply:
+- ../../../../best-practices/disallow_cri_sock_mount/resources/02-resource.yaml
+assert:
+- resource02-assert.yaml
+unitTest: false

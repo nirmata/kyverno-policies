@@ -1,0 +1,32 @@
+name: Kuttl tests
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  
+jobs:
+  run-e2etest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Prepare environment
+        run: make kind-create-cluster 
+      - name: Install kyverno Operator
+        run: make kind-deploy-kyverno-operator
+      - name: Install kyverno
+        run: make kind-deploy-kyverno
+      - name: Wait for Kyverno to start
+        run: sleep 60
+      - name: Install kyverno Policies
+        run: make kind-deploy-kyverno-policies
+      - name: Test with kuttl
+        run: make test-kuttl

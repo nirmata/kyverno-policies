@@ -1,0 +1,7 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestStep
+apply:
+- ../../../../best-practices/add_network_policy/add_network_policy.yaml
+assert:
+- policy-assert.yaml
+unitTest: false
