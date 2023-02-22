@@ -41,7 +41,7 @@ clean-tools:
 .PHONY: test-kuttl
 test-kuttl: $(KUTTL) ## Run kuttl tests
 	@echo Running kuttl tests... >&2
-	@$(KUTTL) test --config ./tests/kuttl-test/kuttl-test.yaml
+	@$(KUTTL) test --config kuttl-test.yaml
 
 ## Create kind cluster
 .PHONY: kind-create-cluster
