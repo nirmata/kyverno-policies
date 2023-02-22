@@ -26,7 +26,5 @@ jobs:
         run: make kind-deploy-kyverno
       - name: Wait for Kyverno to start
         run: sleep 60
-      - name: Install kyverno Policies
-        run: make kind-deploy-kyverno-policies
       - name: Test with kuttl
         run: make test-kuttl
