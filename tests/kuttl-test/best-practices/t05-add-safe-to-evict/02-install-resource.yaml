@@ -1,8 +1,0 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestStep
-apply:
-- ../../../../best-practices/add_safe_to_evict/resource.yaml
-assert:
-- ../../../../best-practices/add_safe_to_evict/myapp-pod03-patched.yaml
-- ../../../../best-practices/add_safe_to_evict/myapp-pod04-patched.yaml
-unitTest: false

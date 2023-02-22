@@ -1,5 +1,0 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestStep
-commands:
-- command: kubectl delete -f ../../../../best-practices/disallow_cri_sock_mount/resources/01-resource.yaml --force --wait=true --ignore-not-found=true
-unitTest: false

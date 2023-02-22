@@ -1,4 +1,4 @@
-name: Kuttl tests
+name: Kuttl Test
 
 on:
   push:

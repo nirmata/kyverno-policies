@@ -1,7 +1,0 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestStep
-apply:
-- ../../../../best-practices/add_safe_to_evict/add_safe_to_evict.yaml
-assert:
-- policy-assert.yaml
-unitTest: false

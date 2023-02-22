@@ -1,7 +1,7 @@
 apiVersion: kuttl.dev/v1beta1
 kind: TestStep
 apply:
-- ../../../../best-practices/add_ns_quota/add_ns_quota.yaml
+- ../add_network_policy.yaml
 assert:
 - policy-assert.yaml
 unitTest: false

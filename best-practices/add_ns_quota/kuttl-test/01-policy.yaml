@@ -1,7 +1,7 @@
 apiVersion: kuttl.dev/v1beta1
 kind: TestStep
 apply:
-- ../../../../best-practices/disallow_cri_sock_mount/disallow_cri_sock_mount.yaml
+- ../add_ns_quota.yaml
 assert:
 - policy-assert.yaml
 unitTest: false
