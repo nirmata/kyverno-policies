@@ -16,7 +16,7 @@ spec:
         kinds:
         - Namespace
     mutate:
-      overlay:
+      patchStrategicMerge:
         metadata:
           annotations:
             nirmata.io/ns-creator: "{{serviceAccountName}}"
