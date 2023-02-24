@@ -1,0 +1,29 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: deny-loadbalancer-creation
+  annotations:
+    kyverno.io/category: "Networking"
+    kyverno.io/subject: "Service"
+    kyverno.io/severity: "medium"
+    kyverno.io/title: "Deny LoadBalancer Creation"
+    kyverno.io/description: >-
+      LoadBalancer type svc provides a Public IP address or DNS name to which the external users can connect. 
+      This policy blocks the creation of Kubernetes LoadBalancer type services.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+  - name: deny-loadbalancer-creation
+    match:
+      resources:
+        kinds:
+        - Service
+    validate:
+      message: "LoadBalancer type service creation is not allowed."
+      deny:
+        conditions:
+          all:
+            - key: "{{request.object.spec.type}}"
+              operator: Equal
+              value: LoadBalancer
