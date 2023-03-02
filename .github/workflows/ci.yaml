@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - main
-      - release*
   pull_request:
     branches:
       - main
-      - release*
 
 jobs:
   test:
@@ -19,7 +17,7 @@ jobs:
         with:
           path: kyverno-policies
 
-      - name: Clone Kyverno
+      - name: Clone Enterprise Kyverno
         uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
         with:
           repository: nirmata/kyverno
@@ -32,6 +30,6 @@ jobs:
         with:
           go-version: 1.18
 
-      - name: Test Policy
+      - name: Run Kyverno CLI tests
         run: go run ./cmd/cli/kubectl-kyverno test ../kyverno-policies
         working-directory: kyverno

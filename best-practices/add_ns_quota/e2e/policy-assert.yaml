@@ -1,7 +1,7 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: add-networkpolicy
+  name: add-ns-quota
 status:
   conditions:
   - reason: Succeeded
