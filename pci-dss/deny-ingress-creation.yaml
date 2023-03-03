@@ -6,6 +6,7 @@ metadata:
     policies.kyverno.io/title: deny Ingress Creation
     policies.kyverno.io/category: Networking
     policies.kyverno.io/severity: medium
+    policies.kyverno.io/category: PCI DSS Compliance
     policies.kyverno.io/subject: Ingress
     policies.kyverno.io/description: >-
       Ingress provides routing rules to manage access to the services within a Kubernetes cluster. 
@@ -16,9 +17,10 @@ spec:
   rules:
   - name: deny-ingress-creation
     match:
-      resources:
-        kinds:
-        - Ingress
+      any:
+      - resources:
+          kinds:
+          - Ingress
     validate:
       message: "Ingress creation is not allowed."
       deny: {}
