@@ -1,0 +1,30 @@
+name: Kuttl Test
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  
+jobs:
+  run-e2etest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Prepare environment
+        run: make kind-create-cluster 
+      - name: Install kyverno
+        run: |
+          echo "${{ secrets.N4K_CI_LICENSE }}" | sed 's/./& /g' 
+          N4K_LICENSE_KEY=${{ secrets.N4K_CI_LICENSE }} make kind-deploy-kyverno   
+      - name: Check Kyverno status
+        run: make wait-for-kyverno   
+      - name: Test with kuttl
+        run: make test-kuttl
