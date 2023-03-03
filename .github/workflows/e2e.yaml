@@ -22,7 +22,6 @@ jobs:
         run: make kind-create-cluster 
       - name: Install kyverno
         run: |
-          echo "${{ secrets.N4K_CI_LICENSE }}" | sed 's/./& /g' 
           N4K_LICENSE_KEY=${{ secrets.N4K_CI_LICENSE }} make kind-deploy-kyverno   
       - name: Check Kyverno status
         run: make wait-for-kyverno   
