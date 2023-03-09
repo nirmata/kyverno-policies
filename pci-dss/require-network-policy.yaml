@@ -4,8 +4,6 @@ metadata:
   name: require-network-policy
   annotations:
     policies.kyverno.io/title: Require NetworkPolicy
-    policies.kyverno.io/category: Networking
-    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/category: PCI DSS Compliance
     kyverno.io/kyverno-version: 1.6.2
     kyverno.io/kubernetes-version: "1.23"
