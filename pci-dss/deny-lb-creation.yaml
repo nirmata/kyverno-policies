@@ -3,7 +3,6 @@ kind: ClusterPolicy
 metadata:
   name: deny-loadbalancer-creation
   annotations:
-    policices.kyverno.io/category: "Networking"
     policices.kyverno.io/subject: "Service"
     policices.kyverno.io/severity: "medium"
     policies.kyverno.io/category: PCI DSS Compliance
