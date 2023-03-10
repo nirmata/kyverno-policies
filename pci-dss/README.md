@@ -4,7 +4,7 @@
 
 **Clone Repository:**
 
-Clone the kyverno-policies repository.
+Clone the `kyverno-policies` repository
 
 ```console
 git clone https://github.com/nirmata/kyverno-policies.git
