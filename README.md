@@ -16,6 +16,10 @@ Clone the kyverno-policies repository.
 ```console
 git clone https://github.com/nirmata/kyverno-policies.git
 ```
+@@ -16,24 +16,17 @@ Clone the kyverno-policies repository.
+```console
+git clone https://github.com/nirmata/kyverno-policies.git
+```
 
 **Install Policies:**
 
@@ -29,6 +33,7 @@ To install Multitenancy and EKS Best Practices
 cd kyverno-policies
 kubectl apply -f multitenancy
 kubectl apply -f eks-best-practices
+kubectl apply -f pci-dss
 ```
 
 Once policies are installed, you can check if they are ready using the command:
@@ -36,4 +41,3 @@ Once policies are installed, you can check if they are ready using the command:
 ```console
 kubectl get cpol
 ```
-
