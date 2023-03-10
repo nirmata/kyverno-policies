@@ -2,6 +2,14 @@ apiVersion: kyverno.io/v2alpha1
 kind: ClusterCleanupPolicy
 metadata:
   name: cleandeploy
+  annotations:
+    policies.kyverno.io/title: Cluster Cleanup Policy
+    policies.kyverno.io/category: FinOps
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Service
+    policies.kyverno.io/minversion: 1.9.0
+    policies.kyverno.io/description: >-
+      Automate the resource cleanup process by using a CleanupPolicy.
 spec:
   match:
     any:
