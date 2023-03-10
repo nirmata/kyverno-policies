@@ -82,5 +82,4 @@ get-kyverno-binary:
 .PHONY: run-cli-test
 run-cli-test: 
 	@echo wait kyverno pod status installation... >&2
-	@./kyverno test ../kyverno-policies
-
+	@./kyverno test .
