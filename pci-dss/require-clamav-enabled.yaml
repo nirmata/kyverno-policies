@@ -1,0 +1,32 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-antivirus
+  annotations:
+    policies.kyverno.io/title: check for ClamAV Antivirus
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/category: PCI DSS Compliance
+    policies.kyverno.io/description: >-
+      ClamAV antivirus software can be used to scan for viruses and malware in Kubernetes clusters.
+      ClamAV is commonly used in Kubernetes environments to protect against threats that could
+      potentially harm containers or the entire cluster.
+      This policy ensures that all containers in a Pod use the ClamAV antivirus.
+spec:
+  background: true
+  validationFailureAction: Audit
+  rules:
+  - name: check-antivirus
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    validate:
+      message: "Checking usage of ClamAV antivirus"
+      pattern:
+        spec:
+          env:
+          - name: CLAMAV_ENABLED
+            value: "true"

@@ -1,0 +1,31 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: add-annotations
+  annotations:
+    policies.kyverno.io/title: Add annotations
+    policies.kyverno.io/category: PCI DSS Compliance
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Annotation
+    policies.kyverno.io/description: >-
+      Annotations are key/value pairs, which is used as an important source of metadata describing
+      objects in various ways or triggering other functionality. Annotations are also a very basic
+      concept and should be used throughout Kubernetes. This policy performs a simple mutation
+      which adds a Annotation `foo=bar` to Pods, Services, ConfigMaps, and Secrets.
+spec:
+  rules:
+  - name: add-annotations
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          - Service
+          - ConfigMap
+          - Secret
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            foo: bar
