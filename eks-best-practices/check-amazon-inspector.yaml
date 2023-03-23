@@ -1,0 +1,28 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-amazon-inspector
+  annotations:
+    policies.kyverno.io/title: Check Amazon Inspector for EC2 and ECR
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/description: >-
+      Amazon Inspector is not enabled on both EC2 and ECR
+spec:
+  validationFailureAction: audit
+  background: true
+  rules:
+    - name: check-amazon-inspector
+      match:
+        any:
+        - resources:
+            kinds:
+              - AWSAdapterConfig
+      validate:
+        message: "Amazon Inspector must be enabled on EC2 and ECR"
+        pattern:
+          status:
+            accountData:
+              inspectorEnabledEC2: true
+              inspectorEnabledECR: true

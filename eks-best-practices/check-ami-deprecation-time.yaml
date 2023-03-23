@@ -1,0 +1,31 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-ami-deprecation-time
+  annotations:
+    policies.kyverno.io/title: Check AMI deprecation Time
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/description: >-
+      AMIs past their deprecation time
+spec:
+  validationFailureAction: audit
+  background: true
+  rules:
+  - name: check-ami-deprecation-time
+    match:
+      any:
+      - resources:
+          kinds:
+          - AWSAdapterConfig
+    validate:
+      message: "This rule audits for AMIs that are past their deprecation time"
+      foreach:
+      - list: "request.object.status.eksCluster.compute.reservations[].instances[].amazonMachineImage"
+        deny:
+          conditions:
+            any:
+            - key: "{{ time_before('{{ element.deprecationTime }}', '{{ time_now_utc() }}') }}"
+              operator: Equals
+              value: true
