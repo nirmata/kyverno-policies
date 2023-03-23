@@ -1,0 +1,28 @@
+name: Kyverno CLI Test
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cli-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        n4k-version: [v1.9.0-n4kbuild.3]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get kyverno binary
+        run: |
+          N4K_BINARY_VERSION=${{ matrix.n4k-version }} make get-kyverno-binary
+      - name: Run kyverno CLI test
+        run: make run-cli-test
