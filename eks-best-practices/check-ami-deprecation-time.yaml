@@ -22,7 +22,7 @@ spec:
     validate:
       message: "This rule audits for AMIs that are past their deprecation time"
       foreach:
-      - list: "request.object.status.eksCluster.compute.reservations[].instances[].amazonMachineImage"
+      - list: "request.object.status.eksCluster.compute.nodeGroups[].amazonMachineImage"
         deny:
           conditions:
             any:
