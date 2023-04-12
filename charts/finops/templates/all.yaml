@@ -1,0 +1,399 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: FinOps
+    policies.kyverno.io/description: 'The Kubernetes cluster autoscaler does not evict
+      pods that  use hostPath or emptyDir volumes. To allow eviction of these pods,
+      the annotation  cluster-autoscaler.kubernetes.io/safe-to-evict=true must be
+      added to the pods.       '
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/subject: Pod,Annotation
+  name: add-safe-to-evict
+spec:
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            +(cluster-autoscaler.kubernetes.io/safe-to-evict): "true"
+        spec:
+          volumes:
+          - <(emptyDir): {}
+    name: annotate-empty-dir
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            +(cluster-autoscaler.kubernetes.io/safe-to-evict): "true"
+        spec:
+          volumes:
+          - hostPath:
+              <(path): '*'
+    name: annotate-host-path
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: FinOps
+    policies.kyverno.io/description: 'Especially in cloud provider environments, a
+      Service having type LoadBalancer will cause the provider to respond by creating
+      a load balancer somewhere in the customer account. This adds cost and complexity
+      to a deployment. Without restricting this ability, users may easily overrun
+      established budgets and security practices set by the organization. This policy
+      restricts use of the Service type LoadBalancer.      '
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Service
+    policies.kyverno.io/title: Disallow Service Type LoadBalancer
+  name: no-loadbalancer-service
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Service
+    name: no-LoadBalancer
+    validate:
+      message: Service of type LoadBalancer is not allowed.
+      pattern:
+        spec:
+          type: '!LoadBalancer'
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kyverno-version: 1.7.0
+    pod-policies.kyverno.io/autogen-controllers: none
+    policies.kyverno.io/category: FinOps
+    policies.kyverno.io/description: 'Pods not created by workload controllers such
+      as Deployments have no self-healing or scaling abilities and are unsuitable
+      for production. This policy prevents such "naked" Pods from being created unless
+      they originate from a higher-level workload controller of some sort.      '
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/title: Prevent Orphan Pods
+  name: prevent-naked-pods
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: naked-pods
+    preconditions:
+      all:
+      - key: '{{request.operation || ''BACKGROUND''}}'
+        operator: NotEquals
+        value: DELETE
+    validate:
+      deny:
+        conditions:
+          any:
+          - key: ownerReferences
+            operator: AnyNotIn
+            value: '{{request.object.metadata.keys(@)}}'
+      message: Naked Pods are not allowed. They must be created by Pod controllers.
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: FinOps
+    policies.kyverno.io/description: 'As application workloads share cluster resources,
+      it is important to limit resources requested and consumed by each Pod. It is
+      recommended to require resource requests and limits per Pod, especially for
+      memory and CPU. If a Namespace level request or limit is specified, defaults
+      will automatically be applied to each Pod based on the LimitRange configuration.
+      This policy validates that all containers have something specified for memory
+      and CPU requests and memory limits.      '
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/title: Require Limits and Requests
+  name: require-requests-limits
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: validate-resources
+    validate:
+      message: CPU and memory resource requests and limits are required.
+      pattern:
+        spec:
+          containers:
+          - resources:
+              limits:
+                memory: ?*
+              requests:
+                cpu: ?*
+                memory: ?*
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kyverno-version: 1.7.0
+    policies.kyverno.io/category: FinOps
+    policies.kyverno.io/description: 'If a Deployment''s Pods are seen crashing multiple
+      times it usually indicates there is an issue that must be manually resolved.
+      Removing the failing Pods and marking the Deployment is often a useful troubleshooting
+      step. This policy watches existing Pods and if any are observed to have restarted
+      more than once, indicating a potential crashloop, Kyverno scales its parent
+      deployment to zero and writes an annotation signaling to an SRE team that troubleshooting
+      is needed. It may be necessary to grant additional privileges to the Kyverno
+      ServiceAccount, via one of the existing ClusterRoleBindings or a new one, so
+      it can modify Deployments.      '
+    policies.kyverno.io/minversion: 1.7.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Deployment
+    policies.kyverno.io/title: Scale Deployment to Zero
+  name: scale-deployment-zero
+spec:
+  rules:
+  - context:
+    - name: rsname
+      variable:
+        default: ""
+        jmesPath: request.object.metadata.ownerReferences[0].name
+    - apiCall:
+        jmesPath: items[?metadata.name=='{{rsname}}'].metadata.ownerReferences[0].name
+          | [0]
+        urlPath: /apis/apps/v1/namespaces/{{request.namespace}}/replicasets
+      name: deploymentname
+    match:
+      any:
+      - resources:
+          kinds:
+          - v1/Pod.status
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            sre.corp.org/troubleshooting-needed: "true"
+        spec:
+          replicas: 0
+      targets:
+      - apiVersion: apps/v1
+        kind: Deployment
+        name: '{{deploymentname}}'
+        namespace: '{{request.namespace}}'
+    name: annotate-deployment-rule
+    preconditions:
+      all:
+      - key: '{{request.operation || ''BACKGROUND''}}'
+        operator: Equals
+        value: UPDATE
+      - key: '{{request.object.status.containerStatuses[0].restartCount}}'
+        operator: GreaterThan
+        value: 1
+---
+apiVersion: kyverno.io/v2alpha1
+kind: ClusterCleanupPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: FinOps
+    policies.kyverno.io/description: Automate the resource cleanup process by using
+      a CleanupPolicy.
+    policies.kyverno.io/minversion: 1.9.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Service
+    policies.kyverno.io/title: Cluster Cleanup Policy
+  name: cleandeploy
+spec:
+  conditions:
+    any:
+    - key: '{{ target.spec.replicas }}'
+      operator: LessThan
+      value: 2
+  match:
+    any:
+    - resources:
+        kinds:
+        - Deployment
+        selector:
+          matchLabels:
+            canremove: "true"
+  schedule: '*/5 * * * *'
+---
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kyverno-version: 1.9.0
+    policies.kyverno.io/category: FinOps
+    policies.kyverno.io/description: 'In cases such as multi-tenancy where new Namespaces
+      must be fully provisioned before they can be used, it may not be easy to declare
+      and understand if/when the Namespace is ready. Having a policy which defines
+      all the resources which are required for each Namespace can assist in determining
+      compliance. This policy, expected to be run in background mode only, performs
+      a Namespace inventory check to ensure that all Namespaces have a ResourceQuota
+      and NetworkPolicy. Additional rules may be written to extend the check for your
+      needs. By default, background scans occur every one hour which may be changed
+      with an additional container flag. Please see the installation documentation
+      for details.      '
+    policies.kyverno.io/minversion: 1.9.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Namespace
+    policies.kyverno.io/title: Namespace Inventory Check
+  name: namespace-inventory-check
+spec:
+  background: true
+  rules:
+  - context:
+    - apiCall:
+        jmesPath: items[] | length(@)
+        urlPath: /api/v1/namespaces/{{request.object.metadata.name}}/resourcequotas
+      name: resourcequotas
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - kube-public
+          - kube-node-lease
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    name: resourcequotas
+    validate:
+      deny:
+        conditions:
+          all:
+          - key: '{{ resourcequotas }}'
+            operator: Equals
+            value: 0
+      message: Every Namespace must have at least one ResourceQuota.
+  - context:
+    - apiCall:
+        jmesPath: items[] | length(@)
+        urlPath: /apis/networking.k8s.io/v1/namespaces/{{request.object.metadata.name}}/networkpolicies
+      name: netpols
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - kube-public
+          - kube-node-lease
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    name: networkpolicies
+    validate:
+      deny:
+        conditions:
+          all:
+          - key: '{{ netpols }}'
+            operator: Equals
+            value: 0
+      message: Every Namespace must have at least one NetworkPolicy.
+  validationFailureAction: Audit
+---
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kyverno-version: 1.9.0
+    policies.kyverno.io/category: FinOps
+    policies.kyverno.io/description: 'Pod controllers such as Deployments which implement
+      replicas and permit the scale action use a `/scale` subresource to control this
+      behavior. In addition to checks for creations of such controllers that their
+      replica is in a certain shape, the scale operation and subresource needs to
+      be accounted for as well. This policy, operable beginning in Kyverno 1.9, is
+      a collection of rules which can be used to limit the replica count both upon
+      creation of a Deployment and when a scale operation is performed.      '
+    policies.kyverno.io/minversion: 1.9.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Deployment
+    policies.kyverno.io/title: Restrict Scale
+  name: restrict-scale
+spec:
+  background: false
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Deployment/scale
+    name: scale-max-eight
+    validate:
+      message: The replica count for this Deployment may not exceed 8.
+      pattern:
+        =(status):
+          =(selector): '*type=monitoring*'
+        spec:
+          replicas: <9
+  - context:
+    - apiCall:
+        jmesPath: items[0]
+        urlPath: /apis/apps/v1/namespaces/{{request.namespace}}/deployments?fieldSelector=metadata.name={{request.name}}
+      name: parentdeploy
+    - name: dept
+      variable:
+        default: empty
+        jmesPath: parentdeploy.metadata.annotations."corp.org/dept"
+    match:
+      any:
+      - resources:
+          kinds:
+          - Deployment/scale
+    name: scale-max-eight-annotations
+    validate:
+      deny:
+        conditions:
+          all:
+          - key: '{{dept}}'
+            operator: Equals
+            value: engineering
+          - key: '{{request.object.spec.replicas}}'
+            operator: GreaterThan
+            value: 8
+      message: The replica count for this Deployment may not exceed 8.
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Deployment
+          selector:
+            matchLabels:
+              type: monitoring
+    name: create-max-four
+    validate:
+      message: The replica count for this Deployment may not exceed 4.
+      pattern:
+        spec:
+          replicas: <5
+  validationFailureAction: audit

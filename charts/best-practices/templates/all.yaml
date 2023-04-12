@@ -1,0 +1,881 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Multi-Tenancy, EKS Best Practices
+    policies.kyverno.io/description: By default, Kubernetes allows communications
+      across all Pods within a cluster. The NetworkPolicy resource and a CNI plug-in
+      that supports NetworkPolicy must be used to restrict communications. A default
+      NetworkPolicy should be configured for each Namespace to default deny all ingress
+      and egress traffic to the Pods in the Namespace. Application teams can then
+      configure additional NetworkPolicy resources to allow desired traffic to application
+      Pods from select sources. This policy will create a new NetworkPolicy resource
+      named `default-deny` which will deny all traffic anytime a new Namespace is
+      created.
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/subject: NetworkPolicy
+    policies.kyverno.io/title: Add Network Policy
+  name: add-networkpolicy
+spec:
+  rules:
+  - generate:
+      apiVersion: networking.k8s.io/v1
+      data:
+        spec:
+          podSelector: {}
+          policyTypes:
+          - Ingress
+          - Egress
+      kind: NetworkPolicy
+      name: default-deny
+      namespace: '{{request.object.metadata.name}}'
+      synchronize: true
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    name: default-deny
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kyverno-version: 1.6.2
+    policies.kyverno.io/category: Multi-Tenancy, EKS Best Practices
+    policies.kyverno.io/description: By default, Kubernetes allows communications
+      across all Pods within a cluster. The NetworkPolicy resource and a CNI plug-in
+      that supports NetworkPolicy must be used to restrict communications. A default
+      NetworkPolicy should be configured for each Namespace to default deny all ingress
+      and egress traffic to the Pods in the Namespace. Application teams can then
+      configure additional NetworkPolicy resources to allow desired traffic to application
+      Pods from select sources. This policy will create a new NetworkPolicy resource
+      named `default-deny` which will deny all traffic anytime a new Namespace is
+      created.
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/subject: NetworkPolicy
+    policies.kyverno.io/title: Add Network Policy for DNS
+  name: add-networkpolicy-dns
+spec:
+  rules:
+  - generate:
+      apiVersion: networking.k8s.io/v1
+      data:
+        spec:
+          egress:
+          - ports:
+            - port: 53
+              protocol: UDP
+            to:
+            - namespaceSelector:
+                matchLabels:
+                  name: kube-system
+          podSelector:
+            matchLabels: {}
+          policyTypes:
+          - Egress
+      kind: NetworkPolicy
+      name: allow-dns
+      namespace: '{{request.object.metadata.name}}'
+      synchronize: false
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    name: add-netpol-dns
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Multi-Tenancy, EKS Best Practices
+    policies.kyverno.io/description: To better control the number of resources that
+      can be created in a given Namespace and provide default resource consumption
+      limits for Pods, ResourceQuota and LimitRange resources are recommended. This
+      policy will generate ResourceQuota and LimitRange resources when a new Namespace
+      is created.
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/subject: ResourceQuota, LimitRange
+    policies.kyverno.io/title: Add Quota
+  name: add-ns-quota
+spec:
+  rules:
+  - generate:
+      apiVersion: v1
+      data:
+        spec:
+          hard:
+            limits.cpu: "4"
+            limits.memory: 16Gi
+            requests.cpu: "4"
+            requests.memory: 16Gi
+      kind: ResourceQuota
+      name: default-resourcequota
+      namespace: '{{request.object.metadata.name}}'
+      synchronize: true
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    name: generate-resourcequota
+  - generate:
+      apiVersion: v1
+      data:
+        spec:
+          limits:
+          - default:
+              cpu: 500m
+              memory: 1Gi
+            defaultRequest:
+              cpu: 200m
+              memory: 256Mi
+            type: Container
+      kind: LimitRange
+      name: default-limitrange
+      namespace: '{{request.object.metadata.name}}'
+      synchronize: true
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    name: generate-limitrange
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Multi-Tenancy
+    policies.kyverno.io/description: Typically in multi-tenancy and other use cases,
+      when a new Namespace is created, users and other principals must be given some
+      permissions to create and interact with resources in the Namespace. Very commonly,
+      Roles and RoleBindings are used to grant permissions at the Namespace level.
+      This policy generates a RoleBinding called `<userName>-admin-binding` in the
+      new Namespace which binds to the ClusterRole `admin` as long as a `cluster-admin`
+      did not create the Namespace. Additionally, an annotation named `kyverno.io/user`
+      is added to the RoleBinding recording the name of the user responsible for the
+      Namespace's creation.
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/subject: RoleBinding
+    policies.kyverno.io/title: Add RoleBinding
+  name: add-rolebinding
+spec:
+  background: false
+  rules:
+  - exclude:
+      any:
+      - clusterRoles:
+        - cluster-admin
+    generate:
+      data:
+        metadata:
+          annotations:
+            kyverno.io/user: '{{request.userInfo.username}}'
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: ClusterRole
+          name: admin
+        subjects:
+        - kind: User
+          name: '{{request.userInfo.username}}'
+      kind: RoleBinding
+      name: '{{request.userInfo.username}}-admin-binding'
+      namespace: '{{request.object.metadata.name}}'
+      synchronize: true
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    name: generate-admin-binding
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Other
+    policies.kyverno.io/description: 'The Kubernetes cluster autoscaler does not evict
+      pods that  use hostPath or emptyDir volumes. To allow eviction of these pods,
+      the annotation  cluster-autoscaler.kubernetes.io/safe-to-evict=true must be
+      added to the pods. '
+    policies.kyverno.io/minversion: 1.4.3
+    policies.kyverno.io/subject: Pod,Annotation
+  name: add-safe-to-evict
+spec:
+  rules:
+  - match:
+      resources:
+        kinds:
+        - Pod
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            +(cluster-autoscaler.kubernetes.io/safe-to-evict): "true"
+        spec:
+          volumes:
+          - <(emptyDir): {}
+    name: annotate-empty-dir
+  - match:
+      resources:
+        kinds:
+        - Pod
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            +(cluster-autoscaler.kubernetes.io/safe-to-evict): "true"
+        spec:
+          volumes:
+          - hostPath:
+              <(path): '*'
+    name: annotate-host-path
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kyverno-version: 1.7.4
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: Kubernetes APIs are sometimes deprecated and
+      removed after a few releases. As a best practice, older API versions should
+      be replaced with newer versions. This policy validates for APIs that are deprecated
+      or scheduled for removal. Note that checking for some of these resources may
+      require modifying the Kyverno ConfigMap to remove filters. In the validate-v1-22-removals
+      rule, the Lease kind has been commented out due to a check for this kind having
+      a performance penalty on Kubernetes clusters with many leases. Its enabling
+      should be attended carefully and is not recommended on large clusters. PodSecurityPolicy
+      is removed in v1.25 so therefore the validate-v1-25-removals rule may not completely
+      work on 1.25+. This policy requires Kyverno v1.7.4+ to function properly.
+    policies.kyverno.io/minversion: 1.7.4
+    policies.kyverno.io/subject: Kubernetes APIs
+    policies.kyverno.io/title: Check deprecated APIs
+  name: check-deprecated-apis
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - admissionregistration.k8s.io/*/ValidatingWebhookConfiguration
+          - admissionregistration.k8s.io/*/MutatingWebhookConfiguration
+          - apiextensions.k8s.io/*/CustomResourceDefinition
+          - apiregistration.k8s.io/*/APIService
+          - authentication.k8s.io/*/TokenReview
+          - authorization.k8s.io/*/SubjectAccessReview
+          - authorization.k8s.io/*/LocalSubjectAccessReview
+          - authorization.k8s.io/*/SelfSubjectAccessReview
+          - certificates.k8s.io/*/CertificateSigningRequest
+          - extensions/*/Ingress
+          - networking.k8s.io/*/Ingress
+          - networking.k8s.io/*/IngressClass
+          - rbac.authorization.k8s.io/*/ClusterRole
+          - rbac.authorization.k8s.io/*/ClusterRoleBinding
+          - rbac.authorization.k8s.io/*/Role
+          - rbac.authorization.k8s.io/*/RoleBinding
+          - scheduling.k8s.io/*/PriorityClass
+          - storage.k8s.io/*/CSIDriver
+          - storage.k8s.io/*/CSINode
+          - storage.k8s.io/*/StorageClass
+          - storage.k8s.io/*/VolumeAttachment
+    name: validate-v1-22-removals
+    preconditions:
+      all:
+      - key: '{{ request.operation || ''BACKGROUND'' }}'
+        operator: NotEquals
+        value: DELETE
+      - key: '{{request.object.apiVersion}}'
+        operator: AnyIn
+        value:
+        - admissionregistration.k8s.io/v1beta1
+        - apiextensions.k8s.io/v1beta1
+        - apiregistration.k8s.io/v1beta1
+        - authentication.k8s.io/v1beta1
+        - authorization.k8s.io/v1beta1
+        - certificates.k8s.io/v1beta1
+        - coordination.k8s.io/v1beta1
+        - extensions/v1beta1
+        - networking.k8s.io/v1beta1
+        - rbac.authorization.k8s.io/v1beta1
+        - scheduling.k8s.io/v1beta1
+        - storage.k8s.io/v1beta1
+    validate:
+      deny: {}
+      message: '{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated
+        and will be removed in v1.22. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'
+  - match:
+      any:
+      - resources:
+          kinds:
+          - batch/*/CronJob
+          - discovery.k8s.io/*/EndpointSlice
+          - events.k8s.io/*/Event
+          - policy/*/PodDisruptionBudget
+          - policy/*/PodSecurityPolicy
+          - node.k8s.io/*/RuntimeClass
+    name: validate-v1-25-removals
+    preconditions:
+      all:
+      - key: '{{ request.operation || ''BACKGROUND'' }}'
+        operator: NotEquals
+        value: DELETE
+      - key: '{{request.object.apiVersion}}'
+        operator: AnyIn
+        value:
+        - batch/v1beta1
+        - discovery.k8s.io/v1beta1
+        - events.k8s.io/v1beta1
+        - policy/v1beta1
+        - node.k8s.io/v1beta1
+    validate:
+      deny: {}
+      message: '{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated
+        and will be removed in v1.25. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'
+  - match:
+      any:
+      - resources:
+          kinds:
+          - flowcontrol.apiserver.k8s.io/*/FlowSchema
+          - flowcontrol.apiserver.k8s.io/*/PriorityLevelConfiguration
+          - autoscaling/*/HorizontalPodAutoscaler
+    name: validate-v1-26-removals
+    preconditions:
+      all:
+      - key: '{{ request.operation || ''BACKGROUND'' }}'
+        operator: NotEquals
+        value: DELETE
+      - key: '{{request.object.apiVersion}}'
+        operator: AnyIn
+        value:
+        - flowcontrol.apiserver.k8s.io/v1beta1
+        - autoscaling/v2beta2
+    validate:
+      deny: {}
+      message: '{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated
+        and will be removed in v1.26. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'
+  - match:
+      any:
+      - resources:
+          kinds:
+          - storage.k8s.io/*/CSIStorageCapacity
+    name: validate-v1-27-removals
+    preconditions:
+      all:
+      - key: '{{ request.operation || ''BACKGROUND'' }}'
+        operator: NotEquals
+        value: DELETE
+      - key: '{{request.object.apiVersion}}'
+        operator: AnyIn
+        value:
+        - storage.k8s.io/v1beta1
+    validate:
+      deny: {}
+      message: '{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated
+        and will be removed in v1.27. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Best Practices, EKS Best Practices
+    policies.kyverno.io/description: Container daemon socket bind mounts allows access
+      to the container engine on the node. This access can be used for privilege escalation
+      and to manage containers outside of Kubernetes, and hence should not be allowed.
+      This policy validates that the sockets used for CRI engines Docker, Containerd,
+      and CRI-O are not used.
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/title: Disallow CRI socket mounts
+  name: disallow-container-sock-mounts
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: validate-docker-sock-mount
+    validate:
+      message: Use of the Docker Unix socket is not allowed.
+      pattern:
+        spec:
+          =(volumes):
+          - =(hostPath):
+              path: '!/var/run/docker.sock'
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: validate-containerd-sock-mount
+    validate:
+      message: Use of the Containerd Unix socket is not allowed.
+      pattern:
+        spec:
+          =(volumes):
+          - =(hostPath):
+              path: '!/var/run/containerd.sock'
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: validate-crio-sock-mount
+    validate:
+      message: Use of the CRI-O Unix socket is not allowed.
+      pattern:
+        spec:
+          =(volumes):
+          - =(hostPath):
+              path: '!/var/run/crio.sock'
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+    policies.kyverno.io/category: Multi-Tenancy
+    policies.kyverno.io/description: Kubernetes Namespaces are an optional feature
+      that provide a way to segment and isolate cluster resources across multiple
+      applications and users. As a best practice, workloads should be isolated with
+      Namespaces. Namespaces should be required and the default (empty) Namespace
+      should not be used. This policy validates that Pods specify a Namespace name
+      other than `default`. Rule auto-generation is disabled here due to Pod controllers
+      need to specify the `namespace` field under the top-level `metadata` object
+      and not at the Pod template level.
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/title: Disallow Default Namespace
+  name: disallow-default-namespace
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: validate-namespace
+    validate:
+      message: Using 'default' namespace is not allowed.
+      pattern:
+        metadata:
+          namespace: '!default'
+  - match:
+      any:
+      - resources:
+          kinds:
+          - DaemonSet
+          - Deployment
+          - Job
+          - StatefulSet
+    name: validate-podcontroller-namespace
+    validate:
+      message: Using 'default' namespace is not allowed for pod controllers.
+      pattern:
+        metadata:
+          namespace: '!default'
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: An ingress resource needs to define an actual
+      host name in order to be valid. This policy ensures that there is a hostname
+      for each rule defined.
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Ingress
+    policies.kyverno.io/title: Disallow empty Ingress host
+  name: disallow-empty-ingress-host
+spec:
+  background: false
+  rules:
+  - match:
+      resources:
+        kinds:
+        - Ingress
+    name: disallow-empty-ingress-host
+    validate:
+      deny:
+        conditions:
+        - key: '{{ request.object.spec.rules[].host || `[]` | length(@) }}'
+          operator: NotEquals
+          value: '{{ request.object.spec.rules[].http || `[]` | length(@) }}'
+      message: The Ingress host name must be defined, not empty.
+  validationFailureAction: enforce
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: The ':latest' tag is mutable and can lead to
+      unexpected errors if the image changes. A best practice is to use an immutable
+      tag that maps to a specific version of an application Pod. This policy validates
+      that the image specifies a tag and that it is not called `latest`.
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/title: Disallow Latest Tag
+  name: disallow-latest-tag
+spec:
+  background: true
+  rules:
+  - match:
+      resources:
+        kinds:
+        - Pod
+    name: require-image-tag
+    validate:
+      message: An image tag is required.
+      pattern:
+        spec:
+          containers:
+          - image: '*:*'
+  - match:
+      resources:
+        kinds:
+        - Pod
+    name: validate-image-tag
+    validate:
+      message: Using a mutable image tag e.g. 'latest' is not allowed.
+      pattern:
+        spec:
+          containers:
+          - image: '!*:latest'
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: 'Capabilities permit privileged actions without
+      giving full root access. All capabilities should be dropped from a Pod, with
+      only those required added back. This policy ensures that all containers explicitly
+      specify the `drop: ["ALL"]` ability. Note that this policy also illustrates
+      how to cover drop entries in any case although this may not strictly conform
+      to the Pod Security Standards.'
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/title: Drop All Capabilities
+  name: drop-all-capabilities
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: require-drop-all
+    preconditions:
+      all:
+      - key: '{{ request.operation || ''BACKGROUND'' }}'
+        operator: NotEquals
+        value: DELETE
+    validate:
+      foreach:
+      - deny:
+          conditions:
+            all:
+            - key: ALL
+              operator: AnyNotIn
+              value: '{{ element.securityContext.capabilities.drop[].to_upper(@) ||
+                `[]` }}'
+        list: request.object.spec.[ephemeralContainers, initContainers, containers][]
+      message: Containers must drop `ALL` capabilities.
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: Capabilities permit privileged actions without
+      giving full root access. The CAP_NET_RAW capability, enabled by default, allows
+      processes in a container to forge packets and bind to any interface potentially
+      leading to MitM attacks. This policy ensures that all containers explicitly
+      drop the CAP_NET_RAW ability. Note that this policy also illustrates how to
+      cover drop entries in any case although this may not strictly conform to the
+      Pod Security Standards.
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/title: Drop CAP_NET_RAW
+  name: drop-cap-net-raw
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: require-drop-cap-net-raw
+    preconditions:
+      all:
+      - key: '{{ request.operation || ''BACKGROUND'' }}'
+        operator: NotEquals
+        value: DELETE
+    validate:
+      foreach:
+      - deny:
+          conditions:
+            all:
+            - key: CAP_NET_RAW
+              operator: AnyNotIn
+              value: '{{ element.securityContext.capabilities.drop[].to_upper(@) ||
+                `[]` }}'
+        list: request.object.spec.[ephemeralContainers, initContainers, containers][]
+      message: Containers must drop the `CAP_NET_RAW` capability.
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: Define and use labels that identify semantic
+      attributes of your application or Deployment. A common set of labels allows
+      tools to work collaboratively, describing objects in a common manner that all
+      tools can understand. The recommended labels describe applications in a way
+      that can be queried. This policy validates that the label `app.kubernetes.io/name`
+      is specified with some value.
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod, Label
+    policies.kyverno.io/title: Require Labels
+  name: require-labels
+spec:
+  background: true
+  rules:
+  - match:
+      resources:
+        kinds:
+        - Pod
+    name: check-for-labels
+    validate:
+      message: The label `app.kubernetes.io/name` is required.
+      pattern:
+        metadata:
+          labels:
+            app.kubernetes.io/name: ?*
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet
+    policies.kyverno.io/category: Best Practices, EKS Best Practices
+    policies.kyverno.io/description: Liveness and readiness probes need to be configured
+      to correctly manage a Pod's lifecycle during deployments, restarts, and upgrades.
+      For each Pod, a periodic `livenessProbe` is performed by the kubelet to determine
+      if the Pod's containers are running or need to be restarted. A `readinessProbe`
+      is used by Services and Deployments to determine if the Pod is ready to receive
+      network traffic. This policy validates that all containers have one of livenessProbe,
+      readinessProbe, or startupProbe defined.
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/title: Require Pod Probes
+  name: require-pod-probes
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: validate-probes
+    validate:
+      foreach:
+      - deny:
+          conditions:
+            all:
+            - key: livenessProbe
+              operator: AllNotIn
+              value: '{{ element.keys(@)[] }}'
+            - key: startupProbe
+              operator: AllNotIn
+              value: '{{ element.keys(@)[] }}'
+            - key: readinessProbe
+              operator: AllNotIn
+              value: '{{ element.keys(@)[] }}'
+        list: request.object.spec.containers[]
+      message: Liveness, readiness, or startup probes are required for all containers.
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Best Practices, EKS Best Practices
+    policies.kyverno.io/description: As application workloads share cluster resources,
+      it is important to limit resources requested and consumed by each Pod. It is
+      recommended to require resource requests and limits per Pod, especially for
+      memory and CPU. If a Namespace level request or limit is specified, defaults
+      will automatically be applied to each Pod based on the LimitRange configuration.
+      This policy validates that all containers have something specified for memory
+      and CPU requests and memory limits.
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/title: Require Limits and Requests
+  name: require-requests-limits
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: validate-resources
+    validate:
+      message: CPU and memory resource requests and limits are required.
+      pattern:
+        spec:
+          containers:
+          - resources:
+              limits:
+                memory: ?*
+              requests:
+                cpu: ?*
+                memory: ?*
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Best Practices, EKS Best Practices
+    policies.kyverno.io/description: 'A read-only root file system helps to enforce
+      an immutable infrastructure strategy; the container only needs to write on the
+      mounted volume that persists the state. An immutable root filesystem can also
+      prevent malicious binaries from writing to the host system. This policy validates
+      that containers define a securityContext with `readOnlyRootFilesystem: true`.'
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/title: Require Read-Only Root Filesystem
+  name: require-ro-rootfs
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: validate-readOnlyRootFilesystem
+    validate:
+      message: Root filesystem must be read-only.
+      pattern:
+        spec:
+          containers:
+          - securityContext:
+              readOnlyRootFilesystem: true
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: 'Service externalIPs can be used for a MITM attack
+      (CVE-2020-8554). Restrict externalIPs or limit to a known set of addresses.
+      See: https://github.com/kyverno/kyverno/issues/1367. This policy validates that
+      the `externalIPs` field is not set on a Service.'
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Service
+    policies.kyverno.io/title: Restrict External IPs
+  name: restrict-external-ips
+spec:
+  background: true
+  rules:
+  - match:
+      resources:
+        kinds:
+        - Service
+    name: check-ips
+    validate:
+      message: externalIPs are not allowed.
+      pattern:
+        spec:
+          X(externalIPs): "null"
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Best Practices, EKS Best Practices
+    policies.kyverno.io/description: Images from unknown, public registries can be
+      of dubious quality and may not be scanned and secured, representing a high degree
+      of risk. Requiring use of known, approved registries helps reduce threat exposure
+      by ensuring image pulls only come from them. This policy validates that container
+      images only originate from the registry `eu.foo.io` or `bar.io`. Use of this
+      policy requires customization to define your allowable registries.
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/title: Restrict Image Registries
+  name: restrict-image-registries
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: validate-registries
+    validate:
+      message: Unknown image registry.
+      pattern:
+        spec:
+          containers:
+          - image: eu.foo.io/* | bar.io/*
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: A Kubernetes Service of type NodePort uses a
+      host port to receive traffic from any source. A NetworkPolicy cannot be used
+      to control traffic to host ports. Although NodePort Services can be useful,
+      their use must be limited to Services with additional upstream security checks.
+      This policy validates that any new Services do not use the `NodePort` type.
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Service
+    policies.kyverno.io/title: Disallow NodePort
+  name: restrict-nodeport
+spec:
+  background: true
+  rules:
+  - match:
+      resources:
+        kinds:
+        - Service
+    name: validate-nodeport
+    validate:
+      message: Services of type NodePort are not allowed.
+      pattern:
+        spec:
+          =(type): '!NodePort'
+  validationFailureAction: audit

@@ -1,0 +1,229 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: PCI DSS Compliance
+    policies.kyverno.io/description: Annotations are key/value pairs, which is used
+      as an important source of metadata describing objects in various ways or triggering
+      other functionality. Annotations are also a very basic concept and should be
+      used throughout Kubernetes. This policy performs a simple mutation which adds
+      a Annotation `foo=bar` to Pods, Services, ConfigMaps, and Secrets.
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Annotation
+    policies.kyverno.io/title: Add annotations
+  name: add-annotations
+spec:
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          - Service
+          - ConfigMap
+          - Secret
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            foo: bar
+    name: add-annotations
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/description: ClamAV antivirus software can be used to scan
+      for viruses and malware in Kubernetes clusters. ClamAV is commonly used in Kubernetes
+      environments to protect against threats that could potentially harm containers
+      or the entire cluster. This policy ensures that all containers in a Pod use
+      the ClamAV antivirus.
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/title: check for ClamAV Antivirus
+  name: check-antivirus
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: check-antivirus
+    validate:
+      message: Checking usage of ClamAV antivirus
+      pattern:
+        spec:
+          env:
+          - name: CLAMAV_ENABLED
+            value: "true"
+  validationFailureAction: Audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: PCI DSS Compliance
+    policies.kyverno.io/description: Secrets like registry credentials often need
+      to exist in multiple Namespaces so Pods there have access. This policy will
+      check for the username and password present in a secret.
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Secrets
+    policies.kyverno.io/title: check secrets
+  name: check-secrets
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Secret
+    name: check-secrets
+    validate:
+      message: Cannot define username and password in secret
+      pattern:
+        data:
+          password: null
+          username: null
+  validationFailureAction: Enforce
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Networking
+    policies.kyverno.io/description: Ingress provides routing rules to manage access
+      to the services within a Kubernetes cluster.  This policy blocks the creation
+      of Kubernetes ingress resources.
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Ingress
+    policies.kyverno.io/title: deny Ingress Creation
+  name: deny-ingress-creation
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Ingress
+    name: deny-ingress-creation
+    validate:
+      deny: {}
+      message: Ingress creation is not allowed.
+  validationFailureAction: Audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policices.kyverno.io/description: LoadBalancer type svc provides a Public IP address
+      or dNS name to which the external users can connect. This policy blocks the
+      creation of Kubernetes LoadBalancer type services.
+    policices.kyverno.io/severity: medium
+    policices.kyverno.io/subject: Service
+    policices.kyverno.io/title: deny LoadBalancer Creation
+    policies.kyverno.io/category: PCI DSS Compliance
+  name: deny-loadbalancer-creation
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Service
+    name: deny-loadbalancer-creation
+    validate:
+      deny:
+        conditions:
+          all:
+          - key: '{{request.object.spec.type}}'
+            operator: Equal
+            value: LoadBalancer
+      message: LoadBalancer type service creation is not allowed.
+  validationFailureAction: Audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: none
+    policies.kyverno.io/category: PCI DSS Compliance
+    policies.kyverno.io/description: Kubernetes Service account provides an identity
+      for processes that run in a Pod, and maps to a ServiceAccount object. When you
+      authenticate to the API server, you identify yourself as a particular user.
+      Kubernetes recognises the concept of a user, however, Kubernetes itself does
+      not have a User API. Service account should be required and the default service
+      account should not be used. This policy validates that Pods specify a service
+      account name other than `default`.
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/title: Disallow Default Serviceaccount
+  name: disallow-default-serviceaccount
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: validate-serviceaccount
+    validate:
+      message: Using 'default' service account is not allowed.
+      pattern:
+        spec:
+          serviceAccount: '!default'
+          serviceAccountName: '!default'
+  validationFailureAction: Audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kyverno-version: 1.6.2
+    policies.kyverno.io/category: PCI DSS Compliance
+    policies.kyverno.io/description: 'NetworkPolicy is used to control Pod-to-Pod
+      communication and is a good practice to ensure only authorized Pods can send/receive
+      traffic. This policy checks incoming Deployments to ensure they have a matching,
+      preexisting NetworkPolicy.      '
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/subject: Deployment, NetworkPolicy
+    policies.kyverno.io/title: Require NetworkPolicy
+  name: require-network-policy
+spec:
+  background: false
+  rules:
+  - context:
+    - apiCall:
+        jmesPath: items[?label_match(spec.podSelector.matchLabels, `{{request.object.spec.template.metadata.labels}}`)]
+          | length(@)
+        urlPath: /apis/networking.k8s.io/v1/namespaces/{{request.namespace}}/networkpolicies
+      name: policies_count
+    match:
+      any:
+      - resources:
+          kinds:
+          - Deployment
+    name: require-network-policy
+    preconditions:
+      any:
+      - key: '{{request.operation || ''BACKGROUND''}}'
+        operator: Equals
+        value: CREATE
+    validate:
+      deny:
+        conditions:
+          any:
+          - key: '{{policies_count}}'
+            operator: LessThan
+            value: 1
+      message: Every Deployment requires a matching NetworkPolicy.
+  validationFailureAction: audit

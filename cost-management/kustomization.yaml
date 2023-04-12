@@ -1,0 +1,4 @@
+resources:
+  - disallow-service-type-loadbalancer.yaml
+  - namespace-inventory-check.yaml
+  - require-requests-and-limits.yaml

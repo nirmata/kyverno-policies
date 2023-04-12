@@ -1,0 +1,9 @@
+resources:
+  - restrict_scale.yaml
+  - add_safe_to_evict.yaml
+  - namespace_inventory_check.yaml
+  - scale_deployment_to_zero.yaml
+  - cleanup.yaml
+  - prevent_orphan_pods.yaml
+  - disallow_service_type_loadBalancer.yaml
+  - require_limits_and_requests.yaml

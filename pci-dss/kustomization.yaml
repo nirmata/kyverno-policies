@@ -1,0 +1,8 @@
+resources:
+  - add-annotations.yaml
+  - deny-ingress-creation.yaml
+  - deny-lb-creation.yaml
+  - disallow-default-service-account.yaml
+  - require-clamav-enabled.yaml
+  - require-network-policy.yaml
+  - restrict-basic-auth-secret.yaml

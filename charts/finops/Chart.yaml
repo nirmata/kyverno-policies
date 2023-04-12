@@ -1,0 +1,13 @@
+apiVersion: v2
+name: finops-policies
+description: Finops policy set
+type: application
+version: 0.1.1
+appVersion: 0.1.0
+keywords:
+  - kubernetes
+  - nirmata
+  - policy
+maintainers:
+  - name: Nirmata
+    url: https://nirmata.com/

@@ -1,0 +1,13 @@
+resources:
+  - check-amazon-inspector.yaml
+  - check-ami-deprecation-time.yaml
+  - check-cluster-endpoint.yaml
+  - check-cluster-logging.yaml
+  - check-cluster-remote-access.yaml
+  - check-cluster-rolearn.yaml
+  - check-cluster-secrets-encryption.yaml
+  - check-cluster-tags.yaml
+  - check-immutable-tags-ecr.yaml
+  - check-instance-profile-access.yaml
+  - check-public-dns.yaml
+  - check-vpc-flow-logs.

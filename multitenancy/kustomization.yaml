@@ -1,0 +1,3 @@
+resources:
+  - add-network-policy.yaml
+  - add-roles.yaml

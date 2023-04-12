@@ -1,0 +1,145 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Multitenancy
+    policies.kyverno.io/description: 'By default Kubernetes allows communications
+      across all pods within a cluster. Network  policies and, a CNI that enforces
+      network policies (e.g. Calico, kube-router, etc.), must  be used to restrict
+      communinications. A default NetworkPolicy should be configured for  each namespace
+      to deny all ingress and egress traffic. Application teams can then configure  additional
+      NetworkPolicy resources in their namespace to allow desired traffic. '
+    policies.kyverno.io/title: Add default network policy
+  name: add-network-policy
+spec:
+  rules:
+  - generate:
+      data:
+        spec:
+          podSelector: {}
+          policyTypes:
+          - Ingress
+          - Egress
+      kind: NetworkPolicy
+      name: default-deny
+      namespace: '{{request.object.metadata.name}}'
+    match:
+      resources:
+        kinds:
+        - Namespace
+        name: '*'
+    name: default-deny
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Multitenancy
+    policies.kyverno.io/description: Creates roles and role bindings for a new namespace.
+    policies.kyverno.io/title: Configure namespace roles
+  name: add-ns-access-controls
+spec:
+  background: false
+  rules:
+  - match:
+      resources:
+        kinds:
+        - Namespace
+    mutate:
+      patchStrategicMerge:
+        metadata:
+          annotations:
+            nirmata.io/ns-creator: '{{serviceAccountName}}'
+    name: add-sa-annotation
+  - generate:
+      data:
+        metadata:
+          annotations:
+            nirmata.io/ns-creator: '{{serviceAccountName}}'
+        rules:
+        - apiGroups:
+          - ""
+          resourceNames:
+          - '{{request.object.metadata.name}}'
+          resources:
+          - namespaces
+          verbs:
+          - delete
+      kind: ClusterRole
+      name: ns-owner-{{request.object.metadata.name}}-{{request.userInfo.username}}
+    match:
+      resources:
+        kinds:
+        - Namespace
+    name: generate-owner-role
+    preconditions:
+    - key: '{{request.userInfo.username}}'
+      operator: NotEquals
+      value: ""
+    - key: '{{serviceAccountName}}'
+      operator: NotEquals
+      value: ""
+    - key: '{{serviceAccountNamespace}}'
+      operator: NotEquals
+      value: ""
+  - generate:
+      data:
+        metadata:
+          annotations:
+            nirmata.io/ns-creator: '{{serviceAccountName}}'
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: ClusterRole
+          name: ns-owner-{{request.object.metadata.name}}-{{request.userInfo.username}}
+        subjects:
+        - kind: ServiceAccount
+          name: '{{serviceAccountName}}'
+          namespace: '{{serviceAccountNamespace}}'
+      kind: ClusterRoleBinding
+      name: ns-owner-{{request.object.metadata.name}}-{{request.userInfo.username}}-binding
+    match:
+      resources:
+        kinds:
+        - Namespace
+    name: generate-owner-role-binding
+    preconditions:
+    - key: '{{request.userInfo.username}}'
+      operator: NotEquals
+      value: ""
+    - key: '{{serviceAccountName}}'
+      operator: NotEquals
+      value: ""
+    - key: '{{serviceAccountNamespace}}'
+      operator: NotEquals
+      value: ""
+  - generate:
+      data:
+        metadata:
+          annotations:
+            nirmata.io/ns-creator: '{{serviceAccountName}}'
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: ClusterRole
+          name: admin
+        subjects:
+        - kind: ServiceAccount
+          name: '{{serviceAccountName}}'
+          namespace: '{{serviceAccountNamespace}}'
+      kind: RoleBinding
+      name: ns-admin-{{request.object.metadata.name}}-{{request.userInfo.username}}-binding
+      namespace: '{{request.object.metadata.name}}'
+    match:
+      resources:
+        kinds:
+        - Namespace
+    name: generate-admin-role-binding
+    preconditions:
+    - key: '{{request.userInfo.username}}'
+      operator: NotEquals
+      value: ""
+    - key: '{{serviceAccountName}}'
+      operator: NotEquals
+      value: ""
+    - key: '{{serviceAccountNamespace}}'
+      operator: NotEquals
+      value: ""
