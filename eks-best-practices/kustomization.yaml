@@ -10,4 +10,4 @@ resources:
   - check-immutable-tags-ecr.yaml
   - check-instance-profile-access.yaml
   - check-public-dns.yaml
-  - check-vpc-flow-logs.
+  - check-vpc-flow-logs.yaml

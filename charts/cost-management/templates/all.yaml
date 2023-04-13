@@ -1,0 +1,196 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: Best Practices, EKS Best Practices, Cost Management
+    policies.kyverno.io/description: 'As application workloads share cluster resources,
+      it is important to limit resources requested and consumed by each Pod. It is
+      recommended to require resource requests and limits per Pod, especially for
+      memory and CPU. If a Namespace level request or limit is specified, defaults
+      will automatically be applied to each Pod based on the LimitRange configuration.
+      This policy validates that all containers have something specified for memory
+      and CPU requests and memory limits.      '
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/title: Require Limits and Requests
+  name: require-requests-limits
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: validate-resources
+    validate:
+      message: CPU and memory resource requests and limits are required.
+      pattern:
+        spec:
+          containers:
+          - resources:
+              limits:
+                memory: ?*
+              requests:
+                cpu: ?*
+                memory: ?*
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kyverno-version: 1.9.0
+    policies.kyverno.io/category: Cost Management
+    policies.kyverno.io/description: 'In cases such as multi-tenancy where new Namespaces
+      must be fully provisioned before they can be used, it may not be easy to declare
+      and understand if/when the Namespace is ready. Having a policy which defines
+      all the resources which are required for each Namespace can assist in determining
+      compliance. This policy, expected to be run in background mode only, performs
+      a Namespace inventory check to ensure that all Namespaces have a ResourceQuota
+      and NetworkPolicy. Additional rules may be written to extend the check for your
+      needs. By default, background scans occur every one hour which may be changed
+      with an additional container flag. Please see the installation documentation
+      for details.      '
+    policies.kyverno.io/minversion: 1.9.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Namespace
+    policies.kyverno.io/title: Disallow Service Type Loadbalancer
+  name: disallow-service-type-loadbalancer
+spec:
+  background: true
+  rules:
+  - context:
+    - apiCall:
+        jmesPath: items[] | length(@)
+        urlPath: /api/v1/namespaces/{{request.object.metadata.name}}/resourcequotas
+      name: resourcequotas
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - kube-public
+          - kube-node-lease
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    name: resourcequotas
+    validate:
+      deny:
+        conditions:
+          all:
+          - key: '{{ resourcequotas }}'
+            operator: Equals
+            value: 0
+      message: Every Namespace must have at least one ResourceQuota.
+  - context:
+    - apiCall:
+        jmesPath: items[] | length(@)
+        urlPath: /apis/networking.k8s.io/v1/namespaces/{{request.object.metadata.name}}/networkpolicies
+      name: netpols
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - kube-public
+          - kube-node-lease
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    name: networkpolicies
+    validate:
+      deny:
+        conditions:
+          all:
+          - key: '{{ netpols }}'
+            operator: Equals
+            value: 0
+      message: Every Namespace must have at least one NetworkPolicy.
+  validationFailureAction: Audit
+---
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kyverno-version: 1.9.0
+    policies.kyverno.io/category: Cost Management
+    policies.kyverno.io/description: 'In cases such as multi-tenancy where new Namespaces
+      must be fully provisioned before they can be used, it may not be easy to declare
+      and understand if/when the Namespace is ready. Having a policy which defines
+      all the resources which are required for each Namespace can assist in determining
+      compliance. This policy, expected to be run in background mode only, performs
+      a Namespace inventory check to ensure that all Namespaces have a ResourceQuota
+      and NetworkPolicy. Additional rules may be written to extend the check for your
+      needs. By default, background scans occur every one hour which may be changed
+      with an additional container flag. Please see the installation documentation
+      for details.      '
+    policies.kyverno.io/minversion: 1.9.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Namespace
+    policies.kyverno.io/title: Namespace Inventory Check
+  name: namespace-inventory-check
+spec:
+  background: true
+  rules:
+  - context:
+    - apiCall:
+        jmesPath: items[] | length(@)
+        urlPath: /api/v1/namespaces/{{request.object.metadata.name}}/resourcequotas
+      name: resourcequotas
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - kube-public
+          - kube-node-lease
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    name: resourcequotas
+    validate:
+      deny:
+        conditions:
+          all:
+          - key: '{{ resourcequotas }}'
+            operator: Equals
+            value: 0
+      message: Every Namespace must have at least one ResourceQuota.
+  - context:
+    - apiCall:
+        jmesPath: items[] | length(@)
+        urlPath: /apis/networking.k8s.io/v1/namespaces/{{request.object.metadata.name}}/networkpolicies
+      name: netpols
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - kube-public
+          - kube-node-lease
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    name: networkpolicies
+    validate:
+      deny:
+        conditions:
+          all:
+          - key: '{{ netpols }}'
+            operator: Equals
+            value: 0
+      message: Every Namespace must have at least one NetworkPolicy.
+  validationFailureAction: Audit

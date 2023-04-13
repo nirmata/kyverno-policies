@@ -1,0 +1,353 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/description: Amazon Inspector is not enabled on both EC2 and
+      ECR
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/title: Check Amazon Inspector for EC2 and ECR
+  name: check-amazon-inspector
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - AWSAdapterConfig
+    name: check-amazon-inspector
+    validate:
+      message: Amazon Inspector must be enabled on EC2 and ECR
+      pattern:
+        status:
+          accountData:
+            inspectorEnabledEC2: true
+            inspectorEnabledECR: true
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/description: AMIs past their deprecation time
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/title: Check AMI deprecation Time
+  name: check-ami-deprecation-time
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - AWSAdapterConfig
+    name: check-ami-deprecation-time
+    validate:
+      foreach:
+      - deny:
+          conditions:
+            any:
+            - key: '{{ time_before(''{{ element.deprecationTime }}'', ''{{ time_now_utc()
+                }}'') }}'
+              operator: Equals
+              value: true
+        list: request.object.status.eksCluster.compute.nodeGroups[].amazonMachineImage
+      message: This rule audits for AMIs that are past their deprecation time
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/description: Cluster endpoint should not be public.
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/title: Check Public Endpoint
+  name: check-cluster-endpoint
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - AWSAdapterConfig
+    name: check-cluster-endpoint
+    validate:
+      message: The cluster endpoint should not be public. The field status.eksCluster.networking.vpc.endpointPublicAccess
+        must equal false.
+      pattern:
+        status:
+          eksCluster:
+            networking:
+              vpc:
+                endpointPublicAccess: "false"
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/description: Cluster logging should be enabled.
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/title: Check Cluster Logging
+  name: check-cluster-logging
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - AWSAdapterConfig
+    name: check-cluster-audit-logging
+    validate:
+      message: Audit logging should be enabled. The field status.eksCluster.logging.audit
+        must equal true.
+      pattern:
+        status:
+          eksCluster:
+            logging:
+              audit: true
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/description: Cluster remote access should be disabled.
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/title: Check Cluster Remote Access
+  name: check-cluster-remote-access
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - AWSAdapterConfig
+    name: check-cluster-remote-access
+    validate:
+      message: Remote access should be disabled. The field status.eksCluster.compute.nodeGroups
+        must not define remoteAccessConfig.
+      pattern:
+        status:
+          eksCluster:
+            compute:
+              nodeGroups:
+              - X(remoteAccessConfig): "null"
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/description: Incorrect cluster role ARN is used. Requires
+      customization with your role ARN.
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/title: Check Cluster Role ARN
+  name: check-cluster-rolearn
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - AWSAdapterConfig
+    name: check-cluster-role-arn
+    validate:
+      message: Invalid cluster role ARN is being used. The field status.eksCluster.roleArn
+        must be set to arn:aws:iam::844333597536:role/standard-eks-role.
+      pattern:
+        status:
+          eksCluster:
+            roleArn: arn:aws:iam::844333597536:role/standard-eks-role
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/description: Cluster secrets encryption should be enabled.
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/title: Check Cluster Secrets Encryption
+  name: check-cluster-secrets-encryption
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - AWSAdapterConfig
+    name: check-cluster-secrets-encryption
+    validate:
+      deny:
+        conditions:
+          all:
+          - key: '{{ request.object.status.eksCluster.encryptionConfig[].keys(@) ||
+              `[]` | length(@) }}'
+            operator: Equals
+            value: 0
+      message: Secrets encryption should be enabled. The field status.eksCluster.encryptionConfig
+        must be defined.
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/description: 'Required tags are missing on the cluster.  '
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/title: Check Cluster Tags
+  name: check-cluster-tags
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - AWSAdapterConfig
+    name: check-department-tag
+    validate:
+      message: The `department` tag on the cluster is required. The field status.eksConfig.tags.department
+        must exist with some value.
+      pattern:
+        status:
+          eksCluster:
+            tags:
+              department: ?*
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/description: 'Immutable tags are not enabled on all ECR repositories.  '
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/title: Check Immutable Tags for ECR
+  name: check-immutable-tags-ecr
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - AWSAdapterConfig
+    name: check-immutable-tag
+    validate:
+      foreach:
+      - list: request.object.status.ecrRepositories[]
+        pattern:
+          imageTagMutable: true
+      message: The `imageTagMutable` field must set to true on all ECR repositories.
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/description: Restrict access to the instance profile assigned
+      to nodes
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/title: Check Access to Instance Profile
+  name: check-instance-profile-access
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - AWSAdapterConfig
+    name: check-instance-profile-access
+    validate:
+      foreach:
+      - list: request.object.status.eksCluster.compute.reservations[]
+        pattern:
+          instances:
+          - httpPutResponseHopLimit: '!2'
+      message: Restrict access to the instance profile assigned to nodes
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/description: Deploy workers onto private subnets. If a public
+      DNSName exists, then it means the worker is deployed on a public subnet
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/title: Check Public DNSName
+  name: check-public-dns
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - AWSAdapterConfig
+    name: check-public-dns
+    validate:
+      foreach:
+      - list: request.object.status.eksCluster.compute.reservations[]
+        pattern:
+          instances:
+          - X(publicDnsName): "null"
+      message: Deploy workers onto private subnets. If a public DNSName exists, then
+        it means the worker is deployed on a public subnet.
+  validationFailureAction: audit
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/description: VPC Flow logs are not enabled.
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Cluster
+    policies.kyverno.io/title: Check VPC Flow Logs
+  name: check-vpc-flow-logs
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - AWSAdapterConfig
+    name: check-vpc-flow-logs
+    validate:
+      message: Flow logs must be enabled for the VPC
+      pattern:
+        status:
+          eksCluster:
+            networking:
+              vpc:
+                flowLogsEnabled: true
+  validationFailureAction: audit
