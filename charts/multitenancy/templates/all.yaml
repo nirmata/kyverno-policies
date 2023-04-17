@@ -22,7 +22,7 @@ spec:
           - Egress
       kind: NetworkPolicy
       name: default-deny
-      namespace: '{{request.object.metadata.name}}'
+      namespace: '"{{"request.object.metadata.name"}}"'
     match:
       resources:
         kinds:
@@ -49,97 +49,97 @@ spec:
       patchStrategicMerge:
         metadata:
           annotations:
-            nirmata.io/ns-creator: '{{serviceAccountName}}'
+            nirmata.io/ns-creator: '"{{"serviceAccountName"}}"'
     name: add-sa-annotation
   - generate:
       data:
         metadata:
           annotations:
-            nirmata.io/ns-creator: '{{serviceAccountName}}'
+            nirmata.io/ns-creator: '"{{"serviceAccountName"}}"'
         rules:
         - apiGroups:
           - ""
           resourceNames:
-          - '{{request.object.metadata.name}}'
+          - '"{{"request.object.metadata.name"}}"'
           resources:
           - namespaces
           verbs:
           - delete
       kind: ClusterRole
-      name: ns-owner-{{request.object.metadata.name}}-{{request.userInfo.username}}
+      name: ns-owner-"{{"request.object.metadata.name"}}"-"{{"request.userInfo.username"}}"
     match:
       resources:
         kinds:
         - Namespace
     name: generate-owner-role
     preconditions:
-    - key: '{{request.userInfo.username}}'
+    - key: '"{{"request.userInfo.username"}}"'
       operator: NotEquals
       value: ""
-    - key: '{{serviceAccountName}}'
+    - key: '"{{"serviceAccountName"}}"'
       operator: NotEquals
       value: ""
-    - key: '{{serviceAccountNamespace}}'
+    - key: '"{{"serviceAccountNamespace"}}"'
       operator: NotEquals
       value: ""
   - generate:
       data:
         metadata:
           annotations:
-            nirmata.io/ns-creator: '{{serviceAccountName}}'
+            nirmata.io/ns-creator: '"{{"serviceAccountName"}}"'
         roleRef:
           apiGroup: rbac.authorization.k8s.io
           kind: ClusterRole
-          name: ns-owner-{{request.object.metadata.name}}-{{request.userInfo.username}}
+          name: ns-owner-"{{"request.object.metadata.name"}}"-"{{"request.userInfo.username"}}"
         subjects:
         - kind: ServiceAccount
-          name: '{{serviceAccountName}}'
-          namespace: '{{serviceAccountNamespace}}'
+          name: '"{{"serviceAccountName"}}"'
+          namespace: '"{{"serviceAccountNamespace"}}"'
       kind: ClusterRoleBinding
-      name: ns-owner-{{request.object.metadata.name}}-{{request.userInfo.username}}-binding
+      name: ns-owner-"{{"request.object.metadata.name"}}"-"{{"request.userInfo.username"}}"-binding
     match:
       resources:
         kinds:
         - Namespace
     name: generate-owner-role-binding
     preconditions:
-    - key: '{{request.userInfo.username}}'
+    - key: '"{{"request.userInfo.username"}}"'
       operator: NotEquals
       value: ""
-    - key: '{{serviceAccountName}}'
+    - key: '"{{"serviceAccountName"}}"'
       operator: NotEquals
       value: ""
-    - key: '{{serviceAccountNamespace}}'
+    - key: '"{{"serviceAccountNamespace"}}"'
       operator: NotEquals
       value: ""
   - generate:
       data:
         metadata:
           annotations:
-            nirmata.io/ns-creator: '{{serviceAccountName}}'
+            nirmata.io/ns-creator: '"{{"serviceAccountName"}}"'
         roleRef:
           apiGroup: rbac.authorization.k8s.io
           kind: ClusterRole
           name: admin
         subjects:
         - kind: ServiceAccount
-          name: '{{serviceAccountName}}'
-          namespace: '{{serviceAccountNamespace}}'
+          name: '"{{"serviceAccountName"}}"'
+          namespace: '"{{"serviceAccountNamespace"}}"'
       kind: RoleBinding
-      name: ns-admin-{{request.object.metadata.name}}-{{request.userInfo.username}}-binding
-      namespace: '{{request.object.metadata.name}}'
+      name: ns-admin-"{{"request.object.metadata.name"}}"-"{{"request.userInfo.username"}}"-binding
+      namespace: '"{{"request.object.metadata.name"}}"'
     match:
       resources:
         kinds:
         - Namespace
     name: generate-admin-role-binding
     preconditions:
-    - key: '{{request.userInfo.username}}'
+    - key: '"{{"request.userInfo.username"}}"'
       operator: NotEquals
       value: ""
-    - key: '{{serviceAccountName}}'
+    - key: '"{{"serviceAccountName"}}"'
       operator: NotEquals
       value: ""
-    - key: '{{serviceAccountNamespace}}'
+    - key: '"{{"serviceAccountNamespace"}}"'
       operator: NotEquals
       value: ""

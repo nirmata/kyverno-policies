@@ -102,7 +102,7 @@ spec:
     name: naked-pods
     preconditions:
       all:
-      - key: '{{request.operation || ''BACKGROUND''}}'
+      - key: '"{{"request.operation || ''BACKGROUND''"}}"'
         operator: NotEquals
         value: DELETE
     validate:
@@ -111,7 +111,7 @@ spec:
           any:
           - key: ownerReferences
             operator: AnyNotIn
-            value: '{{request.object.metadata.keys(@)}}'
+            value: '"{{"request.object.metadata.keys(@)"}}"'
       message: Naked Pods are not allowed. They must be created by Pod controllers.
   validationFailureAction: audit
 ---
@@ -183,9 +183,9 @@ spec:
         default: ""
         jmesPath: request.object.metadata.ownerReferences[0].name
     - apiCall:
-        jmesPath: items[?metadata.name=='{{rsname}}'].metadata.ownerReferences[0].name
+        jmesPath: items[?metadata.name=='"{{"rsname"}}"'].metadata.ownerReferences[0].name
           | [0]
-        urlPath: /apis/apps/v1/namespaces/{{request.namespace}}/replicasets
+        urlPath: /apis/apps/v1/namespaces/"{{"request.namespace"}}"/replicasets
       name: deploymentname
     match:
       any:
@@ -202,15 +202,15 @@ spec:
       targets:
       - apiVersion: apps/v1
         kind: Deployment
-        name: '{{deploymentname}}'
-        namespace: '{{request.namespace}}'
+        name: '"{{"deploymentname"}}"'
+        namespace: '"{{"request.namespace"}}"'
     name: annotate-deployment-rule
     preconditions:
       all:
-      - key: '{{request.operation || ''BACKGROUND''}}'
+      - key: '"{{"request.operation || ''BACKGROUND''"}}"'
         operator: Equals
         value: UPDATE
-      - key: '{{request.object.status.containerStatuses[0].restartCount}}'
+      - key: '"{{"request.object.status.containerStatuses[0].restartCount"}}"'
         operator: GreaterThan
         value: 1
 ---
@@ -229,7 +229,7 @@ metadata:
 spec:
   conditions:
     any:
-    - key: '{{ target.spec.replicas }}'
+    - key: '"{{" target.spec.replicas "}}"'
       operator: LessThan
       value: 2
   match:
@@ -270,7 +270,7 @@ spec:
   - context:
     - apiCall:
         jmesPath: items[] | length(@)
-        urlPath: /api/v1/namespaces/{{request.object.metadata.name}}/resourcequotas
+        urlPath: /api/v1/namespaces/"{{"request.object.metadata.name"}}"/resourcequotas
       name: resourcequotas
     exclude:
       any:
@@ -289,14 +289,14 @@ spec:
       deny:
         conditions:
           all:
-          - key: '{{ resourcequotas }}'
+          - key: '"{{" resourcequotas "}}"'
             operator: Equals
             value: 0
       message: Every Namespace must have at least one ResourceQuota.
   - context:
     - apiCall:
         jmesPath: items[] | length(@)
-        urlPath: /apis/networking.k8s.io/v1/namespaces/{{request.object.metadata.name}}/networkpolicies
+        urlPath: /apis/networking.k8s.io/v1/namespaces/"{{"request.object.metadata.name"}}"/networkpolicies
       name: netpols
     exclude:
       any:
@@ -315,7 +315,7 @@ spec:
       deny:
         conditions:
           all:
-          - key: '{{ netpols }}'
+          - key: '"{{" netpols "}}"'
             operator: Equals
             value: 0
       message: Every Namespace must have at least one NetworkPolicy.
@@ -359,7 +359,7 @@ spec:
   - context:
     - apiCall:
         jmesPath: items[0]
-        urlPath: /apis/apps/v1/namespaces/{{request.namespace}}/deployments?fieldSelector=metadata.name={{request.name}}
+        urlPath: /apis/apps/v1/namespaces/"{{"request.namespace"}}"/deployments?fieldSelector=metadata.name="{{"request.name"}}"
       name: parentdeploy
     - name: dept
       variable:
@@ -375,10 +375,10 @@ spec:
       deny:
         conditions:
           all:
-          - key: '{{dept}}'
+          - key: '"{{"dept"}}"'
             operator: Equals
             value: engineering
-          - key: '{{request.object.spec.replicas}}'
+          - key: '"{{"request.object.spec.replicas"}}"'
             operator: GreaterThan
             value: 8
       message: The replica count for this Deployment may not exceed 8.

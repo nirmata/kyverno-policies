@@ -65,7 +65,7 @@ spec:
   - context:
     - apiCall:
         jmesPath: items[] | length(@)
-        urlPath: /api/v1/namespaces/{{request.object.metadata.name}}/resourcequotas
+        urlPath: /api/v1/namespaces/"{{"request.object.metadata.name"}}"/resourcequotas
       name: resourcequotas
     exclude:
       any:
@@ -84,14 +84,14 @@ spec:
       deny:
         conditions:
           all:
-          - key: '{{ resourcequotas }}'
+          - key: '"{{" resourcequotas "}}"'
             operator: Equals
             value: 0
       message: Every Namespace must have at least one ResourceQuota.
   - context:
     - apiCall:
         jmesPath: items[] | length(@)
-        urlPath: /apis/networking.k8s.io/v1/namespaces/{{request.object.metadata.name}}/networkpolicies
+        urlPath: /apis/networking.k8s.io/v1/namespaces/"{{"request.object.metadata.name"}}"/networkpolicies
       name: netpols
     exclude:
       any:
@@ -110,7 +110,7 @@ spec:
       deny:
         conditions:
           all:
-          - key: '{{ netpols }}'
+          - key: '"{{" netpols "}}"'
             operator: Equals
             value: 0
       message: Every Namespace must have at least one NetworkPolicy.
@@ -144,7 +144,7 @@ spec:
   - context:
     - apiCall:
         jmesPath: items[] | length(@)
-        urlPath: /api/v1/namespaces/{{request.object.metadata.name}}/resourcequotas
+        urlPath: /api/v1/namespaces/"{{"request.object.metadata.name"}}"/resourcequotas
       name: resourcequotas
     exclude:
       any:
@@ -163,14 +163,14 @@ spec:
       deny:
         conditions:
           all:
-          - key: '{{ resourcequotas }}'
+          - key: '"{{" resourcequotas "}}"'
             operator: Equals
             value: 0
       message: Every Namespace must have at least one ResourceQuota.
   - context:
     - apiCall:
         jmesPath: items[] | length(@)
-        urlPath: /apis/networking.k8s.io/v1/namespaces/{{request.object.metadata.name}}/networkpolicies
+        urlPath: /apis/networking.k8s.io/v1/namespaces/"{{"request.object.metadata.name"}}"/networkpolicies
       name: netpols
     exclude:
       any:
@@ -189,7 +189,7 @@ spec:
       deny:
         conditions:
           all:
-          - key: '{{ netpols }}'
+          - key: '"{{" netpols "}}"'
             operator: Equals
             value: 0
       message: Every Namespace must have at least one NetworkPolicy.

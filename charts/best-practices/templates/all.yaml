@@ -28,7 +28,7 @@ spec:
           - Egress
       kind: NetworkPolicy
       name: default-deny
-      namespace: '{{request.object.metadata.name}}'
+      namespace: '"{{"request.object.metadata.name"}}"'
       synchronize: true
     match:
       any:
@@ -77,7 +77,7 @@ spec:
           - Egress
       kind: NetworkPolicy
       name: allow-dns
-      namespace: '{{request.object.metadata.name}}'
+      namespace: '"{{"request.object.metadata.name"}}"'
       synchronize: false
     match:
       any:
@@ -113,7 +113,7 @@ spec:
             requests.memory: 16Gi
       kind: ResourceQuota
       name: default-resourcequota
-      namespace: '{{request.object.metadata.name}}'
+      namespace: '"{{"request.object.metadata.name"}}"'
       synchronize: true
     match:
       any:
@@ -135,7 +135,7 @@ spec:
             type: Container
       kind: LimitRange
       name: default-limitrange
-      namespace: '{{request.object.metadata.name}}'
+      namespace: '"{{"request.object.metadata.name"}}"'
       synchronize: true
     match:
       any:
@@ -173,17 +173,17 @@ spec:
       data:
         metadata:
           annotations:
-            kyverno.io/user: '{{request.userInfo.username}}'
+            kyverno.io/user: '"{{"request.userInfo.username"}}"'
         roleRef:
           apiGroup: rbac.authorization.k8s.io
           kind: ClusterRole
           name: admin
         subjects:
         - kind: User
-          name: '{{request.userInfo.username}}'
+          name: '"{{"request.userInfo.username"}}"'
       kind: RoleBinding
-      name: '{{request.userInfo.username}}-admin-binding'
-      namespace: '{{request.object.metadata.name}}'
+      name: '"{{"request.userInfo.username"}}"-admin-binding'
+      namespace: '"{{"request.object.metadata.name"}}"'
       synchronize: true
     match:
       any:
@@ -286,10 +286,10 @@ spec:
     name: validate-v1-22-removals
     preconditions:
       all:
-      - key: '{{ request.operation || ''BACKGROUND'' }}'
+      - key: '"{{" request.operation || ''BACKGROUND'' "}}"'
         operator: NotEquals
         value: DELETE
-      - key: '{{request.object.apiVersion}}'
+      - key: '"{{"request.object.apiVersion"}}"'
         operator: AnyIn
         value:
         - admissionregistration.k8s.io/v1beta1
@@ -306,7 +306,7 @@ spec:
         - storage.k8s.io/v1beta1
     validate:
       deny: {}
-      message: '{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated
+      message: '"{{" request.object.apiVersion "}}"/"{{" request.object.kind "}}" is deprecated
         and will be removed in v1.22. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'
   - match:
       any:
@@ -321,10 +321,10 @@ spec:
     name: validate-v1-25-removals
     preconditions:
       all:
-      - key: '{{ request.operation || ''BACKGROUND'' }}'
+      - key: '"{{" request.operation || ''BACKGROUND'' "}}"'
         operator: NotEquals
         value: DELETE
-      - key: '{{request.object.apiVersion}}'
+      - key: '"{{"request.object.apiVersion"}}"'
         operator: AnyIn
         value:
         - batch/v1beta1
@@ -334,7 +334,7 @@ spec:
         - node.k8s.io/v1beta1
     validate:
       deny: {}
-      message: '{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated
+      message: '"{{" request.object.apiVersion "}}"/"{{" request.object.kind "}}" is deprecated
         and will be removed in v1.25. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'
   - match:
       any:
@@ -346,17 +346,17 @@ spec:
     name: validate-v1-26-removals
     preconditions:
       all:
-      - key: '{{ request.operation || ''BACKGROUND'' }}'
+      - key: '"{{" request.operation || ''BACKGROUND'' "}}"'
         operator: NotEquals
         value: DELETE
-      - key: '{{request.object.apiVersion}}'
+      - key: '"{{"request.object.apiVersion"}}"'
         operator: AnyIn
         value:
         - flowcontrol.apiserver.k8s.io/v1beta1
         - autoscaling/v2beta2
     validate:
       deny: {}
-      message: '{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated
+      message: '"{{" request.object.apiVersion "}}"/"{{" request.object.kind "}}" is deprecated
         and will be removed in v1.26. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'
   - match:
       any:
@@ -366,16 +366,16 @@ spec:
     name: validate-v1-27-removals
     preconditions:
       all:
-      - key: '{{ request.operation || ''BACKGROUND'' }}'
+      - key: '"{{" request.operation || ''BACKGROUND'' "}}"'
         operator: NotEquals
         value: DELETE
-      - key: '{{request.object.apiVersion}}'
+      - key: '"{{"request.object.apiVersion"}}"'
         operator: AnyIn
         value:
         - storage.k8s.io/v1beta1
     validate:
       deny: {}
-      message: '{{ request.object.apiVersion }}/{{ request.object.kind }} is deprecated
+      message: '"{{" request.object.apiVersion "}}"/"{{" request.object.kind "}}" is deprecated
         and will be removed in v1.27. See: https://kubernetes.io/docs/reference/using-api/deprecation-guide/'
   validationFailureAction: audit
 ---
@@ -510,9 +510,9 @@ spec:
     validate:
       deny:
         conditions:
-        - key: '{{ request.object.spec.rules[].host || `[]` | length(@) }}'
+        - key: '"{{" request.object.spec.rules[].host || `[]` | length(@) "}}"'
           operator: NotEquals
-          value: '{{ request.object.spec.rules[].http || `[]` | length(@) }}'
+          value: '"{{" request.object.spec.rules[].http || `[]` | length(@) "}}"'
       message: The Ingress host name must be defined, not empty.
   validationFailureAction: enforce
 ---
@@ -583,7 +583,7 @@ spec:
     name: require-drop-all
     preconditions:
       all:
-      - key: '{{ request.operation || ''BACKGROUND'' }}'
+      - key: '"{{" request.operation || ''BACKGROUND'' "}}"'
         operator: NotEquals
         value: DELETE
     validate:
@@ -593,8 +593,7 @@ spec:
             all:
             - key: ALL
               operator: AnyNotIn
-              value: '{{ element.securityContext.capabilities.drop[].to_upper(@) ||
-                `[]` }}'
+              value: '"{{" element.securityContext.capabilities.drop[].to_upper(@) || `[]` "}}"'
         list: request.object.spec.[ephemeralContainers, initContainers, containers][]
       message: Containers must drop `ALL` capabilities.
   validationFailureAction: audit
@@ -627,7 +626,7 @@ spec:
     name: require-drop-cap-net-raw
     preconditions:
       all:
-      - key: '{{ request.operation || ''BACKGROUND'' }}'
+      - key: '"{{" request.operation || ''BACKGROUND'' "}}"'
         operator: NotEquals
         value: DELETE
     validate:
@@ -637,8 +636,7 @@ spec:
             all:
             - key: CAP_NET_RAW
               operator: AnyNotIn
-              value: '{{ element.securityContext.capabilities.drop[].to_upper(@) ||
-                `[]` }}'
+              value: '"{{" element.securityContext.capabilities.drop[].to_upper(@) || `[]` "}}"'
         list: request.object.spec.[ephemeralContainers, initContainers, containers][]
       message: Containers must drop the `CAP_NET_RAW` capability.
   validationFailureAction: audit
@@ -707,13 +705,13 @@ spec:
             all:
             - key: livenessProbe
               operator: AllNotIn
-              value: '{{ element.keys(@)[] }}'
+              value: '"{{" element.keys(@)[] "}}"'
             - key: startupProbe
               operator: AllNotIn
-              value: '{{ element.keys(@)[] }}'
+              value: '"{{" element.keys(@)[] "}}"'
             - key: readinessProbe
               operator: AllNotIn
-              value: '{{ element.keys(@)[] }}'
+              value: '"{{" element.keys(@)[] "}}"'
         list: request.object.spec.containers[]
       message: Liveness, readiness, or startup probes are required for all containers.
   validationFailureAction: audit

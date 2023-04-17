@@ -28,7 +28,7 @@ spec:
           - Egress
       kind: NetworkPolicy
       name: allow-dns-access
-      namespace: '{{request.object.metadata.name}}'
+      namespace: '"{{"request.object.metadata.name"}}"'
       synchronize: false
     match:
       resources:

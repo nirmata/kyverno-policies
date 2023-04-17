@@ -142,7 +142,7 @@ spec:
       deny:
         conditions:
           all:
-          - key: '{{request.object.spec.type}}'
+          - key: '"{{"request.object.spec.type"}}"'
             operator: Equal
             value: LoadBalancer
       message: LoadBalancer type service creation is not allowed.
@@ -203,9 +203,9 @@ spec:
   rules:
   - context:
     - apiCall:
-        jmesPath: items[?label_match(spec.podSelector.matchLabels, `{{request.object.spec.template.metadata.labels}}`)]
+        jmesPath: items[?label_match(spec.podSelector.matchLabels, `"{{"request.object.spec.template.metadata.labels"}}"`)]
           | length(@)
-        urlPath: /apis/networking.k8s.io/v1/namespaces/{{request.namespace}}/networkpolicies
+        urlPath: /apis/networking.k8s.io/v1/namespaces/"{{"request.namespace"}}"/networkpolicies
       name: policies_count
     match:
       any:
@@ -215,14 +215,14 @@ spec:
     name: require-network-policy
     preconditions:
       any:
-      - key: '{{request.operation || ''BACKGROUND''}}'
+      - key: '"{{"request.operation || ''BACKGROUND''"}}"'
         operator: Equals
         value: CREATE
     validate:
       deny:
         conditions:
           any:
-          - key: '{{policies_count}}'
+          - key: '"{{"policies_count"}}"'
             operator: LessThan
             value: 1
       message: Every Deployment requires a matching NetworkPolicy.

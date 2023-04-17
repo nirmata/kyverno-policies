@@ -51,8 +51,7 @@ spec:
       - deny:
           conditions:
             any:
-            - key: '{{ time_before(''{{ element.deprecationTime }}'', ''{{ time_now_utc()
-                }}'') }}'
+            - key: '"{{" time_before(''{{ element.deprecationTime }}'', ''{{ time_now_utc() }}'') "}}"'
               operator: Equals
               value: true
         list: request.object.status.eksCluster.compute.nodeGroups[].amazonMachineImage
@@ -200,8 +199,7 @@ spec:
       deny:
         conditions:
           all:
-          - key: '{{ request.object.status.eksCluster.encryptionConfig[].keys(@) ||
-              `[]` | length(@) }}'
+          - key: '"{{" request.object.status.eksCluster.encryptionConfig[].keys(@) || `[]` | length(@) "}}"'
             operator: Equals
             value: 0
       message: Secrets encryption should be enabled. The field status.eksCluster.encryptionConfig
