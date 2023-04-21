@@ -56,4 +56,3 @@ spec:
               cpu: 200m
               memory: 256Mi
             type: Container
-            
