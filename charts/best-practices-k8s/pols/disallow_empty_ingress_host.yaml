@@ -27,4 +27,3 @@ spec:
             - key: "{{ request.object.spec.rules[].host || `[]` | length(@) }}"
               operator: NotEquals
               value: "{{ request.object.spec.rules[].http || `[]` | length(@) }}"
-              

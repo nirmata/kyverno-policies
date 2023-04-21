@@ -56,4 +56,3 @@ spec:
           =(volumes):
             - =(hostPath):
                 path: "!/var/run/crio.sock"
-                

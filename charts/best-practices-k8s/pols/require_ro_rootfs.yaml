@@ -31,4 +31,3 @@ spec:
           containers:
           - securityContext:
               readOnlyRootFilesystem: true
-              

@@ -45,4 +45,3 @@ spec:
           subjects:
             - kind: User
               name: "{{request.userInfo.username}}"
-              

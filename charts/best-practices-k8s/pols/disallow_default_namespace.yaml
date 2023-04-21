@@ -46,4 +46,3 @@ spec:
       pattern:
         metadata:
           namespace: "!default"
-          
