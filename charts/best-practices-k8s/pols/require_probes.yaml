@@ -42,3 +42,4 @@ spec:
             - key: readinessProbe
               operator: AllNotIn
               value: "{{ element.keys(@)[] }}"
+              

@@ -27,3 +27,4 @@ spec:
         metadata:
           labels:
             app.kubernetes.io/name: "?*"
+            

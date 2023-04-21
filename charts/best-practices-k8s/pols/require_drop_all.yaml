@@ -40,3 +40,4 @@ spec:
                 - key: ALL
                   operator: AnyNotIn
                   value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
+                  
