@@ -15,7 +15,7 @@ metadata:
       allowed, or at minimum restricted to a known list. This policy ensures the `hostPort`
       field is set to one in the designated list. 
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: host-port-range

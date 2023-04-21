@@ -15,7 +15,7 @@ metadata:
       are used for certain system-level functions yet typically never appropriate
       for other users. This policy prevents creating bindings for system:masters group.      
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: restrict-masters
