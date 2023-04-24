@@ -1,5 +1,24 @@
 apiVersion: v1
 entries:
+  kubernetes-best-practice-policies:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2023-04-24T11:05:44.627752845Z"
+    description: Kubernetes Best Practice policy set
+    digest: df97a56039f02af16025c33b15988c04d1aa89fdb7718446e13f7f6af1e37382
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: kubernetes-best-practice-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/kubernetes-best-practice-policies-0.1.0/kubernetes-best-practice-policies-0.1.0.tgz
+    version: 0.1.0
   multitenancy-best-practice-policies:
   - apiVersion: v2
     appVersion: 0.1.0
@@ -95,4 +114,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2023-04-24T10:46:41.963737037Z"
+generated: "2023-04-24T11:05:44.627762045Z"
