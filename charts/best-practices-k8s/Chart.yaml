@@ -2,8 +2,8 @@ apiVersion: v2
 name: kubernetes-best-practice-policies
 description: Kubernetes Best Practice policy set
 type: application
-version: 0.1.0
-appVersion: 0.1.1
+version: 0.1.1
+appVersion: 0.1.0
 keywords:
   - kubernetes
   - nirmata
