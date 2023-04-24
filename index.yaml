@@ -1,0 +1,22 @@
+apiVersion: v1
+entries:
+  kubernetes-best-practice-policies:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2023-04-24T10:10:57.024147232Z"
+    description: Kubernetes Best Practice policy set
+    digest: a5e6a40f7efcc69b6cbec7c066d6e1b668a721b8fff38aec8f58207b952c2567
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: kubernetes-best-practice-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/kubernetes-best-practice-policies-0.1.2/kubernetes-best-practice-policies-0.1.2.tgz
+    version: 0.1.2
+generated: "2023-04-24T10:10:57.024156433Z"
