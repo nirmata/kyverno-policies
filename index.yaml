@@ -3,6 +3,24 @@ entries:
   kubernetes-best-practice-policies:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2023-05-05T10:32:11.841035429Z"
+    description: Kubernetes Best Practice policy set
+    digest: 8648344c44ed8a74e43d1bf8176d7ec9e62b1b5bf8743261837bd3ade7e8c573
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: kubernetes-best-practice-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/kubernetes-best-practice-policies-0.1.1/kubernetes-best-practice-policies-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2023-04-24T11:05:44.627752845Z"
     description: Kubernetes Best Practice policy set
     digest: df97a56039f02af16025c33b15988c04d1aa89fdb7718446e13f7f6af1e37382
@@ -20,6 +38,24 @@ entries:
     - https://github.com/nirmata/kyverno-policies/releases/download/kubernetes-best-practice-policies-0.1.0/kubernetes-best-practice-policies-0.1.0.tgz
     version: 0.1.0
   multitenancy-best-practice-policies:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2023-05-05T10:32:12.003166042Z"
+    description: Multitenancy Best Practices policy set
+    digest: 55f7975900f744e5e62bbd380b23d963d1496695701b4c569a464ea60e9e35a0
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: multitenancy-best-practice-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/multitenancy-best-practice-policies-0.1.1/multitenancy-best-practice-policies-0.1.1.tgz
+    version: 0.1.1
   - apiVersion: v2
     appVersion: 0.1.0
     created: "2023-04-24T10:28:22.633769024Z"
@@ -41,6 +77,24 @@ entries:
   pss-baseline-policies:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2023-05-05T10:32:12.17626027Z"
+    description: Pod Security Standards (baseline) policy set
+    digest: f4fdf981693467d2c59fb2351c83e90f44197fce4976e47aebf73e132db7d931
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: pss-baseline-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/pss-baseline-policies-0.1.1/pss-baseline-policies-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2023-04-24T10:37:26.135408593Z"
     description: Pod Security Standards (baseline) policy set
     digest: 0b09f76f6e9fc2e56257dda1f4d48bf0bdf9113dd80ca3f7a505718171ecb983
@@ -58,6 +112,24 @@ entries:
     - https://github.com/nirmata/kyverno-policies/releases/download/pss-baseline-policies-0.1.0/pss-baseline-policies-0.1.0.tgz
     version: 0.1.0
   pss-restricted-policies:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2023-05-05T10:32:12.376188682Z"
+    description: Pod Security Standards (restricted) policy set
+    digest: dce763bbd4e1b5d225e468d19c452a7a48608c46886a6da7013d9c62c16d5539
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: pss-restricted-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/pss-restricted-policies-0.1.1/pss-restricted-policies-0.1.1.tgz
+    version: 0.1.1
   - apiVersion: v2
     appVersion: 0.1.0
     created: "2023-04-24T10:41:32.680951774Z"
@@ -79,6 +151,24 @@ entries:
   rbac-best-practice-policies:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2023-05-05T10:32:12.571734248Z"
+    description: Rbac Best Practice policy set
+    digest: 2f0bf6ea5d7da0ece69867f123b62c3f0f41a08a064dea399492e36303cb13fc
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: rbac-best-practice-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/rbac-best-practice-policies-0.1.1/rbac-best-practice-policies-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2023-04-24T10:46:41.963732437Z"
     description: Rbac Best Practice policy set
     digest: 4cbbea17c87ff7c5292e749c54fb93386c89d9514fcb1ae920ff38bd7ea2de1f
@@ -98,6 +188,24 @@ entries:
   workload-security-best-practice-policies:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2023-05-05T10:32:12.897757092Z"
+    description: Workload Security Best Practice policy set
+    digest: 83af1dbadcfcf3e19d86ab9564fe4af961d16eb1d6d825552843b923edfba429
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: workload-security-best-practice-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.1/workload-security-best-practice-policies-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2023-04-24T10:23:47.660580422Z"
     description: Workload Security Best Practice policy set
     digest: aa6f3a5c02f13cf02345177bef3f8e60b6c40f8257ad2aaad412a940fc7c2a5d
@@ -114,4 +222,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2023-04-24T11:05:44.627762045Z"
+generated: "2023-05-05T10:32:12.897778192Z"
