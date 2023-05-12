@@ -3,6 +3,24 @@ entries:
   kubernetes-best-practice-policies:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2023-05-12T07:39:06.527354896Z"
+    description: Kubernetes Best Practice policy set
+    digest: 481ed43efdc9f90f4de52473a49b56dcce9591ea349ac7d8059aae7933b0b6d9
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: kubernetes-best-practice-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/kubernetes-best-practice-policies-0.1.2/kubernetes-best-practice-policies-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2023-05-05T10:32:11.841035429Z"
     description: Kubernetes Best Practice policy set
     digest: 8648344c44ed8a74e43d1bf8176d7ec9e62b1b5bf8743261837bd3ade7e8c573
@@ -188,6 +206,24 @@ entries:
   workload-security-best-practice-policies:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2023-05-12T07:39:06.708233331Z"
+    description: Workload Security Best Practice policy set
+    digest: 2d082dd52fcce679574f94e5f4e0ddc6b56768504da0c3bda371876ea63d0e23
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: workload-security-best-practice-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.2/workload-security-best-practice-policies-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2023-05-05T10:32:12.897757092Z"
     description: Workload Security Best Practice policy set
     digest: 83af1dbadcfcf3e19d86ab9564fe4af961d16eb1d6d825552843b923edfba429
@@ -222,4 +258,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2023-05-05T10:32:12.897778192Z"
+generated: "2023-05-12T07:39:06.708264032Z"
