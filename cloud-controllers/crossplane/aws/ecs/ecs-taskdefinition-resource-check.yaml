@@ -1,0 +1,41 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: ecs-taskdefinition-resource-check
+  annotations:
+    policies.kyverno.io/title: Task Definition Resource Check
+    policies.kyverno.io/category: Cloud Security and Best Practices
+    policies.nirmata.io/cloudprovider: AWS
+    policies.nirmata.io/cloudservice: Elastic Container Service
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Task Definition
+    policies.kyverno.io/description: Ensure that task definitions are using cpu and memory within allowed limits
+spec:
+  rules:
+    - match:
+        resources:
+          kinds:
+            - TaskDefinition
+      name: ecs-taskdefinition-cpu-check
+      validate:
+        message: This TaskDefinition exceeds max allowed CPU
+        deny:
+          conditions:
+            any:
+            - key: "{{ request.object.status.atProvider.taskDefinition.cpu }}"
+              operator: GreaterThan
+              value: "256"
+    - match:
+        resources:
+          kinds:
+            - TaskDefinition
+      name: ecs-taskdefinition-memory-check
+      validate:
+        message: This TaskDefinition exceeds max allowed memory
+        deny:
+          conditions:
+            any:
+            - key: "{{ request.object.status.atProvider.taskDefinition.memory }}"
+              operator: GreaterThan
+              value: "512"
+  validationFailureAction: Audit

@@ -1,0 +1,28 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: ecs-taskdefinition-image-check
+  annotations:
+    policies.kyverno.io/title: Task Definition Image Check
+    policies.kyverno.io/category: Cloud Security and Best Practices
+    policies.nirmata.io/cloudprovider: AWS
+    policies.nirmata.io/cloudservice: Elastic Container Service
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Task Definition
+    policies.kyverno.io/description: Ensure that authorized image registries are used
+spec:
+  rules:
+    - match:
+        resources:
+          kinds:
+            - TaskDefinition
+      name: ecs-taskdefinition-image-check
+      validate:
+        message: All images in this TaskDefinition  must come from an authorized repository.
+        pattern:
+          status:
+            atProvider:
+              taskDefinition:
+                containerDefinitions:
+                - image: "ghcr.io/*"
+  validationFailureAction: Audit

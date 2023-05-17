@@ -1,0 +1,37 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: s3-event-notifications-enabled
+  annotations:
+    policies.kyverno.io/title: S3 Bucket Notification Check
+    policies.kyverno.io/category: Cloud Security and Best Practices
+    policies.nirmata.io/cloudprovider: AWS
+    policies.nirmata.io/cloudservice: S3
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: S3 Bucket
+spec: 
+  rules:
+    - match:
+        resources:
+          kinds:
+            - Bucket
+      name: s3-event-notifications-enabled
+      validate:
+        anyPattern:
+          - spec:
+              forProvider:
+                notificationConfiguration:
+                  topicConfigurations:
+                    - events: '*'
+          - spec:
+              forProvider:
+                notificationConfiguration:
+                  lambdaFunctionConfigurations:
+                    - events: '*'
+          - spec:
+              forProvider:
+                notificationConfiguration:
+                  queueConfigurations:
+                    - events: '*'
+        message: s3 event notifications should be enabled. Set spec.forProvider.notificationConfiguration
+  validationFailureAction: Audit

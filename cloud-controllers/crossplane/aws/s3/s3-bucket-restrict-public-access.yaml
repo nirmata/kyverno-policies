@@ -1,0 +1,27 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: s3-bucket-level-public-access-prohibited
+  annotations:
+    policies.kyverno.io/title: S3 Bucket Disallow Public Access
+    policies.kyverno.io/category: Cloud Security and Best Practices
+    policies.nirmata.io/cloudprovider: AWS
+    policies.nirmata.io/cloudservice: S3
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: S3 Bucket
+    policies.kyverno.io/description: Disallow public access to S3 buckets
+spec:
+  rules:
+    - match:
+        resources:
+          kinds:
+            - s3.aws.crossplane.io/v1beta1/Bucket
+      name: s3-bucket-level-public-access-block-public-acls
+      validate:
+        message: blockPublicACLs must be true
+        pattern:
+          spec:
+            forProvider:
+              publicAccessBlockConfiguration:
+                blockPublicAcls: true
+  validationFailureAction: Enforce

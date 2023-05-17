@@ -1,0 +1,36 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: s3-bucket-logging-enabled
+  annotations:
+    policies.kyverno.io/title: S3 Bucket Logging Check
+    policies.kyverno.io/category: Cloud Security and Best Practices
+    policies.nirmata.io/cloudprovider: AWS
+    policies.nirmata.io/cloudservice: S3
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: S3 Bucket
+spec:
+  rules:
+    - match:
+        resources:
+          kinds:
+            - Bucket
+      name: s3-bucket-logging-enabled
+      validate:
+        anyPattern:
+          - spec:
+              forProvider:
+                loggingConfiguration:
+                  targetBucket: '*'
+          - spec:
+              forProvider:
+                loggingConfiguration:
+                  targetBucketRef:
+                    name: '*'
+          - spec:
+              forProvider:
+                loggingConfiguration:
+                  targetBucketSelector:
+                    matchLabels: '*'
+        message: s3-bucket-logging must be enabled. Set spec.forProvider.loggingConfiguration
+  validationFailureAction: Enforce
