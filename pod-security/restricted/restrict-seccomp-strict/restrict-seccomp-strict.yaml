@@ -9,6 +9,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.6.0
     kyverno.io/kubernetes-version: "1.22-1.23"
+    policies.nirmata.io/remediation: "policysets/podsecurity/baseline/restrict-seccomp-strict/"
     policies.kyverno.io/description: >-
       The seccomp profile in the Restricted group must not be explicitly set to Unconfined
       but additionally must also not allow an unset value. This policy, 
@@ -22,9 +23,9 @@ spec:
     - name: check-seccomp-strict
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       validate:
         message: >-
           Use of custom Seccomp profiles is disallowed. The fields
@@ -34,32 +35,32 @@ spec:
           spec.ephemeralContainers[*].securityContext.seccompProfile.type
           must be set to `RuntimeDefault` or `Localhost`.
         anyPattern:
-        - spec:
-            securityContext:
-              seccompProfile:
-                type: "RuntimeDefault | Localhost"
-            =(ephemeralContainers):
-            - =(securityContext):
-                =(seccompProfile):
-                  =(type): "RuntimeDefault | Localhost"
-            =(initContainers):
-            - =(securityContext):
-                =(seccompProfile):
-                  =(type): "RuntimeDefault | Localhost"
-            containers:
-            - =(securityContext):
-                =(seccompProfile):
-                  =(type): "RuntimeDefault | Localhost"
-        - spec:
-            =(ephemeralContainers):
-            - securityContext:
+          - spec:
+              securityContext:
                 seccompProfile:
                   type: "RuntimeDefault | Localhost"
-            =(initContainers):
-            - securityContext:
-                seccompProfile:
-                  type: "RuntimeDefault | Localhost"
-            containers:
-            - securityContext:
-                seccompProfile:
-                  type: "RuntimeDefault | Localhost"
+              =(ephemeralContainers):
+                - =(securityContext):
+                    =(seccompProfile):
+                      =(type): "RuntimeDefault | Localhost"
+              =(initContainers):
+                - =(securityContext):
+                    =(seccompProfile):
+                      =(type): "RuntimeDefault | Localhost"
+              containers:
+                - =(securityContext):
+                    =(seccompProfile):
+                      =(type): "RuntimeDefault | Localhost"
+          - spec:
+              =(ephemeralContainers):
+                - securityContext:
+                    seccompProfile:
+                      type: "RuntimeDefault | Localhost"
+              =(initContainers):
+                - securityContext:
+                    seccompProfile:
+                      type: "RuntimeDefault | Localhost"
+              containers:
+                - securityContext:
+                    seccompProfile:
+                      type: "RuntimeDefault | Localhost"

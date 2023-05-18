@@ -9,10 +9,11 @@ metadata:
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.6.0
     kyverno.io/kubernetes-version: "1.22-1.23"
+    policies.nirmata.io/remediation: "policysets/podsecurity/baseline/disallow-host-ports/"
     policies.kyverno.io/description: >-
       Access to host ports allows potential snooping of network traffic and should not be
       allowed, or at minimum restricted to a known list. This policy ensures the `hostPort`
-      field is unset or set to `0`. 
+      field is unset or set to `0`.
 spec:
   validationFailureAction: audit
   background: true
@@ -20,9 +21,9 @@ spec:
     - name: host-ports-none
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       validate:
         message: >-
           Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort
