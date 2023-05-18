@@ -10,7 +10,7 @@ metadata:
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kubernetes-version: "1.22-1.23"
     policies.kyverno.io/subject: Pod
-    policies.nirmata.io/remediation: "policysets/podsecurity/baseline/disallow-capabilities/"
+    policies.nirmata.io/remediation: "https://docs.nirmata.io/policysets/podsecurity/baseline/disallow-capabilities/"
     policies.kyverno.io/description: >-
       Adding capabilities beyond those listed in the policy must be disallowed.
 spec:
