@@ -10,6 +10,7 @@ metadata:
     kyverno.io/kyverno-version: 1.6.0
     kyverno.io/kubernetes-version: "1.22-1.23"
     policies.kyverno.io/subject: Pod
+    policies.nirmata.io/remediation: "https://docs.nirmata.io/policysets/podsecurity/baseline/disallow-capabilities-strict/"
     policies.kyverno.io/description: >-
       Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition,
       all containers must explicitly drop `ALL` capabilities.
@@ -20,14 +21,14 @@ spec:
     - name: require-drop-all
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       preconditions:
         all:
-        - key: "{{ request.operation || 'BACKGROUND' }}"
-          operator: NotEquals
-          value: DELETE
+          - key: "{{ request.operation || 'BACKGROUND' }}"
+            operator: NotEquals
+            value: DELETE
       validate:
         message: >-
           Containers must drop `ALL` capabilities.
@@ -36,20 +37,20 @@ spec:
             deny:
               conditions:
                 all:
-                - key: ALL
-                  operator: AnyNotIn
-                  value: "{{ element.securityContext.capabilities.drop[] || `[]` }}"
+                  - key: ALL
+                    operator: AnyNotIn
+                    value: "{{ element.securityContext.capabilities.drop[] || `[]` }}"
     - name: adding-capabilities-strict
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       preconditions:
         all:
-        - key: "{{ request.operation || 'BACKGROUND' }}"
-          operator: NotEquals
-          value: DELETE
+          - key: "{{ request.operation || 'BACKGROUND' }}"
+            operator: NotEquals
+            value: DELETE
       validate:
         message: >-
           Any capabilities added other than NET_BIND_SERVICE are disallowed.
@@ -58,8 +59,8 @@ spec:
             deny:
               conditions:
                 all:
-                - key: "{{ element.securityContext.capabilities.add[] || `[]` }}"
-                  operator: AnyNotIn
-                  value:
-                  - NET_BIND_SERVICE
-                  - ''
+                  - key: "{{ element.securityContext.capabilities.add[] || `[]` }}"
+                    operator: AnyNotIn
+                    value:
+                      - NET_BIND_SERVICE
+                      - ""
