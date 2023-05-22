@@ -1,20 +1,41 @@
 resources:
-  - add_network_policy/add_network_policy.yaml
   - add_networkpolicy_dns/add-networkpolicy-dns.yaml
+  - add_network_policy/add_network_policy.yaml
   - add_ns_quota/add_ns_quota.yaml
+  - add_pod_anti_affinity/create_pod_antiaffinity.yaml
+  - add_pod_disruption_budget/create_default_pdb.yaml
   - add_rolebinding/add_rolebinding.yaml
   - add_safe_to_evict/add_safe_to_evict.yaml
+  - add_ttl_jobs/add_ttl_jobs.yaml
+  - always_pull_images/always-pull-images.yaml
   - check_deprecated_apis/check_deprecated_apis.yaml
+  - disallow-empty-ingress-host/disallow_empty_ingress_host.yaml
   - disallow_cri_sock_mount/disallow_cri_sock_mount.yaml
   - disallow_default_namespace/disallow_default_namespace.yaml
   - disallow_latest_tag/disallow_latest_tag.yaml
-  - disallow-empty-ingress-host/disallow_empty_ingress_host.yaml
+  - disallow_secrets_from_env_vars/disallow_secrets_from_env_vars.yaml
+  - ensure_probes_different/ensure_probes_different.yaml
+  - limit_hostpath_vols/limit_hostpath_vols.yaml
+  - memory_requests_equal_limits/memory_requests_equal_limits.yaml
+  - prevent_orphan_pods/prevent_orphan_pods.yaml
+  - prevent_stale_images/prevent_stale_images.yaml
+  - require_deployments_have_multiple_replicas/require_deployments_have_multiple_replicas.yaml
   - require_drop_all/require_drop_all.yaml
   - require_drop_cap_net_raw/require_drop_cap_net_raw.yaml
+  - require_ingress_https/require_ingress_https.yaml
   - require_labels/require_labels.yaml
+  - require_netpol/require_netpol.yaml
+  - require_pdb/require_pdb.yaml
   - require_pod_requests_limits/require_pod_requests_limits.yaml
   - require_probes/require_probes.yaml
   - require_ro_rootfs/require_ro_rootfs.yaml
-  - restrict_image_registries/restrict_image_registries.yaml
-  - restrict_node_port/restrict_node_port.yaml
   - restrict-service-external-ips/restrict-service-external-ips.yaml
+  - restrict_automount_sa_token/restrict_automount_sa_token.yaml
+  - restrict_binding_clusteradmin/restrict_binding_clusteradmin.yaml
+  - restrict_controlplane_scheduling/restrict_controlplane_scheduling.yaml
+  - restrict_image_registries/restrict_image_registries.yaml
+  - restrict_ingress_default_backend/restrict_ingress_defaultbackend.yaml
+  - restrict_node_port/restrict_node_port.yaml
+  - restrict_wildcard_resources/restrict_wildcard_resources.yaml
+  - restrict_wildcard_verbs/restrict_wildcard_verbs.yaml
+  - unique_ingress_host_and_path/unique_ingress_host_and_path.yaml
