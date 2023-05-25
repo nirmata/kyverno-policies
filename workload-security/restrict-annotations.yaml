@@ -4,7 +4,7 @@ metadata:
   name: restrict-annotations
   annotations:
     policies.kyverno.io/title: Restrict NGINX Ingress annotation values 
-    policies.kyverno.io/category: Security, NGINX Ingress
+    policies.kyverno.io/category: Workload-Security
     policies.kyverno.io/severity: high
     policies.kyverno.io/subject: Ingress
     policies.kyverno.io/minversion: "1.6.0"
