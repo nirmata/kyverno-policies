@@ -4,7 +4,7 @@ metadata:
   name: restrict-edit-for-endpoints
   annotations:
     policies.kyverno.io/title: Restrict Edit for Endpoints CVE-2021-25740
-    policies.kyverno.io/category: Workload-Security
+    policies.kyverno.io/category: Workload Security
     policies.kyverno.io/severity: low
     policies.kyverno.io/subject: ClusterRole
     kyverno.io/kyverno-version: 1.9.0
