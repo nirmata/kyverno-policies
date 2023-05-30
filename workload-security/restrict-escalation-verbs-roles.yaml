@@ -4,7 +4,7 @@ metadata:
   name: restrict-escalation-verbs-roles
   annotations:
     policies.kyverno.io/title: Restrict Escalation Verbs in Roles
-    policies.kyverno.io/category: Workload-Security
+    policies.kyverno.io/category: Workload Security
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Role, ClusterRole, RBAC
     kyverno.io/kyverno-version: 1.6.2
