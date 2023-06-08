@@ -12,7 +12,7 @@ metadata:
     policies.nirmata.io/remediation: "https://docs.nirmata.io/policysets/podsecurity/baseline/disallow-privileged-containers/"
     policies.kyverno.io/description: >-
       Privileged mode disables most security mechanisms and must not be allowed. This policy
-      ensures Pods do not call for privileged mode.
+      ensures the fields spec.containers[*].securityContext.privileged and spec.initContainers[*].securityContext.privileged must be unset or set to `false`.
 spec:
   validationFailureAction: audit
   background: true
@@ -25,8 +25,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged
-          and spec.initContainers[*].securityContext.privileged must be unset or set to `false`.
+          Privileged mode is disallowed. The privileged mode in the Pod's security context must be either unset or set to `false`.
         pattern:
           spec:
             =(ephemeralContainers):

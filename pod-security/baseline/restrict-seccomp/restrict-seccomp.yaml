@@ -12,8 +12,12 @@ metadata:
     policies.nirmata.io/remediation: "https://docs.nirmata.io/policysets/podsecurity/baseline/restrict-seccomp/"
     policies.kyverno.io/description: >-
       The seccomp profile must not be explicitly set to Unconfined. This policy, 
-      requiring Kubernetes v1.19 or later, ensures that seccomp is unset or 
-      set to `RuntimeDefault` or `Localhost`.
+      requiring Kubernetes v1.19 or later, ensures that the fields
+      spec.securityContext.seccompProfile.type,
+      spec.containers[*].securityContext.seccompProfile.type,
+      spec.initContainers[*].securityContext.seccompProfile.type, and
+      spec.ephemeralContainers[*].securityContext.seccompProfile.type
+      must be unset or set to `RuntimeDefault` or `Localhost`.
 spec:
   background: true
   validationFailureAction: audit
@@ -26,12 +30,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Use of custom Seccomp profiles is disallowed. The fields
-          spec.securityContext.seccompProfile.type,
-          spec.containers[*].securityContext.seccompProfile.type,
-          spec.initContainers[*].securityContext.seccompProfile.type, and
-          spec.ephemeralContainers[*].securityContext.seccompProfile.type
-          must be unset or set to `RuntimeDefault` or `Localhost`.
+          Use of custom Seccomp profiles is disallowed. The `seccompProfile.type` field must be unset or set to `RuntimeDefault` or `Localhost`.
         pattern:
           spec:
             =(securityContext):

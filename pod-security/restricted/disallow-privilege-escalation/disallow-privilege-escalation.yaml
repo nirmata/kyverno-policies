@@ -12,7 +12,11 @@ metadata:
     policies.nirmata.io/remediation: "https://docs.nirmata.io/policysets/podsecurity/baseline/disallow-privilege-escalation/"
     policies.kyverno.io/description: >-
       Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed.
-      This policy ensures the `allowPrivilegeEscalation` field is set to `false`.
+      This policy ensures the fields
+      spec.containers[*].securityContext.allowPrivilegeEscalation,
+      spec.initContainers[*].securityContext.allowPrivilegeEscalation,
+      and spec.ephemeralContainers[*].securityContext.allowPrivilegeEscalation
+      is set to `false`.
 spec:
   validationFailureAction: audit
   background: true
@@ -25,11 +29,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Privilege escalation is disallowed. The fields
-          spec.containers[*].securityContext.allowPrivilegeEscalation,
-          spec.initContainers[*].securityContext.allowPrivilegeEscalation,
-          and spec.ephemeralContainers[*].securityContext.allowPrivilegeEscalation
-          must be set to `false`.
+          Privilege escalation is disallowed. The `allowPrivilegeEscalation` field must be set to `false`
         pattern:
           spec:
             =(ephemeralContainers):
