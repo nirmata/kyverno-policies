@@ -95,6 +95,24 @@ entries:
   pss-baseline-policies:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2023-06-08T14:31:47.558038898Z"
+    description: Pod Security Standards (baseline) policy set
+    digest: 71e225cc0e1b9b18b7d372b3da8bc345f42249227556a253547a6bcb7ca34dca
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: pss-baseline-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/pss-baseline-policies-0.2.0/pss-baseline-policies-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2023-05-05T10:32:12.17626027Z"
     description: Pod Security Standards (baseline) policy set
     digest: f4fdf981693467d2c59fb2351c83e90f44197fce4976e47aebf73e132db7d931
@@ -130,6 +148,24 @@ entries:
     - https://github.com/nirmata/kyverno-policies/releases/download/pss-baseline-policies-0.1.0/pss-baseline-policies-0.1.0.tgz
     version: 0.1.0
   pss-restricted-policies:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2023-06-08T14:31:47.729298994Z"
+    description: Pod Security Standards (restricted) policy set
+    digest: dc5c42ad50161f47e8ac6da59b7b2e5ef84735ea2078b5d941ea8f10aad11d53
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: pss-restricted-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/pss-restricted-policies-0.2.0/pss-restricted-policies-0.2.0.tgz
+    version: 0.2.0
   - apiVersion: v2
     appVersion: 0.1.0
     created: "2023-05-05T10:32:12.376188682Z"
@@ -258,4 +294,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2023-05-12T07:39:06.708264032Z"
+generated: "2023-06-08T14:31:47.729328794Z"
