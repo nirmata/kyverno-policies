@@ -32,16 +32,16 @@ spec:
         deny:
           conditions:
             all:
-              - key: "{{ request.object.spec.volumes[].keys(@)[] || '' }}"
-                operator: AnyNotIn
-                value:
-                  - name
-                  - configMap
-                  - csi
-                  - downwardAPI
-                  - emptyDir
-                  - ephemeral
-                  - persistentVolumeClaim
-                  - projected
-                  - secret
-                  - ""
+            - key: "{{ request.object.spec.volumes[].keys(@)[] || '' }}"
+              operator: AnyNotIn
+              value:
+                - name
+                - configMap
+                - csi
+                - downwardAPI
+                - emptyDir
+                - ephemeral
+                - persistentVolumeClaim
+                - projected
+                - secret
+                - ""
