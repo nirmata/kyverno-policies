@@ -28,7 +28,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Running as root is not allowed.
+          Running the container as root user is not allowed.
         pattern:
           spec:
             =(securityContext):
