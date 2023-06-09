@@ -26,7 +26,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Setting the SELinux type is restricted. `seLinuxOptions.type` must either be unset or set to one of the allowed values (container_t, container_init_t, or container_kvm_t).
+          Setting the SELinux type is restricted.
         pattern:
           spec:
             =(securityContext):

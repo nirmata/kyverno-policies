@@ -29,8 +29,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Changing the proc mount from the default is not allowed. The procMount field must be unset or
-          set to `Default`.
+          Changing the proc mount from the default is not allowed.
         pattern:
           spec:
             =(ephemeralContainers):

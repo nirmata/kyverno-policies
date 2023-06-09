@@ -32,7 +32,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Use of custom Seccomp profiles is disallowed. The field `seccompProfile.type` must be set to `RuntimeDefault` or `Localhost`.
+          Use of custom Seccomp profiles is disallowed.
         anyPattern:
           - spec:
               securityContext:

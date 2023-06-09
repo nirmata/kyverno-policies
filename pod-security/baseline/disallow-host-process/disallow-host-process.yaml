@@ -27,7 +27,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          HostProcess containers are disallowed. The fields, if present, must either be undefined or set to `false`.
+          HostProcess containers are disallowed.
         pattern:
           spec:
             =(ephemeralContainers):

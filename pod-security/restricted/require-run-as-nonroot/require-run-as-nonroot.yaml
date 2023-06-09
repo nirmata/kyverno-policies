@@ -29,7 +29,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Running as root is not allowed. `runAsNonRoot` must be set to `true`.
+          Running as root is not allowed.
         anyPattern:
           - spec:
               securityContext:

@@ -27,7 +27,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Use of host ports is disallowed.It must either be unset or set to `0`.
+          Use of host ports is disallowed.
         pattern:
           spec:
             =(ephemeralContainers):

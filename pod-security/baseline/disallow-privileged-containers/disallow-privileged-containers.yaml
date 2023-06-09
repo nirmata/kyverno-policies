@@ -25,7 +25,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Privileged mode is disallowed. The privileged mode in the Pod's security context must be either unset or set to `false`.
+          Privileged mode is disallowed.
         pattern:
           spec:
             =(ephemeralContainers):

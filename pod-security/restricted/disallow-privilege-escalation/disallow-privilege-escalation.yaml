@@ -29,7 +29,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Privilege escalation is disallowed. The `allowPrivilegeEscalation` field must be set to `false`
+          Privilege escalation is disallowed.
         pattern:
           spec:
             =(ephemeralContainers):
