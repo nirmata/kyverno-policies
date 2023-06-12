@@ -168,6 +168,24 @@ entries:
   pss-restricted-policies:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2023-06-12T10:34:07.916557811Z"
+    description: Pod Security Standards (restricted) policy set
+    digest: 2af0e76dc975ad1f0b922d5a9f35c95dcb969b3f0ad12eb996b1e48df0f983b2
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: pss-restricted-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/pss-restricted-policies-0.2.2/pss-restricted-policies-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2023-06-12T07:34:50.092690244Z"
     description: Pod Security Standards (restricted) policy set
     digest: aa6a6f0551550078aa953f2d641b4d910011d4e85ffe2ccb3971aacf95607ef1
@@ -330,4 +348,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2023-06-12T07:34:50.092734745Z"
+generated: "2023-06-12T10:34:07.916679911Z"
