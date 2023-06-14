@@ -11,8 +11,11 @@ metadata:
     kyverno.io/kubernetes-version: "1.22-1.23"
     policies.nirmata.io/remediation: "https://docs.nirmata.io/policysets/podsecurity/restricted/require-run-as-non-root/"
     policies.kyverno.io/description: >-
-      Containers must be required to run as non-root users. This policy ensures
-      `runAsNonRoot` is set to `true`. A known issue prevents a policy such as this
+      Containers must be required to run as non-root users. This policy ensures either the field 
+      spec.securityContext.runAsNonRoot
+      is set to `true`, or the fields spec.containers[*].securityContext.runAsNonRoot,
+      spec.initContainers[*].securityContext.runAsNonRoot, and spec.ephemeralContainers[*].securityContext.runAsNonRoot
+      is set to `true`. A known issue prevents a policy such as this
       using `anyPattern` from being persisted properly in Kubernetes 1.23.0-1.23.2.
 spec:
   validationFailureAction: audit
@@ -26,10 +29,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Running as root is not allowed. Either the field spec.securityContext.runAsNonRoot
-          must be set to `true`, or the fields spec.containers[*].securityContext.runAsNonRoot,
-          spec.initContainers[*].securityContext.runAsNonRoot, and spec.ephemeralContainers[*].securityContext.runAsNonRoot
-          must be set to `true`.
+          Running the container as root is not allowed.
         anyPattern:
           - spec:
               securityContext:

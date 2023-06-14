@@ -14,7 +14,8 @@ metadata:
     policies.kyverno.io/description: >-
       In addition to restricting HostPath volumes, the restricted pod security profile
       limits usage of non-core volume types to those defined through PersistentVolumes.
-      This policy blocks any other type of volume other than those in the allow list.
+      This policy blocks any other type of volume other than those in the allow list 
+      (configMap, csi, downwardAPI, emptyDir, ephemeral, persistentVolumeClaim, projected, and secret).
 spec:
   validationFailureAction: audit
   background: true
@@ -27,8 +28,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Only the following types of volumes may be used: configMap, csi, downwardAPI,
-          emptyDir, ephemeral, persistentVolumeClaim, projected, and secret.
+          Using volume types beyond those listed in the policy rule is disallowed.
         deny:
           conditions:
             all:
