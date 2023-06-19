@@ -27,10 +27,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          HostProcess containers are disallowed. The fields spec.securityContext.windowsOptions.hostProcess,
-          spec.containers[*].securityContext.windowsOptions.hostProcess, spec.initContainers[*].securityContext.windowsOptions.hostProcess,
-          and spec.ephemeralContainers[*].securityContext.windowsOptions.hostProcess must either be undefined
-          or set to `false`.
+          HostProcess containers are disallowed.
         pattern:
           spec:
             =(ephemeralContainers):

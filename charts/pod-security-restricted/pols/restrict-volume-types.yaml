@@ -27,8 +27,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Only the following types of volumes may be used: configMap, csi, downwardAPI,
-          emptyDir, ephemeral, persistentVolumeClaim, projected, and secret.
+          Using volume types beyond those listed in the policy rule is disallowed.
         deny:
           conditions:
             all:
