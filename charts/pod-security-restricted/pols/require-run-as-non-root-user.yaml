@@ -25,10 +25,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Running as root is not allowed. The fields spec.securityContext.runAsUser,
-          spec.containers[*].securityContext.runAsUser, spec.initContainers[*].securityContext.runAsUser,
-          and spec.ephemeralContainers[*].securityContext.runAsUser must be unset or
-          set to a number greater than zero.
+          Running the container as root user is not allowed.
         pattern:
           spec:
             =(securityContext):

@@ -26,10 +26,7 @@ spec:
                 - Pod
       validate:
         message: >-
-          Running as root is not allowed. Either the field spec.securityContext.runAsNonRoot
-          must be set to `true`, or the fields spec.containers[*].securityContext.runAsNonRoot,
-          spec.initContainers[*].securityContext.runAsNonRoot, and spec.ephemeralContainers[*].securityContext.runAsNonRoot
-          must be set to `true`.
+          Running the container as root is not allowed.
         anyPattern:
           - spec:
               securityContext:
