@@ -95,6 +95,24 @@ entries:
   pss-baseline-policies:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2023-06-20T09:48:05.243270395Z"
+    description: Pod Security Standards (baseline) policy set
+    digest: fd831014f8a6ef9b6c87f5e7bca182cecffe922d6777f02acdbab69a481cae15
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: pss-baseline-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/pss-baseline-policies-0.2.3/pss-baseline-policies-0.2.3.tgz
+    version: 0.2.3
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2023-06-15T11:59:07.54681768Z"
     description: Pod Security Standards (baseline) policy set
     digest: c8517a4e1613f81b7bcf98ef0a06795cddf89b2559448980f693fd5566420b00
@@ -184,6 +202,24 @@ entries:
     - https://github.com/nirmata/kyverno-policies/releases/download/pss-baseline-policies-0.1.0/pss-baseline-policies-0.1.0.tgz
     version: 0.1.0
   pss-restricted-policies:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2023-06-20T09:48:05.441585683Z"
+    description: Pod Security Standards (restricted) policy set
+    digest: e3f4c22870252f5433d00d100797354a23fcc12430b1b41b0d32b19958547c38
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: pss-restricted-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/pss-restricted-policies-0.2.3/pss-restricted-policies-0.2.3.tgz
+    version: 0.2.3
   - apiVersion: v2
     appVersion: 0.1.0
     created: "2023-06-12T10:34:07.916557811Z"
@@ -366,4 +402,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2023-06-15T11:59:07.546867181Z"
+generated: "2023-06-20T09:48:05.441740584Z"
