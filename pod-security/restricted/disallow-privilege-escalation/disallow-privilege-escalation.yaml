@@ -18,7 +18,7 @@ metadata:
       and spec.ephemeralContainers[*].securityContext.allowPrivilegeEscalation
       is set to `false`.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: privilege-escalation

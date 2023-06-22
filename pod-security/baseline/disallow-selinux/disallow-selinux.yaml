@@ -15,7 +15,7 @@ metadata:
       spec.securityContext.seLinuxOptions.type, spec.containers[*].securityContext.seLinuxOptions.type, spec.initContainers[*].securityContext.seLinuxOptions, and spec.ephemeralContainers[*].securityContext.seLinuxOptions.type
       must either be unset or set to one of the allowed values (container_t, container_init_t, or container_kvm_t).
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: selinux-type

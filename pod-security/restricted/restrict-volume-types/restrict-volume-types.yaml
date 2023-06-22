@@ -17,7 +17,7 @@ metadata:
       This policy blocks any other type of volume other than those in the allow list 
       (configMap, csi, downwardAPI, emptyDir, ephemeral, persistentVolumeClaim, projected, and secret).
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: restricted-volumes

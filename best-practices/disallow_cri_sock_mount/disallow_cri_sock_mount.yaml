@@ -14,7 +14,7 @@ metadata:
       outside of Kubernetes, and hence should not be allowed. This policy validates that
       the sockets used for CRI engines Docker, Containerd, and CRI-O are not used.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
   - name: validate-docker-sock-mount

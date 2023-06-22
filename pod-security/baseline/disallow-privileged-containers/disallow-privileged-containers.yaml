@@ -14,7 +14,7 @@ metadata:
       Privileged mode disables most security mechanisms and must not be allowed. This policy
       ensures the fields spec.containers[*].securityContext.privileged and spec.initContainers[*].securityContext.privileged must be unset or set to `false`.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: privileged-containers
