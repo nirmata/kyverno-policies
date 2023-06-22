@@ -7,7 +7,7 @@ metadata:
     policies.kyverno.io/category: Workload Security
     policies.kyverno.io/subject: ConfigMap, Ingress
     policies.kyverno.io/minversion: "1.6.0"
-    kyverno.io/kyverno-version: "1.6.0"
+    kyverno.io/kyverno-version: 1.10.0
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/description: >-
       Users that can create or update ingress objects can use the custom snippets 

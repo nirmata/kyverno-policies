@@ -7,7 +7,7 @@ metadata:
     policies.kyverno.io/category: Pod Security Standards (Restricted)
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kyverno-version: 1.10.0
     kyverno.io/kubernetes-version: "1.22-1.23"
     policies.nirmata.io/remediation: "https://docs.nirmata.io/policysets/podsecurity/restricted/require-run-as-non-root-user/"
     policies.kyverno.io/description: >-

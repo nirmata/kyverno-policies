@@ -6,7 +6,7 @@ metadata:
     policies.kyverno.io/title: Restrict Scale
     policies.kyverno.io/category: FinOps
     policies.kyverno.io/severity: medium
-    kyverno.io/kyverno-version: 1.9.0
+    kyverno.io/kyverno-version: 1.10.0
     policies.kyverno.io/minversion: 1.9.0
     kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/subject: Deployment
