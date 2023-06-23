@@ -6,6 +6,7 @@ metadata:
     policies.kyverno.io/title: Require Labels
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.10.0
     policies.kyverno.io/subject: Pod, Label
     policies.kyverno.io/description: >-
       Define and use labels that identify semantic attributes of your application or Deployment.
@@ -13,7 +14,7 @@ metadata:
       all tools can understand. The recommended labels describe applications in a way that can be
       queried. This policy validates that the label `app.kubernetes.io/name` is specified with some value.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
   - name: check-for-labels

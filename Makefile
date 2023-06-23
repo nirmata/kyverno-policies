@@ -1,13 +1,13 @@
 .DEFAULT_GOAL: build-all
 
 K8S_VERSION          ?= $(shell kubectl version --short | grep -i server | cut -d" " -f3 | cut -c2-)
-KIND_IMAGE           ?= kindest/node:v1.25.2
+KIND_IMAGE           ?= kindest/node:v1.27.1
 KIND_NAME            ?= kind
 USE_CONFIG           ?= standard
 
 TOOLS_DIR                          := $(PWD)/.tools
 KIND                               := $(TOOLS_DIR)/kind
-KIND_VERSION                       := v0.17.0
+KIND_VERSION                       := v0.19.0
 HELM                               := $(TOOLS_DIR)/helm
 HELM_VERSION                       := v3.10.1
 KUTTL                              := $(TOOLS_DIR)/kubectl-kuttl
@@ -60,9 +60,16 @@ kind-delete-cluster: $(KIND)
 kind-deploy-kyverno: $(HELM) 
 	@echo Install kyverno chart... >&2
 	@echo $(N4K_LICENSE_KEY) >&2
-	@$(HELM) repo add nirmata https://nirmata.github.io/kyverno-charts
-	@$(HELM) install kyverno --namespace kyverno --create-namespace nirmata/kyverno --set licenseManager.licenseKey=+7BT76LNHCKLi3vW2mbYP5vYuS+Rm4XaLPu7k6Vgq4/efR3BEJk6Ru+zOFJagN2l0oLyG15qZ2kkXpzqaeEAal6APDLB7s3htLFeJ6mf0hc7/3dupUY13zrdX5svkS5p6BNKVisuXwK5XfF8sJyLn16I/CRdICj9fzktWQWYB5h46xOj5NlMPMj0/m6tCa3hIVJpB9Onkd4KMXlO+PQUbUwk/wxuciQkGwjbXQs+V9w0MuWMODpY0jGN1dgLNETI7mpS6G5DVvHkbAtrJ+gvG15aFFtKjgPInoemqxbhj2wzYue5pNSdHUZYE9b+LLlj
+	
+##	@$(HELM) repo add nirmata https://nirmata.github.io/kyverno-charts
+##	@$(HELM) install kyverno --namespace kyverno --create-namespace nirmata/kyverno --set image.tag=v1.10.0-n4k.nirmata.1 --set initImage.tag=v1.10.0-n4k.nirmata.1 --set cleanupController.image.tag=v1.10.0-n4k.nirmata.1
 
+    ### Adding temporary  installation command for the kyverno n4k 1.10
+	git clone -b kyverno-1.10-beta1 https://github.com/nirmata/kyverno-charts.git
+	@$(HELM) install kyverno ./kyverno-charts/charts/nirmata -n kyverno --create-namespace  --set licenseManager.licenseKey=+7BT76LNHCKLi3vW2mbYP5vYuS+Rm4XaLPu7k6Vgq4/efR3BEJk6Ru+zOFJagN2l0oLyG15qZ2kkXpzqaeEAal6APDLB7s3htLFeJ6mf0hc7/3dupUY13zrdX5svkS5p6BNKVisuXwK5XfF8sJyLn16I/CRdICj9fzktWQWYB5h46xOj5NlMPMj0/m6tCa3hIVJpB9Onkd4KMXlO+PQUbUwk/wxuciQkGwjbXQs+V9w0MuWMODpY0jGN1dgLNETI7mpS6G5DVvHkbAtrJ+gvG15aFFtKjgPInoemqxbhj2wzYue5pNSdHUZYE9b+LLlj
+
+##  @$(HELM) repo add nirmata https://nirmata.github.io/kyverno-charts
+##	@$(HELM) install kyverno --namespace kyverno --create-namespace nirmata/kyverno --set licenseManager.licenseKey=+7BT76LNHCKLi3vW2mbYP5vYuS+Rm4XaLPu7k6Vgq4/efR3BEJk6Ru+zOFJagN2l0oLyG15qZ2kkXpzqaeEAal6APDLB7s3htLFeJ6mf0hc7/3dupUY13zrdX5svkS5p6BNKVisuXwK5XfF8sJyLn16I/CRdICj9fzktWQWYB5h46xOj5NlMPMj0/m6tCa3hIVJpB9Onkd4KMXlO+PQUbUwk/wxuciQkGwjbXQs+V9w0MuWMODpY0jGN1dgLNETI7mpS6G5DVvHkbAtrJ+gvG15aFFtKjgPInoemqxbhj2wzYue5pNSdHUZYE9b+LLlj --set image.tag=v1.10.0-n4k.nirmata.1 --set initImage.tag=v1.10.0-n4k.nirmata.1 --set cleanupController.image.tag=v1.10.0-n4k.nirmata.1
 ## Check Kyverno status 
 .PHONY: wait-for-kyverno
 wait-for-kyverno: 

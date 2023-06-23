@@ -3,13 +3,13 @@ name: Kuttl Test
 on:
   push:
     branches:
-      - 'main'
+      - 'kyverno-1.10'
   # this action needs to read GH secret
   # hence prevents executing on PRs from forks
   # disabling running on PRs until we find a workaround for this
   pull_request:
     branches:
-      - 'main'
+      - 'kyverno-1.10'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

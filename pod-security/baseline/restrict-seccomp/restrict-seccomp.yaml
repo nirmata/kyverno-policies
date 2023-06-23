@@ -7,7 +7,6 @@ metadata:
     policies.kyverno.io/category: Pod Security Standards (Baseline)
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
-    kyverno.io/kyverno-version: 1.6.0
     kyverno.io/kubernetes-version: "1.22-1.23"
     policies.nirmata.io/remediation: "https://docs.nirmata.io/policysets/podsecurity/baseline/restrict-seccomp/"
     policies.kyverno.io/description: >-
@@ -20,7 +19,7 @@ metadata:
       must be unset or set to `RuntimeDefault` or `Localhost`.
 spec:
   background: true
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
     - name: check-seccomp
       match:
