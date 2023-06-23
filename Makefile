@@ -1,13 +1,13 @@
 .DEFAULT_GOAL: build-all
 
 K8S_VERSION          ?= $(shell kubectl version --short | grep -i server | cut -d" " -f3 | cut -c2-)
-KIND_IMAGE           ?= kindest/node:v1.25.2
+KIND_IMAGE           ?= kindest/node:v1.27.1
 KIND_NAME            ?= kind
 USE_CONFIG           ?= standard
 
 TOOLS_DIR                          := $(PWD)/.tools
 KIND                               := $(TOOLS_DIR)/kind
-KIND_VERSION                       := v0.17.0
+KIND_VERSION                       := v0.19.0
 HELM                               := $(TOOLS_DIR)/helm
 HELM_VERSION                       := v3.10.1
 KUTTL                              := $(TOOLS_DIR)/kubectl-kuttl
@@ -61,7 +61,7 @@ kind-deploy-kyverno: $(HELM)
 	@echo Install kyverno chart... >&2
 	@echo $(N4K_LICENSE_KEY) >&2
 	@$(HELM) repo add nirmata https://nirmata.github.io/kyverno-charts
-	@$(HELM) install kyverno --namespace kyverno --create-namespace nirmata/kyverno --set licenseManager.licenseKey=$(N4K_LICENSE_KEY)
+	@$(HELM) install kyverno --namespace kyverno --create-namespace nirmata/kyverno --set licenseManager.licenseKey=$(N4K_LICENSE_KEY) --set image.tag=v1.10.0-n4k.nirmata.1 --set initImage.tag=v1.10.0-n4k.nirmata.1 --set cleanupController.image.tag=v1.10.0-n4k.nirmata.1
 
 ## Check Kyverno status 
 .PHONY: wait-for-kyverno
