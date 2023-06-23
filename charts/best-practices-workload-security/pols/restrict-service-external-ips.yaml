@@ -6,6 +6,7 @@ metadata:
     policies.kyverno.io/title: Restrict External IPs
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.10.0
     policies.kyverno.io/subject: Service
     policies.kyverno.io/description: >-
       Service externalIPs can be used for a MITM attack (CVE-2020-8554).
