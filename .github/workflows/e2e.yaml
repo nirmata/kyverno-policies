@@ -7,9 +7,9 @@ on:
   # this action needs to read GH secret
   # hence prevents executing on PRs from forks
   # disabling running on PRs until we find a workaround for this
-  # pull_request:
-  #   branches:
-  #     - 'main'
+  pull_request:
+    branches:
+      - 'kyverno-1.10'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
