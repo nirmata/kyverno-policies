@@ -2,10 +2,10 @@ name: Kyverno CLI Test
 on:
   push:
     branches:
-      - main
+      - kyverno-1.10
   pull_request:
     branches:
-      - main
+      - kyverno-1.10
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
