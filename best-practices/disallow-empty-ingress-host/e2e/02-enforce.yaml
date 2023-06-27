@@ -3,4 +3,3 @@ kind: TestStep
 commands:
 - script: |
     sed 's/validationFailureAction: audit/validationFailureAction: Enforce/' ../disallow_empty_ingress_host.yaml | kubectl apply -f -
- 

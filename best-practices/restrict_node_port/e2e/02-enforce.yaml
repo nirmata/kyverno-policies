@@ -3,4 +3,3 @@ kind: TestStep
 commands:
 - script: |
     sed 's/validationFailureAction: audit/validationFailureAction: Enforce/' ../restrict_node_port.yaml | kubectl apply -f -
- 

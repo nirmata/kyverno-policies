@@ -3,4 +3,3 @@ kind: TestStep
 commands:
 - script: |
     sed 's/validationFailureAction: audit/validationFailureAction: Enforce/' ../restrict-service-external-ips.yaml | kubectl apply -f -
- 
