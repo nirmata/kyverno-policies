@@ -4,4 +4,3 @@ apply:
 - ../add_ns_quota.yaml
 assert:
 - policy-assert.yaml
-unitTest: false

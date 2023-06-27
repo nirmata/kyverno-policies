@@ -28,7 +28,3 @@ results:
     resource: good-cronjob
     kind: CronJob
     result: skip
-
- 
-    
-    

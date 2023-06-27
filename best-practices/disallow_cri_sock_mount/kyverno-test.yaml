@@ -2,8 +2,7 @@ name: disallow-cri-sock-mount
 policies:
   -  disallow_cri_sock_mount.yaml
 resources:
-  -  resources/resource-1.yaml
-  -  resources/resource-2.yaml
+  -  resource.yaml
 results:
   - policy: disallow-container-sock-mounts
     rule: validate-docker-sock-mount

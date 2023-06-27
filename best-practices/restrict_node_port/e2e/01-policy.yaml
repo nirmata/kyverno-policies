@@ -1,0 +1,6 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestStep
+apply:
+- ../restrict_node_port.yaml
+assert:
+- policy-assert.yaml
