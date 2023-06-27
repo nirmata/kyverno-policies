@@ -2,4 +2,5 @@ apiVersion: kuttl.dev/v1beta1
 kind: TestStep
 commands:
 - script: |
-    sed 's/validationFailureAction: audit/validationFailureAction: Enforce/' ../disallow_empty_ingress_host.yaml | kubectl apply -f - 
+    sed 's/validationFailureAction: audit/validationFailureAction: Enforce/' ../disallow_empty_ingress_host.yaml | kubectl apply -f -
+ 
