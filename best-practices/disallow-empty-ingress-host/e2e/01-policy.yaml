@@ -1,0 +1,6 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestStep
+apply:
+- ../disallow_empty_ingress_host.yaml
+assert:
+- policy-assert.yaml
