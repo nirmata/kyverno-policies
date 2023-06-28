@@ -3,7 +3,7 @@ kind: ClusterPolicy
 metadata:
   name: disallow-empty-ingress-host
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
 status:
   conditions:
   - reason: Succeeded

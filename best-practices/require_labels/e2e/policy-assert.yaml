@@ -3,7 +3,7 @@ kind: ClusterPolicy
 metadata:
   name: require-labels
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
 status:
   conditions:
   - reason: Succeeded

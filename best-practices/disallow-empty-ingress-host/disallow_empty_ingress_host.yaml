@@ -6,6 +6,7 @@ metadata:
     policies.kyverno.io/title: Disallow empty Ingress host
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.10.0
     policies.kyverno.io/subject: Ingress
     policies.kyverno.io/description: >-
       An ingress resource needs to define an actual host name
