@@ -1,0 +1,5 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestStep
+commands:
+- script: |
+    sed 's/validationFailureAction: audit/validationFailureAction: Enforce/' ../require_pod_requests_limits.yaml | kubectl apply -f - 

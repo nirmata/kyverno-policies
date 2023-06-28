@@ -1,7 +1,6 @@
 apiVersion: kuttl.dev/v1beta1
 kind: TestStep
 apply:
-- ../add_network_policy.yaml
+- ../disallow_empty_ingress_host.yaml
 assert:
 - policy-assert.yaml
-unitTest: false

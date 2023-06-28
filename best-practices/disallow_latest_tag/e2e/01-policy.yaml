@@ -1,0 +1,6 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestStep
+apply:
+- ../disallow_latest_tag.yaml
+assert:
+- policy-assert.yaml
