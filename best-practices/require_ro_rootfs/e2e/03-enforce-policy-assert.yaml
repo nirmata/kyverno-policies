@@ -1,0 +1,11 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-ro-rootfs
+spec:
+  validationFailureAction: enforce
+status:
+  conditions:
+  - reason: Succeeded
+    status: "True"
+    type: Ready

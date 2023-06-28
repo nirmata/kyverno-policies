@@ -1,0 +1,6 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestStep
+apply:
+- ../require_drop_cap_net_raw.yaml
+assert:
+- policy-assert.yaml
