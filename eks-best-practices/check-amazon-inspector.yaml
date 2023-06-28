@@ -10,7 +10,7 @@ metadata:
     policies.kyverno.io/description: >-
       Amazon Inspector is not enabled on both EC2 and ECR
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: check-amazon-inspector

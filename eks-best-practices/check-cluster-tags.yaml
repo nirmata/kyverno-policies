@@ -10,7 +10,7 @@ metadata:
     policies.kyverno.io/description: >-
       Required tags are missing on the cluster.  
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: check-department-tag

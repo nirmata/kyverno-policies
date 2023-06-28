@@ -3,7 +3,7 @@ kind: ClusterPolicy
 metadata:
   name: require-pod-probes
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
 status:
   conditions:
   - reason: Succeeded

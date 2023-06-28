@@ -2,7 +2,7 @@ apiVersion: v2
 name: workload-security-best-practice-policies
 description: Workload Security Best Practice policy set
 type: application
-version: 0.1.2
+version: 0.2.0
 appVersion: 0.1.0
 keywords:
   - kubernetes

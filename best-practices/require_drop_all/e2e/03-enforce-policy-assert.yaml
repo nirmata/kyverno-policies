@@ -3,7 +3,7 @@ kind: ClusterPolicy
 metadata:
   name: drop-all-capabilities
 spec:
-  validationFailureAction: enforce
+  validationFailureAction: Enforce
 status:
   conditions:
   - reason: Succeeded

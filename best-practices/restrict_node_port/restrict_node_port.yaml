@@ -6,6 +6,7 @@ metadata:
     policies.kyverno.io/title: Disallow NodePort
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.10.0
     policies.kyverno.io/subject: Service
     policies.kyverno.io/description: >-
       A Kubernetes Service of type NodePort uses a host port to receive traffic from
@@ -14,7 +15,7 @@ metadata:
       with additional upstream security checks. This policy validates that any new Services
       do not use the `NodePort` type.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
   - name: validate-nodeport

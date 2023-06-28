@@ -10,7 +10,7 @@ metadata:
     policies.kyverno.io/description: >-
       VPC Flow logs are not enabled.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: check-vpc-flow-logs

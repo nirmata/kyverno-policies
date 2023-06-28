@@ -8,6 +8,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.6.0
+    kyverno.io/kyverno-version: 1.10.0
     policies.kyverno.io/description: >-
       A read-only root file system helps to enforce an immutable infrastructure strategy;
       the container only needs to write on the mounted volume that persists the state.
@@ -15,7 +16,7 @@ metadata:
       host system. This policy validates that containers define a securityContext
       with `readOnlyRootFilesystem: true`.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
   - name: validate-readOnlyRootFilesystem
