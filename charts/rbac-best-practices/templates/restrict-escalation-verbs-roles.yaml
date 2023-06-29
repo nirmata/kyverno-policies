@@ -32,16 +32,16 @@ spec:
           deny:
             conditions:
               all:
-              - key: "{{ element.apiGroups || '' }}"
+              - key: "{{`{{`}} element.apiGroups || '' {{`}}`}}"
                 operator: AnyIn
                 value:
                 - rbac.authorization.k8s.io
-              - key: "{{ element.resources || '' }}"
+              - key: "{{`{{`}} element.resources || '' {{`}}`}}"
                 operator: AnyIn
                 value:
                 - clusterroles
                 - roles
-              - key: "{{ element.verbs }}"
+              - key: "{{`{{`}} element.verbs {{`}}`}}"
                 operator: AnyIn
                 value:
                 - bind

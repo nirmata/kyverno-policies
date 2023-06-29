@@ -23,7 +23,7 @@ spec:
     generate:
       kind: "NetworkPolicy"
       name: "default-deny"
-      namespace: "{{request.object.metadata.name}}"
+      namespace: "{{`{{`}}request.object.metadata.name{{`}}`}}"
       data:
         spec:
           podSelector: {}

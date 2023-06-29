@@ -31,7 +31,7 @@ spec:
         deny:
           conditions:
             all:
-              - key: "{{ request.object.spec.volumes[].keys(@)[] || '' }}"
+              - key: "{{`{{`}} request.object.spec.volumes[].keys(@)[] || '' {{`}}`}}"
                 operator: AnyNotIn
                 value:
                   - name

@@ -32,6 +32,6 @@ spec:
         deny:
           conditions:
             any:
-            - key: "{{ contains(request.object.rules[].resources[], '*') }}"
+            - key: "{{`{{`}} contains(request.object.rules[].resources[], '*') {{`}}`}}"
               operator: Equals
               value: true
