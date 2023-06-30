@@ -1,7 +1,8 @@
+{{- $name := "restrict-sysctls" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: restrict-sysctls
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Restrict sysctls
     policies.kyverno.io/category: Pod Security Standards (Baseline)
@@ -18,8 +19,8 @@ metadata:
       This policy ensures that only those "safe" subsets can be specified in
       a Pod.
 spec:
-  validationFailureAction: audit
-  background: true
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
     - name: check-sysctls
       match:

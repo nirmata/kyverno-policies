@@ -1,7 +1,8 @@
+{{- $name := "disallow-host-process" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: disallow-host-process
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Disallow hostProcess
     policies.kyverno.io/category: Pod Security Standards (Baseline)
@@ -16,8 +17,8 @@ metadata:
       policy. HostProcess pods are an alpha feature as of Kubernetes v1.22. This policy ensures
       the `hostProcess` field, if present, is set to `false`.
 spec:
-  validationFailureAction: audit
-  background: true
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
     - name: host-process-containers
       match:

@@ -1,7 +1,8 @@
+{{- $name := "disallow-privileged-containers" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: disallow-privileged-containers
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Disallow Privileged Containers
     policies.kyverno.io/category: Pod Security Standards (Baseline)
@@ -14,8 +15,8 @@ metadata:
       Privileged mode disables most security mechanisms and must not be allowed. This policy
       ensures Pods do not call for privileged mode.
 spec:
-  validationFailureAction: audit
-  background: true
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
     - name: privileged-containers
       match:

@@ -1,7 +1,8 @@
+{{- $name := "restrict-escalation-verbs-roles" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: restrict-escalation-verbs-roles
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Restrict Escalation Verbs in Roles
     policies.kyverno.io/category: RBAC Best Practices
@@ -15,8 +16,8 @@ metadata:
       privilege escalation and should be tightly controlled. This policy prevents
       use of these verbs in Role or ClusterRole resources.      
 spec:
-  validationFailureAction: audit
-  background: true
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
     - name: escalate
       match:

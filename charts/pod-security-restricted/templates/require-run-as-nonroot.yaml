@@ -1,7 +1,8 @@
+{{- $name := "require-run-as-nonroot" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: require-run-as-nonroot
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Require runAsNonRoot
     policies.kyverno.io/category: Pod Security Standards (Restricted)
@@ -15,8 +16,8 @@ metadata:
       `runAsNonRoot` is set to `true`. A known issue prevents a policy such as this
       using `anyPattern` from being persisted properly in Kubernetes 1.23.0-1.23.2.
 spec:
-  validationFailureAction: audit
-  background: true
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
     - name: run-as-non-root
       match:

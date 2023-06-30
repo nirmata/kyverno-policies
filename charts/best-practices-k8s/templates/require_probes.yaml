@@ -1,7 +1,8 @@
+{{- $name := "require-pod-probes" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: require-pod-probes
+  name: {{ $name }}
   annotations:
     pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet
     policies.kyverno.io/title: Require Pod Probes
@@ -17,8 +18,8 @@ metadata:
       This policy validates that all containers have one of livenessProbe, readinessProbe,
       or startupProbe defined.
 spec:
-  validationFailureAction: audit
-  background: true
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
   - name: validate-probes
     match:

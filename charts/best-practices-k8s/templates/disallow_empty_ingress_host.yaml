@@ -1,7 +1,8 @@
+{{- $name := "disallow-empty-ingress-host" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: disallow-empty-ingress-host
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Disallow empty Ingress host
     policies.kyverno.io/category: Best Practices
@@ -12,8 +13,8 @@ metadata:
       in order to be valid. This policy ensures that there is a
       hostname for each rule defined.
 spec:
-  validationFailureAction: audit
-  background: false
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
     - name: disallow-empty-ingress-host
       match:

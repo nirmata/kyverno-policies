@@ -1,7 +1,8 @@
+{{- $name := "disallow-host-ports" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: disallow-host-ports
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Disallow hostPorts
     policies.kyverno.io/category: Pod Security Standards (Baseline)
@@ -15,8 +16,8 @@ metadata:
       allowed, or at minimum restricted to a known list. This policy ensures the `hostPort`
       field is unset or set to `0`.
 spec:
-  validationFailureAction: audit
-  background: true
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
     - name: host-ports-none
       match:

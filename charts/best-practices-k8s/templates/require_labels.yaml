@@ -1,7 +1,8 @@
+{{- $name := "require-labels" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: require-labels
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Require Labels
     policies.kyverno.io/category: Best Practices
@@ -13,8 +14,8 @@ metadata:
       all tools can understand. The recommended labels describe applications in a way that can be
       queried. This policy validates that the label `app.kubernetes.io/name` is specified with some value.
 spec:
-  validationFailureAction: audit
-  background: true
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
   - name: check-for-labels
     match:

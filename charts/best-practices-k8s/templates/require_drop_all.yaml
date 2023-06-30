@@ -1,7 +1,8 @@
+{{- $name :=  "drop-all-capabilities" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: drop-all-capabilities
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Drop All Capabilities
     policies.kyverno.io/category: Best Practices
@@ -15,8 +16,8 @@ metadata:
       ability. Note that this policy also illustrates how to cover drop entries in any
       case although this may not strictly conform to the Pod Security Standards.
 spec:
-  validationFailureAction: audit
-  background: true
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
     - name: require-drop-all
       match:

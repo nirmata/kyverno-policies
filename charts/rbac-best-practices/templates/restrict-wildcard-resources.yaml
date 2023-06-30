@@ -1,7 +1,8 @@
+{{- $name := "restrict-wildcard-resources" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: restrict-wildcard-resources
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Restrict Wildcards in Resources
     policies.kyverno.io/category: RBAC Best Practices
@@ -17,8 +18,8 @@ metadata:
       This policy blocks any Role or ClusterRole that contains a wildcard entry in
       the resources list found in any rule.      
 spec:
-  validationFailureAction: audit
-  background: true
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
     - name: wildcard-resources
       match:

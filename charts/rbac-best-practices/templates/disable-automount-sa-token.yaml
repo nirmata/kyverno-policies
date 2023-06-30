@@ -1,7 +1,8 @@
+{{- $name := "disable-automount-sa-token" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: disable-automount-sa-token
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Disable automountServiceAccountToken
     policies.kyverno.io/category: RBAC Best Practices
@@ -16,6 +17,8 @@ metadata:
       This policy mutates any new `default` ServiceAccounts to disable auto-mounting of the token
       into Pods obviating the need to do so individually.      
 spec:
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
   - name: disable-automountserviceaccounttoken
     match:

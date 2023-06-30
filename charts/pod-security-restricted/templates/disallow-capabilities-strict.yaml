@@ -1,7 +1,8 @@
+{{- $name := "disallow-capabilities-strict" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: disallow-capabilities-strict
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Disallow Capabilities (Strict)
     policies.kyverno.io/category: Pod Security Standards (Restricted)
@@ -15,8 +16,8 @@ metadata:
       Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition,
       all containers must explicitly drop `ALL` capabilities.
 spec:
-  validationFailureAction: audit
-  background: true
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
     - name: require-drop-all
       match:

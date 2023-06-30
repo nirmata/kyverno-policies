@@ -1,7 +1,8 @@
+{{- $name := "restrict-clusterrole-nodesproxy" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: restrict-clusterrole-nodesproxy
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Restrict ClusterRole with Nodes Proxy
     policies.kyverno.io/category: RBAC Best Practices
@@ -18,8 +19,8 @@ metadata:
       for more info. This policy prevents the creation
       of a ClusterRole if it contains the nodes/proxy resource.       
 spec:
-  validationFailureAction: audit
-  background: true
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
     - name: clusterrole-nodesproxy
       match:

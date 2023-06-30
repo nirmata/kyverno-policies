@@ -1,7 +1,8 @@
+{{- $name := "restrict-external-ips" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: restrict-external-ips
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Restrict External IPs
     policies.kyverno.io/category: Best Practices
@@ -13,8 +14,8 @@ metadata:
       See: https://github.com/kyverno/kyverno/issues/1367. This policy validates
       that the `externalIPs` field is not set on a Service.
 spec:
-  validationFailureAction: audit
-  background: true
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
   - name: check-ips
     match:

@@ -1,7 +1,8 @@
+{{- $name := "restrict-seccomp-strict" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: restrict-seccomp-strict
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Restrict Seccomp (Strict)
     policies.kyverno.io/category: Pod Security Standards (Restricted)
@@ -17,8 +18,8 @@ metadata:
       set to `RuntimeDefault` or `Localhost`. A known issue prevents a policy such as this
       using `anyPattern` from being persisted properly in Kubernetes 1.23.0-1.23.2.
 spec:
-  background: true
-  validationFailureAction: audit
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
     - name: check-seccomp-strict
       match:

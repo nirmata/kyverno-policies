@@ -1,7 +1,8 @@
+{{- $name := "disallow-capabilities" }}
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: disallow-capabilities
+  name: {{ $name }}
   annotations:
     policies.kyverno.io/title: Disallow Capabilities
     policies.kyverno.io/category: Pod Security Standards (Baseline)
@@ -14,8 +15,8 @@ metadata:
     policies.kyverno.io/description: >-
       Adding capabilities beyond those listed in the policy must be disallowed.
 spec:
-  validationFailureAction: audit
-  background: true
+  validationFailureAction: {{ include "vfa-for-pol" (dict "Values" .Values "polname" $name) }}
+  background: {{ include "bgscan-for-pol" (dict "Values" .Values "polname" $name) }}
   rules:
     - name: adding-capabilities
       match:
