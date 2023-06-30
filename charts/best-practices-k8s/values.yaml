@@ -7,9 +7,9 @@ validationFailureAction: audit
 # -- Define background for specific policies.
 # Override the defined `background` with a individual background for individual Policies.
 backgroundByPolicy: {}
-  #require-labels: false
+  # require-labels: false
 
 # -- Define validationFailureActionByPolicy for specific policies.
 # Override the defined `validationFailureAction` with a individual validationFailureAction for individual Policies.
 validationFailureActionByPolicy: {}
-  #require-labels: enforce
+  # require-labels: enforce
