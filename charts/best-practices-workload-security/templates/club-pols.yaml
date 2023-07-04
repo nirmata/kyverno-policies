@@ -1,4 +1,0 @@
-{{ range $path, $junk :=  .Files.Glob  "pols/**.yaml" }}
-{{ $.Files.Get $path }}
----
-{{ end }}
