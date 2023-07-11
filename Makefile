@@ -60,6 +60,9 @@ kind-delete-cluster: $(KIND)
 kind-deploy-kyverno: $(HELM) 
 	@echo Install kyverno chart... >&2
 	@echo $(N4K_LICENSE_KEY) >&2
+	
+##	@$(HELM) repo add nirmata https://nirmata.github.io/kyverno-charts
+##	@$(HELM) install kyverno --namespace kyverno --create-namespace nirmata/kyverno --set image.tag=v1.10.0-n4k.nirmata.1 --set initImage.tag=v1.10.0-n4k.nirmata.1 --set cleanupController.image.tag=v1.10.0-n4k.nirmata.1
 
     ### Adding temporary  installation command for the kyverno n4k 1.10
 	git clone -b kyverno-1.10-beta1 https://github.com/nirmata/kyverno-charts.git
