@@ -24,11 +24,9 @@ spec:
         - resources:
             kinds:
               - Pod
-      preconditions:
-        all:
-        - key: "{{ request.operation || 'BACKGROUND' }}"
-          operator: NotEquals
-          value: DELETE
+            operations:
+            - CREATE
+            - UPDATE
       validate:
         message: >-
           Containers must drop `ALL` capabilities.
