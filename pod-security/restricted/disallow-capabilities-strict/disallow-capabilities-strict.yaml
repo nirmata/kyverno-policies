@@ -23,11 +23,9 @@ spec:
           - resources:
               kinds:
                 - Pod
-      preconditions:
-        all:
-          - key: "{{ request.operation || 'BACKGROUND' }}"
-            operator: NotEquals
-            value: DELETE
+              operations:
+              - CREATE
+              - UPDATE
       validate:
         message: >-
           Containers must drop `ALL` capabilities.
@@ -45,11 +43,9 @@ spec:
           - resources:
               kinds:
                 - Pod
-      preconditions:
-        all:
-          - key: "{{ request.operation || 'BACKGROUND' }}"
-            operator: NotEquals
-            value: DELETE
+              operations:
+              - CREATE
+              - UPDATE
       validate:
         message: >-
           Any capabilities added other than NET_BIND_SERVICE are disallowed.
