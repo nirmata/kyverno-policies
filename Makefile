@@ -65,9 +65,12 @@ kind-deploy-kyverno: $(HELM)
     ##  git clone -b release-chart-1.10 https://github.com/nirmata/kyverno-charts.git
     ## @$(HELM) install kyverno ./kyverno-charts/charts/nirmata -n kyverno --create-namespace  --set licenseManager.licenseKey=+7BT76LNHCKLi3vW2mbYP5vYuS+Rm4XaLPu7k6Vgq4/efR3BEJk6Ru+zOFJagN2l0oLyG15qZ2kkXpzqaeEAal6APDLB7s3htLFeJ6mf0hc7/3dupUY13zrdX5svkS5p6BNKVisuXwK5XfF8sJyLn16I/CRdICj9fzktWQWYB5h46xOj5NlMPMj0/m6tCa3hIVJpB9Onkd4KMXlO+PQUbUwk/wxuciQkGwjbXQs+V9w0MuWMODpY0jGN1dgLNETI7mpS6G5DVvHkbAtrJ+gvG15aFFtKjgPInoemqxbhj2wzYue5pNSdHUZYE9b+LLlj
 
-   @$(HELM) repo add nirmata https://nirmata.github.io/kyverno-charts
-   @$(HELM) repo update nirmata
-   @$(HELM) install kyverno --namespace kyverno --create-namespace nirmata/kyverno --set licenseManager.licenseKey=+7BT76LNHCKLi3vW2mbYP5vYuS+Rm4XaLPu7k6Vgq4/efR3BEJk6Ru+zOFJagN2l0oLyG15qZ2kkXpzqaeEAal6APDLB7s3htLFeJ6mf0hc7/3dupUY13zrdX5svkS5p6BNKVisuXwK5XfF8sJyLn16I/CRdICj9fzktWQWYB5h46xOj5NlMPMj0/m6tCa3hIVJpB9Onkd4KMXlO+PQUbUwk/wxuciQkGwjbXQs+V9w0MuWMODpY0jGN1dgLNETI7mpS6G5DVvHkbAtrJ+gvG15aFFtKjgPInoemqxbhj2wzYue5pNSdHUZYE9b+LLlj --devel
+	@$(HELM) repo add nirmata https://nirmata.github.io/kyverno-charts
+	@$(HELM) repo update nirmata
+	@$(HELM) install kyverno --namespace kyverno --create-namespace nirmata/kyverno --set licenseManager.licenseKey=+7BT76LNHCKLi3vW2mbYP5vYuS+Rm4XaLPu7k6Vgq4/efR3BEJk6Ru+zOFJagN2l0oLyG15qZ2kkXpzqaeEAal6APDLB7s3htLFeJ6mf0hc7/3dupUY13zrdX5svkS5p6BNKVisuXwK5XfF8sJyLn16I/CRdICj9fzktWQWYB5h46xOj5NlMPMj0/m6tCa3hIVJpB9Onkd4KMXlO+PQUbUwk/wxuciQkGwjbXQs+V9w0MuWMODpY0jGN1dgLNETI7mpS6G5DVvHkbAtrJ+gvG15aFFtKjgPInoemqxbhj2wzYue5pNSdHUZYE9b+LLlj --devel
+
+## Check Kyverno status 
+.PHONY: wait-for-kyverno
 wait-for-kyverno: 
 	@echo Check kyverno status to be ready... >&2
 	@kubectl wait --namespace kyverno --for=condition=ready pod --all --timeout=120s
