@@ -1,0 +1,34 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: remediate-disallow-privileged-ephemeral-containers
+  annotations:
+    policies.kyverno.io/title: Remediate Disallow Privileged Containers
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/description: >-
+      This policy remediates the disallow-privileged-containers violation
+spec:
+  background: false
+  rules:
+    - name: remove-privileged-containers-all
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+                - StatefulSet
+                - Job
+      preconditions:
+        all:
+        - key: request.object.spec.template.spec.ephemeralContainers[].securityContext.privileged
+          operator: Equals
+          value: true
+      mutate:
+        foreach: 
+          - list: request.object.spec.template.spec.ephemeralContainers[].securityContext
+            order: Descending
+            patchesJson6902: |-
+              - path: /spec/template/spec/ephemeralContainers/{{elementIndex0}}/securityContext/privileged
+                op: replace
+                value: false
+

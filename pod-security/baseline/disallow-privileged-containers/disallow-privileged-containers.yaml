@@ -13,6 +13,46 @@ metadata:
     policies.kyverno.io/description: >-
       Privileged mode disables most security mechanisms and must not be allowed. This policy
       ensures the fields spec.containers[*].securityContext.privileged and spec.initContainers[*].securityContext.privileged must be unset or set to `false`.
+    policies.nirmata.io/autofix:
+    - preconditions:
+        all:
+        - key: request.object.spec.template.spec.containers[].securityContext.privileged
+          operator: Equals
+          value: true
+      mutate:
+        foreach:
+          - list: request.object.spec.template.spec.containers[].securityContext
+            order: Descending
+            patchesJson6902: |-
+              - path: /spec/template/spec/containers/{{elementIndex0}}/securityContext/privileged
+                op: replace
+                value: false
+    - preconditions:
+        all:
+        - key: request.object.spec.template.spec.ephemeralContainers[].securityContext.privileged
+          operator: Equals
+          value: true
+      mutate:
+        foreach:
+          - list: request.object.spec.template.spec.ephemeralContainers[].securityContext
+            order: Descending
+            patchesJson6902: |-
+              - path: /spec/template/spec/ephemeralContainers/{{elementIndex0}}/securityContext/privileged
+                op: replace
+                value: false
+    - preconditions:
+        all:
+        - key: request.object.spec.template.spec.initContainers[].securityContext.privileged
+          operator: Equals
+          value: true
+      mutate:
+        foreach:
+          - list: request.object.spec.template.spec.initContainers[].securityContext
+            order: Descending
+            patchesJson6902: |-
+              - path: /spec/template/spec/initContainers/{{elementIndex0}}/securityContext/privileged
+                op: replace
+                value: false
 spec:
   validationFailureAction: audit
   background: true
