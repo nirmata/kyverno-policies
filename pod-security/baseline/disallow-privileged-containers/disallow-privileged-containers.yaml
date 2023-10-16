@@ -13,6 +13,50 @@ metadata:
     policies.kyverno.io/description: >-
       Privileged mode disables most security mechanisms and must not be allowed. This policy
       ensures the fields spec.containers[*].securityContext.privileged and spec.initContainers[*].securityContext.privileged must be unset or set to `false`.
+    policies.nirmata.io/autofix-inline:
+    - preconditions:
+        all:
+        - key: request.object.spec.template.spec.containers[].securityContext.privileged
+          operator: Equals
+          value: true
+      mutate:
+        foreach:
+          - list: request.object.spec.template.spec.containers[].securityContext
+            order: Descending
+            patchesJson6902: |-
+              - path: /spec/template/spec/containers/{{elementIndex0}}/securityContext/privileged
+                op: replace
+                value: false
+    - preconditions:
+        all:
+        - key: request.object.spec.template.spec.ephemeralContainers[].securityContext.privileged
+          operator: Equals
+          value: true
+      mutate:
+        foreach:
+          - list: request.object.spec.template.spec.ephemeralContainers[].securityContext
+            order: Descending
+            patchesJson6902: |-
+              - path: /spec/template/spec/ephemeralContainers/{{elementIndex0}}/securityContext/privileged
+                op: replace
+                value: false
+    - preconditions:
+        all:
+        - key: request.object.spec.template.spec.initContainers[].securityContext.privileged
+          operator: Equals
+          value: true
+      mutate:
+        foreach:
+          - list: request.object.spec.template.spec.initContainers[].securityContext
+            order: Descending
+            patchesJson6902: |-
+              - path: /spec/template/spec/initContainers/{{elementIndex0}}/securityContext/privileged
+                op: replace
+                value: false
+    policies.nirmata.io/autofix:
+      - "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-privileged-containers/remediate-disallow-privileged-containers.yaml"
+      - "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-privileged-containers/remediate-disallow-privileged-init-containers.yaml"
+      - "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-privileged-containers/remediate-disallow-privileged-ephemeral-containers.yaml"
 spec:
   validationFailureAction: audit
   background: true

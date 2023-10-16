@@ -1,0 +1,29 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: remediate-disallow-host-pid
+  annotations:
+    policies.kyverno.io/title: Remediate Disallow host namespaces
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/description: >-
+      This policy remediates the disallow-host-namespaces violation
+spec:
+  background: false
+  rules:
+    - name: remove-host-namespaces
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+      preconditions:
+        all:
+        - key: request.object.spec.template.spec.hostPID
+          operator: Equals
+          value: true
+      mutate:
+        patchesJson6902: |-
+          - path: /spec/template/spec/hostPID
+            op: replace
+            value: false
+

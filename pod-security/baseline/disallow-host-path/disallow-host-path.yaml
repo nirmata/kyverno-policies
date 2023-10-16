@@ -14,6 +14,21 @@ metadata:
       HostPath volumes let Pods use host directories and volumes in containers.
       Using host resources can be used to access shared data or escalate privileges
       and should not be allowed. This policy ensures no hostPath volumes are in use.
+    policies.nirmata.io/autofix-inline:
+      - mutate:
+          foreach:
+            - list: request.object.spec.template.spec.volumes[]
+              order: Descending
+              preconditions:
+                all:
+                - key: hostPath
+                  operator: AnyIn
+                  value: "{{ element.keys(@) }}"
+              patchesJson6902: |-
+                - path: /spec/template/spec/volumes/{{elementIndex}}
+                  op: remove
+    policies.nirmata.io/autofix:
+      - "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-host-path/remediate-disallow-host-path.yaml"
 spec:
   validationFailureAction: audit
   background: true
