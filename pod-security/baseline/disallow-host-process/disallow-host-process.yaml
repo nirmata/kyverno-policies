@@ -15,7 +15,7 @@ metadata:
       access to the Windows node. Privileged access to the host is disallowed in the baseline
       policy. HostProcess pods are an alpha feature as of Kubernetes v1.22. This policy ensures
       fields spec.securityContext.windowsOptions.hostProcess, spec.containers[*].securityContext.windowsOptions.hostProcess, spec.initContainers[*].securityContext.windowsOptions.hostProcess, and spec.ephemeralContainers[*].securityContext.windowsOptions.hostProcess must either be undefined or set to `false`.
-    policies.nirmata.io/autofix:
+    policies.nirmata.io/autofix-inline:
       - preconditions:
           all:
           - key: request.object.spec.template.spec.containers[].securityContext.windowsOptions
@@ -55,6 +55,10 @@ metadata:
                 - path: /spec/template/spec/initContainers/{{elementIndex0}}/securityContext/windowsOptions/hostProcess
                   op: replace
                   value: false
+    policies.nirmata.io/autofix:
+      - "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-host-process/remediate-disallow-host-process-containers.yaml"
+      - "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-host-process/remediate-disallow-host-process-ephemeral-containers.yaml"
+      - "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-host-process/remediate-disallow-host-process-init-containers.yaml"
 spec:
   validationFailureAction: audit
   background: true

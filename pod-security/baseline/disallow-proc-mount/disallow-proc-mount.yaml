@@ -17,7 +17,7 @@ metadata:
       and spec.ephemeralContainers[*].securityContext.procMount. Note that in order for users
       to deviate from the `Default` procMount requires setting a feature gate at the API
       server.
-    policies.nirmata.io/autofix:
+    policies.nirmata.io/autofix-inline:
     - preconditions:
         all:
         - key: request.object.spec.template.spec.containers[].securityContext.procMount
@@ -57,6 +57,10 @@ metadata:
               - path: /spec/template/spec/initContainers/{{elementIndex0}}/securityContext/procMount
                 op: replace
                 value: Default
+    policies.nirmata.io/autofix:
+      - "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-proc-mount/remediate-disallow-proc-mount-containers.yaml"
+      - "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-proc-mount/remediate-disallow-proc-mount-ephemeral-containers.yaml"
+      - "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-proc-mount/remediate-disallow-proc-mount-init-containers.yaml"
 spec:
   validationFailureAction: audit
   background: true
