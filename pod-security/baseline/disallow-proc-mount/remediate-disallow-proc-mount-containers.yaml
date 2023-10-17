@@ -10,7 +10,7 @@ metadata:
 spec:
   background: false
   rules:
-    - name: remove-proc-mount
+    - name: remove-proc-mount-containers
       match:
         any:
           - resources:
@@ -18,16 +18,38 @@ spec:
                 - Deployment
                 - StatefulSet
                 - Job
-      preconditions:
-        all:
-        - key: request.object.spec.template.spec.containers[].securityContext.procMount
-          operator: NotEquals
-          value: "Default"
       mutate:
         foreach: 
-          - list: request.object.spec.template.spec.containers[].securityContext
+          - list: request.object.spec.template.spec.containers[]
             order: Descending
+            preconditions:
+              all:
+              - key: "{{ element.securityContext && element.securityContext.procMount }}"
+                operator: NotEquals
+                value: "Default"
             patchesJson6902: |-
-              - path: /spec/template/spec/containers/{{elementIndex0}}/securityContext/procMount
+              - path: /spec/template/spec/containers/{{elementIndex}}/securityContext/procMount
+                op: replace
+                value: Default
+          - list: request.object.spec.template.spec.initContainers[]
+            order: Descending
+            preconditions:
+              all:
+              - key: "{{ element.securityContext && element.securityContext.procMount }}"
+                operator: NotEquals
+                value: "Default"
+            patchesJson6902: |-
+              - path: /spec/template/spec/initContainers/{{elementIndex0}}/securityContext/procMount
+                op: replace
+                value: Default
+          - list: request.object.spec.template.spec.ephemeralContainers[]
+            order: Descending
+            preconditions:
+              all:
+              - key: "{{ element.securityContext && element.securityContext.procMount }}"
+                operator: NotEquals
+                value: "Default"
+            patchesJson6902: |-
+              - path: /spec/template/spec/ephemeralContainers/{{elementIndex0}}/securityContext/procMount
                 op: replace
                 value: Default
