@@ -16,6 +16,8 @@ spec:
           - resources:
               kinds:
                 - Deployment
+                - StatefulSet
+                - Job
       mutate:
         foreach:
           - list: request.object.spec.template.spec.volumes[]
