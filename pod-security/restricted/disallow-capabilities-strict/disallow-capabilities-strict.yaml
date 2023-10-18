@@ -11,6 +11,7 @@ metadata:
     kyverno.io/kubernetes-version: "1.22-1.23"
     policies.kyverno.io/subject: Pod
     policies.nirmata.io/remediation: "https://docs.nirmata.io/policysets/podsecurity/restricted/disallow-capabilities-strict/"
+    policies.nirmata.io/autofix: "https://github.com/nirmata/kyverno-policies/tree/autofix/pod-security/restricted/disallow-capabilities-strict/remediate-disallow-capabilities-strict.yaml"
     policies.kyverno.io/description: >-
       Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition,
       all containers must explicitly drop `ALL` capabilities.
