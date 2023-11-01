@@ -9,7 +9,7 @@ metadata:
     policies.kyverno.io/subject: Pod,Volume
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kubernetes-version: "1.22-1.23"
-    policies.nirmata.io/remediation: "https://docs.nirmata.io/policysets/podsecurity/restricted/restrict-volume-types/"
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/podsecurity/restricted/restrict-volume-types/"
     policies.kyverno.io/description: >-
       In addition to restricting HostPath volumes, the restricted pod security profile
       limits usage of non-core volume types to those defined through PersistentVolumes.
