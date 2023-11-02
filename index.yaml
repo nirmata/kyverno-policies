@@ -185,6 +185,24 @@ entries:
   pss-baseline-policies:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2023-11-02T04:34:05.69322461Z"
+    description: Pod Security Standards (baseline) policy set
+    digest: 2bac9e3b3ff7fd11f204a8753608fd38a08677682509820031b1e11c4eca83c3
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: pss-baseline-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/pss-baseline-policies-0.4.0-rc.1/pss-baseline-policies-0.4.0-rc.1.tgz
+    version: 0.4.0-rc.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2023-11-01T18:14:19.806868692Z"
     description: Pod Security Standards (baseline) policy set
     digest: 40d44fcd09ea23528532a6eba26aa7fc92031b7a2a7943ff6f060d7341ac2f77
@@ -346,6 +364,24 @@ entries:
     - https://github.com/nirmata/kyverno-policies/releases/download/pss-baseline-policies-0.1.0/pss-baseline-policies-0.1.0.tgz
     version: 0.1.0
   pss-restricted-policies:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2023-11-02T04:34:05.908607814Z"
+    description: Pod Security Standards (restricted) policy set
+    digest: cfb2c0e8b764ea664ea928cb1866d4502ada9c3b0f03fae1047e7325df79c45d
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: pss-restricted-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/pss-restricted-policies-0.4.0-rc.1/pss-restricted-policies-0.4.0-rc.1.tgz
+    version: 0.4.0-rc.1
   - apiVersion: v2
     appVersion: 0.1.0
     created: "2023-11-01T18:14:20.028702973Z"
@@ -672,4 +708,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2023-11-01T18:14:20.028834476Z"
+generated: "2023-11-02T04:34:05.908720222Z"
