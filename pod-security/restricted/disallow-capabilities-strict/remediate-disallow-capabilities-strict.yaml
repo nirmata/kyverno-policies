@@ -1,0 +1,45 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: remediate-capabilities-strict
+  annotations:
+    policies.kyverno.io/title: Remediate Capabilities Strict
+    policies.kyverno.io/category: Pod Security Standards (Restricted)
+    policies.kyverno.io/description: >-
+      This policy remediates the disallow-capabilities-strict
+spec:
+  background: false
+  rules:
+    - name: add-drop-all
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+                - StatefulSet
+                - Job
+      mutate:
+        foreach:
+        - list: "request.object.spec.template.spec.[containers, initContainers, ephemeralContainers][]"
+          patchStrategicMerge:
+            spec:
+              template:
+                spec:
+                  containers:
+                    - (name): "{{ element.name }}"
+                      securityContext:
+                        capabilities:
+                          +(drop):
+                            - ALL
+                  initContainers:
+                    - (name): "{{ element.name }}"
+                      securityContext:
+                        capabilities:
+                          +(drop):
+                            - ALL
+                  ephemeralContainers:
+                    - (name): "{{ element.name }}"
+                      securityContext:
+                        capabilities:
+                          +(drop):
+                            - ALL

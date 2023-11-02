@@ -8,7 +8,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     kyverno.io/kubernetes-version: "1.22-1.23"
-    policies.nirmata.io/remediation: "https://docs.nirmata.io/policysets/podsecurity/baseline/disallow-proc-mount/"
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/podsecurity/baseline/disallow-proc-mount/"
     policies.kyverno.io/description: >-
       The default /proc masks are set up to reduce attack surface and should be required. This policy
       ensures nothing but the default procMount can be specified for the fields fields
@@ -16,6 +16,7 @@ metadata:
       and spec.ephemeralContainers[*].securityContext.procMount. Note that in order for users
       to deviate from the `Default` procMount requires setting a feature gate at the API
       server.
+    policies.nirmata.io/remediation: "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-proc-mount/remediate-disallow-proc-mount-containers.yaml"
 spec:
   validationFailureAction: Audit
   background: true
