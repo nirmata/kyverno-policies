@@ -36,19 +36,19 @@ spec:
               template:
                 spec:
                   securityContext:
-                    runAsNonRoot: "true"
+                    runAsNonRoot: true
                   containers:
                     - (name): "{{ element.name }}"
                       securityContext:
                         (runAsNonRoot): "false"
-                        runAsNonRoot: "true"
+                        runAsNonRoot: true
                   initContainers:
                     - (name): "{{ element.name }}"
                       securityContext:
                         (runAsNonRoot): "false"
-                        runAsNonRoot: "true"
+                        runAsNonRoot: true
                   ephemeralContainers:
                     - (name): "{{ element.name }}"
                       securityContext:
                         (runAsNonRoot): "false"
-                        runAsNonRoot: "true"
+                        runAsNonRoot: true
