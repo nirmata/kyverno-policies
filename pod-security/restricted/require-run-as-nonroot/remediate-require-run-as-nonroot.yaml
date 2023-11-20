@@ -26,6 +26,7 @@ spec:
                 - Deployment
                 - StatefulSet
                 - Job
+                - DaemonSet
       mutate:
         foreach:
         - list: "request.object.spec.template.spec.[containers, initContainers, ephemeralContainers][]"
@@ -35,19 +36,19 @@ spec:
               template:
                 spec:
                   securityContext:
-                    runAsNonRoot: "true"
+                    runAsNonRoot: true
                   containers:
                     - (name): "{{ element.name }}"
                       securityContext:
                         (runAsNonRoot): "false"
-                        runAsNonRoot: "true"
+                        runAsNonRoot: true
                   initContainers:
                     - (name): "{{ element.name }}"
                       securityContext:
                         (runAsNonRoot): "false"
-                        runAsNonRoot: "true"
+                        runAsNonRoot: true
                   ephemeralContainers:
                     - (name): "{{ element.name }}"
                       securityContext:
                         (runAsNonRoot): "false"
-                        runAsNonRoot: "true"
+                        runAsNonRoot: true
