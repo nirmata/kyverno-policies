@@ -39,15 +39,12 @@ spec:
                   containers:
                     - (name): "{{ element.name }}"
                       securityContext:
-                        (allowPrivilegeEscalation): true
                         allowPrivilegeEscalation: false
                   initContainers:
                     - (name): "{{ element.name }}"
                       securityContext:
-                        (allowPrivilegeEscalation): true
                         allowPrivilegeEscalation: false
                   ephemeralContainers:
                     - (name): "{{ element.name }}"
                       securityContext:
-                        (allowPrivilegeEscalation): true
                         allowPrivilegeEscalation: false
