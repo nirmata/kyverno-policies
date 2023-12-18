@@ -1,0 +1,11 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: remediate-require-run-as-nonroot
+spec:
+  validationFailureAction: Audit
+status:
+  conditions:
+  - reason: Succeeded
+    status: "True"
+    type: Ready

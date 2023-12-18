@@ -1,5 +1,0 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestStep
-commands:
-- script: |
-    sed 's/validationFailureAction: audit/validationFailureAction: Enforce/' ../require_drop_all.yaml | kubectl apply -f - 
