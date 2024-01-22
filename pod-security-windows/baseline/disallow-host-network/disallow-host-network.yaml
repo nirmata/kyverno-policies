@@ -1,0 +1,33 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-host-network
+  annotations:
+    policies.kyverno.io/title: Disallow Host Network
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kubernetes-version: "1.22-1.23"
+    policies.kyverno.io/subject: Pod
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/podsecurity/baseline/disallow-host-namespaces/"
+    policies.kyverno.io/description: >-
+      Host namespaces (network namespace) allow access to shared information and can be used to elevate
+      privileges. Pods should not be allowed access to host namespaces. This policy ensures
+      fields which make use of these host namespaces are unset or set to `false`.
+    policies.nirmata.io/remediation: "NA"
+spec:
+  validationFailureAction: audit
+  background: true
+  rules:
+    - name: host-namespaces
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: >-
+          Sharing the host network namespaces is disallowed.
+        pattern:
+          spec:
+            =(hostNetwork): "false"
