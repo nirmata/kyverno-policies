@@ -1,0 +1,222 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.6.6",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_s3_bucket.example",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "example",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "bucket": "test-bucket-demo-18012003",
+            "force_destroy": false,
+            "tags": null,
+            "timeouts": null
+          },
+          "sensitive_values": {
+            "cors_rule": [],
+            "grant": [],
+            "lifecycle_rule": [],
+            "logging": [],
+            "object_lock_configuration": [],
+            "replication_configuration": [],
+            "server_side_encryption_configuration": [],
+            "tags_all": {},
+            "versioning": [],
+            "website": []
+          }
+        },
+        {
+          "address": "aws_s3_bucket_ownership_controls.example",
+          "mode": "managed",
+          "type": "aws_s3_bucket_ownership_controls",
+          "name": "example",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "rule": [
+              {
+                "object_ownership": "BucketOwnerEnforced"
+              }
+            ]
+          },
+          "sensitive_values": {
+            "rule": [
+              {}
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.example",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "example",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "test-bucket-demo-18012003",
+          "force_destroy": false,
+          "tags": null,
+          "timeouts": null
+        },
+        "after_unknown": {
+          "acceleration_status": true,
+          "acl": true,
+          "arn": true,
+          "bucket_domain_name": true,
+          "bucket_prefix": true,
+          "bucket_regional_domain_name": true,
+          "cors_rule": true,
+          "grant": true,
+          "hosted_zone_id": true,
+          "id": true,
+          "lifecycle_rule": true,
+          "logging": true,
+          "object_lock_configuration": true,
+          "object_lock_enabled": true,
+          "policy": true,
+          "region": true,
+          "replication_configuration": true,
+          "request_payer": true,
+          "server_side_encryption_configuration": true,
+          "tags_all": true,
+          "versioning": true,
+          "website": true,
+          "website_domain": true,
+          "website_endpoint": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "cors_rule": [],
+          "grant": [],
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "replication_configuration": [],
+          "server_side_encryption_configuration": [],
+          "tags_all": {},
+          "versioning": [],
+          "website": []
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_ownership_controls.example",
+      "mode": "managed",
+      "type": "aws_s3_bucket_ownership_controls",
+      "name": "example",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "rule": [
+            {
+              "object_ownership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "after_unknown": {
+          "bucket": true,
+          "id": true,
+          "rule": [
+            {}
+          ]
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "rule": [
+            {}
+          ]
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 4.16",
+        "expressions": {
+          "access_key": {
+            "constant_value": "ASIA4JFRUINQNABYZTNP"
+          },
+          "region": {
+            "constant_value": "us-west-2"
+          },
+          "secret_key": {
+            "constant_value": "HXiB5ijszDzqfHCNT4hzF6WsHjFtkvSSZylIFaSO"
+          },
+          "token": {
+            "constant_value": "IQoJb3JpZ2luX2VjEEQaCXVzLWVhc3QtMiJHMEUCIQDtBv00RXWgfzVtShLXu/ICvgI5I4+OWLgmsxRvN494dQIgavNEPFqrQmk5KAFOeWx8MrJ434tye9Wfss5CEPFvVV8qlwMI7f//////////ARADGgw4NDQzMzM1OTc1MzYiDKB0z2OJRMRQbRZDNirrArUdNiTk6i47T80oO4iBhprjoLvUGlMIPlnvT2c8PRIRsRjPKOVll4USqsyyY7S7n9QdFGjKGXpSFSdmO8O30hHy4PJdqgwrLyQyE6Gl1Fu0A/EAuQWVR8qzg0YcNyj4LVmrJJhKYc7t2kJN+5NuibSpTDuzTs9F+bqco9XntV394ltXEB4dqOzSAXFRVFr90fMhvdS8stNVEsJ3OnXXYbXIrn9N4VLeUlxKSwlji03h+TeqfLk40A+lp8RgIbNsP8qdQFkGi+Fk/i+kqba2K0qGHqo0SKcCNadqsnfmkIhQkq/UKFRGgQdMMQWEFK2IMfn+szsi+AHB6dJDrdvAy/yLDhqkjilA5AqBXm8e4IT0Y5cQwodMU8NCzvTqdeI9ruK1mZfy0gxOpNpj0WBiidJCjMoufYO+iFcDfCaJh7dpQnFSipTdtWPgydk0DL8WXn5mKNFGMDlKaRWQdmVR2oNfLNDghL0JPSnj9TDIyamtBjqmAYa8arm0m3yJJcmR3jDqtEKybLnSGjXvV+B72Tl8i3Y4z5ZengwXNF5JKP/fHUYDfn6zZm/TnUTAaeL0oxAs7bJik/hwqtrde7Bv0gobL3fxqLPEbSxd1iIfO6uUnZDCvynbvD3oMiVwOCmX5tkWqRHEmpfme0irSDcqqem2bB4MOUCDpJQmXi6be+QR0MPC42UyW39ABeqa3K39tZVOLPYz+xLz5WU="
+          }
+        }
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_s3_bucket.example",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "example",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "constant_value": "test-bucket-demo-18012003"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket_ownership_controls.example",
+          "mode": "managed",
+          "type": "aws_s3_bucket_ownership_controls",
+          "name": "example",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "references": [
+                "aws_s3_bucket.example.id",
+                "aws_s3_bucket.example"
+              ]
+            },
+            "rule": [
+              {
+                "object_ownership": {
+                  "constant_value": "BucketOwnerEnforced"
+                }
+              }
+            ]
+          },
+          "schema_version": 0
+        }
+      ]
+    }
+  },
+  "relevant_attributes": [
+    {
+      "resource": "aws_s3_bucket.example",
+      "attribute": [
+        "id"
+      ]
+    }
+  ],
+  "timestamp": "2024-01-19T12:05:57Z",
+  "errored": false
+}
