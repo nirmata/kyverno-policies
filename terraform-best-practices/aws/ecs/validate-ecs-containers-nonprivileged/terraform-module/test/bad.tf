@@ -1,7 +1,7 @@
 module "ecs_container_definition" {
   source = "terraform-aws-modules/ecs/aws//modules/container-definition"
   name      = "example"
-  privileged = false
+  privileged = true
   image     = "public.ecr.aws/aws-containers/ecsdemo-frontend:776fd50"
   port_mappings = [
     {

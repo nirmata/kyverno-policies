@@ -1,0 +1,208 @@
+{
+    "format_version": "1.2",
+    "terraform_version": "1.7.1-dev",
+    "planned_values": {
+      "root_module": {
+        "resources": [
+          {
+            "address": "aws_ecs_service.service",
+            "mode": "managed",
+            "type": "aws_ecs_service",
+            "name": "service",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "values": {
+              "alarms": [],
+              "capacity_provider_strategy": [],
+              "deployment_circuit_breaker": [],
+              "deployment_controller": [],
+              "deployment_maximum_percent": 200,
+              "deployment_minimum_healthy_percent": 100,
+              "desired_count": null,
+              "enable_ecs_managed_tags": false,
+              "enable_execute_command": false,
+              "force_new_deployment": null,
+              "health_check_grace_period_seconds": null,
+              "load_balancer": [],
+              "name": "foo-service",
+              "network_configuration": [],
+              "ordered_placement_strategy": [],
+              "placement_constraints": [],
+              "propagate_tags": null,
+              "scheduling_strategy": "REPLICA",
+              "service_connect_configuration": [
+                {
+                  "enabled": true,
+                  "log_configuration": [],
+                  "namespace": null,
+                  "service": []
+                }
+              ],
+              "service_registries": [],
+              "tags": null,
+              "task_definition": null,
+              "timeouts": null,
+              "wait_for_steady_state": false
+            },
+            "sensitive_values": {
+              "alarms": [],
+              "capacity_provider_strategy": [],
+              "deployment_circuit_breaker": [],
+              "deployment_controller": [],
+              "load_balancer": [],
+              "network_configuration": [],
+              "ordered_placement_strategy": [],
+              "placement_constraints": [],
+              "service_connect_configuration": [
+                {
+                  "log_configuration": [],
+                  "service": []
+                }
+              ],
+              "service_registries": [],
+              "tags_all": {},
+              "triggers": {}
+            }
+          }
+        ]
+      }
+    },
+    "resource_changes": [
+      {
+        "address": "aws_ecs_service.service",
+        "mode": "managed",
+        "type": "aws_ecs_service",
+        "name": "service",
+        "provider_name": "registry.terraform.io/hashicorp/aws",
+        "change": {
+          "actions": [
+            "create"
+          ],
+          "before": null,
+          "after": {
+            "alarms": [],
+            "capacity_provider_strategy": [],
+            "deployment_circuit_breaker": [],
+            "deployment_controller": [],
+            "deployment_maximum_percent": 200,
+            "deployment_minimum_healthy_percent": 100,
+            "desired_count": null,
+            "enable_ecs_managed_tags": false,
+            "enable_execute_command": false,
+            "force_new_deployment": null,
+            "health_check_grace_period_seconds": null,
+            "load_balancer": [],
+            "name": "foo-service",
+            "network_configuration": [],
+            "ordered_placement_strategy": [],
+            "placement_constraints": [],
+            "propagate_tags": null,
+            "scheduling_strategy": "REPLICA",
+            "service_connect_configuration": [
+              {
+                "enabled": true,
+                "log_configuration": [],
+                "namespace": null,
+                "service": []
+              }
+            ],
+            "service_registries": [],
+            "tags": null,
+            "task_definition": null,
+            "timeouts": null,
+            "wait_for_steady_state": false
+          },
+          "after_unknown": {
+            "alarms": [],
+            "capacity_provider_strategy": [],
+            "cluster": true,
+            "deployment_circuit_breaker": [],
+            "deployment_controller": [],
+            "iam_role": true,
+            "id": true,
+            "launch_type": true,
+            "load_balancer": [],
+            "network_configuration": [],
+            "ordered_placement_strategy": [],
+            "placement_constraints": [],
+            "platform_version": true,
+            "service_connect_configuration": [
+              {
+                "log_configuration": [],
+                "service": []
+              }
+            ],
+            "service_registries": [],
+            "tags_all": true,
+            "triggers": true
+          },
+          "before_sensitive": false,
+          "after_sensitive": {
+            "alarms": [],
+            "capacity_provider_strategy": [],
+            "deployment_circuit_breaker": [],
+            "deployment_controller": [],
+            "load_balancer": [],
+            "network_configuration": [],
+            "ordered_placement_strategy": [],
+            "placement_constraints": [],
+            "service_connect_configuration": [
+              {
+                "log_configuration": [],
+                "service": []
+              }
+            ],
+            "service_registries": [],
+            "tags_all": {},
+            "triggers": {}
+          }
+        }
+      }
+    ],
+    "configuration": {
+      "provider_config": {
+        "aws": {
+          "name": "aws",
+          "full_name": "registry.terraform.io/hashicorp/aws",
+          "version_constraint": "~> 4.0",
+          "expressions": {
+            "region": {
+              "constant_value": "us-west-1"
+            }
+          }
+        },
+        "docker": {
+          "name": "docker",
+          "full_name": "registry.terraform.io/kreuzwerker/docker",
+          "version_constraint": "~> 2.20.0"
+        }
+      },
+      "root_module": {
+        "resources": [
+          {
+            "address": "aws_ecs_service.service",
+            "mode": "managed",
+            "type": "aws_ecs_service",
+            "name": "service",
+            "provider_config_key": "aws",
+            "expressions": {
+              "name": {
+                "constant_value": "foo-service"
+              },
+              "service_connect_configuration": [
+                {
+                  "enabled": {
+                    "constant_value": true
+                  }
+                }
+              ]
+            },
+            "schema_version": 0
+          }
+        ]
+      }
+    },
+    "timestamp": "2024-01-30T15:32:28Z",
+    "errored": false
+  }
+  
