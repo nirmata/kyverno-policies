@@ -1,0 +1,555 @@
+{
+    "format_version": "1.2",
+    "terraform_version": "1.7.1-dev",
+    "variables": {
+      "vpc_cidr": {
+        "value": "10.0.0.0/16"
+      }
+    },
+    "planned_values": {
+      "root_module": {
+        "resources": [
+          {
+            "address": "aws_ecs_cluster.cluster",
+            "mode": "managed",
+            "type": "aws_ecs_cluster",
+            "name": "cluster",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "values": {
+              "configuration": [],
+              "name": "cluster",
+              "service_connect_defaults": [],
+              "setting": [
+                {
+                  "name": "containerInsights",
+                  "value": "enabled"
+                }
+              ],
+              "tags": null
+            },
+            "sensitive_values": {
+              "capacity_providers": [],
+              "configuration": [],
+              "default_capacity_provider_strategy": [],
+              "service_connect_defaults": [],
+              "setting": [
+                {}
+              ],
+              "tags_all": {}
+            }
+          },
+          {
+            "address": "aws_ecs_service.service",
+            "mode": "managed",
+            "type": "aws_ecs_service",
+            "name": "service",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "values": {
+              "alarms": [],
+              "capacity_provider_strategy": [],
+              "deployment_circuit_breaker": [],
+              "deployment_controller": [],
+              "deployment_maximum_percent": 200,
+              "deployment_minimum_healthy_percent": 100,
+              "desired_count": 1,
+              "enable_ecs_managed_tags": false,
+              "enable_execute_command": false,
+              "force_new_deployment": null,
+              "health_check_grace_period_seconds": null,
+              "launch_type": "EC2",
+              "load_balancer": [],
+              "name": "foo-service",
+              "network_configuration": [
+                {
+                  "assign_public_ip": true,
+                  "security_groups": null
+                }
+              ],
+              "ordered_placement_strategy": [],
+              "placement_constraints": [],
+              "propagate_tags": null,
+              "scheduling_strategy": "REPLICA",
+              "service_connect_configuration": [],
+              "service_registries": [],
+              "tags": null,
+              "task_definition": null,
+              "timeouts": null,
+              "wait_for_steady_state": false
+            },
+            "sensitive_values": {
+              "alarms": [],
+              "capacity_provider_strategy": [],
+              "deployment_circuit_breaker": [],
+              "deployment_controller": [],
+              "load_balancer": [],
+              "network_configuration": [
+                {
+                  "subnets": []
+                }
+              ],
+              "ordered_placement_strategy": [],
+              "placement_constraints": [],
+              "service_connect_configuration": [],
+              "service_registries": [],
+              "tags_all": {},
+              "triggers": {}
+            }
+          },
+          {
+            "address": "aws_subnet.subnet",
+            "mode": "managed",
+            "type": "aws_subnet",
+            "name": "subnet",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 1,
+            "values": {
+              "assign_ipv6_address_on_creation": false,
+              "cidr_block": "10.0.1.0/24",
+              "customer_owned_ipv4_pool": null,
+              "enable_dns64": false,
+              "enable_lni_at_device_index": null,
+              "enable_resource_name_dns_a_record_on_launch": false,
+              "enable_resource_name_dns_aaaa_record_on_launch": false,
+              "ipv6_cidr_block": null,
+              "ipv6_native": false,
+              "map_customer_owned_ip_on_launch": null,
+              "map_public_ip_on_launch": true,
+              "outpost_arn": null,
+              "tags": null,
+              "timeouts": null
+            },
+            "sensitive_values": {
+              "tags_all": {}
+            }
+          },
+          {
+            "address": "aws_vpc.main",
+            "mode": "managed",
+            "type": "aws_vpc",
+            "name": "main",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 1,
+            "values": {
+              "assign_generated_ipv6_cidr_block": null,
+              "cidr_block": "10.0.0.0/16",
+              "enable_dns_support": true,
+              "instance_tenancy": "default",
+              "ipv4_ipam_pool_id": null,
+              "ipv4_netmask_length": null,
+              "ipv6_ipam_pool_id": null,
+              "ipv6_netmask_length": null,
+              "tags": {
+                "name": "main"
+              },
+              "tags_all": {
+                "name": "main"
+              }
+            },
+            "sensitive_values": {
+              "tags": {},
+              "tags_all": {}
+            }
+          }
+        ]
+      }
+    },
+    "resource_changes": [
+      {
+        "address": "aws_ecs_cluster.cluster",
+        "mode": "managed",
+        "type": "aws_ecs_cluster",
+        "name": "cluster",
+        "provider_name": "registry.terraform.io/hashicorp/aws",
+        "change": {
+          "actions": [
+            "create"
+          ],
+          "before": null,
+          "after": {
+            "configuration": [],
+            "name": "cluster",
+            "service_connect_defaults": [],
+            "setting": [
+              {
+                "name": "containerInsights",
+                "value": "enabled"
+              }
+            ],
+            "tags": null
+          },
+          "after_unknown": {
+            "arn": true,
+            "capacity_providers": true,
+            "configuration": [],
+            "default_capacity_provider_strategy": true,
+            "id": true,
+            "service_connect_defaults": [],
+            "setting": [
+              {}
+            ],
+            "tags_all": true
+          },
+          "before_sensitive": false,
+          "after_sensitive": {
+            "capacity_providers": [],
+            "configuration": [],
+            "default_capacity_provider_strategy": [],
+            "service_connect_defaults": [],
+            "setting": [
+              {}
+            ],
+            "tags_all": {}
+          }
+        }
+      },
+      {
+        "address": "aws_ecs_service.service",
+        "mode": "managed",
+        "type": "aws_ecs_service",
+        "name": "service",
+        "provider_name": "registry.terraform.io/hashicorp/aws",
+        "change": {
+          "actions": [
+            "create"
+          ],
+          "before": null,
+          "after": {
+            "alarms": [],
+            "capacity_provider_strategy": [],
+            "deployment_circuit_breaker": [],
+            "deployment_controller": [],
+            "deployment_maximum_percent": 200,
+            "deployment_minimum_healthy_percent": 100,
+            "desired_count": 1,
+            "enable_ecs_managed_tags": false,
+            "enable_execute_command": false,
+            "force_new_deployment": null,
+            "health_check_grace_period_seconds": null,
+            "launch_type": "EC2",
+            "load_balancer": [],
+            "name": "foo-service",
+            "network_configuration": [
+              {
+                "assign_public_ip": true,
+                "security_groups": null
+              }
+            ],
+            "ordered_placement_strategy": [],
+            "placement_constraints": [],
+            "propagate_tags": null,
+            "scheduling_strategy": "REPLICA",
+            "service_connect_configuration": [],
+            "service_registries": [],
+            "tags": null,
+            "task_definition": null,
+            "timeouts": null,
+            "wait_for_steady_state": false
+          },
+          "after_unknown": {
+            "alarms": [],
+            "capacity_provider_strategy": [],
+            "cluster": true,
+            "deployment_circuit_breaker": [],
+            "deployment_controller": [],
+            "iam_role": true,
+            "id": true,
+            "load_balancer": [],
+            "network_configuration": [
+              {
+                "subnets": true
+              }
+            ],
+            "ordered_placement_strategy": [],
+            "placement_constraints": [],
+            "platform_version": true,
+            "service_connect_configuration": [],
+            "service_registries": [],
+            "tags_all": true,
+            "triggers": true
+          },
+          "before_sensitive": false,
+          "after_sensitive": {
+            "alarms": [],
+            "capacity_provider_strategy": [],
+            "deployment_circuit_breaker": [],
+            "deployment_controller": [],
+            "load_balancer": [],
+            "network_configuration": [
+              {
+                "subnets": []
+              }
+            ],
+            "ordered_placement_strategy": [],
+            "placement_constraints": [],
+            "service_connect_configuration": [],
+            "service_registries": [],
+            "tags_all": {},
+            "triggers": {}
+          }
+        }
+      },
+      {
+        "address": "aws_subnet.subnet",
+        "mode": "managed",
+        "type": "aws_subnet",
+        "name": "subnet",
+        "provider_name": "registry.terraform.io/hashicorp/aws",
+        "change": {
+          "actions": [
+            "create"
+          ],
+          "before": null,
+          "after": {
+            "assign_ipv6_address_on_creation": false,
+            "cidr_block": "10.0.1.0/24",
+            "customer_owned_ipv4_pool": null,
+            "enable_dns64": false,
+            "enable_lni_at_device_index": null,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "ipv6_cidr_block": null,
+            "ipv6_native": false,
+            "map_customer_owned_ip_on_launch": null,
+            "map_public_ip_on_launch": true,
+            "outpost_arn": null,
+            "tags": null,
+            "timeouts": null
+          },
+          "after_unknown": {
+            "arn": true,
+            "availability_zone": true,
+            "availability_zone_id": true,
+            "id": true,
+            "ipv6_cidr_block_association_id": true,
+            "owner_id": true,
+            "private_dns_hostname_type_on_launch": true,
+            "tags_all": true,
+            "vpc_id": true
+          },
+          "before_sensitive": false,
+          "after_sensitive": {
+            "tags_all": {}
+          }
+        }
+      },
+      {
+        "address": "aws_vpc.main",
+        "mode": "managed",
+        "type": "aws_vpc",
+        "name": "main",
+        "provider_name": "registry.terraform.io/hashicorp/aws",
+        "change": {
+          "actions": [
+            "create"
+          ],
+          "before": null,
+          "after": {
+            "assign_generated_ipv6_cidr_block": null,
+            "cidr_block": "10.0.0.0/16",
+            "enable_dns_support": true,
+            "instance_tenancy": "default",
+            "ipv4_ipam_pool_id": null,
+            "ipv4_netmask_length": null,
+            "ipv6_ipam_pool_id": null,
+            "ipv6_netmask_length": null,
+            "tags": {
+              "name": "main"
+            },
+            "tags_all": {
+              "name": "main"
+            }
+          },
+          "after_unknown": {
+            "arn": true,
+            "default_network_acl_id": true,
+            "default_route_table_id": true,
+            "default_security_group_id": true,
+            "dhcp_options_id": true,
+            "enable_classiclink": true,
+            "enable_classiclink_dns_support": true,
+            "enable_dns_hostnames": true,
+            "enable_network_address_usage_metrics": true,
+            "id": true,
+            "ipv6_association_id": true,
+            "ipv6_cidr_block": true,
+            "ipv6_cidr_block_network_border_group": true,
+            "main_route_table_id": true,
+            "owner_id": true,
+            "tags": {},
+            "tags_all": {}
+          },
+          "before_sensitive": false,
+          "after_sensitive": {
+            "tags": {},
+            "tags_all": {}
+          }
+        }
+      }
+    ],
+    "configuration": {
+      "provider_config": {
+        "aws": {
+          "name": "aws",
+          "full_name": "registry.terraform.io/hashicorp/aws",
+          "version_constraint": "~> 4.0",
+          "expressions": {
+            "region": {
+              "constant_value": "us-west-1"
+            }
+          }
+        },
+        "docker": {
+          "name": "docker",
+          "full_name": "registry.terraform.io/kreuzwerker/docker",
+          "version_constraint": "~> 2.20.0"
+        }
+      },
+      "root_module": {
+        "resources": [
+          {
+            "address": "aws_ecs_cluster.cluster",
+            "mode": "managed",
+            "type": "aws_ecs_cluster",
+            "name": "cluster",
+            "provider_config_key": "aws",
+            "expressions": {
+              "name": {
+                "constant_value": "cluster"
+              },
+              "setting": [
+                {
+                  "name": {
+                    "constant_value": "containerInsights"
+                  },
+                  "value": {
+                    "constant_value": "enabled"
+                  }
+                }
+              ]
+            },
+            "schema_version": 0
+          },
+          {
+            "address": "aws_ecs_service.service",
+            "mode": "managed",
+            "type": "aws_ecs_service",
+            "name": "service",
+            "provider_config_key": "aws",
+            "expressions": {
+              "cluster": {
+                "references": [
+                  "aws_ecs_cluster.cluster.id",
+                  "aws_ecs_cluster.cluster"
+                ]
+              },
+              "desired_count": {
+                "constant_value": 1
+              },
+              "launch_type": {
+                "constant_value": "EC2"
+              },
+              "name": {
+                "constant_value": "foo-service"
+              },
+              "network_configuration": [
+                {
+                  "assign_public_ip": {
+                    "constant_value": true
+                  },
+                  "subnets": {
+                    "references": [
+                      "aws_subnet.subnet.id",
+                      "aws_subnet.subnet"
+                    ]
+                  }
+                }
+              ]
+            },
+            "schema_version": 0
+          },
+          {
+            "address": "aws_subnet.subnet",
+            "mode": "managed",
+            "type": "aws_subnet",
+            "name": "subnet",
+            "provider_config_key": "aws",
+            "expressions": {
+              "cidr_block": {
+                "references": [
+                  "aws_vpc.main.cidr_block",
+                  "aws_vpc.main"
+                ]
+              },
+              "map_public_ip_on_launch": {
+                "constant_value": true
+              },
+              "vpc_id": {
+                "references": [
+                  "aws_vpc.main.id",
+                  "aws_vpc.main"
+                ]
+              }
+            },
+            "schema_version": 1
+          },
+          {
+            "address": "aws_vpc.main",
+            "mode": "managed",
+            "type": "aws_vpc",
+            "name": "main",
+            "provider_config_key": "aws",
+            "expressions": {
+              "cidr_block": {
+                "references": [
+                  "var.vpc_cidr"
+                ]
+              },
+              "tags": {
+                "constant_value": {
+                  "name": "main"
+                }
+              }
+            },
+            "schema_version": 1
+          }
+        ],
+        "variables": {
+          "vpc_cidr": {
+            "default": "10.0.0.0/16",
+            "description": "CIDR block for main"
+          }
+        }
+      }
+    },
+    "relevant_attributes": [
+      {
+        "resource": "aws_vpc.main",
+        "attribute": [
+          "id"
+        ]
+      },
+      {
+        "resource": "aws_vpc.main",
+        "attribute": [
+          "cidr_block"
+        ]
+      },
+      {
+        "resource": "aws_ecs_cluster.cluster",
+        "attribute": [
+          "id"
+        ]
+      },
+      {
+        "resource": "aws_subnet.subnet",
+        "attribute": [
+          "id"
+        ]
+      }
+    ],
+    "timestamp": "2024-01-30T10:42:01Z",
+    "errored": false
+  }
+  
