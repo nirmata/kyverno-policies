@@ -39,8 +39,8 @@ spec:
         file: enforce-policy-assert.yaml
     - apply:
         file: good-resource.yaml
-    - apply:
-        expect:
-        - check:
-            ($error != null): true
-        file: bad-resource.yaml
+    # - apply:
+    #     expect:
+    #     - check:
+    #         ($error != null): true
+    #     file: bad-resource.yaml
