@@ -7,7 +7,7 @@ USE_CONFIG           ?= standard
 
 TOOLS_DIR                          := $(PWD)/.tools
 KIND                               := $(TOOLS_DIR)/kind
-KIND_VERSION                       := v0.20.0
+KIND_VERSION                       := v0.22.0
 HELM                               := $(TOOLS_DIR)/helm
 HELM_VERSION                       := v3.10.1
 TOOLS                              := $(KIND) $(HELM)
@@ -55,7 +55,11 @@ kind-deploy-kyverno: $(HELM)
 	@echo Install kyverno chart... >&2
 	@$(HELM) repo add nirmata https://nirmata.github.io/kyverno-charts
 	@$(HELM) repo update
-	@$(HELM) install kyverno nirmata/kyverno -n kyverno --create-namespace --version=$(N4K_VERSION)
+	@if [ "$(N4K_VERSION)" = "devel" ]; then \
+		$(HELM) install kyverno nirmata/kyverno -n kyverno --create-namespace --devel; \
+	else \
+		$(HELM) install kyverno nirmata/kyverno -n kyverno --create-namespace --version=$(N4K_VERSION); \
+	fi
 
 ## Check Kyverno status 
 .PHONY: wait-for-kyverno

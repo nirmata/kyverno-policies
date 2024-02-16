@@ -3,9 +3,7 @@ on:
   push:
     branches:
       - 'main'
-  # this action needs to read GH secret
-  # hence prevents executing on PRs from forks
-  # disabling running on PRs until we find a workaround for this
+
   pull_request:
     branches:
       - 'main'
@@ -13,18 +11,20 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-  
+
 jobs:
   run-e2etest:
     runs-on: ubuntu-latest
-    permissions:
-      packages: read
+    
     strategy:
-      fail-fast: false
+      fail-fast: false    
       matrix:
-        k8s-version: [v1.28.0, v1.27.3, v1.26.3, v1.25.8, v1.24.12, v1.23.17]
-        n4k-chart-version: [1.6.11, 3.0.9]
-
+        k8s-version: [v1.29.2, v1.28.7, v1.27.11, v1.26.14, v1.25.16]
+        # For n4k-versions 1.10, and 1.11     
+        # "devel" refers to the RC version. 
+        # If there are no new RC versions available, it installs the latest n4k version.
+        n4k-chart-version: [3.0.18, 3.1.1, devel]
+        
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -33,14 +33,16 @@ jobs:
         run: K8S_VERSION=${{ matrix.k8s-version }} make kind-create-cluster
 
       - name: Install kyverno
-        run: |
-          N4K_VERSION=${{ matrix.n4k-chart-version }} make kind-deploy-kyverno
+        run: N4K_VERSION=${{ matrix.n4k-chart-version }} make kind-deploy-kyverno
 
       - name: Check Kyverno status
         run: make wait-for-kyverno
 
-      - name: Install chainsaw
-        uses: kyverno/action-install-chainsaw@6ab03ccb2c8309b5f494fcbc78ec3a2d80cfabee # v0.1.0
+      - name: Install Chainsaw
+        uses: kyverno/action-install-chainsaw@v0.1.4 
+
+      - name: Verify Chainsaw Installation
+        run: chainsaw version
 
       - name: Test with Chainsaw
         run: make test-chainsaw
