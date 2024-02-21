@@ -11,7 +11,7 @@ spec:
     - assert:
         file: policy-assert.yaml
     - apply:
-        file: ../remediate-disallow-proc-mount-containers.yaml
+        file: ../remediate-disallow-proc-mount.yaml
     - assert:
         file: remediation-policy-assert.yaml
     - apply:
