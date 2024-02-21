@@ -1,0 +1,16 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: require-resource-quota
+policies:
+- ../require-resource-quota.yaml
+resources:
+- resource.yaml
+results:
+- kind: Namespace
+  policy: require-resource-quota
+  resources:
+  - ns-resource-quota
+  result: fail
+  rule: require-resource-quota
+variables: values.yaml
