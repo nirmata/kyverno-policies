@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false    
       matrix:
-        k8s-version: [v1.29.2, v1.28.7, v1.27.11, v1.26.14, v1.25.16, v1.24.12, v1.23.1]
+        k8s-version: [v1.29.2, v1.28.7, v1.27.11, v1.26.14, v1.25.16, v1.24.12, v1.23.17]
         # For n4k-versions 1.9
         n4k-chart-version: [1.6.11]
         
