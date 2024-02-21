@@ -55,11 +55,7 @@ kind-deploy-kyverno: $(HELM)
 	@echo Install kyverno chart... >&2
 	@$(HELM) repo add nirmata https://nirmata.github.io/kyverno-charts
 	@$(HELM) repo update
-	@if [ "$(N4K_VERSION)" = "devel" ]; then \
-		$(HELM) install kyverno nirmata/kyverno -n kyverno --create-namespace --devel; \
-	else \
-		$(HELM) install kyverno nirmata/kyverno -n kyverno --create-namespace --version=$(N4K_VERSION); \
-	fi
+	@$(HELM) install kyverno nirmata/kyverno -n kyverno --create-namespace --version=$(N4K_VERSION)
 
 ## Check Kyverno status 
 .PHONY: wait-for-kyverno
