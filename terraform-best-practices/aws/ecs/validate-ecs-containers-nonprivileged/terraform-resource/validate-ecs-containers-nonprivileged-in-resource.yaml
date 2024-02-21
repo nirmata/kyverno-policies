@@ -1,0 +1,25 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-ecs-containers-nonprivileged-in-resource
+  annotations:
+    policies.kyverno.io/title: Validate ECS containers are set to non privileged.
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      When privileged is set to true, the container is given elevated permissions on the host container instance (similar to the root user). 
+      This policy checks if the privileged parameter in the container definition is set to false.
+spec:
+  rules:
+    - name: validate-ecs-containers-nonprivileged-in-resource
+      match:
+        any:
+        - (planned_values.root_module.resources[?type=='aws_ecs_task_definition'] | length(@) > `0` ): true
+      assert:
+        any:
+        - check:
+            ~.(planned_values.root_module.resources[?type=='aws_ecs_task_definition']):
+                values:
+                    ~.(json_parse(container_definitions)):
+                        (!!privileged): false
+          message: The `privileged` field, if present, should be set to `false`

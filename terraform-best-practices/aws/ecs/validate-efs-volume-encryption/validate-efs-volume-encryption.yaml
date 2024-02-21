@@ -1,0 +1,24 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-efs-volume-encryption
+  labels:
+    ecs.aws.tags.kyverno.io: ecs-service
+  annotations:
+    policies.kyverno.io/title: Validate EFS Volume Encryption
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy validates whether transit_encryption is set to ENABLED in the task definition.
+spec:
+  rules:
+    - name: validate-efs-volume-encryption
+      match:
+        any:
+        - (planned_values.root_module.resources[?type=='aws_ecs_task_definition'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Transit Encryption is not `ENABLED` for EFS volumes in ECS Task definitions
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_ecs_task_definition']):
+                (values.volume[].efs_volume_configuration[?transit_encryption=='ENABLED'][] | length(@) > `0`): true
