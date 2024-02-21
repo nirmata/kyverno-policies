@@ -22,7 +22,7 @@ spec:
         file: enforce-policy-assert.yaml
     - script:
         content: |
-        if kubectl debug -it goodpod02-registry --image=busybox:1.35 --target=k8s-nginx -n ir-pods-namespace; then exit 1; else exit 0; fi;
+          if kubectl debug -it goodpod02-registry --image=busybox:1.35 --target=k8s-nginx -n ir-pods-namespace; then exit 1; else exit 0; fi;
     - apply:
         expect:
         - check:
