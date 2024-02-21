@@ -32,7 +32,7 @@ spec:
           name: remediate-disallow-privilege-escalation
     - script:
         content: |
-          sed 's/validationFailureAction: audit/validationFailureAction: Enforce/' ../disallow-privilege-escalation.yaml | kubectl apply -f - 
+          sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../disallow-privilege-escalation.yaml | kubectl apply -f - 
     - assert:
         file: enforce-policy-assert.yaml
     - apply:
