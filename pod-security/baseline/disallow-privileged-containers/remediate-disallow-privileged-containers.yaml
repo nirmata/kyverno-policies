@@ -20,12 +20,12 @@ spec:
                 - Job
                 - DaemonSet
       mutate:
-        foreach: 
+        foreach:
           - list: request.object.spec.template.spec.containers[]
             order: Descending
             preconditions:
               all:
-              - key: "{{ element.securityContext && element.securityContext.privileged }}"
+              - key: "{{ element.securityContext && element.securityContext.privileged || 'false' }}"
                 operator: Equals
                 value: true
             patchesJson6902: |-
@@ -36,7 +36,7 @@ spec:
             order: Descending
             preconditions:
               all:
-              - key: "{{ element.securityContext && element.securityContext.privileged }}"
+              - key: "{{ element.securityContext && element.securityContext.privileged || 'false'  }}"
                 operator: Equals
                 value: true
             patchesJson6902: |-
@@ -47,7 +47,7 @@ spec:
             order: Descending
             preconditions:
               all:
-              - key: "{{ element.securityContext && element.securityContext.privileged }}"
+              - key: "{{ element.securityContext && element.securityContext.privileged || 'false'  }}"
                 operator: Equals
                 value: true
             patchesJson6902: |-
