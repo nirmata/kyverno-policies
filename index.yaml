@@ -620,6 +620,24 @@ entries:
   workload-security-best-practice-policies:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2024-02-22T05:27:08.474060161Z"
+    description: Workload Security Best Practice policy set
+    digest: 177066c560dea214f4664d9a03d6524c4cf93bbe0b22b2bc3681aea18d9db401
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: workload-security-best-practice-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.2.1/workload-security-best-practice-policies-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2023-07-20T13:53:44.023440356Z"
     description: Workload Security Best Practice policy set
     digest: d8d6e251be0d54dfe0bb68a0550fff4a4808a0c268869fcf57631a9597605a9a
@@ -708,4 +726,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2023-11-02T04:34:05.908720222Z"
+generated: "2024-02-22T05:27:08.474125063Z"
