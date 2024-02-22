@@ -3,7 +3,7 @@ kind: ClusterPolicy
 metadata:
   name: restrict-image-registries
 spec:
-  validationFailureAction: Audit
+  validationFailureAction: Enforce
 status:
   conditions:
   - reason: Succeeded

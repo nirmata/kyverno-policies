@@ -1,9 +1,9 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: restrict-image-registries
+  name: restrict-binding-system-groups
 spec:
-  validationFailureAction: Audit
+  validationFailureAction: Enforce
 status:
   conditions:
   - reason: Succeeded

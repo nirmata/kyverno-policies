@@ -1,0 +1,46 @@
+name: ChainSaw Test
+on:
+  push:
+    branches:
+      - 'release-chart-1.10'
+
+  pull_request:
+    branches:
+      - 'release-chart-1.10'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-e2etest:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false    
+      matrix:
+        k8s-version: [v1.29.2, v1.28.7, v1.27.11, v1.26.14, v1.25.16, v1.24.12, v1.23.17]
+        # For n4k-versions 1.10
+        n4k-chart-version: [3.0.18]
+        
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Prepare environment
+        run: K8S_VERSION=${{ matrix.k8s-version }} make kind-create-cluster
+
+      - name: Install kyverno
+        run: N4K_VERSION=${{ matrix.n4k-chart-version }} make kind-deploy-kyverno
+
+      - name: Check Kyverno status
+        run: make wait-for-kyverno
+
+      - name: Install Chainsaw
+        uses: kyverno/action-install-chainsaw@v0.1.4 
+
+      - name: Verify Chainsaw Installation
+        run: chainsaw version
+
+      - name: Test with Chainsaw
+        run: make test-chainsaw

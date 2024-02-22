@@ -1,0 +1,434 @@
+############################
+## Rule: require-drop-all ##
+############################
+###### Pods - Good
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod01
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      capabilities:
+        drop:
+        - ALL
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod02
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      capabilities:
+        drop:
+        - NET_RAW
+        - ALL
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod03
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      capabilities:
+        drop:
+        - ALL
+  - name: container02
+    image: nginx
+    securityContext:
+      capabilities:
+        drop:
+        - ALL
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod04
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+    securityContext:
+      capabilities:
+        drop:
+        - ALL
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      capabilities:
+        drop:
+        - ALL
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod05
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+    securityContext:
+      capabilities:
+        drop:
+        - NET_RAW
+        - ALL
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      capabilities:
+        drop:
+        - ALL
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod06
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+    securityContext:
+      capabilities:
+        drop:
+        - ALL
+  - name: initcontainer02
+    image: nginx
+    securityContext:
+      capabilities:
+        drop:
+        - ALL
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      capabilities:
+        drop:
+        - ALL
+---
+###### Deployments - Good
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment01
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment02
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          capabilities:
+            drop:
+            - NET_RAW
+            - ALL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment03
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+      - name: container02
+        image: nginx
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment04
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment05
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+        securityContext:
+          capabilities:
+            drop:
+            - NET_RAW
+            - ALL
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment06
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+      - name: initcontainer02
+        image: nginx
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+---
+###### CronJobs - Good
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob01
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              capabilities:
+                drop:
+                - ALL
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob02
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              capabilities:
+                drop:
+                - NET_RAW
+                - ALL
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob03
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              capabilities:
+                drop:
+                - ALL
+          - name: container02
+            image: nginx
+            securityContext:
+              capabilities:
+                drop:
+                - ALL
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob04
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+            securityContext:
+              capabilities:
+                drop:
+                - ALL
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              capabilities:
+                drop:
+                - ALL
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob05
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+            securityContext:
+              capabilities:
+                drop:
+                - NET_RAW
+                - ALL
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              capabilities:
+                drop:
+                - ALL
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob06
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+            securityContext:
+              capabilities:
+                drop:
+                - ALL
+          - name: initcontainer02
+            image: nginx
+            securityContext:
+              capabilities:
+                drop:
+                - ALL
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              capabilities:
+                drop:
+                - ALL

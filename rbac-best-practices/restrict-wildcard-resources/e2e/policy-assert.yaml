@@ -1,7 +1,7 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: restrict-image-registries
+  name: restrict-wildcard-resources
 spec:
   validationFailureAction: Audit
 status:

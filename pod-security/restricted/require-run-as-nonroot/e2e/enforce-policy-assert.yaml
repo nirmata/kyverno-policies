@@ -1,9 +1,9 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: restrict-image-registries
+  name: require-run-as-nonroot
 spec:
-  validationFailureAction: Audit
+  validationFailureAction: Enforce
 status:
   conditions:
   - reason: Succeeded

@@ -1,6 +1,0 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestStep
-apply:
-- ../disallow_cri_sock_mount.yaml
-assert:
-- policy-assert.yaml

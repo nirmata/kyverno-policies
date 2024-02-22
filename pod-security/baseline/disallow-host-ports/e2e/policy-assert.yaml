@@ -1,7 +1,7 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: restrict-image-registries
+  name: disallow-host-ports
 spec:
   validationFailureAction: Audit
 status:
