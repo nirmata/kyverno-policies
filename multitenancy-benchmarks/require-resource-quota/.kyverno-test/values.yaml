@@ -3,6 +3,6 @@ kind: Values
 policies:
 - name: require-resource-quota
   rules:
-  - name: require-resource-quota
+  - name: resourcequotas
     values:
-      policies_count: "0"
+      resourcequotas: "1"

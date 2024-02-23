@@ -1,4 +1,4 @@
-apiVersion: kyverno.io/v2beta1
+apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: require-resource-quota
@@ -48,4 +48,3 @@ spec:
           - key: "{{ resourcequotas }}"
             operator: Equals
             value: 0
-
