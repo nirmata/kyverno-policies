@@ -36,6 +36,7 @@ spec:
       operator: NotEquals
       value: ""
     generate:
+      apiVersion: rbac.authorization.k8s.io/v1
       kind: ClusterRole
       name: "ns-owner-{{request.object.metadata.name}}-{{request.userInfo.username}}"
       data:
@@ -64,6 +65,7 @@ spec:
       operator: NotEquals
       value: ""
     generate:
+      apiVersion: rbac.authorization.k8s.io/v1
       kind: ClusterRoleBinding
       name: "ns-owner-{{request.object.metadata.name}}-{{request.userInfo.username}}-binding"
       data:
@@ -94,6 +96,7 @@ spec:
       operator: NotEquals
       value: ""
     generate:
+      apiVersion: rbac.authorization.k8s.io/v1
       kind: RoleBinding
       name: "ns-admin-{{request.object.metadata.name}}-{{request.userInfo.username}}-binding"
       namespace: "{{request.object.metadata.name}}"

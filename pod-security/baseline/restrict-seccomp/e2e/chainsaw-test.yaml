@@ -12,7 +12,7 @@ spec:
         file: policy-assert.yaml
     - script:
         content: |
-          sed 's/validationFailureAction: audit/validationFailureAction: Enforce/' ../restrict-seccomp.yaml | kubectl apply -f - 
+          sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../restrict-seccomp.yaml | kubectl apply -f - 
     - assert:
         file: enforce-policy-assert.yaml
     - apply:

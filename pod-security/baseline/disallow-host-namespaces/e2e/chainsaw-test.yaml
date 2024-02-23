@@ -32,7 +32,7 @@ spec:
           name: remediate-disallow-host-namespaces
     - script:
         content: |
-          sed 's/validationFailureAction: audit/validationFailureAction: Enforce/' ../disallow-host-namespaces.yaml | kubectl apply -f - 
+          sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../disallow-host-namespaces.yaml | kubectl apply -f - 
     - assert:
         file: enforce-policy-assert.yaml
     - apply:

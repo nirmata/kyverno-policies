@@ -7,6 +7,7 @@ metadata:
     policies.kyverno.io/category: Best Practices
     policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/severity: medium
+    kyverno.io/kyverno-version: 1.10.0
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Capabilities permit privileged actions without giving full root access. The
@@ -16,7 +17,7 @@ metadata:
       ability. Note that this policy also illustrates how to cover drop entries in any
       case although this may not strictly conform to the Pod Security Standards.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: require-drop-cap-net-raw
@@ -25,11 +26,9 @@ spec:
         - resources:
             kinds:
               - Pod
-      preconditions:
-        all:
-        - key: "{{ request.operation || 'BACKGROUND' }}"
-          operator: NotEquals
-          value: DELETE
+            operations:
+            - CREATE
+            - UPDATE
       validate:
         message: >-
           Containers must drop the `CAP_NET_RAW` capability.

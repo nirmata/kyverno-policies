@@ -10,7 +10,7 @@ metadata:
     policies.kyverno.io/description: >-
       Incorrect cluster role ARN is used. Requires customization with your role ARN.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: check-cluster-role-arn

@@ -1,0 +1,56 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: remediate-disallow-proc-mount
+  annotations:
+    policies.kyverno.io/title: Remediate Disallow Proc Mount
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/description: >-
+      This policy remediates the disallow-proc-mount violation
+spec:
+  background: false
+  rules:
+    - name: remove-proc-mount-containers
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+                - StatefulSet
+                - Job
+                - DaemonSet
+      mutate:
+        foreach: 
+          - list: request.object.spec.template.spec.containers[]
+            order: Descending
+            preconditions:
+              all:
+              - key: "{{ element.securityContext && element.securityContext.procMount }}"
+                operator: NotEquals
+                value: "Default"
+            patchesJson6902: |-
+              - path: /spec/template/spec/containers/{{elementIndex}}/securityContext/procMount
+                op: replace
+                value: Default
+          - list: request.object.spec.template.spec.initContainers[]
+            order: Descending
+            preconditions:
+              all:
+              - key: "{{ element.securityContext && element.securityContext.procMount }}"
+                operator: NotEquals
+                value: "Default"
+            patchesJson6902: |-
+              - path: /spec/template/spec/initContainers/{{elementIndex0}}/securityContext/procMount
+                op: replace
+                value: Default
+          - list: request.object.spec.template.spec.ephemeralContainers[]
+            order: Descending
+            preconditions:
+              all:
+              - key: "{{ element.securityContext && element.securityContext.procMount }}"
+                operator: NotEquals
+                value: "Default"
+            patchesJson6902: |-
+              - path: /spec/template/spec/ephemeralContainers/{{elementIndex0}}/securityContext/procMount
+                op: replace
+                value: Default
