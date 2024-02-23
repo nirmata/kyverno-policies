@@ -5,26 +5,34 @@ metadata:
   name: require-resource-quota
 spec:
   steps:
-  - name: step-01
+  - name: test-disallow-capabilities
     try:
     - apply:
-        file: ns-good.yaml
-    - script:
-        content: |
-          sed 's/validationFailureAction: audit/validationFailureAction: Audit/' ../require-resource-quota.yaml | kubectl create -f -
+        file: ../require-resource-quota.yaml
     - assert:
-        file: chainsaw-step-01-assert-1.yaml
-  - name: step-02
-    try:
+        file: chainsaw-policy-assert.yaml
+    - apply:
+        file: ns-good.yaml
+    - patch:
+        resource:
+          apiVersion: kyverno.io/v1
+          kind: ClusterPolicy
+          metadata:
+            name: require-resource-quota
+          spec:
+            validationFailureAction: Enforce
+    # - script:
+    #     content: |
+    #       sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../require-resource-quota.yaml | kubectl apply -f - 
+    - assert:
+        file: chainsaw-enforce-assert.yaml
     - apply:
         expect:
         - check:
             ($error != null): true
         file: ns-bad.yaml
-  - name: step-99
-    try:
     - delete:
         ref:
-          apiVersion: kyverno.io/v1
-          kind: ClusterPolicy
-          name: require-resource-quota
+          apiVersion: v1
+          kind: namespace
+          name: good-ns
