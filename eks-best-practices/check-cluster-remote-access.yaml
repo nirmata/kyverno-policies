@@ -10,7 +10,7 @@ metadata:
     policies.kyverno.io/description: >-
       Cluster remote access should be disabled.
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: check-cluster-remote-access

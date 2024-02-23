@@ -32,7 +32,7 @@ spec:
           name: remediate-require-run-as-nonroot
     - script:
         content: |
-          sed 's/validationFailureAction: audit/validationFailureAction: Enforce/' ../require-run-as-nonroot.yaml | kubectl apply -f - 
+          sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../require-run-as-nonroot.yaml | kubectl apply -f - 
     - assert:
         file: enforce-policy-assert.yaml
     - apply:

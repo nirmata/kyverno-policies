@@ -11,7 +11,7 @@ spec:
     - assert:
         file: policy-assert.yaml
     - apply:
-        file: ../remediate-disallow-proc-mount-containers.yaml
+        file: ../remediate-disallow-proc-mount.yaml
     - assert:
         file: remediation-policy-assert.yaml
     - apply:
@@ -32,7 +32,7 @@ spec:
           name: remediate-disallow-proc-mount
     - script:
         content: |
-          sed 's/validationFailureAction: audit/validationFailureAction: Enforce/' ../disallow-proc-mount.yaml | kubectl apply -f - 
+          sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../disallow-proc-mount.yaml | kubectl apply -f - 
     - assert:
         file: enforce-policy-assert.yaml
     - apply:

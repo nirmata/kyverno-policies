@@ -7,7 +7,7 @@ metadata:
     policies.kyverno.io/category: Workload Security
     policies.kyverno.io/severity: low
     policies.kyverno.io/subject: ClusterRole
-    kyverno.io/kyverno-version: 1.9.0
+    kyverno.io/kyverno-version: 1.10.0
     kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/description: >-
       Clusters not initially installed with Kubernetes 1.22 may be vulnerable to an issue
@@ -18,7 +18,7 @@ metadata:
       to CVE-2021-25740 by ensuring the system:aggregate-to-edit ClusterRole does not have
       the edit permission of Endpoints.      
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: system-aggregate-to-edit-check

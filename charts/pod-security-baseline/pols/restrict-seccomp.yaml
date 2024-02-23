@@ -1,0 +1,45 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-seccomp
+  annotations:
+    policies.kyverno.io/title: Restrict Seccomp
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    kyverno.io/kubernetes-version: "1.22-1.23"
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/podsecurity/baseline/restrict-seccomp/"
+    policies.kyverno.io/description: >-
+      The seccomp profile must not be explicitly set to Unconfined. This policy, 
+      requiring Kubernetes v1.19 or later, ensures that seccomp is unset or 
+      set to `RuntimeDefault` or `Localhost`.
+spec:
+  background: true
+  validationFailureAction: Audit
+  rules:
+    - name: check-seccomp
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: >-
+          Use of custom Seccomp profiles is disallowed.
+        pattern:
+          spec:
+            =(securityContext):
+              =(seccompProfile):
+                =(type): "RuntimeDefault | Localhost"
+            =(ephemeralContainers):
+              - =(securityContext):
+                  =(seccompProfile):
+                    =(type): "RuntimeDefault | Localhost"
+            =(initContainers):
+              - =(securityContext):
+                  =(seccompProfile):
+                    =(type): "RuntimeDefault | Localhost"
+            containers:
+              - =(securityContext):
+                  =(seccompProfile):
+                    =(type): "RuntimeDefault | Localhost"

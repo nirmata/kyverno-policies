@@ -12,7 +12,7 @@ spec:
         file: policy-assert.yaml
     - script:
         content: |
-          sed 's/validationFailureAction: audit/validationFailureAction: Enforce/' ../require-run-as-non-root-user.yaml | kubectl apply -f - 
+          sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../require-run-as-non-root-user.yaml | kubectl apply -f - 
     - assert:
         file: enforce-policy-assert.yaml
     - apply:
