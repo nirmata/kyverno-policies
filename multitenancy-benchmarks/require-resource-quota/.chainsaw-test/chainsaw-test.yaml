@@ -1,0 +1,38 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  creationTimestamp: null
+  name: require-resource-quota
+spec:
+  steps:
+  - name: test-disallow-capabilities
+    try:
+    - apply:
+        file: ../require-resource-quota.yaml
+    - assert:
+        file: chainsaw-policy-assert.yaml
+    - apply:
+        file: ns-good.yaml
+    - patch:
+        resource:
+          apiVersion: kyverno.io/v1
+          kind: ClusterPolicy
+          metadata:
+            name: require-resource-quota
+          spec:
+            validationFailureAction: Enforce
+    # - script:
+    #     content: |
+    #       sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../require-resource-quota.yaml | kubectl apply -f - 
+    - assert:
+        file: chainsaw-enforce-assert.yaml
+    - apply:
+        expect:
+        - check:
+            ($error != null): true
+        file: ns-bad.yaml
+    - delete:
+        ref:
+          apiVersion: v1
+          kind: namespace
+          name: good-ns
