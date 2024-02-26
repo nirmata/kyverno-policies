@@ -1,16 +1,12 @@
 name: ChainSaw Test
+
 on:
   push:
     branches:
-      - 'main'
-
+      - main
   pull_request:
     branches:
-      - 'main'
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+      - main
 
 jobs:
   run-e2etest-1:
@@ -20,7 +16,7 @@ jobs:
       fail-fast: false    
       matrix:
         k8s-version: [v1.29.2, v1.28.0, v1.27.3, v1.26.3, v1.25.8, v1.24.12, v1.23.17]
-        n4k-chart-version: [3.0.18] # for n4k-version 1.10
+        n4k-chart-version: [3.0.18]
 
     steps:
       - name: Checkout
@@ -28,13 +24,11 @@ jobs:
 
       - name: Prepare environment
         run: |
-          K8S_VERSION=${{ matrix.k8s-version }}
-          make kind-create-cluster
+          K8S_VERSION=${{ matrix.k8s-version }} make kind-create-cluster
 
       - name: Install kyverno
         run: |
-          N4K_VERSION=${{ matrix.n4k-chart-version }}
-          make kind-deploy-kyverno
+          N4K_VERSION=${{ matrix.n4k-chart-version }} make kind-deploy-kyverno
 
       - name: Check Kyverno status
         run: make wait-for-kyverno
@@ -55,7 +49,7 @@ jobs:
       fail-fast: false    
       matrix:
         k8s-version: [v1.29.2, v1.28.0, v1.27.3, v1.26.3, v1.25.8]
-        n4k-chart-version: [3.1.1] # for n4k-version 1.11
+        n4k-chart-version: [3.1.1]
 
     steps:
       - name: Checkout
@@ -63,13 +57,11 @@ jobs:
 
       - name: Prepare environment
         run: |
-          K8S_VERSION=${{ matrix.k8s-version }}
-          make kind-create-cluster
+          K8S_VERSION=${{ matrix.k8s-version }} make kind-create-cluster
 
       - name: Install kyverno
         run: |
-          N4K_VERSION=${{ matrix.n4k-chart-version }}
-          make kind-deploy-kyverno
+          N4K_VERSION=${{ matrix.n4k-chart-version }} make kind-deploy-kyverno
 
       - name: Check Kyverno status
         run: make wait-for-kyverno
