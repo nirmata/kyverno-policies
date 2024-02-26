@@ -2,11 +2,11 @@ name: ChainSaw Test
 on:
   push:
     branches:
-      - 'release-chart-1.10'
+      - 'main'
 
   pull_request:
     branches:
-      - 'release-chart-1.10'
+      - 'main'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
