@@ -20,8 +20,8 @@ jobs:
       fail-fast: false    
       matrix:
         k8s-version: [v1.29.2, v1.28.7, v1.27.11, v1.26.14, v1.25.16, v1.24.12, v1.23.17]
-        # For n4k-versions 1.10
-        n4k-chart-version: [3.0.18]
+        # For n4k-versions 1.10 and 1.11
+        n4k-chart-version: [3.0.18, 3.1.1]
         
     steps:
       - name: Checkout
