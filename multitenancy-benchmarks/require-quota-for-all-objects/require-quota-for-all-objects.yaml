@@ -12,7 +12,7 @@ metadata:
     policies.kyverno.io/description: >-
       This policy checks that the ResourceQuota is defined for all objects in the namespace.
 spec:
-  validationFailureAction: Audit # Enforce rejection on failure
+  validationFailureAction: Audit 
   rules:
   - name: require-quota-for-all-objects
     match:

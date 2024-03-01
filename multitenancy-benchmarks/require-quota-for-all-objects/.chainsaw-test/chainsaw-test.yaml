@@ -5,7 +5,7 @@ metadata:
   name: require-quota-for-all-objects
 spec:
   steps:
-  - name: test-disallow-capabilities
+  - name: test-require-quota-for-all-objects
     try:
     - apply:
         file: ../require-quota-for-all-objects.yaml
@@ -21,9 +21,6 @@ spec:
             name: require-quota-for-all-objects
           spec:
             validationFailureAction: Enforce
-    # - script:
-    #     content: |
-    #       sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../require-resource-quota.yaml | kubectl apply -f - 
     - assert:
         file: chainsaw-enforce-assert.yaml
     - apply:
@@ -35,4 +32,4 @@ spec:
         ref:
           apiVersion: v1
           kind: namespace
-          name: good-ns
+          name: testing-ns
