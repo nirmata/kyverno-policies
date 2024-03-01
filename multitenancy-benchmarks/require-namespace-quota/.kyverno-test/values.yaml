@@ -5,9 +5,8 @@ policies:
   rules:
   - name: resourcequotas
     values:
-      pattern:
-        spec:
-          hard:
-            cpu: "*"
-            ephemeral-storage: "*"
-            memory: "*"
+      spec:
+        hard:
+          cpu: "*"
+          ephemeral-storage: "*"
+          memory: "*"

@@ -10,7 +10,7 @@ results:
 - kind: Namespace
   policy: require-namespace-quota
   resources:
-  - ns-resource-quota
+  - testing-ns
   result: pass
   rule: resourcequotas
 variables: values.yaml
