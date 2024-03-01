@@ -1,0 +1,20 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-namespace-quota
+spec:
+  validationFailureAction: Audit
+  rules:
+  - name: ensure-essential-resource-quotas
+    match:
+      resources:
+        kinds:
+        - ResourceQuota
+    validate:
+      pattern:
+        spec:
+          hard:
+            cpu: "*"
+            ephemeral-storage: "*"
+            memory: "*"
+      message: "Resource quotas for essential resources (CPU, ephemeral storage, and memory) are not properly configured for the tenant namespace"
