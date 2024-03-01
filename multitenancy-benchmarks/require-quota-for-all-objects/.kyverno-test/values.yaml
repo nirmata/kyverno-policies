@@ -1,0 +1,18 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Values
+policies:
+- name: require-quota-for-all-objects
+  rules:
+  - name: resourcequotas
+    values:
+      spec:
+        hard:
+          pods: "*"
+          services: "*"
+          replicationcontrollers: "*"
+          resourcequotas: "*"
+          secrets: "*"
+          configmaps: "*"
+          persistentvolumeclaims: "*"
+          services.nodeports: "*"
+          services.loadbalancers: "*"
