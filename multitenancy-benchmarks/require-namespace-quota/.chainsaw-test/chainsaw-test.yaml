@@ -32,4 +32,4 @@ spec:
         ref:
           apiVersion: v1
           kind: namespace
-          name: good-testing-ns
+          name: testing-ns

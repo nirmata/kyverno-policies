@@ -1,0 +1,13 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Values
+policies:
+- name: require-namespace-quota
+  rules:
+  - name: resourcequotas
+    values:
+      pattern:
+        spec:
+          hard:
+            cpu: "*"
+            ephemeral-storage: "*"
+            memory: "*"
