@@ -1,0 +1,40 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-privilege-escalation
+  annotations:
+    policies.kyverno.io/title: Disallow Privilege Escalation
+    policies.kyverno.io/category: Pod Security Standards (Restricted)
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    kyverno.io/kyverno-version: 1.10.0
+    kyverno.io/kubernetes-version: "1.22-1.23"
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/podsecurity/restricted/disallow-privilege-escalation/"
+    policies.nirmata.io/remediation: "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/restricted/disallow-privilege-escalation/remediate-disallow-privilege-escalation.yaml"
+    policies.kyverno.io/description: >-
+      Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed.
+      This policy ensures the `allowPrivilegeEscalation` field is set to `false`.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: privilege-escalation
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: >-
+          Privilege escalation is disallowed.
+        pattern:
+          spec:
+            =(ephemeralContainers):
+              - securityContext:
+                  allowPrivilegeEscalation: "false"
+            =(initContainers):
+              - securityContext:
+                  allowPrivilegeEscalation: "false"
+            containers:
+              - securityContext:
+                  allowPrivilegeEscalation: "false"

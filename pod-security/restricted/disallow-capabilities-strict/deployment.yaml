@@ -40,9 +40,8 @@ spec:
             cpu: "500m"
       hostIPC: true
       initContainers:
-      - name: nginx2
+      - name: nginx3
         image: nginx:latest
         securityContext:
           privileged: true
-
 

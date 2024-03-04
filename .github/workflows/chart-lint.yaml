@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - release-*
     paths:
       - charts/**
       - .github/workflows/release-chart.yaml
@@ -28,9 +29,9 @@ jobs:
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
-          changed=$(ct list-changed --target-branch main)
+          changed=$(ct list-changed --target-branch ${{ github.event.pull_request.base.ref }})
           if [[ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
           fi
       - name: Run chart-testing (lint)
-        run: ct lint --target-branch main
+        run: ct lint --target-branch ${{ github.event.pull_request.base.ref }}

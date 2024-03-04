@@ -3,7 +3,7 @@ kind: ClusterPolicy
 metadata:
   name: add-allow-dns-access
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: default-allow-dns-access
     match:
@@ -11,6 +11,7 @@ spec:
         kinds:
         - Namespace
     generate:
+      apiVersion: networking.k8s.io/v1
       kind: NetworkPolicy
       name: allow-dns-access
       namespace: "{{request.object.metadata.name}}"

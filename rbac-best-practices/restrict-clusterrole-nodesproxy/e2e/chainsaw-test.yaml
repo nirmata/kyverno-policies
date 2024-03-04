@@ -1,0 +1,24 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: restrict-clusterrole-nodesproxy-policy
+spec:
+  steps:
+  - name: test-restrict-clusterrole-nodesproxy
+    try:
+    - apply:
+        file: ../restrict-clusterrole-nodesproxy.yaml
+    - assert:
+        file: policy-assert.yaml
+    - script:
+        content: |
+          sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../restrict-clusterrole-nodesproxy.yaml | kubectl apply -f - 
+    - assert:
+        file: enforce-policy-assert.yaml
+    - apply:
+        file: good-resource.yaml
+    - apply:
+        expect:
+        - check:
+            ($error != null): true
+        file: bad-resource.yaml

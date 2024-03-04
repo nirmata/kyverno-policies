@@ -1,0 +1,356 @@
+###### Pods - Good
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod01
+spec:
+  hostNetwork: true
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod02
+spec:
+  hostNetwork: true
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      windowsOptions:
+        hostProcess: false
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod03
+spec:
+  hostNetwork: true
+  containers:
+  - name: container01
+    image: nginx
+  - name: container02
+    image: nginx
+    securityContext:
+      windowsOptions:
+        hostProcess: false
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod04
+spec:
+  hostNetwork: true
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod05
+spec:
+  hostNetwork: true
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+    securityContext:
+      windowsOptions:
+        hostProcess: false
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod06
+spec:
+  hostNetwork: true
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+  - name: initcontainer02
+    image: nginx
+    securityContext:
+      windowsOptions:
+        hostProcess: false
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      windowsOptions:
+        hostProcess: false
+---
+###### Deployments - Good
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment01
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      hostNetwork: true
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment02
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      hostNetwork: true
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          windowsOptions:
+            hostProcess: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment03
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      hostNetwork: true
+      containers:
+      - name: container01
+        image: nginx
+      - name: container02
+        image: nginx
+        securityContext:
+          windowsOptions:
+            hostProcess: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment04
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      hostNetwork: true
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment05
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      hostNetwork: true
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+        securityContext:
+          windowsOptions:
+            hostProcess: false
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment06
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      hostNetwork: true
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+        securityContext:
+          windowsOptions:
+            hostProcess: false
+      - name: initcontainer02
+        image: nginx
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          windowsOptions:
+            hostProcess: false
+---
+###### CronJobs - Good
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob01
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          hostNetwork: true
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob02
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          hostNetwork: true
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              windowsOptions:
+                hostProcess: false
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob03
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          hostNetwork: true
+          containers:
+          - name: container01
+            image: nginx
+          - name: container02
+            image: nginx
+            securityContext:
+              windowsOptions:
+                hostProcess: false
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob04
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          hostNetwork: true
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob05
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          hostNetwork: true
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+            securityContext:
+              windowsOptions:
+                hostProcess: false
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob06
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          hostNetwork: true
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+          - name: initcontainer02
+            image: nginx
+            securityContext:
+              windowsOptions:
+                hostProcess: false
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              windowsOptions:
+                hostProcess: false

@@ -6,7 +6,6 @@ metadata:
     policies.kyverno.io/title: Allowed Base Images
     policies.kyverno.io/category: EKS Best Practices
     policies.kyverno.io/severity: medium
-    kyverno.io/kyverno-version: 1.7.0
     policies.kyverno.io/minversion: 1.7.0
     kyverno.io/kubernetes-version: "1.23"
     policies.kyverno.io/subject: Pod
@@ -18,7 +17,7 @@ metadata:
       that a container's base, found in an OCI annotation, is in a cluster-wide
       allow list.      
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   rules:
   - name: allowed-base-images
     match:
@@ -26,11 +25,9 @@ spec:
       - resources:
           kinds:
           - Pod
-    preconditions:
-      all:
-      - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: NotEquals
-        value: DELETE
+          operations:
+          - CREATE
+          - UPDATE
     context:
     - name: baseimages
       configMap:

@@ -67,4 +67,3 @@ spec:
           - path: /spec/template/spec/hostPID
             op: replace
             value: false
-

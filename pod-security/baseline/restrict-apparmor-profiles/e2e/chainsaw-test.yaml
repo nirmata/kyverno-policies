@@ -1,0 +1,24 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: restrict-apparmor-profiles-policy
+spec:
+  steps:
+  - name: test-restrict-apparmor-profiles
+    try:
+    - apply:
+        file: ../restrict-apparmor-profiles.yaml
+    - assert:
+        file: policy-assert.yaml
+    - script:
+        content: |
+          sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../restrict-apparmor-profiles.yaml | kubectl apply -f - 
+    - assert:
+        file: enforce-policy-assert.yaml
+    - apply:
+        file: good-resource.yaml
+    - apply:
+        expect:
+        - check:
+            ($error != null): true
+        file: bad-resource.yaml

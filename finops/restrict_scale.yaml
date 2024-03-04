@@ -6,7 +6,7 @@ metadata:
     policies.kyverno.io/title: Restrict Scale
     policies.kyverno.io/category: FinOps
     policies.kyverno.io/severity: medium
-    kyverno.io/kyverno-version: 1.9.0
+    kyverno.io/kyverno-version: 1.10.0
     policies.kyverno.io/minversion: 1.9.0
     kyverno.io/kubernetes-version: "1.24"
     policies.kyverno.io/subject: Deployment
@@ -18,7 +18,7 @@ metadata:
       of rules which can be used to limit the replica count both upon creation of a Deployment and
       when a scale operation is performed.      
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: false
   rules:
   # This rule can be used to limit scale operations based upon Deployment labels assuming the given label

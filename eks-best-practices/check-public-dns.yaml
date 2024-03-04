@@ -10,7 +10,7 @@ metadata:
     policies.kyverno.io/description: >-
       Deploy workers onto private subnets. If a public DNSName exists, then it means the worker is deployed on a public subnet
 spec:
-  validationFailureAction: audit
+  validationFailureAction: Audit
   background: true
   rules:
     - name: check-public-dns

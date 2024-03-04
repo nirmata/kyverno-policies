@@ -1,5 +1,0 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestStep
-commands:
-- script: |
-    sed 's/validationFailureAction: audit/validationFailureAction: Enforce/' ../disallow_cri_sock_mount.yaml | kubectl apply -f - 
