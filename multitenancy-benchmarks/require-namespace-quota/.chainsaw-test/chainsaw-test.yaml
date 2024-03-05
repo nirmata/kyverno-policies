@@ -1,0 +1,35 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  creationTimestamp: null
+  name: require-namespace-quota
+spec:
+  steps:
+  - name: test-require-namespace-quota
+    try:
+    - apply:
+        file: ../require-namespace-quota.yaml
+    - assert:
+        file: chainsaw-policy-assert.yaml
+    - apply:
+        file: good-resource.yaml
+    - patch:
+        resource:
+          apiVersion: kyverno.io/v1
+          kind: ClusterPolicy
+          metadata:
+            name: require-namespace-quota
+          spec:
+            validationFailureAction: Enforce
+    - assert:
+        file: chainsaw-enforce-assert.yaml
+    - apply:
+        expect:
+        - check:
+            ($error != null): true
+        file: bad-resource.yaml
+    - delete:
+        ref:
+          apiVersion: v1
+          kind: namespace
+          name: testing-ns
