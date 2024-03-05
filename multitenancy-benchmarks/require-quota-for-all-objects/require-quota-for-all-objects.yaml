@@ -3,7 +3,7 @@ kind: ClusterPolicy
 metadata:
   name: require-quota-for-all-objects
   annotations:
-    policies.kyverno.io/title: Require ResourceQuota for all 9 Objects present in the Namespace
+    policies.kyverno.io/title: Require ResourceQuota for all Objects present in the Namespace
     policies.kyverno.io/category: Multitenancy Benchmark
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: ResourceQuota
