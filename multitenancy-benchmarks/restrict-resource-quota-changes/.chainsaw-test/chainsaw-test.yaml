@@ -1,0 +1,35 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  creationTimestamp: null
+  name: restrict-resource-quota-changes
+spec:
+  steps:
+  - name: test-restrict-resource-quota-changes
+    try:
+    - apply:
+        file: ../restrict-resource-quota-changes.yaml
+    - assert:
+        file: chainsaw-policy-assert.yaml
+    - apply:
+        file: rq-good.yaml
+    - patch:
+        resource:
+          apiVersion: kyverno.io/v1
+          kind: ClusterPolicy
+          metadata:
+            name: restrict-resource-quota-changes
+          spec:
+            validationFailureAction: Enforce
+    - assert:
+        file: chainsaw-enforce-assert.yaml
+    - apply:
+        expect:
+        - check:
+            ($error != null): true
+        file: rq-bad.yaml
+    - delete:
+        ref:
+          apiVersion: v1
+          kind: namespace
+          name: chainsaw-test
