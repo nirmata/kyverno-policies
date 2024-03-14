@@ -1,0 +1,78 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+        {
+            "Name": "base",
+            "BaseName": "scratch",
+            "Platform": "",
+            "Comment": "",
+            "SourceCode": "FROM scratch as base",
+            "Location": [
+                {
+                    "Start": {
+                        "Line": 3,
+                        "Character": 0
+                    },
+                    "End": {
+                        "Line": 3,
+                        "Character": 0
+                    }
+                }
+            ],
+            "As": "base",
+            "From": {
+                "Scratch": true
+            },
+            "Commands": [
+                {
+                    "Chmod": "",
+                    "Chown": "",
+                    "DestPath": "/test.sh",
+                    "From": "",
+                    "Link": false,
+                    "Name": "COPY",
+                    "SourceContents": null,
+                    "SourcePaths": [
+                        "test.sh"
+                    ]
+                }
+            ]
+        },
+        {
+            "Name": "",
+            "BaseName": "base",
+            "Platform": "",
+            "Comment": "",
+            "SourceCode": "FROM base",
+            "Location": [
+                {
+                    "Start": {
+                        "Line": 6,
+                        "Character": 0
+                    },
+                    "End": {
+                        "Line": 6,
+                        "Character": 0
+                    }
+                }
+            ],
+            "From": {
+                "Stage": {
+                    "Named": "base",
+                    "Index": 0
+                }
+            },
+            "Commands": [
+                {
+                    "Labels": [
+                        {
+                            "Key": "foo",
+                            "Value": "bar"
+                        }
+                    ],
+                    "Name": "LABEL"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,48 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+        {
+            "Name": "",
+            "BaseName": "ubuntu:latest",
+            "Platform": "",
+            "Comment": "",
+            "SourceCode": "FROM ubuntu:latest",
+            "Location": [
+                {
+                    "Start": {
+                        "Line": 2,
+                        "Character": 0
+                    },
+                    "End": {
+                        "Line": 2,
+                        "Character": 0
+                    }
+                }
+            ],
+            "From": {
+                "Image": "ubuntu:latest"
+            },
+            "Commands": [
+                {
+                    "Health": {
+                        "Test": [
+                            "CMD-SHELL",
+                            "curl --fail http://localhost:80 || exit 1"
+                        ]
+                    },
+                    "Name": "HEALTHCHECK"
+                },
+                {
+                    "CmdLine": [
+                        "nginx",
+                        "-g",
+                        "daemon off;"
+                    ],
+                    "Files": null,
+                    "Name": "CMD",
+                    "PrependShell": false
+                }
+            ]
+        }
+    ]
+}

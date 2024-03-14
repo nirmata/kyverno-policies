@@ -1,0 +1,3 @@
+# Scratch Build
+
+FROM scratch

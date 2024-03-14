@@ -1,0 +1,35 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-ecs-task-definition-user-for-host-mode-check
+  labels:
+    ecs.aws.tags.kyverno.io: ecs-service
+  annotations:
+    policies.kyverno.io/title: Validate ECS Task Definition User for Host mode 
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy makes sure that ECS task definitions avoid using 
+      the root user for the host network mode or false privileges.
+spec:
+  rules:
+    - name: validate-ecs-task-definition-user-for-host-mode-check
+      match:
+        any:
+        - ~.(planned_values.root_module.resources[?type=='aws_ecs_task_definition'].values):
+            network_mode: host
+        - ~.(planned_values.root_module.resources[?type=='aws_ecs_task_definition'].values):
+            ~.(json_parse(container_definitions)):
+                privileged: false
+      assert:
+        all:
+        - message: User should be set to non-root user when using the host network mode or privileged set to false.
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_ecs_task_definition'] ):
+                values:
+                    ~.(json_parse(container_definitions)):
+                        (!user): false
+                        (starts_with(user || '', '0:') || ends_with(user || '', ':0')): false
+                        (user != null): true
+                        (user != '0'): true
+

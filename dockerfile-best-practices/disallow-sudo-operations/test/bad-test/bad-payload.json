@@ -1,0 +1,47 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+      {
+        "Name": "",
+        "BaseName": "ubuntu:20.04",
+        "Platform": "",
+        "Comment": "",
+        "SourceCode": "FROM ubuntu:20.04",
+        "Location": [
+          {
+            "Start": {
+              "Line": 1,
+              "Character": 0
+            },
+            "End": {
+              "Line": 1,
+              "Character": 0
+            }
+          }
+        ],
+        "From": {
+          "Image": "ubuntu:20.04"
+        },
+        "Commands": [
+          {
+            "CmdLine": [
+              "apt-get update &&     apt-get install -y vim"
+            ],
+            "Files": null,
+            "FlagsUsed": [],
+            "Name": "RUN",
+            "PrependShell": true
+          },
+          {
+            "CmdLine": [
+              "sudo apt-get install -y python3"
+            ],
+            "Files": null,
+            "FlagsUsed": [],
+            "Name": "RUN",
+            "PrependShell": true
+          }
+        ]
+      }
+    ]
+  }

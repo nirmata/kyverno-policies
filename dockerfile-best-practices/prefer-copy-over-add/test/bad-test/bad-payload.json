@@ -1,0 +1,84 @@
+{
+  "MetaArgs": null,
+  "Stages": [
+    {
+      "Name": "",
+      "BaseName": "ubuntu:latest",
+      "Platform": "",
+      "Comment": "",
+      "SourceCode": "FROM ubuntu:latest",
+      "Location": [
+        {
+          "Start": {
+            "Line": 1,
+            "Character": 0
+          },
+          "End": {
+            "Line": 1,
+            "Character": 0
+          }
+        }
+      ],
+      "From": {
+        "Image": "ubuntu:latest"
+      },
+      "Commands": [
+        {
+          "Name": "WORKDIR",
+          "Path": "/app"
+        },
+        {
+          "Checksum": "",
+          "Chmod": "",
+          "Chown": "",
+          "DestPath": "/app/",
+          "KeepGitDir": false,
+          "Link": false,
+          "Name": "ADD",
+          "SourceContents": null,
+          "SourcePaths": [
+            "."
+          ]
+        },
+        {
+          "CmdLine": [
+            "apt-get update && apt-get install -y nano"
+          ],
+          "Files": null,
+          "FlagsUsed": [
+
+          ],
+          "Name": "RUN",
+          "PrependShell": true
+        },
+        {
+          "Chmod": "",
+          "Chown": "",
+          "DestPath": "/app",
+          "From": "",
+          "Link": false,
+          "Name": "COPY",
+          "SourceContents": null,
+          "SourcePaths": [
+            "."
+          ]
+        },
+        {
+          "Name": "EXPOSE",
+          "Ports": [
+            "8080"
+          ]
+        },
+        {
+          "CmdLine": [
+            "echo",
+            "ADD is present in the Dockerfile"
+          ],
+          "Files": null,
+          "Name": "CMD",
+          "PrependShell": false
+        }
+      ]
+    }
+  ]
+}

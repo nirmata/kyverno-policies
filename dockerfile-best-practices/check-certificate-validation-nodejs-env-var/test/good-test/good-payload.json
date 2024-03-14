@@ -1,0 +1,48 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+      {
+        "Name": "",
+        "BaseName": "alpine:latest",
+        "Platform": "",
+        "Comment": "",
+        "SourceCode": "FROM alpine:latest",
+        "Location": [
+          {
+            "Start": {
+              "Line": 1,
+              "Character": 0
+            },
+            "End": {
+              "Line": 1,
+              "Character": 0
+            }
+          }
+        ],
+        "From": {
+          "Image": "alpine:latest"
+        },
+        "Commands": [
+          {
+            "Env": [
+              {
+                "Key": "NODE_TLS_REJECT_UNAUTHORIZED",
+                "Value": "1"
+              }
+            ],
+            "Name": "ENV"
+          },
+          {
+            "CmdLine": [
+              "sh",
+              "-c",
+              "echo 'Hello, World!'"
+            ],
+            "Files": null,
+            "Name": "CMD",
+            "PrependShell": false
+          }
+        ]
+      }
+    ]
+  }

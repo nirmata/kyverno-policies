@@ -1,0 +1,25 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-certificate-validation-python-env-var
+  annotations:
+    policies.kyverno.io/title: Check for certificate validation in the Dockerfile using Python environment variable
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      The PYTHONHTTPSVERIFY environment variable is used in Python to control
+      certificate verification when making HTTPS requests. This policy checks
+      whether this environment variable is set to 0. By default, it is set to 1,
+      which enables certificate verification.
+spec:
+  rules:
+    - name: check-certificate-validation-python-env-var
+      match:
+        any:
+        - (Stages[].Commands[?Name=='ENV'] | length(@) > `0`): true
+      assert:
+        any:
+        - message: Ensure certificate validation is enabled by using `PYTHONHTTPSVERIFY` env with value set to `1`
+          check:
+            (Stages[].Commands[].Env[?Key=='PYTHONHTTPSVERIFY' && Value=='1'][] | length(@) > `0`): true     
+                       

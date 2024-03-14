@@ -1,0 +1,63 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+      {
+        "Name": "",
+        "BaseName": "python:3.9",
+        "Platform": "",
+        "Comment": "",
+        "SourceCode": "FROM python:3.9",
+        "Location": [
+          {
+            "Start": {
+              "Line": 1,
+              "Character": 0
+            },
+            "End": {
+              "Line": 1,
+              "Character": 0
+            }
+          }
+        ],
+        "From": {
+          "Image": "python:3.9"
+        },
+        "Commands": [
+          {
+            "Env": [
+              {
+                "Key": "PYTHONHTTPSVERIFY",
+                "Value": "1"
+              }
+            ],
+            "Name": "ENV"
+          },
+          {
+            "Name": "WORKDIR",
+            "Path": "/app"
+          },
+          {
+            "Chmod": "",
+            "Chown": "",
+            "DestPath": "/app",
+            "From": "",
+            "Link": false,
+            "Name": "COPY",
+            "SourceContents": null,
+            "SourcePaths": [
+              "."
+            ]
+          },
+          {
+            "CmdLine": [
+              "echo",
+              "Hello world"
+            ],
+            "Files": null,
+            "Name": "CMD",
+            "PrependShell": false
+          }
+        ]
+      }
+    ]
+  }

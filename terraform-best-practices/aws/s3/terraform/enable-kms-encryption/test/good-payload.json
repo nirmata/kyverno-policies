@@ -1,0 +1,338 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.6.6",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_kms_key.mykey",
+          "mode": "managed",
+          "type": "aws_kms_key",
+          "name": "mykey",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "bypass_policy_lockout_safety_check": false,
+            "custom_key_store_id": null,
+            "customer_master_key_spec": "SYMMETRIC_DEFAULT",
+            "deletion_window_in_days": 10,
+            "description": "This key is used to encrypt bucket objects",
+            "enable_key_rotation": false,
+            "is_enabled": true,
+            "key_usage": "ENCRYPT_DECRYPT",
+            "tags": null
+          },
+          "sensitive_values": {
+            "tags_all": {}
+          }
+        },
+        {
+          "address": "aws_s3_bucket.mybucket",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "mybucket",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "bucket": "test-bucket-23-01-2024",
+            "force_destroy": false,
+            "tags": null,
+            "timeouts": null
+          },
+          "sensitive_values": {
+            "cors_rule": [],
+            "grant": [],
+            "lifecycle_rule": [],
+            "logging": [],
+            "object_lock_configuration": [],
+            "replication_configuration": [],
+            "server_side_encryption_configuration": [],
+            "tags_all": {},
+            "versioning": [],
+            "website": []
+          }
+        },
+        {
+          "address": "aws_s3_bucket_server_side_encryption_configuration.example",
+          "mode": "managed",
+          "type": "aws_s3_bucket_server_side_encryption_configuration",
+          "name": "example",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "expected_bucket_owner": null,
+            "rule": [
+              {
+                "apply_server_side_encryption_by_default": [
+                  {
+                    "sse_algorithm": "aws:kms"
+                  }
+                ],
+                "bucket_key_enabled": null
+              }
+            ]
+          },
+          "sensitive_values": {
+            "rule": [
+              {
+                "apply_server_side_encryption_by_default": [
+                  {}
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_kms_key.mykey",
+      "mode": "managed",
+      "type": "aws_kms_key",
+      "name": "mykey",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "bypass_policy_lockout_safety_check": false,
+          "custom_key_store_id": null,
+          "customer_master_key_spec": "SYMMETRIC_DEFAULT",
+          "deletion_window_in_days": 10,
+          "description": "This key is used to encrypt bucket objects",
+          "enable_key_rotation": false,
+          "is_enabled": true,
+          "key_usage": "ENCRYPT_DECRYPT",
+          "tags": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "key_id": true,
+          "multi_region": true,
+          "policy": true,
+          "tags_all": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "tags_all": {}
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket.mybucket",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "mybucket",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "test-bucket-23-01-2024",
+          "force_destroy": false,
+          "tags": null,
+          "timeouts": null
+        },
+        "after_unknown": {
+          "acceleration_status": true,
+          "acl": true,
+          "arn": true,
+          "bucket_domain_name": true,
+          "bucket_prefix": true,
+          "bucket_regional_domain_name": true,
+          "cors_rule": true,
+          "grant": true,
+          "hosted_zone_id": true,
+          "id": true,
+          "lifecycle_rule": true,
+          "logging": true,
+          "object_lock_configuration": true,
+          "object_lock_enabled": true,
+          "policy": true,
+          "region": true,
+          "replication_configuration": true,
+          "request_payer": true,
+          "server_side_encryption_configuration": true,
+          "tags_all": true,
+          "versioning": true,
+          "website": true,
+          "website_domain": true,
+          "website_endpoint": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "cors_rule": [],
+          "grant": [],
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "replication_configuration": [],
+          "server_side_encryption_configuration": [],
+          "tags_all": {},
+          "versioning": [],
+          "website": []
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_server_side_encryption_configuration.example",
+      "mode": "managed",
+      "type": "aws_s3_bucket_server_side_encryption_configuration",
+      "name": "example",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "expected_bucket_owner": null,
+          "rule": [
+            {
+              "apply_server_side_encryption_by_default": [
+                {
+                  "sse_algorithm": "aws:kms"
+                }
+              ],
+              "bucket_key_enabled": null
+            }
+          ]
+        },
+        "after_unknown": {
+          "bucket": true,
+          "id": true,
+          "rule": [
+            {
+              "apply_server_side_encryption_by_default": [
+                {
+                  "kms_master_key_id": true
+                }
+              ]
+            }
+          ]
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "rule": [
+            {
+              "apply_server_side_encryption_by_default": [
+                {}
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 4.16",
+        "expressions": {
+          "access_key": {
+            "constant_value": "ASIA4JFRUINQKBTDGLGS"
+          },
+          "region": {
+            "constant_value": "us-west-2"
+          },
+          "secret_key": {
+            "constant_value": "Zo5hCda4P4Ams0eThaKDeSHbq7I4ZicSquqBvSro"
+          },
+          "token": {
+            "constant_value": "IQoJb3JpZ2luX2VjEKD//////////wEaCXVzLWVhc3QtMiJHMEUCIQDcnuiVe62qQTuB4fPZ93qgjmXU2nLW2u0i4qq0+M7aNwIgWy8ueeHE6/5B4roUZWDaFn/VfBDyMvdGLu4q/WB+XBsqjgMIWRADGgw4NDQzMzM1OTc1MzYiDC5xMGtQ6p4bpl8G2SrrAsl2dosEavOxF8R5lhWoKoN6nSrXg9xcizYNonp8TH/IjaojRYmm681QTgh58diaQgluwnHJD0YvlZleufVovcMdg/Zxw6H93gPVLl6qsh/TbrTOpox7b1ua2IomEElldwpR5PeII9EiPftn5ds/2x1jQoRaPZuMt840M6xioZvMpriLwKjLI5Mb3A9zsaAbU57koHTU1fD9rRncYhDqzr86HAo10LKsmdidji2YpCCCh3484/sCkvwK1fpYeYH9zU+QCJ/6OcyoCnvMYN0rRd2vmK5BSpVzstysHK6maIpTAci96rVmUdFiFfORMYQrqfLBl3a+43hhVUfv1I7ptq0bSNTTxqtJu6GCiLNQ6Q/d3c3AvYSSRWpKZMDgvvUoLz+dpbopumxwCojrkGUyAabj6kWPewuvqFAIvprC29HyKUPihfevTDGgYZ1b4AfEobwvAyM+LgqhUiMK5+V6oWyuwGP6Iy7JdrTfTzCI4r2tBjqmARX84w824lU4wx7XKJOQkYLBLLFZEuXadYXJTC83zxLyEfWJfCvnzQWmrxM17gC3tH+7qzeAmN1RMxBF7zxaq6b8pvC1zuLNWrDN63c+j2Pg4FNivWCXt9xbm2lrUzi2MlTLzNuBoVV7RRgCWJ8Iq73cmyqUlzShCd0H5HV10P+NZpZTnzGMh/3tbR0gV7VeO4l6J0gadA8LyztjIu1W6TGtntmjyVs="
+          }
+        }
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_kms_key.mykey",
+          "mode": "managed",
+          "type": "aws_kms_key",
+          "name": "mykey",
+          "provider_config_key": "aws",
+          "expressions": {
+            "deletion_window_in_days": {
+              "constant_value": 10
+            },
+            "description": {
+              "constant_value": "This key is used to encrypt bucket objects"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket.mybucket",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "mybucket",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "constant_value": "test-bucket-23-01-2024"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket_server_side_encryption_configuration.example",
+          "mode": "managed",
+          "type": "aws_s3_bucket_server_side_encryption_configuration",
+          "name": "example",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "references": [
+                "aws_s3_bucket.mybucket.id",
+                "aws_s3_bucket.mybucket"
+              ]
+            },
+            "rule": [
+              {
+                "apply_server_side_encryption_by_default": [
+                  {
+                    "kms_master_key_id": {
+                      "references": [
+                        "aws_kms_key.mykey.arn",
+                        "aws_kms_key.mykey"
+                      ]
+                    },
+                    "sse_algorithm": {
+                      "constant_value": "aws:kms"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "schema_version": 0
+        }
+      ]
+    }
+  },
+  "relevant_attributes": [
+    {
+      "resource": "aws_s3_bucket.mybucket",
+      "attribute": [
+        "id"
+      ]
+    },
+    {
+      "resource": "aws_kms_key.mykey",
+      "attribute": [
+        "arn"
+      ]
+    }
+  ],
+  "timestamp": "2024-01-23T08:08:09Z",
+  "errored": false
+}

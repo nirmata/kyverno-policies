@@ -1,0 +1,56 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+      {
+        "Name": "",
+        "BaseName": "centos:7",
+        "Platform": "",
+        "Comment": "",
+        "SourceCode": "FROM centos:7",
+        "Location": [
+          {
+            "Start": {
+              "Line": 1,
+              "Character": 0
+            },
+            "End": {
+              "Line": 1,
+              "Character": 0
+            }
+          }
+        ],
+        "From": {
+          "Image": "centos:7"
+        },
+        "Commands": [
+          {
+            "CmdLine": [
+              "yum install -y wget"
+            ],
+            "Files": null,
+            "FlagsUsed": [],
+            "Name": "RUN",
+            "PrependShell": true
+          },
+          {
+            "CmdLine": [
+              "rpm -i vim-enhanced-7.4.629-7.el7.aarch64.rpm --nofiledigest"
+            ],
+            "Files": null,
+            "FlagsUsed": [],
+            "Name": "RUN",
+            "PrependShell": true
+          },
+          {
+            "CmdLine": [
+              "echo \"Hello world!\""
+            ],
+            "Files": null,
+            "FlagsUsed": [],
+            "Name": "RUN",
+            "PrependShell": true
+          }
+        ]
+      }
+    ]
+  }

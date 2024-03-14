@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../check-certificate-validation-nodejs-env-var.yaml --payload ./good-test/good-payload.json --output json
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-certificate-validation-nodejs-env-var
+                rules:
+                - rule:
+                    name: check-certificate-validation-nodejs-env-var
+                  error: ~
+                  violations: ~
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../check-certificate-validation-nodejs-env-var.yaml --payload ./bad-test/bad-payload.json --output json
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-certificate-validation-nodejs-env-var
+                rules:
+                - rule:
+                    name: check-certificate-validation-nodejs-env-var
+                  error: ~
+                  violations:
+                  - message: Ensure certificate validation is enabled by using `NODE_TLS_REJECT_UNAUTHORIZED` env with value set to `1`
+                    errors:
+                    - type: FieldValueInvalid
+                      value: false
+                      detail: 'Expected value: true'
