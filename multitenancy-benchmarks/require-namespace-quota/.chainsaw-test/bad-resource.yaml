@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: bad-resource-quota
+  namespace: testing-ns
+spec:
+  hard:
+    cpu: "1"
+    memory: "1Gi"

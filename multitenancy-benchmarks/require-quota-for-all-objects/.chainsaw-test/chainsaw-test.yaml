@@ -1,0 +1,35 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  creationTimestamp: null
+  name: require-quota-for-all-objects
+spec:
+  steps:
+  - name: test-require-quota-for-all-objects
+    try:
+    - apply:
+        file: ../require-quota-for-all-objects.yaml
+    - assert:
+        file: chainsaw-policy-assert.yaml
+    - apply:
+        file: quota-good.yaml
+    - patch:
+        resource:
+          apiVersion: kyverno.io/v1
+          kind: ClusterPolicy
+          metadata:
+            name: require-quota-for-all-objects
+          spec:
+            validationFailureAction: Enforce
+    - assert:
+        file: chainsaw-enforce-assert.yaml
+    - apply:
+        expect:
+        - check:
+            ($error != null): true
+        file: quota-bad.yaml
+    - delete:
+        ref:
+          apiVersion: v1
+          kind: namespace
+          name: testing-ns
