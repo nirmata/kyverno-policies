@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ns-resource-quota
+
+---
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: restricted-resources
+  namespace: ns-resource-quota
+spec:
+  hard:
+    persistentvolumeclaims: 5
+    services.nodeports  : 23
+    pods: 10
+    services: 5
+    replicationcontrollers: 3
+    resourcequotas: 1
+    services.loadbalancers  : 23
+    secrets: 20
+    configmaps: 15
