@@ -1,0 +1,37 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-quota-for-all-objects
+  annotations:
+    policies.kyverno.io/title: Require ResourceQuota for all Objects present in the Namespace
+    policies.kyverno.io/category: Multitenancy Benchmark
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: ResourceQuota
+    kyverno.io/kyverno-version: "1.8.0"
+    kyverno.io/kubernetes-version: "1.24"
+    policies.kyverno.io/description: >-
+      This policy checks that the ResourceQuota is defined for all objects in the namespace.
+spec:
+  validationFailureAction: Audit 
+  rules:
+  - name: require-quota-for-all-objects
+    match:
+      resources:
+        kinds:
+        - ResourceQuota
+        operations:
+        - CREATE
+    validate:
+      message: "ResourceQuota must define quotas for all objects in the namespace"
+      pattern:
+        spec:
+          hard: 
+            pods : "*"
+            services : "*"
+            replicationcontrollers : "*" 
+            resourcequotas : "*"
+            secrets : "*"
+            configmaps  : "*"
+            persistentvolumeclaims  : "*"
+            services.nodeports  : "*"
+            services.loadbalancers  : "*"
