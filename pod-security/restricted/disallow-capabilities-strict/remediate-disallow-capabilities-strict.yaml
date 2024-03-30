@@ -12,35 +12,53 @@ spec:
   rules:
     - name: add-drop-all
       match:
-        any:
-          - resources:
-              kinds:
-                - Deployment
-                - StatefulSet
-                - Job
-                - DaemonSet
+        resources:
+          kinds:
+            - Deployment
+            - StatefulSet
+            - Job
+            - DaemonSet
       mutate:
         foreach:
-        - list: "request.object.spec.template.spec.[containers, initContainers, ephemeralContainers][]"
-          patchStrategicMerge:
-            spec:
-              template:
-                spec:
-                  containers:
-                    - (name): "{{ element.name }}"
-                      securityContext:
-                        capabilities:
-                          +(drop):
-                            - ALL
-                  initContainers:
-                    - (name): "{{ element.name }}"
-                      securityContext:
-                        capabilities:
-                          +(drop):
-                            - ALL
-                  ephemeralContainers:
-                    - (name): "{{ element.name }}"
-                      securityContext:
-                        capabilities:
-                          +(drop):
-                            - ALL
+          - list: request.object.spec.template.spec.containers[]
+            order: Descending
+            preconditions:
+              all:
+                - key: ALL
+                  operator: AnyNotIn
+                  value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
+            patchesJson6902: |-
+              - op: add
+                path: /spec/template/spec/containers/{{elementIndex}}/securityContext
+                value:
+                  capabilities:
+                    drop:
+                      - ALL
+          - list: request.object.spec.template.spec.initContainers[]
+            order: Descending
+            preconditions:
+              all:
+                - key: ALL
+                  operator: AnyNotIn
+                  value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
+            patchesJson6902: |-
+              - op: add
+                path: /spec/template/spec/initContainers/{{elementIndex}}/securityContext
+                value:
+                  capabilities:
+                    drop:
+                      - ALL
+          - list: request.object.spec.template.spec.ephemeralContainers[]
+            order: Descending
+            preconditions:
+              all:
+                - key: ALL
+                  operator: AnyNotIn
+                  value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
+            patchesJson6902: |-
+              - op: add
+                path: /spec/template/spec/ephemeralContainers/{{elementIndex}}/securityContext
+                value:
+                  capabilities:
+                    drop:
+                      - ALL
