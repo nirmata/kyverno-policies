@@ -1,0 +1,267 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.7.1",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_s3_bucket.test_bucket",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "test_bucket",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "bucket": "test-bucket-nitish-demo",
+            "force_destroy": false,
+            "tags": null,
+            "timeouts": null
+          },
+          "sensitive_values": {
+            "cors_rule": [],
+            "grant": [],
+            "lifecycle_rule": [],
+            "logging": [],
+            "object_lock_configuration": [],
+            "replication_configuration": [],
+            "server_side_encryption_configuration": [],
+            "tags_all": {},
+            "versioning": [],
+            "website": []
+          }
+        },
+        {
+          "address": "aws_s3_bucket_policy.bucket_policy",
+          "mode": "managed",
+          "type": "aws_s3_bucket_policy",
+          "name": "bucket_policy",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "policy": "{\"Statement\":[{\"Action\":[\"s3:GetObject\"],\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Resource\":[\"arn:aws:s3:::test-bucket-nitish-demo/*\"],\"Sid\":\"PublicRead\"}],\"Version\":\"2012-10-17\"}"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_s3_bucket_public_access_block.example",
+          "mode": "managed",
+          "type": "aws_s3_bucket_public_access_block",
+          "name": "example",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "block_public_acls": false,
+            "block_public_policy": false,
+            "ignore_public_acls": false,
+            "restrict_public_buckets": false
+          },
+          "sensitive_values": {}
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_s3_bucket.test_bucket",
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "test_bucket",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "test-bucket-nitish-demo",
+          "force_destroy": false,
+          "tags": null,
+          "timeouts": null
+        },
+        "after_unknown": {
+          "acceleration_status": true,
+          "acl": true,
+          "arn": true,
+          "bucket_domain_name": true,
+          "bucket_prefix": true,
+          "bucket_regional_domain_name": true,
+          "cors_rule": true,
+          "grant": true,
+          "hosted_zone_id": true,
+          "id": true,
+          "lifecycle_rule": true,
+          "logging": true,
+          "object_lock_configuration": true,
+          "object_lock_enabled": true,
+          "policy": true,
+          "region": true,
+          "replication_configuration": true,
+          "request_payer": true,
+          "server_side_encryption_configuration": true,
+          "tags_all": true,
+          "versioning": true,
+          "website": true,
+          "website_domain": true,
+          "website_endpoint": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "cors_rule": [],
+          "grant": [],
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "replication_configuration": [],
+          "server_side_encryption_configuration": [],
+          "tags_all": {},
+          "versioning": [],
+          "website": []
+        }
+      }
+    },
+    {
+      "address": "aws_s3_bucket_policy.bucket_policy",
+      "mode": "managed",
+      "type": "aws_s3_bucket_policy",
+      "name": "bucket_policy",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "policy": "{\"Statement\":[{\"Action\":[\"s3:GetObject\"],\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Resource\":[\"arn:aws:s3:::test-bucket-nitish-demo/*\"],\"Sid\":\"PublicRead\"}],\"Version\":\"2012-10-17\"}"
+        },
+        "after_unknown": {
+          "bucket": true,
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {}
+      }
+    },
+    {
+      "address": "aws_s3_bucket_public_access_block.example",
+      "mode": "managed",
+      "type": "aws_s3_bucket_public_access_block",
+      "name": "example",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "block_public_acls": false,
+          "block_public_policy": false,
+          "ignore_public_acls": false,
+          "restrict_public_buckets": false
+        },
+        "after_unknown": {
+          "bucket": true,
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {}
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 4.16",
+        "expressions": {
+          "access_key": {
+            "constant_value": "ASIA4JFRUINQHOKBDNH4"
+          },
+          "region": {
+            "constant_value": "us-west-2"
+          },
+          "secret_key": {
+            "constant_value": "VODSWsF6FxFYm8exKfX//dpz+3sCJyZTk4VmepIE"
+          },
+          "token": {
+            "constant_value": "IQoJb3JpZ2luX2VjEMX//////////wEaCXVzLWVhc3QtMiJIMEYCIQCKQ1PUP+rhAFD3DQpAQt6bSpgUHcUtgOxUrk9ffks3pAIhAN6zKMd4BzhHR4sRsEEQoK9IJmbIv8h8KDLI6qLQjvPSKpcDCI7//////////wEQAxoMODQ0MzMzNTk3NTM2IgxZKhFfpSM5D/Q90ioq6wIjVIhA6X8I4PnIjRqBveL/v8Blo/Twm15dACSoqbSVgsqNNegMay80Zu40CVrPJzQioWFhweyw2UL5+9wGstnrFKg8qviJkwEB7eVr3YTwORusTTOl8z10N3eeDglPq7oWeKIdgp4bnr5oE+02VFBNL0QPNs/MklC5n9MyQsUcxyxLvtC7mQIZNh5a8e/eWHsFfT8WnLx+cU8kyiknilcbo0yxtAx7tdZbWI/0+ISD3mSaQII/vquh3Qyi/lOzYFMaHIxbxvZEJFaJUIOSPTZJ2mgDXOtk62+5YGrOXfl9pxo1T213qzlyuJNWiVcxexlBZy/mYGFLZdR7Y2H5ENp/GVgwCAxu/J6i90Z+vQdW2FkllSkzFgq3tBu3T+3ixA+kWR6Pvx5kkCIICk1zMfhQk3iQpzxUyapssU4luUtNtycTgNblXmbyDguCYXpHnvc07rxSZODD7T2BzSe3/mvRV4i7tc+CuuRRXwYw05T+rQY6pQEf4gz8/E9JoQetBemYWOACb59hjBrgdiLjNL1oQmrTXfhOMcCilV/oBzxqjG3rPN3rSbwq0ORN3arOhoozki9z/gSTt2+HdNkKtaFwsO0u9FnDYAkkHHKTo+UONqXGtLwVKZe6fX00BWJGcvfbOSsOi3EFXjKAp3LluKE/SjYT/YBvDwMgtbjsnV1w1oEsI4UqyLveVX5WMCT8yIIL2T4gpwJrNOY="
+          }
+        }
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_s3_bucket.test_bucket",
+          "mode": "managed",
+          "type": "aws_s3_bucket",
+          "name": "test_bucket",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "constant_value": "test-bucket-nitish-demo"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket_policy.bucket_policy",
+          "mode": "managed",
+          "type": "aws_s3_bucket_policy",
+          "name": "bucket_policy",
+          "provider_config_key": "aws",
+          "expressions": {
+            "bucket": {
+              "references": [
+                "aws_s3_bucket.test_bucket.id",
+                "aws_s3_bucket.test_bucket"
+              ]
+            },
+            "policy": {
+              "constant_value": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"PublicRead\",\n      \"Effect\": \"Allow\",\n      \"Principal\": { \"AWS\" : \"*\" },\n      \"Action\": [\"s3:GetObject\"],\n      \"Resource\": [\n        \"arn:aws:s3:::test-bucket-nitish-demo/*\"\n      ]\n    }\n  ]\n}\n"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_s3_bucket_public_access_block.example",
+          "mode": "managed",
+          "type": "aws_s3_bucket_public_access_block",
+          "name": "example",
+          "provider_config_key": "aws",
+          "expressions": {
+            "block_public_acls": {
+              "constant_value": false
+            },
+            "block_public_policy": {
+              "constant_value": false
+            },
+            "bucket": {
+              "references": [
+                "aws_s3_bucket.test_bucket.id",
+                "aws_s3_bucket.test_bucket"
+              ]
+            },
+            "ignore_public_acls": {
+              "constant_value": false
+            },
+            "restrict_public_buckets": {
+              "constant_value": false
+            }
+          },
+          "schema_version": 0
+        }
+      ]
+    }
+  },
+  "relevant_attributes": [
+    {
+      "resource": "aws_s3_bucket.test_bucket",
+      "attribute": [
+        "id"
+      ]
+    }
+  ],
+  "timestamp": "2024-02-04T13:19:07Z",
+  "errored": false
+}

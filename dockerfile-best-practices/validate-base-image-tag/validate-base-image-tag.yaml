@@ -1,0 +1,23 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-base-image-tag
+  annotations:
+    policies.kyverno.io/title: Validate base image tag
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks whether the base image tag is defined with a specific version or digest in the Dockerfile.
+spec:
+  rules:
+    - name: validate-base-image-tag
+      match:
+        any:
+        - (Stages[].From | length(@) > `0`): true
+      assert:
+        any:
+        - message: Base Image is missing version tags/digests
+          check:
+            ~.(Stages[].From.Image):
+                (contains(@, ':') || contains(@, '@sha')): true
+                (contains(@, ':latest')): false

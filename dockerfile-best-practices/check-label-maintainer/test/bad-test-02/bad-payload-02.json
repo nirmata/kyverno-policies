@@ -1,0 +1,47 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+      {
+        "Name": "",
+        "BaseName": "alpine:latest",
+        "Platform": "",
+        "Comment": "",
+        "SourceCode": "FROM alpine:latest",
+        "Location": [
+          {
+            "Start": {
+              "Line": 1,
+              "Character": 0
+            },
+            "End": {
+              "Line": 1,
+              "Character": 0
+            }
+          }
+        ],
+        "From": {
+          "Image": "alpine:latest"
+        },
+        "Commands": [
+          {
+            "Labels": [
+              {
+                "Key": "MAINTAINER",
+                "Value": "\"Nirmata\""
+              }
+            ],
+            "Name": "LABEL"
+          },
+          {
+            "CmdLine": [
+              "echo \"Hello world\""
+            ],
+            "Files": null,
+            "FlagsUsed": [],
+            "Name": "RUN",
+            "PrependShell": true
+          }
+        ]
+      }
+    ]
+  }

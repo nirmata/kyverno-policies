@@ -1,0 +1,33 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+        {
+            "Name": "",
+            "BaseName": "base",
+            "Platform": "",
+            "Comment": "",
+            "SourceCode": "FROM base",
+            "Location": [
+                {
+                    "Start": {
+                        "Line": 3,
+                        "Character": 0
+                    },
+                    "End": {
+                        "Line": 3,
+                        "Character": 0
+                    }
+                }
+            ],
+            "From": {
+                "Image": "base"
+            },
+            "Commands": [
+                {
+                    "Name": "USER",
+                    "User": "root"
+                }
+            ]
+        }
+    ]
+}

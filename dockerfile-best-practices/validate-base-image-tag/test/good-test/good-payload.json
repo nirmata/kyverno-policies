@@ -1,0 +1,28 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+        {
+            "Name": "",
+            "BaseName": "busybox:1.33",
+            "Platform": "",
+            "Comment": "",
+            "SourceCode": "FROM busybox:1.33",
+            "Location": [
+                {
+                    "Start": {
+                        "Line": 3,
+                        "Character": 0
+                    },
+                    "End": {
+                        "Line": 3,
+                        "Character": 0
+                    }
+                }
+            ],
+            "From": {
+                "Image": "busybox:1.33"
+            },
+            "Commands": null
+        }
+    ]
+}

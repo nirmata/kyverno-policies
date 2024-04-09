@@ -1,0 +1,91 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../validate-any-principal.yaml --payload ./good-payload.json --output json
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: validate-any-principal
+                rules:
+                - rule:
+                    name: validate-any-principal
+                  error: ~
+                  violations: ~
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-01
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../validate-any-principal.yaml --payload ./bad-payload.json --output json
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: validate-any-principal
+                rules:
+                - rule:
+                    name: validate-any-principal
+                  error: ~
+                  violations:
+                  - message: Principal should not be set to `*` in the Bucket Policy.
+                    errors:
+                    - type: FieldValueInvalid
+                      value: true
+                      detail: 'Expected value: false'
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-02
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../validate-any-principal.yaml --payload ./bad-payload-02.json --output json
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: validate-any-principal
+                rules:
+                - rule:
+                    name: validate-any-principal
+                  error: ~
+                  violations:
+                  - message: AWS should not be set to `*` in the Principal field for Bucket Policy
+                    errors:
+                    - type: FieldValueInvalid
+                      value: true
+                      detail: 'Expected value: false'

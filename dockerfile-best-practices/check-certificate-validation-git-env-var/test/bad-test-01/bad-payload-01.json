@@ -1,0 +1,56 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+      {
+        "Name": "",
+        "BaseName": "debian:bullseye",
+        "Platform": "",
+        "Comment": "",
+        "SourceCode": "FROM debian:bullseye",
+        "Location": [
+          {
+            "Start": {
+              "Line": 1,
+              "Character": 0
+            },
+            "End": {
+              "Line": 1,
+              "Character": 0
+            }
+          }
+        ],
+        "From": {
+          "Image": "debian:bullseye"
+        },
+        "Commands": [
+          {
+            "CmdLine": [
+              "apt-get update &&     apt-get install -y git"
+            ],
+            "Files": null,
+            "FlagsUsed": [],
+            "Name": "RUN",
+            "PrependShell": true
+          },
+          {
+            "Env": [
+              {
+                "Key": "GIT_SSL_NO_VERIFY",
+                "Value": "true"
+              }
+            ],
+            "Name": "ENV"
+          },
+          {
+            "CmdLine": [
+              "echo",
+              "hello world"
+            ],
+            "Files": null,
+            "Name": "CMD",
+            "PrependShell": false
+          }
+        ]
+      }
+    ]
+  }
