@@ -1,0 +1,55 @@
+{
+  "MetaArgs": null,
+  "Stages": [
+    {
+      "Name": "",
+      "BaseName": "alpine:latest",
+      "Platform": "",
+      "Comment": "",
+      "SourceCode": "FROM alpine:latest",
+      "Location": [
+        {
+          "Start": {
+            "Line": 1,
+            "Character": 0
+          },
+          "End": {
+            "Line": 1,
+            "Character": 0
+          }
+        }
+      ],
+      "From": {
+        "Image": "alpine:latest"
+      },
+      "Commands": [
+        {
+          "CmdLine": [
+            "apk --no-cache add wget"
+          ],
+          "Files": null,
+          "FlagsUsed": [],
+          "Name": "RUN",
+          "PrependShell": true
+        },
+        {
+          "CmdLine": [
+            "wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.17.2.tar.xz"
+          ],
+          "Files": null,
+          "FlagsUsed": [],
+          "Name": "RUN",
+          "PrependShell": true
+        },
+        {
+          "CmdLine": [
+            "wget"
+          ],
+          "Files": null,
+          "Name": "ENTRYPOINT",
+          "PrependShell": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+      {
+        "Name": "",
+        "BaseName": "fedora:34",
+        "Platform": "",
+        "Comment": "",
+        "SourceCode": "FROM fedora:34",
+        "Location": [
+          {
+            "Start": {
+              "Line": 1,
+              "Character": 0
+            },
+            "End": {
+              "Line": 1,
+              "Character": 0
+            }
+          }
+        ],
+        "From": {
+          "Image": "fedora:34"
+        },
+        "Commands": [
+          {
+            "CmdLine": [
+              "dnf -y install wget &&     dnf -y clean all"
+            ],
+            "Files": null,
+            "FlagsUsed": [],
+            "Name": "RUN",
+            "PrependShell": true
+          },
+          {
+            "CmdLine": [
+              "echo \"Hello, World!\""
+            ],
+            "Files": null,
+            "FlagsUsed": [],
+            "Name": "RUN",
+            "PrependShell": true
+          }
+        ]
+      }
+    ]
+  }
+  

@@ -1,0 +1,22 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-certificate-validation-wget
+  annotations:
+    policies.kyverno.io/title: Check for certificate validation using wget in the Dockerfile
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks whether certificate validation is disabled in the Dockerfile using --no-check-certificate option when running the wget command
+spec:
+  rules:
+    - name: check-certificate-validation-wget
+      match:
+        any:
+        - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
+      assert:
+        any:
+        - message: Ensure certificate validation is enabled by not using `--no-check-certificate` option
+          check:
+            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
+               ((starts_with(@, 'wget ') || contains(@, ' wget ')) && (contains(@, ' --no-check-certificate'))): false

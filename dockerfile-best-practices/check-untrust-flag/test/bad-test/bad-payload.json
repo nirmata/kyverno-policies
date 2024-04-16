@@ -1,0 +1,64 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+      {
+        "Name": "",
+        "BaseName": "alpine:latest",
+        "Platform": "",
+        "Comment": "",
+        "SourceCode": "FROM alpine:latest",
+        "Location": [
+          {
+            "Start": {
+              "Line": 1,
+              "Character": 0
+            },
+            "End": {
+              "Line": 1,
+              "Character": 0
+            }
+          }
+        ],
+        "From": {
+          "Image": "alpine:latest"
+        },
+        "Commands": [
+          {
+            "CmdLine": [
+              "apk update &&     apk add --no-cache --allow-untrusted curl"
+            ],
+            "Files": null,
+            "FlagsUsed": [],
+            "Name": "RUN",
+            "PrependShell": true
+          },
+          {
+            "Name": "WORKDIR",
+            "Path": "/app"
+          },
+          {
+            "Chmod": "",
+            "Chown": "",
+            "DestPath": "/app",
+            "From": "",
+            "Link": false,
+            "Name": "COPY",
+            "SourceContents": null,
+            "SourcePaths": [
+              "."
+            ]
+          },
+          {
+            "CmdLine": [
+              "echo",
+              "Container is running!"
+            ],
+            "Files": null,
+            "Name": "CMD",
+            "PrependShell": false
+          }
+        ]
+      }
+    ]
+  }
+  

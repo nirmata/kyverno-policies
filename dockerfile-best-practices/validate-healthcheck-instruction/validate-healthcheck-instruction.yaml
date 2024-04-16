@@ -1,0 +1,21 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-healthcheck-instruction
+  annotations:
+    policies.kyverno.io/title: Validate Healthcheck Instruction
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks if the HEALTHCHECK instruction is defined in the Dockerfile.
+spec:
+  rules:
+    - name: validate-healthcheck-instruction
+      match:
+        any:
+        - (Stages[].Commands[] | length(@) > `0`): true
+      assert:
+        any:
+        - message: HEALTHCHECK instruction is not defined
+          check:
+            (Stages[].Commands[?Name=='HEALTHCHECK'][] | length(@) > `0`): true

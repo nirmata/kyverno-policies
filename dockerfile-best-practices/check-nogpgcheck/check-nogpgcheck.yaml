@@ -1,0 +1,35 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-nogpgcheck
+  annotations:
+    policies.kyverno.io/title: Check for GPG signature when using yum/dnf/tdnf in the Dockerfile
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+        GPG signature checking is a security feature that verifies
+        the authenticity and integrity of packages before they are
+        installed on a system. When nogpgcheck is enabled, dnf, tdnf,
+        or yum will not verify the GPG signatures associated with the packages,
+        potentially exposing the system to security risks if the packages have been
+        tampered with or are not from trusted sources.
+spec:
+  rules:
+    - name: check-nogpgcheck
+      match:
+        any:
+        - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Enable GPG signature checking with yum by not using `--nogpgcheck` flag
+          check:
+            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
+               ((starts_with(@, 'yum ') || contains(@, ' yum '))  && contains(@, ' --nogpgcheck')): false
+        - message: Enable GPG signature checking with dnf by not using `--nogpgcheck` flag 
+          check: 
+            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
+               ((starts_with(@, 'dnf ') || contains(@, ' dnf '))  && contains(@, ' --nogpgcheck')): false
+        - message: Enable GPG signature checking with tdnf by not using `--nogpgcheck` flag 
+          check: 
+            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
+               ((starts_with(@, 'tdnf ') || contains(@, ' tdnf '))  && contains(@, ' --nogpgcheck')): false       

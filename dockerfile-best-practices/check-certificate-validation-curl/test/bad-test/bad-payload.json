@@ -1,0 +1,55 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+      {
+        "Name": "",
+        "BaseName": "alpine:latest",
+        "Platform": "",
+        "Comment": "",
+        "SourceCode": "FROM alpine:latest",
+        "Location": [
+          {
+            "Start": {
+              "Line": 1,
+              "Character": 0
+            },
+            "End": {
+              "Line": 1,
+              "Character": 0
+            }
+          }
+        ],
+        "From": {
+          "Image": "alpine:latest"
+        },
+        "Commands": [
+          {
+            "CmdLine": [
+              "apk --no-cache add curl"
+            ],
+            "Files": null,
+            "FlagsUsed": [],
+            "Name": "RUN",
+            "PrependShell": true
+          },
+          {
+            "CmdLine": [
+              "curl --insecure -LO https://github.com/glasskube/glasskube/releases/download/v0.0.1/glasskube_v0.0.1_amd64.deb"
+            ],
+            "Files": null,
+            "FlagsUsed": [],
+            "Name": "RUN",
+            "PrependShell": true
+          },
+          {
+            "CmdLine": [
+              "curl"
+            ],
+            "Files": null,
+            "Name": "ENTRYPOINT",
+            "PrependShell": false
+          }
+        ]
+      }
+    ]
+  }
