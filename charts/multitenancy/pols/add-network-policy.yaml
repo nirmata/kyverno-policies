@@ -13,7 +13,6 @@ metadata:
       each namespace to deny all ingress and egress traffic. Application teams can then configure 
       additional NetworkPolicy resources in their namespace to allow desired traffic. 
 spec:
-  validationFailureAction: Audit
   rules:
   - name: "default-deny"
     match:
@@ -26,6 +25,7 @@ spec:
       kind: "NetworkPolicy"
       name: "default-deny"
       namespace: "{{request.object.metadata.name}}"
+      synchronize: true
       data:
         spec:
           podSelector: {}
