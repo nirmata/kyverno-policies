@@ -203,6 +203,24 @@ entries:
   pss-baseline-policies:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2024-05-28T12:31:48.846806893Z"
+    description: Pod Security Standards (baseline) policy set
+    digest: 4396c7d12b09cbfa2d912121f39288745fe1a202a4a95c894da6d883d7e708a9
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: pss-baseline-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/pss-baseline-policies-0.4.0/pss-baseline-policies-0.4.0.tgz
+    version: 0.4.0
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2023-11-02T04:34:05.69322461Z"
     description: Pod Security Standards (baseline) policy set
     digest: 2bac9e3b3ff7fd11f204a8753608fd38a08677682509820031b1e11c4eca83c3
@@ -780,4 +798,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2024-05-09T11:13:40.39869294Z"
+generated: "2024-05-28T12:31:48.846936594Z"
