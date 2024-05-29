@@ -1,0 +1,22 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: detect-multiple-instructions
+  annotations:
+    policies.kyverno.io/title: Detect Multiple Instructions in Single Line
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that Dockerfile Container Image Should Be Built with Minimal Cached Layers
+spec:
+  rules:
+    - name: detect-multiple-instructions
+      match:
+        any:
+        - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Found multiple instructions in a single line
+          check:
+            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
+              (contains(@, ' && ')): false

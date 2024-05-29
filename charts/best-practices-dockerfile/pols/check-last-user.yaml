@@ -1,0 +1,25 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-last-user
+  annotations:
+    policies.kyverno.io/title: Check last USER
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy validates that the last USER is not root.
+spec:
+  rules:
+    - name: check-last-user
+      match:
+        any:
+        - (Stages[].Commands[?Name=='USER'][] | length(@) > `0`): true
+      assert:
+        any:
+        - message: Default user for the container should not be root
+          check:
+            (Stages[].Commands[?Name=='USER'][]):
+                (@)->array:
+                    (subtract(length($array), `1`))->want:
+                        ~index.($array):
+                            (to_number($index) != $want || !(starts_with(User, '0:') || ends_with(User, ':0') || User == 'root' || User == '0' ) ): true

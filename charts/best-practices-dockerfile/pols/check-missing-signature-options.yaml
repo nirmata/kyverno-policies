@@ -1,0 +1,36 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-missing-signature-options
+  annotations:
+    policies.kyverno.io/title: check for missing signature options via rpm
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+        This policy ensures that packages with untrusted or missing signatures
+        are not used by rpm via the ‘–nodigest’, ‘–nosignature’, ‘–noverify’, or
+        ‘–nofiledigest’ options
+spec:
+  rules:
+    - name: check-missing-signature-options
+      match:
+        any:
+        - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Ensure that packages with untrusted or missing signatures are not used by rpm via `--nofiledigest` flag
+          check:
+            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
+               ((starts_with(@, 'rpm ') || contains(@, ' rpm '))  && contains(@, ' --nofiledigest')): false
+        - message: Ensure that packages with untrusted or missing signatures are not used by rpm via `--noverify` flag
+          check: 
+            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
+               ((starts_with(@, 'rpm ') || contains(@, ' rpm '))  && contains(@, ' --noverify')): false
+        - message: Ensure that packages with untrusted or missing signatures are not used by rpm via `--nosignature` flag
+          check: 
+            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
+               ((starts_with(@, 'rpm ') || contains(@, ' rpm '))  && contains(@, ' --nosignature')): false
+        - message: Ensure that packages with untrusted or missing signatures are not used by rpm via `--nodigest` flag
+          check: 
+            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
+               ((starts_with(@, 'rpm ') || contains(@, ' rpm '))  && contains(@, ' --nodigest')): false

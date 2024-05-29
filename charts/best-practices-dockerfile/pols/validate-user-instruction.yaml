@@ -1,0 +1,21 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-user-instruction
+  annotations:
+    policies.kyverno.io/title: Validate USER instruction in Dockerfile
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks if the Dockerfile contains a USER instruction. If the USER instruction is not present, the policy fails.
+spec:
+  rules:
+    - name: validate-user-instruction
+      match:
+        any:
+        - (Stages[].Commands[] | length(@) > `0`): true
+      assert:
+        any:
+        - message: USER instruction is not present in the Dockerfile
+          check:
+            (Stages[].Commands[?Name=='USER'][] | length(@) > `0`): true

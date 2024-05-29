@@ -1,0 +1,22 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-sudo-operations
+  annotations:
+    policies.kyverno.io/title: Check for sudo operation existence
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Using sudo within a Dockerfile is not recommended to avoid privilege escalation.
+spec:
+  rules:
+    - name: detect-sudo-operations
+      match:
+        any:
+        - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
+      assert:
+        any:
+        - message: Dockerfile contains the 'sudo' operation which is not preferred
+          check:
+            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
+               (starts_with(@, 'sudo ') || contains(@, ' sudo ')): false

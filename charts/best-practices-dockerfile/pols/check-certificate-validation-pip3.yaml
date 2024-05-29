@@ -1,0 +1,27 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-certificate-validation-pip3
+  annotations:
+    policies.kyverno.io/title: Check for certificate validation using pip3 in the Dockerfile
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks whether certificate validation is disabled in the Dockerfile using --trusted-host option when running the pip3 command
+spec:
+  rules:
+    - name: check-certificate-validation-pip3
+      match:
+        any:
+        - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Ensure certificate validation is enabled by not using `--trusted-host` option with pip
+          check:
+            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
+               ((starts_with(@, 'pip ') || contains(@, ' pip '))  && contains(@, ' --trusted-host')): false
+        - message: Ensure certificate validation is enabled by not using `--trusted-host` option with pip3
+          check:
+            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
+               ((starts_with(@, 'pip3 ') || contains(@, ' pip3 '))  && contains(@, ' --trusted-host')): false
+               
