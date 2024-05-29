@@ -12,6 +12,8 @@ spec:
   rules:
     - name: prefer-copy-over-add
       match:
+        all:
+        - ($analyzer.resource.type): dockerfile
         any:
         - (Stages[].Commands[] | length(@) > `0`): true
       assert:

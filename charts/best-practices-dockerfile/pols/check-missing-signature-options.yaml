@@ -14,6 +14,8 @@ spec:
   rules:
     - name: check-missing-signature-options
       match:
+        all:
+        - ($analyzer.resource.type): dockerfile
         any:
         - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
       assert:
