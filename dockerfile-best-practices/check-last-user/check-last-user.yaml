@@ -6,13 +6,15 @@ metadata:
     policies.kyverno.io/title: Check last USER
     policies.kyverno.io/category: Dockerfile Best Practices
     policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/check-last-user/"
     policies.kyverno.io/description: >-
       This policy validates that the last USER is not root.
 spec:
   rules:
     - name: check-last-user
       match:
-        any:
+        all:
+        - ($analyzer.resource.type): dockerfile
         - (Stages[].Commands[?Name=='USER'][] | length(@) > `0`): true
       assert:
         any:

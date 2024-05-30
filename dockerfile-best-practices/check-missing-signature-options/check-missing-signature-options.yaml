@@ -6,6 +6,7 @@ metadata:
     policies.kyverno.io/title: check for missing signature options via rpm
     policies.kyverno.io/category: Dockerfile Best Practices
     policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/check-missing-signature-options/"
     policies.kyverno.io/description: >-
         This policy ensures that packages with untrusted or missing signatures
         are not used by rpm via the ‘–nodigest’, ‘–nosignature’, ‘–noverify’, or
@@ -14,7 +15,8 @@ spec:
   rules:
     - name: check-missing-signature-options
       match:
-        any:
+        all:
+        - ($analyzer.resource.type): dockerfile
         - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
       assert:
         all:
