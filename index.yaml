@@ -1,5 +1,24 @@
 apiVersion: v1
 entries:
+  best-practices-dockerfile:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2024-05-30T06:24:15.35742346Z"
+    description: Best practices Dockerfile policy set
+    digest: 8053064052d4dfc9980da908b4571cc3d8809872bbce1793dcf05910a887e482
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: best-practices-dockerfile
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/best-practices-dockerfile-0.1.0/best-practices-dockerfile-0.1.0.tgz
+    version: 0.1.0
   kubernetes-best-practice-policies:
   - apiVersion: v2
     appVersion: 0.1.0
@@ -798,4 +817,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2024-05-28T12:31:48.846936594Z"
+generated: "2024-05-30T06:24:15.357501569Z"
