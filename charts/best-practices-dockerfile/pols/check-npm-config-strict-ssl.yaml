@@ -17,7 +17,6 @@ spec:
       match:
         all:
         - ($analyzer.resource.type): dockerfile
-        any:
         - (Stages[].Commands[?Name=='ENV'] | length(@) > `0`): true
       assert:
         any:

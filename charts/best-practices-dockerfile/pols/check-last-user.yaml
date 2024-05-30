@@ -14,7 +14,6 @@ spec:
       match:
         all:
         - ($analyzer.resource.type): dockerfile
-        any:
         - (Stages[].Commands[?Name=='USER'][] | length(@) > `0`): true
       assert:
         any:
