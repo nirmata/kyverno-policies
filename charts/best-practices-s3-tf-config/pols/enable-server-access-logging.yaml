@@ -1,0 +1,29 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: enable-s3-server-access-logging
+  annotations:
+    policies.kyverno.io/title: enable-s3-server-access-logging
+    policies.kyverno.io/category: AWS S3 Security Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Server access logging provides detailed records for the
+      requests that are made to an Amazon S3 bucket. Server access
+      logs are useful for many applications. For example, access
+      log information can be useful in security and access audits.
+      This information can also help you learn about your customer
+      base and understand your Amazon S3 bill.
+spec:
+  rules:
+    - name: enable-s3-server-access-logging
+      match:
+        all:
+        - ($analyzer):
+            resource:
+              type: terraform-config
+        - (planned_values.root_module.resources[?type=='aws_s3_bucket'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Use the aws_s3_bucket_logging resource to enable server access logging
+          check:
+            (planned_values.root_module.resources[?type=='aws_s3_bucket_logging'] | length(@) > `0`): true
