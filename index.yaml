@@ -38,6 +38,25 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/best-practices-ecs-tf-config-0.1.0/best-practices-ecs-tf-config-0.1.0.tgz
     version: 0.1.0
+  best-practices-s3-tf-config:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2024-05-31T09:16:38.598411953Z"
+    description: Best practices S3 terraform-config
+    digest: 35547422f245bae33b750264293f7e8ad7df0a0e2ceafb0dfe34496c0708f167
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: best-practices-s3-tf-config
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/best-practices-s3-tf-config-0.1.0/best-practices-s3-tf-config-0.1.0.tgz
+    version: 0.1.0
   kubernetes-best-practice-policies:
   - apiVersion: v2
     appVersion: 0.1.0
@@ -836,4 +855,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2024-05-31T05:26:24.199349583Z"
+generated: "2024-05-31T09:16:38.598567424Z"
