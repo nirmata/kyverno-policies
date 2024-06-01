@@ -1,0 +1,30 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: disable-s3-access-control-list
+  annotations:
+    policies.kyverno.io/title: Disable S3 Access Control List 
+    policies.kyverno.io/category: AWS S3 Security Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      S3 Object Ownership is an Amazon S3 bucket-level setting that
+      you can use to control ownership of objects uploaded to your bucket 
+      and to disable or enable ACLs. By default, Object Ownership is set to
+      the Bucket owner enforced setting and all ACLs are disabled. 
+      When ACLs are disabled, the bucket owner owns all the objects in the bucket
+      and manages access to data exclusively using access management policies.
+spec:
+  rules:
+    - name: disable-s3-access-control-list
+      match:
+        all:
+        - ($analyzer):
+            resource:
+              type: terraform-config
+        - (planned_values.root_module.resources[?type=='aws_s3_bucket_ownership_controls' || type=='aws_s3_bucket'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Access Control List(ACL) should be disabled for an S3 Bucket
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_ownership_controls'].values.rule[]):
+                  object_ownership: BucketOwnerEnforced 
