@@ -2,7 +2,7 @@ apiVersion: v2
 name: test-krish
 description: Pod Security Standards (baseline) policy set
 type: application
-version: 0.5.4
+version: 0.5.5
 appVersion: 0.1.0
 keywords:
   - kubernetes
