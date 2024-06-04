@@ -764,6 +764,25 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/rbac-best-practice-policies-0.1.0/rbac-best-practice-policies-0.1.0.tgz
     version: 0.1.0
+  test-krish:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2024-06-04T10:47:34.464299437Z"
+    description: Pod Security Standards (baseline) policy set
+    digest: 513fdd66eb76c670980d811c64d16d7627ddcf4273beb9479d39b8869274d0d3
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: test-krish
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/test-krish-0.4.0/test-krish-0.4.0.tgz
+    version: 0.4.0
   workload-security-best-practice-policies:
   - apiVersion: v2
     appVersion: 0.1.0
@@ -873,4 +892,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2024-05-31T15:43:26.757709226Z"
+generated: "2024-06-04T10:47:34.464465908Z"
