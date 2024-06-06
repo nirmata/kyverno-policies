@@ -767,6 +767,24 @@ entries:
   test-krish:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2024-06-06T08:53:30.025185203Z"
+    description: Pod Security Standards (baseline) policy set
+    digest: 0868f79ec13f9ace76a1f68dd1a38aa90fa0dc0f113fe808b35bd06abf9bd621
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: test-krish
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/test-krish-0.6.25/test-krish-0.6.25.tgz
+    version: 0.6.25
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2024-06-06T08:47:12.047526362Z"
     description: Pod Security Standards (baseline) policy set
     digest: b33162b3ba3ee7f2cd881a1a76ac7ae4eebfeaba3222962e0558601c5f36ee31
@@ -1864,4 +1882,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2024-06-06T08:47:12.04780846Z"
+generated: "2024-06-06T08:53:30.025515724Z"
