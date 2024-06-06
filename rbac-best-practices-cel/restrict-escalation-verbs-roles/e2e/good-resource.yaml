@@ -72,7 +72,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: goodcr-empty-rules
+  name: goodrole-empty-rules
 rules: 
 ---
 # If the 'rules' field is omitted from the manifest, 
@@ -80,11 +80,11 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: goodcr-omitted-rules
+  name: goodrole-omitted-rules
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: goodcr-null-rules
+  name: goodrole-null-rules
   rules: null
 ---
