@@ -46,10 +46,31 @@ rules:
   resources: ["secrets"]
   verbs: ["create", "update", "patch"]
 ---
+# If 'rules' is specified without a value, 
+# the field will be set to 'rules: null' by default when the resource is created in the cluster.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: goodcr-empty-rules
+rules: 
+---
+# If the 'rules' field is omitted from the manifest, 
+# the field will be set to 'rules: null' by default when the resource is created in the cluster.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: goodcr-omitted-rules
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: goodcr-null-rules
+  rules: null
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: goodcr01
+  name: goodrole01
 rules:
 - apiGroups: [""]
   resources: ["pods", "namespaces"]
@@ -61,7 +82,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: goodcr02
+  name: goodrole02
 rules:
 - apiGroups: ["apps"]
   resources: ["deployments"]
@@ -70,7 +91,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: goodcr03
+  name: goodrole03
 rules:
 - apiGroups: ["batch"]
   resources: ["secrets"]
@@ -79,7 +100,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: goodcr04
+  name: goodrole04
 rules:
 - apiGroups: [""]
   resources: ["secrets"]
@@ -88,8 +109,29 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: goodcr05
+  name: goodrole05
 rules:
 - apiGroups: ["*"]
   resources: ["secrets"]
   verbs: ["create", "update", "patch"]
+---
+# If 'rules' is specified without a value, 
+# the field will be set to 'rules: null' by default when the resource is created in the cluster.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: goodcr-empty-rules
+rules: 
+---
+# If the 'rules' field is omitted from the manifest, 
+# the field will be set to 'rules: null' by default when the resource is created in the cluster.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: goodcr-omitted-rules
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: goodcr-null-rules
+  rules: null
