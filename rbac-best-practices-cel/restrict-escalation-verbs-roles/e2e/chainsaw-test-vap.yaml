@@ -1,0 +1,28 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: restrict-escalation-verbs-roles-policy
+spec:
+  steps:
+  - name: test-restrict-escalation-verbs-roles
+    try:
+    - apply:
+        file: ../restrict-escalation-verbs-roles.yaml
+    - assert:
+        file: policy-assert.yaml
+    - script:
+        content: |
+          sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../restrict-escalation-verbs-roles.yaml | kubectl apply -f - 
+    - assert:
+        file: enforce-policy-assert.yaml
+    - assert:
+        file: vap-assert.yaml
+    - assert:
+        file: vap-binding-assert.yaml
+    - apply:
+        file: good-resource.yaml
+    - apply:
+        expect:
+        - check:
+            ($error != null): true
+        file: bad-resource.yaml
