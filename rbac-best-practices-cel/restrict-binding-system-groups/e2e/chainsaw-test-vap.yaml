@@ -1,0 +1,28 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: restrict-binding-system-groups-policy
+spec:
+  steps:
+  - name: test-restrict-binding-system-groups
+    try:
+    - apply:
+        file: ../restrict-binding-system-groups.yaml
+    - assert:
+        file: policy-assert.yaml
+    - script:
+        content: |
+          sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../restrict-binding-system-groups.yaml | kubectl apply -f - 
+    - assert:
+        file: enforce-policy-assert.yaml
+    - assert:
+        file: vap-assert.yaml
+    - assert:
+        file: vap-binding-assert.yaml
+    - apply:
+        file: good-resource.yaml
+    - apply:
+        expect:
+        - check:
+            ($error != null): true
+        file: bad-resource.yaml
