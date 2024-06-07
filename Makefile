@@ -8,6 +8,9 @@ USE_CONFIG           ?= standard
 TOOLS_DIR                          := $(PWD)/.tools
 KIND                               := $(TOOLS_DIR)/kind
 KIND_VERSION                       := v0.22.0
+KIND_VAP_ALPHA_CONFIG			   := $(PWD)/.github/scripts/config/kind/vap-v1alpha1.yaml
+KIND_VAP_BETA_CONFIG			   := $(PWD)/.github/scripts/config/kind/vap-v1beta1.yaml
+HELM_VALUES_VAP					   := $(PWD)/.github/scripts/config/helm/values-vap.yaml
 HELM                               := $(TOOLS_DIR)/helm
 HELM_VERSION                       := v3.10.1
 TOOLS                              := $(KIND) $(HELM)
@@ -37,11 +40,28 @@ test-chainsaw:
 	@echo Running chainsaw tests... >&2
 	@chainsaw test --config .chainsaw-config.yaml
 
+.PHONY: test-chainsaw-vap
+test-chainsaw-vap:  
+	@echo Running chainsaw tests for VAPs... >&2
+	@chainsaw test --config .chainsaw-config.yaml --test-file chainsaw-test-vap.yaml
+
 ## Create kind cluster
 .PHONY: kind-create-cluster
 kind-create-cluster: $(KIND) 
 	@echo Create kind cluster... >&2
 	@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE)
+
+## Create kind cluster with alpha VAP enabled
+.PHONY: kind-create-cluster-vap-alpha
+kind-create-cluster-vap-alpha: $(KIND) 
+	@echo Create kind cluster... >&2
+	@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE) --config $(KIND_VAP_ALPHA_CONFIG)
+
+## Create kind cluster with beta VAP enabled
+.PHONY: kind-create-cluster-vap-beta
+kind-create-cluster-vap-beta: $(KIND) 
+	@echo Create kind cluster... >&2
+	@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE) --config $(KIND_VAP_BETA_CONFIG)
 
 ## Delete kind cluster
 .PHONY: kind-delete-cluster
@@ -56,6 +76,14 @@ kind-deploy-kyverno: $(HELM)
 	@$(HELM) repo add nirmata https://nirmata.github.io/kyverno-charts
 	@$(HELM) repo update
 	@$(HELM) install kyverno nirmata/kyverno -n kyverno --create-namespace --version=$(N4K_VERSION)
+
+## Deploy Enterprise Kyverno with VAP generation enabled
+.PHONY: kind-deploy-kyverno-vap
+kind-deploy-kyverno-vap: $(HELM) 
+	@echo Install kyverno chart... >&2
+	@$(HELM) repo add nirmata https://nirmata.github.io/kyverno-charts
+	@$(HELM) repo update
+	@$(HELM) install kyverno nirmata/kyverno -n kyverno --create-namespace --version=$(N4K_VERSION) --values=$(HELM_VALUES_VAP)
 
 ## Check Kyverno status 
 .PHONY: wait-for-kyverno
