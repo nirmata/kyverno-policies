@@ -11,8 +11,6 @@ KIND_VERSION                       := v0.22.0
 HELM                               := $(TOOLS_DIR)/helm
 HELM_VERSION                       := v3.10.1
 TOOLS                              := $(KIND) $(HELM)
-EXCLUDE_TEST_REGEX ?= ""
-INCLUDE_TEST_REGEX ?= ""
 
 $(KIND):
 	@echo Install kind... >&2
@@ -37,7 +35,7 @@ clean-tools:
 .PHONY: test-chainsaw
 test-chainsaw:  
 	@echo Running chainsaw tests... >&2
-	@chainsaw test --config .chainsaw-config.yaml --exclude-test-regex $(EXCLUDE_TEST_REGEX) --include-test-regex $(INCLUDE_TEST_REGEX)
+	@chainsaw test --config $(CHAINSAW_CONFIG)
 
 ## Create kind cluster
 .PHONY: kind-create-cluster

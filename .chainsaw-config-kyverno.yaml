@@ -15,3 +15,5 @@ spec:
   fullName: true
   forceTerminationGracePeriod: 5s
   delayBeforeCleanup: 3s
+  discovery:
+    excludeTestRegex: 'dockerfile-*'

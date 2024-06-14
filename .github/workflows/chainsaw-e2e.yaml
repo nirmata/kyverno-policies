@@ -40,7 +40,7 @@ jobs:
         run: chainsaw version
 
       - name: Test with Chainsaw
-        run: EXCLUDE_TEST_REGEX="./dockerfile*" make test-chainsaw
+        run: CHAINSAW_CONFIG="./.chainsaw-config-kyverno.yaml" make test-chainsaw
 
   run-e2etest-n4k-1-11:
     runs-on: ubuntu-latest
@@ -73,7 +73,7 @@ jobs:
         run: chainsaw version
 
       - name: Test with Chainsaw
-        run: EXCLUDE_TEST_REGEX="./dockerfile*" make test-chainsaw
+        run: CHAINSAW_CONFIG="./.chainsaw-config-kyverno.yaml" make test-chainsaw
 
   run-e2etest-kyverno-json:
     runs-on: ubuntu-latest
@@ -98,4 +98,4 @@ jobs:
         run: chainsaw version
 
       - name: Test with Chainsaw
-        run: INCLUDE_TEST_REGEX="./dockerfile*"  make test-chainsaw
+        run: CHAINSAW_CONFIG="./.chainsaw-config-kyverno-json.yaml"  make test-chainsaw
