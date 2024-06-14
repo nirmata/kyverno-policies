@@ -10,7 +10,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./good-test/01-yum/good-payload.json --output json
+            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./good-test/01-yum/good-payload.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):
@@ -38,7 +38,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./good-test/02-dnf/good-payload.json --output json
+            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./good-test/02-dnf/good-payload.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):
@@ -66,7 +66,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./good-test/03-tdnf/good-payload.json --output json
+            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./good-test/03-tdnf/good-payload.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):
@@ -94,7 +94,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./bad-test/01-yum/bad-payload.json --output json
+            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./bad-test/01-yum/bad-payload.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):
@@ -127,7 +127,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./bad-test/02-dnf/bad-payload.json --output json
+            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./bad-test/02-dnf/bad-payload.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):
@@ -160,7 +160,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./bad-test/03-tdnf/bad-payload.json --output json
+            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./bad-test/03-tdnf/bad-payload.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):
