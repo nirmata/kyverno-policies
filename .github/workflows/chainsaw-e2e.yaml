@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     
     strategy:
+      fail-fast: false
       matrix:
         k8s-version: [v1.29.2, v1.28.0, v1.27.3, v1.26.3, v1.25.8, v1.24.12]
         n4k-chart-version: [3.0.29]
@@ -39,12 +40,13 @@ jobs:
         run: chainsaw version
 
       - name: Test with Chainsaw
-        run: EXCLUDE_TEST_REGEX="*cel*"  make test-chainsaw
+        run: EXCLUDE_TEST_REGEX="./*-cel"  make test-chainsaw
 
   run-e2etest-n4k-1-11:
     runs-on: ubuntu-latest
     
     strategy:
+      fail-fast: false
       matrix:
         k8s-version: [v1.29.2, v1.28.0, v1.27.3, v1.26.3, v1.25.8]
         n4k-chart-version: [3.1.14]
@@ -87,7 +89,7 @@ jobs:
 
       - name: Prepare environment
         run: |
-          K8S_VERSION="1.29" make kind-create-cluster
+          K8S_VERSION="v1.29.2" make kind-create-cluster
 
       - name: Install chainsaw
         uses: kyverno/action-install-chainsaw@v0.1.6
@@ -96,4 +98,4 @@ jobs:
         run: chainsaw version
 
       - name: Test with Chainsaw
-        run: INCLUDE_TEST_REGEX=*dockerfile*  make test-chainsaw
+        run: INCLUDE_TEST_REGEX="./dockerfile*"  make test-chainsaw
