@@ -40,7 +40,7 @@ jobs:
         run: chainsaw version
 
       - name: Test with Chainsaw
-        run: EXCLUDE_TEST_REGEX="./*-cel"  make test-chainsaw
+        run: make test-chainsaw
 
   run-e2etest-n4k-1-11:
     runs-on: ubuntu-latest
