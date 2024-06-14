@@ -85,6 +85,10 @@ jobs:
         with:
           release: main
 
+      - name: Prepare environment
+        run: |
+          K8S_VERSION="1.29" make kind-create-cluster
+
       - name: Install chainsaw
         uses: kyverno/action-install-chainsaw@v0.1.6
 

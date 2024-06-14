@@ -11,6 +11,8 @@ KIND_VERSION                       := v0.22.0
 HELM                               := $(TOOLS_DIR)/helm
 HELM_VERSION                       := v3.10.1
 TOOLS                              := $(KIND) $(HELM)
+EXCLUDE_TEST_REGEX ?= ""
+INCLUDE_TEST_REGEX ?= ""
 
 $(KIND):
 	@echo Install kind... >&2
