@@ -9,11 +9,10 @@ on:
       - main
 
 jobs:
-  run-e2etest-1:
+  run-e2etest-n4k-1-10:
     runs-on: ubuntu-latest
     
     strategy:
-      fail-fast: false    
       matrix:
         k8s-version: [v1.29.2, v1.28.0, v1.27.3, v1.26.3, v1.25.8, v1.24.12]
         n4k-chart-version: [3.0.29]
@@ -21,11 +20,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Install kyverno-json
-        uses: kyverno/action-install-kyverno-json@4ac28215fd015ff6aa5525afc67f119f9f758957 # v0.0.1
-        with:
-          release: v0.0.3-alpha.2
 
       - name: Prepare environment
         run: |
@@ -47,11 +41,10 @@ jobs:
       - name: Test with Chainsaw
         run: make test-chainsaw
 
-  run-e2etest-2:
+  run-e2etest-n4k-1-11:
     runs-on: ubuntu-latest
     
     strategy:
-      fail-fast: false    
       matrix:
         k8s-version: [v1.29.2, v1.28.0, v1.27.3, v1.26.3, v1.25.8]
         n4k-chart-version: [3.1.14]
@@ -59,11 +52,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Install kyverno-json
-        uses: kyverno/action-install-kyverno-json@4ac28215fd015ff6aa5525afc67f119f9f758957 # v0.0.1
-        with:
-          release: v0.0.3-alpha.2
 
       - name: Prepare environment
         run: |
@@ -75,6 +63,27 @@ jobs:
 
       - name: Check Kyverno status
         run: make wait-for-kyverno
+
+      - name: Install chainsaw
+        uses: kyverno/action-install-chainsaw@v0.1.6
+
+      - name: Verify Chainsaw Installation
+        run: chainsaw version
+
+      - name: Test with Chainsaw
+        run: make test-chainsaw
+
+  run-e2etest-kyverno-json:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install kyverno-json
+        uses: kyverno/action-install-kyverno-json@4ac28215fd015ff6aa5525afc67f119f9f758957 # v0.0.1
+        with:
+          release: main
 
       - name: Install chainsaw
         uses: kyverno/action-install-chainsaw@v0.1.6
