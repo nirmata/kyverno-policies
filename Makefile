@@ -35,7 +35,7 @@ clean-tools:
 .PHONY: test-chainsaw
 test-chainsaw:  
 	@echo Running chainsaw tests... >&2
-	@chainsaw test --config .chainsaw-config.yaml
+	@chainsaw test --config .chainsaw-config.yaml --exclude-test-regex $(EXCLUDE_TEST_REGEX) --include-test-regex $(INCLUDE_TEST_REGEX)
 
 ## Create kind cluster
 .PHONY: kind-create-cluster

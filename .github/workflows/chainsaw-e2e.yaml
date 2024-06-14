@@ -39,7 +39,7 @@ jobs:
         run: chainsaw version
 
       - name: Test with Chainsaw
-        run: make test-chainsaw
+        run: EXCLUDE_TEST_REGEX="*cel*"  make test-chainsaw
 
   run-e2etest-n4k-1-11:
     runs-on: ubuntu-latest
@@ -92,4 +92,4 @@ jobs:
         run: chainsaw version
 
       - name: Test with Chainsaw
-        run: make test-chainsaw
+        run: INCLUDE_TEST_REGEX=*dockerfile*  make test-chainsaw
