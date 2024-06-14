@@ -10,7 +10,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-apt-command-force-yes.yaml --payload ./good-test/good-payload.json --output json
+            kyverno-json scan --policy ../check-apt-command-force-yes.yaml --payload ./good-test/good-payload.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):
@@ -38,7 +38,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-apt-command-force-yes.yaml --payload ./bad-test/bad-payload.json --output json
+            kyverno-json scan --policy ../check-apt-command-force-yes.yaml --payload ./bad-test/bad-payload.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):
@@ -72,7 +72,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-apt-command-force-yes.yaml --payload ./bad-test/bad-payload-02.json --output json
+            kyverno-json scan --policy ../check-apt-command-force-yes.yaml --payload ./bad-test/bad-payload-02.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):
