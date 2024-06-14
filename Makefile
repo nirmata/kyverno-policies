@@ -4,6 +4,7 @@ K8S_VERSION          ?= $(shell kubectl version --short | grep -i server | cut -
 KIND_IMAGE           ?= kindest/node:$(K8S_VERSION)
 KIND_NAME            ?= kind
 USE_CONFIG           ?= standard
+CHAINSAW_CONFIG ?= .chainsaw-config-kyverno.yaml
 
 TOOLS_DIR                          := $(PWD)/.tools
 KIND                               := $(TOOLS_DIR)/kind
