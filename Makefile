@@ -4,7 +4,8 @@ K8S_VERSION          ?= $(shell kubectl version --short | grep -i server | cut -
 KIND_IMAGE           ?= kindest/node:$(K8S_VERSION)
 KIND_NAME            ?= kind
 USE_CONFIG           ?= standard
-CHAINSAW_CONFIG ?= .chainsaw-config-kyverno.yaml
+CHAINSAW_CONFIG 	 ?= .chainsaw-config-kyverno.yaml
+NO_CLUSTER 			 ?= ""
 
 TOOLS_DIR                          := $(PWD)/.tools
 KIND                               := $(TOOLS_DIR)/kind
@@ -36,7 +37,7 @@ clean-tools:
 .PHONY: test-chainsaw
 test-chainsaw:  
 	@echo Running chainsaw tests... >&2
-	@chainsaw test --config $(CHAINSAW_CONFIG)
+	@chainsaw test --config $(CHAINSAW_CONFIG) $(NO_CLUSTER)
 
 ## Create kind cluster
 .PHONY: kind-create-cluster

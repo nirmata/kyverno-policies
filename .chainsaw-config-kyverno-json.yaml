@@ -12,6 +12,7 @@ spec:
     error: 1m30s
     exec: 1m30s
   execution:
+    parallel: 1
     forceTerminationGracePeriod: 5s
   cleanup:
     delayBeforeCleanup: 3s
