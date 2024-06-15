@@ -18,4 +18,4 @@ spec:
     delayBeforeCleanup: 3s
   discovery:
     fullName: true
-    excludeTestRegex: 'dockerfile-*|multitenancy-*'
+    excludeTestRegex: 'dockerfile-*'
