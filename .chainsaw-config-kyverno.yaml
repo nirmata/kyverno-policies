@@ -1,10 +1,9 @@
-apiVersion: chainsaw.kyverno.io/v1alpha1
+apiVersion: chainsaw.kyverno.io/v1alpha2
 kind: Configuration
 metadata:
   creationTimestamp: null
   name: configuration
 spec:
-  parallel: 1
   timeouts:
     apply: 1m30s
     assert: 1m30s
@@ -12,8 +11,10 @@ spec:
     delete: 1m30s
     error: 1m30s
     exec: 1m30s
-  fullName: true
-  forceTerminationGracePeriod: 5s
-  delayBeforeCleanup: 3s
+  execution:
+    forceTerminationGracePeriod: 5s
+  cleanup:
+    delayBeforeCleanup: 3s
   discovery:
+    fullName: true
     excludeTestRegex: 'dockerfile-*'
