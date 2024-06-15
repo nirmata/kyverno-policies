@@ -92,7 +92,7 @@ jobs:
           K8S_VERSION="v1.29.2" make kind-create-cluster
 
       - name: Install chainsaw
-        uses: kyverno/action-install-chainsaw@v0.1.6
+        uses: kyverno/action-install-chainsaw@v0.2.4
 
       - name: Verify Chainsaw Installation
         run: chainsaw version
