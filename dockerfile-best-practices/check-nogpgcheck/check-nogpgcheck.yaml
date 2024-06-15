@@ -6,6 +6,7 @@ metadata:
     policies.kyverno.io/title: Check for GPG signature when using yum/dnf/tdnf in the Dockerfile
     policies.kyverno.io/category: Dockerfile Best Practices
     policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/check-nogpgcheck/"
     policies.kyverno.io/description: >-
         GPG signature checking is a security feature that verifies
         the authenticity and integrity of packages before they are
@@ -17,7 +18,8 @@ spec:
   rules:
     - name: check-nogpgcheck
       match:
-        any:
+        all:
+        - ($analyzer.resource.type): dockerfile
         - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
       assert:
         all:
