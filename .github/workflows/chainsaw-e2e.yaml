@@ -63,7 +63,7 @@ jobs:
       - name: Install kyverno-json
         uses: kyverno/action-install-kyverno-json@4ac28215fd015ff6aa5525afc67f119f9f758957 # v0.0.1
         with:
-          release: v0.0.3-alpha.2
+          release: main
 
       - name: Prepare environment
         run: |
