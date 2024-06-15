@@ -10,7 +10,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-certificate-validation-wget.yaml --payload ./good-test/good-payload.json --output json
+            kyverno-json scan --policy ../check-certificate-validation-wget.yaml --payload ./good-test/good-payload.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):
@@ -38,7 +38,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-certificate-validation-wget.yaml --payload ./bad-test/bad-payload.json --output json
+            kyverno-json scan --policy ../check-certificate-validation-wget.yaml --payload ./bad-test/bad-payload.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):

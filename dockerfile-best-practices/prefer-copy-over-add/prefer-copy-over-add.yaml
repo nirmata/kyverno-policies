@@ -6,13 +6,15 @@ metadata:
     policies.kyverno.io/title: Prefer COPY over ADD in Dockerfile
     policies.kyverno.io/category: Dockerfile Best Practices
     policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/prefer-copy-over-add/"
     policies.kyverno.io/description: >-
       This policy ensures that COPY instructions are used instead of ADD instructions in Dockerfiles.
 spec:
   rules:
     - name: prefer-copy-over-add
       match:
-        any:
+        all:
+        - ($analyzer.resource.type): dockerfile
         - (Stages[].Commands[] | length(@) > `0`): true
       assert:
         any:
