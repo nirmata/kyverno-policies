@@ -6,6 +6,7 @@ metadata:
     policies.kyverno.io/title: Check for certificate validation using curl in the Dockerfile
     policies.kyverno.io/category: Dockerfile Best Practices
     policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/check-certificate-validation-curl/"
     policies.kyverno.io/description: >-
       This policy checks whether certificate validation is disabled in the Dockerfile using --insecure option when running the curl command
 spec:

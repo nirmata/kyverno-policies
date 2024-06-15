@@ -2,8 +2,8 @@ apiVersion: v2
 name: best-practices-dockerfile
 description: Best practices Dockerfile policy set
 type: application
-version: 0.1.1
-appVersion: 0.1.1
+version: 0.1.2
+appVersion: 0.1.2
 keywords:
   - kubernetes
   - nirmata

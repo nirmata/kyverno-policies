@@ -6,6 +6,7 @@ metadata:
     policies.kyverno.io/title: Check for certificate validation in the Dockerfile using Python environment variable
     policies.kyverno.io/category: Dockerfile Best Practices
     policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/check-certificate-validation-python-env-var/"
     policies.kyverno.io/description: >-
       The PYTHONHTTPSVERIFY environment variable is used in Python to control
       certificate verification when making HTTPS requests. This policy checks
@@ -23,4 +24,3 @@ spec:
         - message: Ensure certificate validation is enabled by using `PYTHONHTTPSVERIFY` env with value set to `1`
           check:
             (Stages[].Commands[].Env[?Key=='PYTHONHTTPSVERIFY' && Value=='1'][] | length(@) > `0`): true     
-                       
