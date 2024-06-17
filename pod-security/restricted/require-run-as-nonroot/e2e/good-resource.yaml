@@ -184,8 +184,8 @@ spec:
       containers:
       - name: container01
         image: nginx
-        securityContext:
-          runAsNonRoot: true
+      securityContext:
+        runAsNonRoot: true
 ---
 apiVersion: apps/v1
 kind: Deployment

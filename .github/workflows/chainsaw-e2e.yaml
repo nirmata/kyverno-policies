@@ -9,11 +9,11 @@ on:
       - main
 
 jobs:
-  run-e2etest-1:
+  run-e2etest-n4k-1-10:
     runs-on: ubuntu-latest
     
     strategy:
-      fail-fast: false    
+      fail-fast: false
       matrix:
         k8s-version: [v1.29.2, v1.28.0, v1.27.3, v1.26.3, v1.25.8, v1.24.12]
         n4k-chart-version: [3.0.29]
@@ -22,10 +22,38 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install kyverno-json
-        uses: kyverno/action-install-kyverno-json@4ac28215fd015ff6aa5525afc67f119f9f758957 # v0.0.1
-        with:
-          release: main
+      - name: Prepare environment
+        run: |
+          K8S_VERSION=${{ matrix.k8s-version }} make kind-create-cluster
+
+      - name: Install kyverno
+        run: |
+          N4K_VERSION=${{ matrix.n4k-chart-version }} make kind-deploy-kyverno
+
+      - name: Check Kyverno status
+        run: make wait-for-kyverno
+
+      - name: Install chainsaw
+        uses: kyverno/action-install-chainsaw@v0.2.4
+
+      - name: Verify Chainsaw Installation
+        run: chainsaw version
+
+      - name: Test with Chainsaw
+        run: CHAINSAW_CONFIG=".chainsaw-config-kyverno.yaml" make test-chainsaw
+
+  run-e2etest-n4k-1-11:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        k8s-version: [v1.29.2, v1.28.0, v1.27.3, v1.26.3, v1.25.8]
+        n4k-chart-version: [3.1.17]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Prepare environment
         run: |
@@ -39,22 +67,16 @@ jobs:
         run: make wait-for-kyverno
 
       - name: Install chainsaw
-        uses: kyverno/action-install-chainsaw@v0.1.6
+        uses: kyverno/action-install-chainsaw@v0.2.4
 
       - name: Verify Chainsaw Installation
         run: chainsaw version
 
       - name: Test with Chainsaw
-        run: make test-chainsaw
+        run: CHAINSAW_CONFIG=".chainsaw-config-kyverno.yaml" make test-chainsaw
 
-  run-e2etest-2:
+  run-e2etest-kyverno-json:
     runs-on: ubuntu-latest
-    
-    strategy:
-      fail-fast: false    
-      matrix:
-        k8s-version: [v1.29.2, v1.28.0, v1.27.3, v1.26.3, v1.25.8]
-        n4k-chart-version: [3.1.14]
 
     steps:
       - name: Checkout
@@ -65,22 +87,11 @@ jobs:
         with:
           release: main
 
-      - name: Prepare environment
-        run: |
-          K8S_VERSION=${{ matrix.k8s-version }} make kind-create-cluster
-
-      - name: Install kyverno
-        run: |
-          N4K_VERSION=${{ matrix.n4k-chart-version }} make kind-deploy-kyverno
-
-      - name: Check Kyverno status
-        run: make wait-for-kyverno
-
       - name: Install chainsaw
-        uses: kyverno/action-install-chainsaw@v0.1.6
+        uses: kyverno/action-install-chainsaw@v0.2.4
 
       - name: Verify Chainsaw Installation
         run: chainsaw version
 
       - name: Test with Chainsaw
-        run: make test-chainsaw
+        run: CHAINSAW_CONFIG=".chainsaw-config-kyverno-json.yaml" NO_CLUSTER="--no-cluster" make test-chainsaw

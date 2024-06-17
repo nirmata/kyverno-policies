@@ -4,12 +4,15 @@ kind: Pod
 metadata:
   name: goodpod01
 spec:
-  containers:
-  - name: container01
-    image: nginx
   securityContext:
     seccompProfile:
       type: RuntimeDefault
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
 ---
 apiVersion: v1
 kind: Pod
@@ -19,6 +22,9 @@ spec:
   containers:
   - name: container01
     image: nginx
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
   securityContext:
     seccompProfile:
       localhostProfile: operator/default/profile1.json
@@ -29,6 +35,9 @@ kind: Pod
 metadata:
   name: goodpod03
 spec:
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
   containers:
   - name: container01
     image: nginx
@@ -41,6 +50,9 @@ kind: Pod
 metadata:
   name: goodpod04
 spec:
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
   containers:
   - name: container01
     image: nginx
@@ -57,6 +69,9 @@ spec:
   containers:
   - name: container01
     image: nginx
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
   - name: container02
     image: nginx
     securityContext:
@@ -72,6 +87,9 @@ kind: Pod
 metadata:
   name: goodpod06
 spec:
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
   containers:
   - name: container01
     image: nginx
@@ -99,6 +117,9 @@ spec:
   containers:
   - name: container01
     image: nginx
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
   securityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -118,6 +139,9 @@ spec:
   containers:
   - name: container01
     image: nginx
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
   securityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -130,6 +154,9 @@ spec:
   initContainers:
   - name: initcontainer01
     image: nginx
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
   - name: initcontainer02
     image: nginx
     securityContext:
@@ -138,6 +165,9 @@ spec:
   containers:
   - name: container01
     image: nginx
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
   securityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -162,6 +192,9 @@ spec:
   containers:
   - name: container01
     image: nginx
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
   securityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -184,6 +217,9 @@ spec:
       containers:
       - name: container01
         image: nginx
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -205,6 +241,9 @@ spec:
       containers:
       - name: container01
         image: nginx
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
       securityContext:
         seccompProfile:
           type: Localhost
@@ -224,6 +263,9 @@ spec:
       labels:
         app: app
     spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: container01
         image: nginx
@@ -245,6 +287,9 @@ spec:
       labels:
         app: app
     spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: container01
         image: nginx
@@ -270,6 +315,9 @@ spec:
       containers:
       - name: container01
         image: nginx
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
       - name: container02
         image: nginx
         securityContext:
@@ -294,6 +342,9 @@ spec:
       labels:
         app: app
     spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: container01
         image: nginx
@@ -330,6 +381,9 @@ spec:
       containers:
       - name: container01
         image: nginx
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -358,6 +412,9 @@ spec:
       containers:
       - name: container01
         image: nginx
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -379,6 +436,9 @@ spec:
       initContainers:
       - name: initcontainer01
         image: nginx
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
       - name: initcontainer02
         image: nginx
         securityContext:
@@ -420,6 +480,9 @@ spec:
       containers:
       - name: container01
         image: nginx
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
       securityContext:
         seccompProfile:
           type: RuntimeDefault
