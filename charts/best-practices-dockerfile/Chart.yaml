@@ -1,0 +1,14 @@
+apiVersion: v2
+name: best-practices-dockerfile
+description: Best practices Dockerfile policy set
+type: application
+version: 0.1.1
+appVersion: 0.1.1
+keywords:
+  - kubernetes
+  - nirmata
+  - kyverno
+  - policy
+maintainers:
+  - name: Nirmata
+    url: https://nirmata.com/

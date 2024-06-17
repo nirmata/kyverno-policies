@@ -10,7 +10,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-missing-signature-options.yaml --payload ./good-test/good-payload.json --output json
+            kyverno-json scan --policy ../check-missing-signature-options.yaml --payload ./good-test/good-payload.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):
@@ -38,7 +38,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-missing-signature-options.yaml --payload ./bad-test/01-digest/bad-payload.json --output json
+            kyverno-json scan --policy ../check-missing-signature-options.yaml --payload ./bad-test/01-digest/bad-payload.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):
@@ -71,7 +71,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-missing-signature-options.yaml --payload ./bad-test/02-signature/bad-payload.json --output json
+            kyverno-json scan --policy ../check-missing-signature-options.yaml --payload ./bad-test/02-signature/bad-payload.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):
@@ -104,7 +104,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-missing-signature-options.yaml --payload ./bad-test/03-verify/bad-payload.json --output json
+            kyverno-json scan --policy ../check-missing-signature-options.yaml --payload ./bad-test/03-verify/bad-payload.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):
@@ -137,7 +137,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-missing-signature-options.yaml --payload ./bad-test/04-filedigest/bad-payload.json --output json
+            kyverno-json scan --policy ../check-missing-signature-options.yaml --payload ./bad-test/04-filedigest/bad-payload.json --output json --bindings ./binding.yaml
           check:
             ($error): ~
             (json_parse($stdout)):
