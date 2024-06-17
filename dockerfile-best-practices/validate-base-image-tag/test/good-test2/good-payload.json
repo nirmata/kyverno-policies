@@ -1,0 +1,105 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+        {
+            "Name": "base",
+            "BaseName": "busybox:1.33",
+            "Platform": "",
+            "Comment": "",
+            "SourceCode": "FROM busybox:1.33 AS base",
+            "Location": [
+                {
+                    "Start": {
+                        "Line": 3,
+                        "Character": 0
+                    },
+                    "End": {
+                        "Line": 3,
+                        "Character": 0
+                    }
+                }
+            ],
+            "As": "base",
+            "From": {
+                "Image": "busybox:1.33"
+            },
+            "Commands": [
+                {
+                    "Chmod": "",
+                    "Chown": "",
+                    "DestPath": "/test.sh",
+                    "From": "",
+                    "Link": false,
+                    "Name": "COPY",
+                    "SourceContents": null,
+                    "SourcePaths": [
+                        "test.sh"
+                    ]
+                }
+            ]
+        },
+        {
+            "Name": "build",
+            "BaseName": "base",
+            "Platform": "",
+            "Comment": "",
+            "SourceCode": "FROM base AS build",
+            "Location": [
+                {
+                    "Start": {
+                        "Line": 6,
+                        "Character": 0
+                    },
+                    "End": {
+                        "Line": 6,
+                        "Character": 0
+                    }
+                }
+            ],
+            "As": "build",
+            "From": {
+                "Stage": {
+                    "Named": "base",
+                    "Index": 0
+                }
+            },
+            "Commands": [
+                {
+                    "Labels": [
+                        {
+                            "Key": "foo",
+                            "Value": "bar"
+                        }
+                    ],
+                    "Name": "LABEL"
+                }
+            ]
+        },
+        {
+            "Name": "",
+            "BaseName": "base",
+            "Platform": "",
+            "Comment": "",
+            "SourceCode": "FROM base",
+            "Location": [
+                {
+                    "Start": {
+                        "Line": 9,
+                        "Character": 0
+                    },
+                    "End": {
+                        "Line": 9,
+                        "Character": 0
+                    }
+                }
+            ],
+            "From": {
+                "Stage": {
+                    "Named": "base",
+                    "Index": 0
+                }
+            },
+            "Commands": null
+        }
+    ]
+}

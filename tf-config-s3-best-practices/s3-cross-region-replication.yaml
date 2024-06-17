@@ -1,0 +1,33 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: enable-s3-cross-region-replication
+  annotations:
+    policies.kyverno.io/title: enable-s3-cross-region-replication
+    policies.kyverno.io/category: AWS S3 Security Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Replication enables automatic, asynchronous copying of objects
+      across Amazon S3 buckets. Buckets that are configured for object
+      replication can be owned by the same AWS account or by different
+      accounts. You can replicate objects to a single destination bucket
+      or to multiple destination buckets. The destination buckets can be
+      in different AWS Regions or within the same Region as the source bucket.
+spec:
+  rules:
+    - name: check-s3-cross-region-replication
+      match:
+        all:
+        - ($analyzer):
+            resource:
+              type: terraform-config
+        - (planned_values.root_module.resources[?type=='aws_s3_bucket'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Use the `aws_s3_bucket_replication_configuration` resource to set the status to Enabled
+          check:
+            (planned_values.root_module.resources[?type=='aws_s3_bucket_replication_configuration'] | length(@) > `0`): true
+        - message:  Set S3 Bucket Cross Region Replication status to 'Enabled'
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_replication_configuration']):
+              (values.rule[?status=='Enabled'] | length(@) > `0`): true

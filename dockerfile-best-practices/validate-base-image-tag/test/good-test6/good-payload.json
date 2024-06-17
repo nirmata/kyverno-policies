@@ -1,0 +1,28 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+      {
+        "Name": "",
+        "BaseName": "name@sha256:digest",
+        "Platform": "",
+        "Comment": "",
+        "SourceCode": "FROM name@sha256:digest",
+        "Location": [
+          {
+            "Start": {
+              "Line": 3,
+              "Character": 0
+            },
+            "End": {
+              "Line": 3,
+              "Character": 0
+            }
+          }
+        ],
+        "From": {
+          "Image": "name@sha256:digest"
+        },
+        "Commands": null
+      }
+    ]
+  }

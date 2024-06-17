@@ -1,0 +1,51 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+      {
+        "Name": "",
+        "BaseName": "python",
+        "Platform": "",
+        "Comment": "",
+        "SourceCode": "FROM python",
+        "Location": [
+          {
+            "Start": {
+              "Line": 1,
+              "Character": 0
+            },
+            "End": {
+              "Line": 1,
+              "Character": 0
+            }
+          }
+        ],
+        "From": {
+          "Image": "python"
+        },
+        "Commands": [
+          {
+            "Name": "WORKDIR",
+            "Path": "/app"
+          },
+          {
+            "CmdLine": [
+              "pip3 install --trusted-host pypi.python.org numpy"
+            ],
+            "Files": null,
+            "FlagsUsed": [],
+            "Name": "RUN",
+            "PrependShell": true
+          },
+          {
+            "CmdLine": [
+              "echo",
+              "Installed successfully"
+            ],
+            "Files": null,
+            "Name": "CMD",
+            "PrependShell": false
+          }
+        ]
+      }
+    ]
+  }

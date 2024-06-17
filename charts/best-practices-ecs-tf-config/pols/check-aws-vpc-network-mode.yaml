@@ -1,0 +1,32 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-awsvpc-network-mode
+  labels:
+    ecs.aws.network.kyverno.io: awsvpc
+  annotations:
+    policies.kyverno.io/title: Check awsvpc network mode
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      The awsvpc network mode restricts the flow of traffic between different 
+      tasks or between your tasks and other services that run within your Amazon VPC.
+      The awsvpc network mode provides task-level network isolation for tasks 
+      that run on Amazon EC2.
+spec:
+  rules:
+    - name: check-awsvpc-network-mode
+      match:
+        all:
+        - ($analyzer):
+            resource:
+              type: terraform-config
+        - (resource.aws_ecs_task_definition && length(resource.aws_ecs_task_definition) > `0`): true
+      assert:
+        all:
+        - message: ECS services and tasks are required to use awsvpc network mode.
+          check:
+            resource:
+              ~.(aws_ecs_task_definition):
+                ~.(@):
+                  network_mode: awsvpc
