@@ -1,0 +1,37 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-resource-quota-changes
+  annotations:
+    policies.kyverno.io/title: Restrict Resource Quota Changes
+    policies.kyverno.io/category: Multitenancy Benchmarks
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: ResourceQuota
+    policies.kyverno.io/description: >-
+      This policy verifies that tenants cannot create, update, patch, delete, or perform 
+      bulk-deletion operations on resource quotas within their namespaces. 
+      This could be a security measure to prevent tenants from interfering with 
+      resource management or exceeding their allocated resources.
+spec:
+  background: false
+  validationFailureAction: Enforce
+  rules:
+  - name: restrict-resource-quota-changes
+    match:
+      any:
+        - resources:
+            kinds:
+            - ResourceQuota        
+    validate:
+      message: "ResourceQuota changes are restricted"
+      deny:
+        conditions:
+          any:
+            - key: "{{request.operation || 'BACKGROUND'}}"
+              operator: AnyIn
+              value:
+              - CREATE
+              - UPDATE
+              - DELETE
+              - PATCH
+              - DELETECOLLECTION
