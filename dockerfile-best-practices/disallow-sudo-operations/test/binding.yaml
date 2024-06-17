@@ -1,0 +1,3 @@
+analyzer:
+  resource:
+    type: dockerfile

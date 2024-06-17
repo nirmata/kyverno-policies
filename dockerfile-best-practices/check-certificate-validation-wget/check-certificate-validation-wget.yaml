@@ -6,13 +6,15 @@ metadata:
     policies.kyverno.io/title: Check for certificate validation using wget in the Dockerfile
     policies.kyverno.io/category: Dockerfile Best Practices
     policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/check-certificate-validation-wget/"
     policies.kyverno.io/description: >-
       This policy checks whether certificate validation is disabled in the Dockerfile using --no-check-certificate option when running the wget command
 spec:
   rules:
     - name: check-certificate-validation-wget
       match:
-        any:
+        all:
+        - ($analyzer.resource.type): dockerfile
         - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
       assert:
         any:
