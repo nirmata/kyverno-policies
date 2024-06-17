@@ -1,0 +1,33 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-apt-command-force-yes
+  annotations:
+    policies.kyverno.io/title: Check for overidding of safety checks in apt-get command 
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/check-apt-command-force-yes/"
+    policies.kyverno.io/description: >-
+        The --force-yes option in apt-get is used to override some safety checks
+        and prompts, allowing the installation or upgrade of packages even if
+        they require additional user confirmation or if they conflict with other
+        packages. This can potentially lead to system instability or unexpected
+        behavior, as it bypasses certain safeguards put in place to ensure the stability
+        and consistency of the system.
+spec:
+  rules:
+    - name: check-apt-command-force-yes
+      match:
+        all:
+        - ($analyzer.resource.type): dockerfile
+        - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
+      assert:
+        all:
+        - message: refrain from using the '--force-yes' option with `apt-get` as it bypasses important package validation checks and can potentially compromise the stability and security of your system.
+          check:
+            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
+                ((starts_with(@, 'apt-get ') || contains(@, ' apt-get '))  && contains(@, ' --force-yes')): false
+        - message: refrain from using the '--force-yes' option with `apt` as it bypasses important package validation checks and can potentially compromise the stability and security of your system.
+          check:
+            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
+                ((starts_with(@, 'apt ') || contains(@, ' apt '))  && contains(@, ' --force-yes')): false        

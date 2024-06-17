@@ -6,6 +6,7 @@ metadata:
     policies.kyverno.io/title: Check for certificate validation in the Dockerfile for npm using `NPM_CONFIG_STRICT_SSL` environemt variable
     policies.kyverno.io/category: Dockerfile Best Practices
     policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/check-npm-config-strict-ssl/"
     policies.kyverno.io/description: >-
       The NPM_CONFIG_STRICT_SSL environment variable is used to control strict SSL
       certificate validation behavior in npm. This policy ensures that certificate
