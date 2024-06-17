@@ -1,0 +1,27 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-label-maintainer
+  annotations:
+    policies.kyverno.io/title: Validating LABEL maintainer instruction in Dockerfile
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/check-label-maintainer/"
+    policies.kyverno.io/description: >-
+      MAINTAINER instruction is deprecated for the Dockerfile. Instead, you can use the 
+      LABEL instruction to provide the maintainer name in the Dockerfile. This policy checks
+      if LABEL instruction has been specified with maintainer name.
+spec:
+  rules:
+  - assert:
+      all:
+      - check:
+          (Stages[].Commands[?Name=='MAINTAINER'][] | length(@) > `0`): false
+        message: MAINTAINER instruction is deprecated, use LABELS instruction to mention maintainer name
+      - check:
+          (Stages[].Commands[].Labels[?Key=='maintainer' || Key=='owner' || Key=='author'][] | length(@) > `0`): true
+        message: Use the LABELS instruction to set the MAINTAINER name
+    name: dockerfile-allow-label-maintainer-instruction
+    match:
+        all:
+        - ($analyzer.resource.type): dockerfile

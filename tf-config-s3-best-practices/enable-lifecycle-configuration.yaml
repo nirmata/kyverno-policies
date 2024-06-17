@@ -1,0 +1,30 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: s3-lifecycle-configuration
+  annotations:
+    policies.kyverno.io/title: s3-lifecycle-configuration 
+    policies.kyverno.io/category: AWS S3 Security Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      S3 Lifecycle manage your objects so that they are stored cost effectively
+      throughout their lifecycle. This policy ensures the lifecycle_configuration
+      is set when creating an S3 bucket.
+spec:
+  rules:
+    - name: check-s3-lifecycle-configuration
+      match:
+        all:
+        - ($analyzer):
+            resource:
+              type: terraform-config
+        - (planned_values.root_module.resources[?type=='aws_s3_bucket'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Use the `aws_s3_bucket_lifecycle_configuration` resource to enable lifecycle configuration.
+          check:
+            (planned_values.root_module.resources[?type=='aws_s3_bucket_lifecycle_configuration'] | length(@) > `0`): true
+        - message: S3 Bucket Lifecycle Configuration 'status' needs to be set to 'Enabled'
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_lifecycle_configuration']):
+              (values.rule[?status=='Enabled'] | length(@) > `0`): true

@@ -1,0 +1,23 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: detect-untrusted-flag
+  annotations:
+    policies.kyverno.io/title: Check for untrusted flag in Dockerfile
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that Dockerfile do not contain the '--allow-untrusted' flag.
+spec:
+  rules:
+    - name: detect-untrusted-flag
+      match:
+        all:
+        - ($analyzer.resource.type): dockerfile
+        - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
+      assert:
+        any:
+        - message: Dockerfile contains the '--allow-untrusted' which is not preferred
+          check:
+            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
+               (contains(@, '--allow-untrusted') && (contains(@, 'apk'))): false

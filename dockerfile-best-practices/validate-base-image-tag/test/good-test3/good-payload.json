@@ -1,0 +1,79 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+        {
+            "Name": "build",
+            "BaseName": "ubuntu:22.04-slim",
+            "Platform": "$BUILDPLATFORM",
+            "Comment": "",
+            "SourceCode": "FROM --platform=$BUILDPLATFORM ubuntu:22.04-slim AS build",
+            "Location": [
+                {
+                    "Start": {
+                        "Line": 3,
+                        "Character": 0
+                    },
+                    "End": {
+                        "Line": 3,
+                        "Character": 0
+                    }
+                }
+            ],
+            "As": "build",
+            "From": {
+                "Image": "ubuntu:22.04-slim"
+            },
+            "Commands": [
+                {
+                    "Chmod": "",
+                    "Chown": "",
+                    "DestPath": "/test.sh",
+                    "From": "",
+                    "Link": false,
+                    "Name": "COPY",
+                    "SourceContents": null,
+                    "SourcePaths": [
+                        "test.sh"
+                    ]
+                }
+            ]
+        },
+        {
+            "Name": "run",
+            "BaseName": "build",
+            "Platform": "",
+            "Comment": "",
+            "SourceCode": "FROM build as run",
+            "Location": [
+                {
+                    "Start": {
+                        "Line": 6,
+                        "Character": 0
+                    },
+                    "End": {
+                        "Line": 6,
+                        "Character": 0
+                    }
+                }
+            ],
+            "As": "run",
+            "From": {
+                "Stage": {
+                    "Named": "build",
+                    "Index": 0
+                }
+            },
+            "Commands": [
+                {
+                    "Labels": [
+                        {
+                            "Key": "foo",
+                            "Value": "bar"
+                        }
+                    ],
+                    "Name": "LABEL"
+                }
+            ]
+        }
+    ]
+}

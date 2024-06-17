@@ -1,0 +1,39 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+        {
+            "Name": "",
+            "BaseName": "ubuntu:latest",
+            "Platform": "",
+            "Comment": "",
+            "SourceCode": "FROM ubuntu:latest",
+            "Location": [
+                {
+                    "Start": {
+                        "Line": 2,
+                        "Character": 0
+                    },
+                    "End": {
+                        "Line": 2,
+                        "Character": 0
+                    }
+                }
+            ],
+            "From": {
+                "Image": "ubuntu:latest"
+            },
+            "Commands": [
+                {
+                    "CmdLine": [
+                        "nginx",
+                        "-g",
+                        "daemon off;"
+                    ],
+                    "Files": null,
+                    "Name": "CMD",
+                    "PrependShell": false
+                }
+            ]
+        }
+    ]
+}

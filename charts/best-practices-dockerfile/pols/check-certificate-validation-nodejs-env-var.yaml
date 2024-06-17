@@ -1,0 +1,25 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-certificate-validation-nodejs-env-var
+  annotations:
+    policies.kyverno.io/title: Check for certificate validation in the Dockerfile using Node.js environment variable
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      NODE_TLS_REJECT_UNAUTHORIZED is an environment variable used in Node.js
+      to control TLS certificate verification behavior. This policy checks whether
+      this environment variable is set to 0. By default, it is set to 1, which enables
+      certificate verification.
+spec:
+  rules:
+    - name: check-certificate-validation-nodejs-env-var
+      match:
+        all:
+        - ($analyzer.resource.type): dockerfile
+        - (Stages[].Commands[?Name=='ENV'] | length(@) > `0`): true
+      assert:
+        any:
+        - message: Ensure certificate validation is enabled by using `NODE_TLS_REJECT_UNAUTHORIZED` env with value set to `1`
+          check:
+            (Stages[].Commands[].Env[?Key=='NODE_TLS_REJECT_UNAUTHORIZED' && Value=='1'][] | length(@) > `0`): true     

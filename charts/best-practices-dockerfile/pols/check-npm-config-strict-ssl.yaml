@@ -1,0 +1,25 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-npm-config-strict-ssl
+  annotations:
+    policies.kyverno.io/title: Check for certificate validation in the Dockerfile for npm using `NPM_CONFIG_STRICT_SSL` environemt variable
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      The NPM_CONFIG_STRICT_SSL environment variable is used to control strict SSL
+      certificate validation behavior in npm. This policy ensures that certificate
+      validation isn't disabled for npm via the 'NPM_CONFIG_STRICT_SSL' environmnet
+      variable.
+spec:
+  rules:
+    - name: check-npm-config-strict-ssl
+      match:
+        all:
+        - ($analyzer.resource.type): dockerfile
+        - (Stages[].Commands[?Name=='ENV'] | length(@) > `0`): true
+      assert:
+        any:
+        - message: Ensure certificate validation is enabled by setting `NODE_TLS_REJECT_UNAUTHORIZED` env with value set to `true`
+          check:
+            (Stages[].Commands[].Env[?Key=='NPM_CONFIG_STRICT_SSL' && Value=='true'][] | length(@) > `0`): true

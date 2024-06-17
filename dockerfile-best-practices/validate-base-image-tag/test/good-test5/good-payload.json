@@ -1,0 +1,28 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+        {
+            "Name": "",
+            "BaseName": "scratch",
+            "Platform": "",
+            "Comment": "",
+            "SourceCode": "FROM scratch",
+            "Location": [
+                {
+                    "Start": {
+                        "Line": 3,
+                        "Character": 0
+                    },
+                    "End": {
+                        "Line": 3,
+                        "Character": 0
+                    }
+                }
+            ],
+            "From": {
+                "Scratch": true
+            },
+            "Commands": null
+        }
+    ]
+}

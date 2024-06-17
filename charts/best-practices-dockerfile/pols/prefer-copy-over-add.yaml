@@ -1,0 +1,22 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: prefer-copy-over-add
+  annotations:
+    policies.kyverno.io/title: Prefer COPY over ADD in Dockerfile
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that COPY instructions are used instead of ADD instructions in Dockerfiles.
+spec:
+  rules:
+    - name: prefer-copy-over-add
+      match:
+        all:
+        - ($analyzer.resource.type): dockerfile
+        - (Stages[].Commands[] | length(@) > `0`): true
+      assert:
+        any:
+        - message: Avoid the use of ADD instructions in Dockerfiles
+          check:
+            (Stages[].Commands[?Name=='ADD'].Link[] | length(@) > `0`): false

@@ -1,0 +1,47 @@
+{
+    "MetaArgs": null,
+    "Stages": [
+      {
+        "Name": "",
+        "BaseName": "node:latest",
+        "Platform": "",
+        "Comment": "",
+        "SourceCode": "FROM node:latest",
+        "Location": [
+          {
+            "Start": {
+              "Line": 1,
+              "Character": 0
+            },
+            "End": {
+              "Line": 1,
+              "Character": 0
+            }
+          }
+        ],
+        "From": {
+          "Image": "node:latest"
+        },
+        "Commands": [
+          {
+            "Env": [
+              {
+                "Key": "NPM_CONFIG_STRICT_SSL",
+                "Value": "false"
+              }
+            ],
+            "Name": "ENV"
+          },
+          {
+            "CmdLine": [
+              "echo \"Hello world\""
+            ],
+            "Files": null,
+            "FlagsUsed": [],
+            "Name": "RUN",
+            "PrependShell": true
+          }
+        ]
+      }
+    ]
+  }
