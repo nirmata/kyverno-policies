@@ -1,0 +1,46 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-hostprocess-containers
+  annotations:
+    policies.kyverno.io/title: Disallow HostProcess Containers
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kubernetes-version: "1.22-1.23"
+    policies.nirmata.io/remediation-docs: "NA"
+    policies.kyverno.io/description: >-
+      Hostprocess mode disables most security mechanisms and must not be allowed. This policy
+      ensures the fields spec.containers[*].securityContext.privileged and spec.initContainers[*].securityContext.windowsOptions.hostProcess must be unset or set to `false`.
+    policies.nirmata.io/remediation: "NA"
+spec:
+  validationFailureAction: audit
+  background: true
+  rules:
+    - name: hostprocess-containers
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: >-
+          HostProcess mode is disallowed.
+        pattern:
+          spec:
+            =(securityContext):
+              =(windowsOptions):
+                =(hostProcess): "false"
+            =(ephemeralContainers):
+              - =(securityContext):
+                  =(windowsOptions):
+                    =(hostProcess): "false"
+            =(initContainers):
+              - =(securityContext):
+                  =(windowsOptions):
+                    =(hostProcess): "false"
+            containers:
+              - =(securityContext):
+                  =(windowsOptions):
+                    =(hostProcess): "false"

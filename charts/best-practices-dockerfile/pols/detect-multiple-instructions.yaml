@@ -6,6 +6,7 @@ metadata:
     policies.kyverno.io/title: Detect Multiple Instructions in Single Line
     policies.kyverno.io/category: Dockerfile Best Practices
     policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/detect-multiple-instructions/"
     policies.kyverno.io/description: >-
       This policy ensures that Dockerfile Container Image Should Be Built with Minimal Cached Layers
 spec:

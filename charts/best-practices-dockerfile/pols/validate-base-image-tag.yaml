@@ -6,6 +6,7 @@ metadata:
     policies.kyverno.io/title: Validate base image tag
     policies.kyverno.io/category: Dockerfile Best Practices
     policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/validate-base-image-tag/"
     policies.kyverno.io/description: >-
       This policy checks whether the base image tag is defined with a specific version or digest in the Dockerfile.
 spec:

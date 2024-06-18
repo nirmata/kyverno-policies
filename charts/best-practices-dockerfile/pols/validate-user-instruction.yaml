@@ -6,6 +6,7 @@ metadata:
     policies.kyverno.io/title: Validate USER instruction in Dockerfile
     policies.kyverno.io/category: Dockerfile Best Practices
     policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/validate-user-instruction/"
     policies.kyverno.io/description: >-
       This policy checks if the Dockerfile contains a USER instruction. If the USER instruction is not present, the policy fails.
 spec:

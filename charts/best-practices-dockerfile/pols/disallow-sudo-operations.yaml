@@ -6,6 +6,7 @@ metadata:
     policies.kyverno.io/title: Check for sudo operation existence
     policies.kyverno.io/category: Dockerfile Best Practices
     policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/disallow-sudo-operations/"
     policies.kyverno.io/description: >-
       Using sudo within a Dockerfile is not recommended to avoid privilege escalation.
 spec:
