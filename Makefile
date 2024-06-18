@@ -40,6 +40,11 @@ test-chainsaw:
 	@echo Running chainsaw tests... >&2
 	@chainsaw test --config .chainsaw-config.yaml
 
+.PHONY: test-chainsaw-exclude-cel
+test-chainsaw-exclude-cel:  
+	@echo Running chainsaw tests by excluding CEL folders... >&2
+	@chainsaw test --config .chainsaw-config.yaml --exclude-test-regex 'chainsaw/.*-cel'
+
 .PHONY: test-chainsaw-vap
 test-chainsaw-vap:  
 	@echo Running chainsaw tests for VAPs... >&2

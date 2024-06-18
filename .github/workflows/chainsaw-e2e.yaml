@@ -45,7 +45,7 @@ jobs:
         run: chainsaw version
 
       - name: Test with Chainsaw
-        run: make test-chainsaw
+        run: make test-chainsaw-exclude-cel
 
   run-e2etest-2:
     runs-on: ubuntu-latest
