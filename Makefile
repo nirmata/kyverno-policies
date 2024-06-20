@@ -7,7 +7,7 @@ USE_CONFIG           ?= standard
 
 TOOLS_DIR                          := $(PWD)/.tools
 KIND                               := $(TOOLS_DIR)/kind
-KIND_VERSION                       := v0.22.0
+KIND_VERSION                       := v0.23.0
 KIND_VAP_ALPHA_CONFIG			   := $(PWD)/.github/scripts/config/kind/vap-v1alpha1.yaml
 KIND_VAP_BETA_CONFIG			   := $(PWD)/.github/scripts/config/kind/vap-v1beta1.yaml
 HELM_VALUES_VAP					   := $(PWD)/.github/scripts/config/helm/values-vap.yaml
