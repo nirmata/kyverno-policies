@@ -58,8 +58,8 @@ kind-create-cluster: $(KIND)
 		@echo Create kind cluster with kind-config-2.yaml... >&2
 		@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE) --config kind-config-2.yaml
 	else
-		@echo Create kind cluster with kind-config.yaml... >&2
-		@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE) --config kind-config.yaml
+		@echo Create kind cluster with default configuration... >&2
+		@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE)
 	endif
 ## Create kind cluster with alpha VAP enabled
 .PHONY: kind-create-cluster-vap-alpha
