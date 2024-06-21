@@ -52,15 +52,15 @@ test-chainsaw-vap:
 
 ## Create kind cluster
 .PHONY: kind-create-cluster
-kind-create-cluster: $(KIND) 
+kind-create-cluster: $(KIND)
 	@echo Create kind cluster... >&2
-	ifeq ($(K8S_VERSION),v1.22.17)
-		@echo Create kind cluster with kind-config-2.yaml... >&2
-		@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE) --config kind-config-1-22.yaml
-	else
-		@echo Create kind cluster with default configuration... >&2
-		@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE)
-	endif
+ifeq ($(K8S_VERSION),v1.22.17)
+	@echo Create kind cluster with kind-config-2.yaml... >&2
+	@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE) --config kind-config-1-22.yaml
+else
+	@echo Create kind cluster with default configuration... >&2
+	@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE)
+endif
 ## Create kind cluster with alpha VAP enabled
 .PHONY: kind-create-cluster-vap-alpha
 kind-create-cluster-vap-alpha: $(KIND) 
