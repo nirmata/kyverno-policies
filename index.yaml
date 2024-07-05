@@ -709,6 +709,25 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/pss-restricted-policies-0.1.0/pss-restricted-policies-0.1.0.tgz
     version: 0.1.0
+  rbac-best-practice-cel-policies:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2024-07-05T13:35:51.642384557Z"
+    description: Rbac Best Practice CEL policy set
+    digest: a7bfc5202607b8148b31e7bae328ecd18155782d2b4c0449f5cc1443cab50767
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: rbac-best-practice-cel-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/rbac-best-practice-cel-policies-0.1.0/rbac-best-practice-cel-policies-0.1.0.tgz
+    version: 0.1.0
   rbac-best-practice-policies:
   - apiVersion: v2
     appVersion: 0.1.0
@@ -1972,4 +1991,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2024-06-17T12:18:56.543887537Z"
+generated: "2024-07-05T13:35:51.642585833Z"
