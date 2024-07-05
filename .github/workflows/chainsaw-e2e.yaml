@@ -54,7 +54,7 @@ jobs:
       fail-fast: false    
       matrix:
         k8s-version: [v1.30.0, v1.29.4, v1.28.9, v1.27.13, v1.26.15, v1.25.16, v1.24.17, v1.23.17, v1.22.17]
-        n4k-chart-version: [3.1.18-rc3, 3.2.2-rc2]
+        n4k-chart-version: [3.1.18, 3.2.2-rc3]
 
     steps:
       - name: Checkout
@@ -91,8 +91,8 @@ jobs:
     strategy:
       fail-fast: false    
       matrix:
-        k8s-version: [v1.30.0]
-        n4k-chart-version: [3.1.17, 3.2.1]
+        k8s-version: [v1.27.3, v1.26.3]
+        n4k-chart-version: [3.1.18, 3.2.1]
 
     steps:
       - name: Checkout
@@ -125,7 +125,7 @@ jobs:
       fail-fast: false    
       matrix:
         k8s-version: [v1.30.0, v1.29.4, v1.28.9]
-        n4k-chart-version: [3.1.17, 3.2.1]
+        n4k-chart-version: [3.1.18, 3.2.1]
 
     steps:
       - name: Checkout
