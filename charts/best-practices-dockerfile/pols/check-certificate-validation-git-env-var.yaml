@@ -1,0 +1,25 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-certificate-validation-git-env-var
+  annotations:
+    policies.kyverno.io/title: Check for certificate validation in the Dockerfile using Node.js environment variable
+    policies.kyverno.io/category: Dockerfile Best Practices
+    policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/check-certificate-validation-git-env-var/"
+    policies.kyverno.io/description: >-
+      To control SSL certificate validation in Git operations within a Docker container,
+      you can use the GIT_SSL_NO_VERIFY environment variable. Setting this variable to true
+      or 1 tells Git to bypass SSL certificate validation.
+spec:
+  rules:
+    - name: check-certificate-validation-git-env-var
+      match:
+        all:
+        - ($analyzer.resource.type): dockerfile
+        - (Stages[].Commands[?Name=='ENV'] | length(@) > `0`): true
+      assert:
+        any:
+        - message: Ensure certificate validation is enabled by using `GIT_SSL_NO_VERIFY` env with value set to '0' or 'false'
+          check:
+            (Stages[].Commands[].Env[?Key=='GIT_SSL_NO_VERIFY' && (Value=='1' || Value=='true')][] | length(@) > `0`): false

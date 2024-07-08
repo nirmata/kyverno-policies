@@ -24,4 +24,3 @@ spec:
         - message: Ensure certificate validation is enabled by using `PYTHONHTTPSVERIFY` env with value set to `1`
           check:
             (Stages[].Commands[].Env[?Key=='PYTHONHTTPSVERIFY' && Value=='1'][] | length(@) > `0`): true     
-                       

@@ -8,8 +8,8 @@ spec:
   timeouts:
     apply: 1m30s
     assert: 1m30s
-    cleanup: 2m30s
-    delete: 1m30s
+    cleanup: 3m30s
+    delete: 2m30s
     error: 1m30s
     exec: 1m30s
   fullName: true

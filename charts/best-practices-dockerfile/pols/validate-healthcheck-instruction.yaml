@@ -6,6 +6,7 @@ metadata:
     policies.kyverno.io/title: Validate Healthcheck Instruction
     policies.kyverno.io/category: Dockerfile Best Practices
     policies.kyverno.io/severity: medium
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/validate-healthcheck-instruction/"
     policies.kyverno.io/description: >-
       This policy checks if the HEALTHCHECK instruction is defined in the Dockerfile.
 spec:

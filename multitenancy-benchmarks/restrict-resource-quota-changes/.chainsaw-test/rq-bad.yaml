@@ -1,0 +1,27 @@
+# create-resource-quota
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: create-resource-quota
+  namespace: chainsaw-test
+spec:
+  hard:
+    limits.cpu: "2"
+    limits.memory: 2Gi
+    requests.cpu: "1"
+    requests.memory: 1Gi
+
+---
+
+# Update ResourceQuota
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: create-resource-quota
+  namespace: chainsaw-test
+spec:
+  hard:
+    limits.cpu: "2"
+    limits.memory: 2Gi

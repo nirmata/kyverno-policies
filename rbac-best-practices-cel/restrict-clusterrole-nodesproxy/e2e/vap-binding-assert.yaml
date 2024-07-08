@@ -1,0 +1,12 @@
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kyverno
+  name: restrict-clusterrole-nodesproxy-binding
+  ownerReferences:
+  - apiVersion: kyverno.io/v1
+    kind: ClusterPolicy
+    name: restrict-clusterrole-nodesproxy
+spec:
+  policyName: restrict-clusterrole-nodesproxy
