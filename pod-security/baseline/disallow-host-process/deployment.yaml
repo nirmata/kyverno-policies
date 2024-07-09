@@ -35,6 +35,9 @@ spec:
             cpu: "500m"
       - name: nginx3
         image: nginx:1.14.2
+        securityContext:
+          windowsOptions:
+            hostProcess: true
         resources:
           requests:
             memory: "64Mi"
