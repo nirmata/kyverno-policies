@@ -1,0 +1,43 @@
+{
+    "provider": {
+        "aws": [
+            {
+                "region": "us-west-2"
+            }
+        ]
+    },
+    "resource": {
+        "aws_s3_bucket": {
+            "example": [
+                {
+                    "bucket": "test-bucket-demo-18012003"
+                }
+            ]
+        },
+        "aws_s3_bucket_ownership_controls": {
+            "example": [
+                {
+                    "bucket": "${aws_s3_bucket.example.id}",
+                    "rule": [
+                        {
+                            "object_ownership": "BucketOwnerEnforced"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "terraform": [
+        {
+            "required_providers": [
+                {
+                    "aws": {
+                        "source": "hashicorp/aws",
+                        "version": "~\u003e 4.16"
+                    }
+                }
+            ],
+            "required_version": "\u003e= 1.2.0"
+        }
+    ]
+}
