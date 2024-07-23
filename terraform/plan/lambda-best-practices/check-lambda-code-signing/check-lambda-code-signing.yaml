@@ -1,0 +1,23 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-lambda-code-signing
+  annotations:
+    policies.kyverno.io/title: check-lambda-code-signing 
+    policies.kyverno.io/category: AWS Lambda Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that AWS Lambda function is configured to validate code-signing
+spec:
+  rules:
+    - name: check-lambda-code-signing
+      match:
+        all:
+        - (planned_values.root_module.resources[?type=='aws_lambda_function'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Enable the code signing for the AWS Lambda function by specifying correct value to 'code_signing_config_arn' attribute in 'aws_lambda_function' resource block
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_lambda_function']):
+              values:
+                ((code_signing_config_arn || '') != ''): true
