@@ -1,0 +1,32 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-nodegroup-remote-access
+  annotations:
+    policies.kyverno.io/title: Ensure AWS EKS node group does not have implicit SSH access from 0.0.0.0/0
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Restricting SSH access prevents unauthorized users from gaining direct access to the underlying nodes of the Kubernetes cluster. 
+      By limiting access to specific trusted networks or entities, organizations can reduce the 
+      risk of potential security breaches and unauthorized modifications to the cluster infrastructure. 
+      If `ec2_ssh_key` is specified and `source_security_group_ids` is not specified for the EKS Node Group, 
+      either port 3389 for Windows or port 22 for other operating systems will be opened on the worker nodes to the Internet which can lead to unauthorized access 
+spec:
+  rules:
+    - name: check-nodegroup-remote-access
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-plan
+        - (planned_values.root_module.resources[?type=='aws_eks_node_group'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: >-
+            AWS EKS node group should not have implicit SSH access from 0.0.0.0/0
+            If `ec2_ssh_key` is specified and `source_security_group_ids` is not specified for the EKS Node Group, 
+            either port 3389 for Windows or port 22 for other operating systems will be opened on the worker nodes to the Internet which can lead to unauthorized access
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_eks_node_group']):
+                ~.(values.remote_access || `[]`):
+                    ((!ec2_ssh_key == `false`) && (!source_security_group_ids == `true`)): false
+                  

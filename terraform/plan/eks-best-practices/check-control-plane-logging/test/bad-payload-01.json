@@ -1,0 +1,217 @@
+{
+    "format_version": "1.2",
+    "terraform_version": "1.8.4",
+    "planned_values": {
+        "outputs": {
+            "cluster_id": {
+                "sensitive": false
+            }
+        },
+        "root_module": {
+            "resources": [
+                {
+                    "address": "aws_eks_cluster.example",
+                    "mode": "managed",
+                    "type": "aws_eks_cluster",
+                    "name": "example",
+                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                    "schema_version": 0,
+                    "values": {
+                        "enabled_cluster_log_types": null,
+                        "encryption_config": [],
+                        "name": "example-cluster",
+                        "outpost_config": [],
+                        "role_arn": "arn:aws:iam::123456789012:role/eks-cluster-role",
+                        "tags": null,
+                        "timeouts": null,
+                        "vpc_config": [
+                            {
+                                "endpoint_private_access": false,
+                                "endpoint_public_access": true,
+                                "security_group_ids": null,
+                                "subnet_ids": [
+                                    "subnet-0123456789abcdef0",
+                                    "subnet-0123456789abcdef1"
+                                ]
+                            }
+                        ]
+                    },
+                    "sensitive_values": {
+                        "certificate_authority": [],
+                        "encryption_config": [],
+                        "identity": [],
+                        "kubernetes_network_config": [],
+                        "outpost_config": [],
+                        "tags_all": {},
+                        "vpc_config": [
+                            {
+                                "public_access_cidrs": [],
+                                "subnet_ids": [
+                                    false,
+                                    false
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "resource_changes": [
+        {
+            "address": "aws_eks_cluster.example",
+            "mode": "managed",
+            "type": "aws_eks_cluster",
+            "name": "example",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "enabled_cluster_log_types": null,
+                    "encryption_config": [],
+                    "name": "example-cluster",
+                    "outpost_config": [],
+                    "role_arn": "arn:aws:iam::123456789012:role/eks-cluster-role",
+                    "tags": null,
+                    "timeouts": null,
+                    "vpc_config": [
+                        {
+                            "endpoint_private_access": false,
+                            "endpoint_public_access": true,
+                            "security_group_ids": null,
+                            "subnet_ids": [
+                                "subnet-0123456789abcdef0",
+                                "subnet-0123456789abcdef1"
+                            ]
+                        }
+                    ]
+                },
+                "after_unknown": {
+                    "arn": true,
+                    "certificate_authority": true,
+                    "cluster_id": true,
+                    "created_at": true,
+                    "encryption_config": [],
+                    "endpoint": true,
+                    "id": true,
+                    "identity": true,
+                    "kubernetes_network_config": true,
+                    "outpost_config": [],
+                    "platform_version": true,
+                    "status": true,
+                    "tags_all": true,
+                    "version": true,
+                    "vpc_config": [
+                        {
+                            "cluster_security_group_id": true,
+                            "public_access_cidrs": true,
+                            "subnet_ids": [
+                                false,
+                                false
+                            ],
+                            "vpc_id": true
+                        }
+                    ]
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "certificate_authority": [],
+                    "encryption_config": [],
+                    "identity": [],
+                    "kubernetes_network_config": [],
+                    "outpost_config": [],
+                    "tags_all": {},
+                    "vpc_config": [
+                        {
+                            "public_access_cidrs": [],
+                            "subnet_ids": [
+                                false,
+                                false
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "output_changes": {
+        "cluster_id": {
+            "actions": [
+                "create"
+            ],
+            "before": null,
+            "after_unknown": true,
+            "before_sensitive": false,
+            "after_sensitive": false
+        }
+    },
+    "configuration": {
+        "provider_config": {
+            "aws": {
+                "name": "aws",
+                "full_name": "registry.terraform.io/hashicorp/aws",
+                "version_constraint": "~\u003e 4.16",
+                "expressions": {
+                    "region": {
+                        "constant_value": "us-west-2"
+                    }
+                }
+            }
+        },
+        "root_module": {
+            "outputs": {
+                "cluster_id": {
+                    "expression": {
+                        "references": [
+                            "aws_eks_cluster.example.id",
+                            "aws_eks_cluster.example"
+                        ]
+                    }
+                }
+            },
+            "resources": [
+                {
+                    "address": "aws_eks_cluster.example",
+                    "mode": "managed",
+                    "type": "aws_eks_cluster",
+                    "name": "example",
+                    "provider_config_key": "aws",
+                    "expressions": {
+                        "name": {
+                            "constant_value": "example-cluster"
+                        },
+                        "role_arn": {
+                            "constant_value": "arn:aws:iam::123456789012:role/eks-cluster-role"
+                        },
+                        "vpc_config": [
+                            {
+                                "subnet_ids": {
+                                    "constant_value": [
+                                        "subnet-0123456789abcdef0",
+                                        "subnet-0123456789abcdef1"
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "schema_version": 0
+                }
+            ]
+        }
+    },
+    "relevant_attributes": [
+        {
+            "resource": "aws_eks_cluster.example",
+            "attribute": [
+                "id"
+            ]
+        }
+    ],
+    "timestamp": "2024-06-21T12:24:25Z",
+    "applyable": true,
+    "complete": true,
+    "errored": false
+}
