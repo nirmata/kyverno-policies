@@ -1,0 +1,24 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-env-var-encryption
+  annotations:
+    policies.kyverno.io/title: check-env-var-encryption 
+    policies.kyverno.io/category: AWS Lambda Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that if environment variables are used in a Lambda function, they should be encrypted.
+spec:
+  rules:
+    - name: check-env-var-encryption
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-plan
+        - (planned_values.root_module.resources[?type=='aws_lambda_function'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Enable the encryption of environment variable for the AWS Lambda function by specifying correct value to 'kms_key_arn' attribute in 'aws_lambda_function' resource block
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_lambda_function']):
+              values:
+                ((kms_key_arn || '') != ''): true
