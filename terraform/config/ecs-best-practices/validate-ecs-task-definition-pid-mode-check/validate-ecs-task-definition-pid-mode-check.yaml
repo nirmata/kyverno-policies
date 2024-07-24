@@ -1,0 +1,25 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-ecs-task-definition-pid-mode-check
+  labels:
+    ecs.aws.tags.kyverno.io: ecs-service
+  annotations:
+    policies.kyverno.io/title: Validate ECS task definition PID mode check
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that ECS task definitions do not share the host's process namespace
+spec:
+  rules:
+    - name: validate-ecs-task-definition-pid-mode-check
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-config
+        - (resource.aws_ecs_task_definition != null): true
+      assert:
+        all:
+        - message: ECS task definitions shares the host's process namespace
+          check:
+            ~.(resource.aws_ecs_task_definition.values(@)[]):
+                (pid_mode || 'task'): task

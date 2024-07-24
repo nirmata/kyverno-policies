@@ -1,0 +1,54 @@
+{
+    "provider": {
+        "aws": [
+            {
+                "region": "us-west-1"
+            }
+        ],
+        "docker": [
+            {}
+        ]
+    },
+    "resource": {
+        "aws_ecs_cluster": {
+            "good_ecs_cluster_1": [
+                {
+                    "name": "good-cluster-1",
+                    "setting": [
+                        {
+                            "name": "containerInsights",
+                            "value": "enabled"
+                        }
+                    ]
+                }
+            ],
+            "good_ecs_cluster_2": [
+                {
+                    "name": "good-cluster-2",
+                    "setting": [
+                        {
+                            "name": "containerInsights",
+                            "value": "enabled"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "terraform": [
+        {
+            "required_providers": [
+                {
+                    "aws": {
+                        "source": "hashicorp/aws",
+                        "version": "~\u003e 4.0"
+                    },
+                    "docker": {
+                        "source": "kreuzwerker/docker",
+                        "version": "~\u003e2.20.0"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,45 @@
+{
+    "provider": {
+        "aws": [
+            {
+                "region": "us-west-1"
+            }
+        ],
+        "docker": [
+            {}
+        ]
+    },
+    "resource": {
+        "aws_ecs_task_definition": {
+            "bad_task": [
+                {
+                    "container_definitions": "  [\n    {\n      \"name\"      : \"foo-task\",\n      \"image\"     : \"nginx:1.23.1\",\n      \"cpu\"       : 512,\n      \"memory\"    : 2048,\n      \"essential\" : true,\n      \"portMappings\" : [\n        {\n          \"containerPort\" : 80,\n          \"hostPort\"      : 80\n        }\n      ]\n    }\n  ]\n",
+                    "family": "service",
+                    "pid_mode": "host"
+                }
+            ],
+            "good_task": [
+                {
+                    "container_definitions": "  [\n    {\n      \"name\"      : \"bar-task\",\n      \"image\"     : \"httpd:2.4\",\n      \"cpu\"       : 256,\n      \"memory\"    : 1024,\n      \"essential\" : true,\n      \"portMappings\" : [\n        {\n          \"containerPort\" : 8080,\n          \"hostPort\"      : 8080\n        }\n      ]\n    }\n  ]\n",
+                    "family": "service-2"
+                }
+            ]
+        }
+    },
+    "terraform": [
+        {
+            "required_providers": [
+                {
+                    "aws": {
+                        "source": "hashicorp/aws",
+                        "version": "~\u003e 4.0"
+                    },
+                    "docker": {
+                        "source": "kreuzwerker/docker",
+                        "version": "~\u003e2.20.0"
+                    }
+                }
+            ]
+        }
+    ]
+}
