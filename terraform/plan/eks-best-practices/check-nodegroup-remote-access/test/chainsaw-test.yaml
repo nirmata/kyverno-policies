@@ -1,0 +1,180 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-01
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../check-nodegroup-remote-access.yaml --payload good-payload-01.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-nodegroup-remote-access
+                rules:
+                - rule:
+                    name: check-nodegroup-remote-access
+                  error: ~
+                  violations: ~
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-02
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../check-nodegroup-remote-access.yaml --payload good-payload-02.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-nodegroup-remote-access
+                rules:
+                - rule:
+                    name: check-nodegroup-remote-access
+                  error: ~
+                  violations: ~
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-03
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../check-nodegroup-remote-access.yaml --payload good-payload-03.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-nodegroup-remote-access
+                rules:
+                - rule:
+                    name: check-nodegroup-remote-access
+                  error: ~
+                  violations: ~
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-04
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../check-nodegroup-remote-access.yaml --payload good-payload-04.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-nodegroup-remote-access
+                rules:
+                - rule:
+                    name: check-nodegroup-remote-access
+                  error: ~
+                  violations: ~
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-01
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../check-nodegroup-remote-access.yaml --payload bad-payload-01.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-nodegroup-remote-access
+                rules:
+                - rule:
+                    name: check-nodegroup-remote-access
+                  error: ~
+                  violations:
+                  - message: >-
+                      AWS EKS node group should not have implicit SSH access from 0.0.0.0/0
+                      If `ec2_ssh_key` is specified and `source_security_group_ids` is not specified for the EKS Node Group, 
+                      either port 3389 for Windows or port 22 for other operating systems will be opened on the worker nodes to the Internet which can lead to unauthorized access
+                    errors:
+                    - type: FieldValueInvalid
+                      value: true
+                      detail: 'Expected value: false'
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-02
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../check-nodegroup-remote-access.yaml --payload bad-payload-02.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-nodegroup-remote-access
+                rules:
+                - rule:
+                    name: check-nodegroup-remote-access
+                  error: ~
+                  violations:
+                  - message: >-
+                      AWS EKS node group should not have implicit SSH access from 0.0.0.0/0
+                      If `ec2_ssh_key` is specified and `source_security_group_ids` is not specified for the EKS Node Group, 
+                      either port 3389 for Windows or port 22 for other operating systems will be opened on the worker nodes to the Internet which can lead to unauthorized access
+                    errors:
+                    - type: FieldValueInvalid
+                      value: true
+                      detail: 'Expected value: false'

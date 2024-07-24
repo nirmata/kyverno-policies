@@ -1,0 +1,29 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-control-plane-logging
+  annotations:
+    policies.kyverno.io/title: Check Control Plane Logging
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Enabling Amazon EKS control plane logging for all log types is a best practice 
+      for enhancing the security, monitoring, troubleshooting, performance optimization, and operational management of your Kubernetes clusters. 
+      By capturing comprehensive logs of control plane activities, you can effectively manage and secure your 
+      EKS infrastructure while ensuring compliance with regulatory requirements and industry standards.
+spec:
+  rules:
+    - name: check-control-plane-logging
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-plan
+        - (planned_values.root_module.resources[?type=='aws_eks_cluster'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: EKS control plane logging must be enabled for all log types
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_eks_cluster']):
+                (values.enabled_cluster_log_types[] || `[]`):
+                  (contains(@, 'api') && contains(@, 'audit') && contains(@, 'authenticator') && contains(@, 'controllerManager') && contains(@, 'scheduler')): true
+
+

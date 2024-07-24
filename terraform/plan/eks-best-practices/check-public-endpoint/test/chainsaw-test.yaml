@@ -1,0 +1,93 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-01
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./good-test/good-payload-01.json --policy ../check-public-endpoint.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-public-endpoint
+                rules:
+                - rule:
+                    name: check-public-endpoint
+                  error: ~
+                  violations: ~
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-01
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./bad-test/bad-payload-01.json --policy ../check-public-endpoint.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-public-endpoint
+                rules:
+                - rule:
+                    name: check-public-endpoint
+                  error: ~
+                  violations:
+                  - message: Public access to EKS cluster endpoint must be explicitly set to false
+                    errors:
+                    - type: FieldValueInvalid
+                      value: true
+                      detail: 'Expected value: false'
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-02
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./bad-test/bad-payload-02.json --policy ../check-public-endpoint.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-public-endpoint
+                rules:
+                - rule:
+                    name: check-public-endpoint
+                  error: ~
+                  violations:
+                  - message: Public access to EKS cluster endpoint must be explicitly set to false
+                    errors:
+                    - type: FieldValueInvalid
+                      value: true
+                      detail: 'Expected value: false'
