@@ -1,0 +1,490 @@
+{
+    "format_version": "1.2",
+    "terraform_version": "1.8.4",
+    "planned_values": {
+        "root_module": {
+            "resources": [
+                {
+                    "address": "aws_eks_cluster.example",
+                    "mode": "managed",
+                    "type": "aws_eks_cluster",
+                    "name": "example",
+                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                    "schema_version": 0,
+                    "values": {
+                        "enabled_cluster_log_types": null,
+                        "encryption_config": [],
+                        "name": "example-cluster",
+                        "outpost_config": [],
+                        "tags": null,
+                        "timeouts": null,
+                        "vpc_config": [
+                            {
+                                "endpoint_private_access": false,
+                                "endpoint_public_access": true,
+                                "security_group_ids": null,
+                                "subnet_ids": [
+                                    "subnet-12345",
+                                    "subnet-67890"
+                                ]
+                            }
+                        ]
+                    },
+                    "sensitive_values": {
+                        "certificate_authority": [],
+                        "encryption_config": [],
+                        "identity": [],
+                        "kubernetes_network_config": [],
+                        "outpost_config": [],
+                        "tags_all": {},
+                        "vpc_config": [
+                            {
+                                "public_access_cidrs": [],
+                                "subnet_ids": [
+                                    false,
+                                    false
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "address": "aws_eks_node_group.good_example",
+                    "mode": "managed",
+                    "type": "aws_eks_node_group",
+                    "name": "good_example",
+                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                    "schema_version": 0,
+                    "values": {
+                        "cluster_name": "example-cluster",
+                        "force_update_version": null,
+                        "labels": null,
+                        "launch_template": [],
+                        "node_group_name": "good-example-node-group",
+                        "remote_access": [
+                            {
+                                "ec2_ssh_key": "some-key",
+                                "source_security_group_ids": [
+                                    "sg-12345678"
+                                ]
+                            }
+                        ],
+                        "scaling_config": [
+                            {
+                                "desired_size": 1,
+                                "max_size": 2,
+                                "min_size": 1
+                            }
+                        ],
+                        "subnet_ids": [
+                            "subnet-12345",
+                            "subnet-67890"
+                        ],
+                        "tags": null,
+                        "taint": [],
+                        "timeouts": null
+                    },
+                    "sensitive_values": {
+                        "instance_types": [],
+                        "launch_template": [],
+                        "remote_access": [
+                            {
+                                "source_security_group_ids": [
+                                    false
+                                ]
+                            }
+                        ],
+                        "resources": [],
+                        "scaling_config": [
+                            {}
+                        ],
+                        "subnet_ids": [
+                            false,
+                            false
+                        ],
+                        "tags_all": {},
+                        "taint": [],
+                        "update_config": []
+                    }
+                },
+                {
+                    "address": "aws_iam_role.example",
+                    "mode": "managed",
+                    "type": "aws_iam_role",
+                    "name": "example",
+                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                    "schema_version": 0,
+                    "values": {
+                        "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"eks.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+                        "description": null,
+                        "force_detach_policies": false,
+                        "max_session_duration": 3600,
+                        "name": "example-role",
+                        "path": "/",
+                        "permissions_boundary": null,
+                        "tags": null
+                    },
+                    "sensitive_values": {
+                        "inline_policy": [],
+                        "managed_policy_arns": [],
+                        "role_last_used": [],
+                        "tags_all": {}
+                    }
+                }
+            ]
+        }
+    },
+    "resource_changes": [
+        {
+            "address": "aws_eks_cluster.example",
+            "mode": "managed",
+            "type": "aws_eks_cluster",
+            "name": "example",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "enabled_cluster_log_types": null,
+                    "encryption_config": [],
+                    "name": "example-cluster",
+                    "outpost_config": [],
+                    "tags": null,
+                    "timeouts": null,
+                    "vpc_config": [
+                        {
+                            "endpoint_private_access": false,
+                            "endpoint_public_access": true,
+                            "security_group_ids": null,
+                            "subnet_ids": [
+                                "subnet-12345",
+                                "subnet-67890"
+                            ]
+                        }
+                    ]
+                },
+                "after_unknown": {
+                    "arn": true,
+                    "certificate_authority": true,
+                    "cluster_id": true,
+                    "created_at": true,
+                    "encryption_config": [],
+                    "endpoint": true,
+                    "id": true,
+                    "identity": true,
+                    "kubernetes_network_config": true,
+                    "outpost_config": [],
+                    "platform_version": true,
+                    "role_arn": true,
+                    "status": true,
+                    "tags_all": true,
+                    "version": true,
+                    "vpc_config": [
+                        {
+                            "cluster_security_group_id": true,
+                            "public_access_cidrs": true,
+                            "subnet_ids": [
+                                false,
+                                false
+                            ],
+                            "vpc_id": true
+                        }
+                    ]
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "certificate_authority": [],
+                    "encryption_config": [],
+                    "identity": [],
+                    "kubernetes_network_config": [],
+                    "outpost_config": [],
+                    "tags_all": {},
+                    "vpc_config": [
+                        {
+                            "public_access_cidrs": [],
+                            "subnet_ids": [
+                                false,
+                                false
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "address": "aws_eks_node_group.good_example",
+            "mode": "managed",
+            "type": "aws_eks_node_group",
+            "name": "good_example",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "cluster_name": "example-cluster",
+                    "force_update_version": null,
+                    "labels": null,
+                    "launch_template": [],
+                    "node_group_name": "good-example-node-group",
+                    "remote_access": [
+                        {
+                            "ec2_ssh_key": "some-key",
+                            "source_security_group_ids": [
+                                "sg-12345678"
+                            ]
+                        }
+                    ],
+                    "scaling_config": [
+                        {
+                            "desired_size": 1,
+                            "max_size": 2,
+                            "min_size": 1
+                        }
+                    ],
+                    "subnet_ids": [
+                        "subnet-12345",
+                        "subnet-67890"
+                    ],
+                    "tags": null,
+                    "taint": [],
+                    "timeouts": null
+                },
+                "after_unknown": {
+                    "ami_type": true,
+                    "arn": true,
+                    "capacity_type": true,
+                    "disk_size": true,
+                    "id": true,
+                    "instance_types": true,
+                    "launch_template": [],
+                    "node_group_name_prefix": true,
+                    "node_role_arn": true,
+                    "release_version": true,
+                    "remote_access": [
+                        {
+                            "source_security_group_ids": [
+                                false
+                            ]
+                        }
+                    ],
+                    "resources": true,
+                    "scaling_config": [
+                        {}
+                    ],
+                    "status": true,
+                    "subnet_ids": [
+                        false,
+                        false
+                    ],
+                    "tags_all": true,
+                    "taint": [],
+                    "update_config": true,
+                    "version": true
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "instance_types": [],
+                    "launch_template": [],
+                    "remote_access": [
+                        {
+                            "source_security_group_ids": [
+                                false
+                            ]
+                        }
+                    ],
+                    "resources": [],
+                    "scaling_config": [
+                        {}
+                    ],
+                    "subnet_ids": [
+                        false,
+                        false
+                    ],
+                    "tags_all": {},
+                    "taint": [],
+                    "update_config": []
+                }
+            }
+        },
+        {
+            "address": "aws_iam_role.example",
+            "mode": "managed",
+            "type": "aws_iam_role",
+            "name": "example",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"eks.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+                    "description": null,
+                    "force_detach_policies": false,
+                    "max_session_duration": 3600,
+                    "name": "example-role",
+                    "path": "/",
+                    "permissions_boundary": null,
+                    "tags": null
+                },
+                "after_unknown": {
+                    "arn": true,
+                    "create_date": true,
+                    "id": true,
+                    "inline_policy": true,
+                    "managed_policy_arns": true,
+                    "name_prefix": true,
+                    "role_last_used": true,
+                    "tags_all": true,
+                    "unique_id": true
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "inline_policy": [],
+                    "managed_policy_arns": [],
+                    "role_last_used": [],
+                    "tags_all": {}
+                }
+            }
+        }
+    ],
+    "configuration": {
+        "provider_config": {
+            "aws": {
+                "name": "aws",
+                "full_name": "registry.terraform.io/hashicorp/aws",
+                "version_constraint": "~\u003e 4.16",
+                "expressions": {
+                    "region": {
+                        "constant_value": "us-west-2"
+                    }
+                }
+            }
+        },
+        "root_module": {
+            "resources": [
+                {
+                    "address": "aws_eks_cluster.example",
+                    "mode": "managed",
+                    "type": "aws_eks_cluster",
+                    "name": "example",
+                    "provider_config_key": "aws",
+                    "expressions": {
+                        "name": {
+                            "constant_value": "example-cluster"
+                        },
+                        "role_arn": {
+                            "references": [
+                                "aws_iam_role.example.arn",
+                                "aws_iam_role.example"
+                            ]
+                        },
+                        "vpc_config": [
+                            {
+                                "subnet_ids": {
+                                    "constant_value": [
+                                        "subnet-12345",
+                                        "subnet-67890"
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    "schema_version": 0
+                },
+                {
+                    "address": "aws_eks_node_group.good_example",
+                    "mode": "managed",
+                    "type": "aws_eks_node_group",
+                    "name": "good_example",
+                    "provider_config_key": "aws",
+                    "expressions": {
+                        "cluster_name": {
+                            "references": [
+                                "aws_eks_cluster.example.name",
+                                "aws_eks_cluster.example"
+                            ]
+                        },
+                        "node_group_name": {
+                            "constant_value": "good-example-node-group"
+                        },
+                        "node_role_arn": {
+                            "references": [
+                                "aws_iam_role.example.arn",
+                                "aws_iam_role.example"
+                            ]
+                        },
+                        "remote_access": [
+                            {
+                                "ec2_ssh_key": {
+                                    "constant_value": "some-key"
+                                },
+                                "source_security_group_ids": {
+                                    "constant_value": [
+                                        "sg-12345678"
+                                    ]
+                                }
+                            }
+                        ],
+                        "scaling_config": [
+                            {
+                                "desired_size": {
+                                    "constant_value": 1
+                                },
+                                "max_size": {
+                                    "constant_value": 2
+                                },
+                                "min_size": {
+                                    "constant_value": 1
+                                }
+                            }
+                        ],
+                        "subnet_ids": {
+                            "constant_value": [
+                                "subnet-12345",
+                                "subnet-67890"
+                            ]
+                        }
+                    },
+                    "schema_version": 0
+                },
+                {
+                    "address": "aws_iam_role.example",
+                    "mode": "managed",
+                    "type": "aws_iam_role",
+                    "name": "example",
+                    "provider_config_key": "aws",
+                    "expressions": {
+                        "assume_role_policy": {},
+                        "name": {
+                            "constant_value": "example-role"
+                        }
+                    },
+                    "schema_version": 0
+                }
+            ]
+        }
+    },
+    "relevant_attributes": [
+        {
+            "resource": "aws_iam_role.example",
+            "attribute": [
+                "arn"
+            ]
+        },
+        {
+            "resource": "aws_eks_cluster.example",
+            "attribute": [
+                "name"
+            ]
+        }
+    ],
+    "timestamp": "2024-06-21T13:13:09Z",
+    "applyable": true,
+    "complete": true,
+    "errored": false
+}
