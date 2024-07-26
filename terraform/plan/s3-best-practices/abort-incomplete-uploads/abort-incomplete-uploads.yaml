@@ -1,0 +1,36 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: abort-incomplete-uploads
+  annotations:
+    policies.kyverno.io/title: enable-s3-versioning 
+    policies.kyverno.io/category: AWS S3 Security Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Amazon S3 supports a bucket lifecycle rule that you can use to direct Amazon S3 
+      to stop multipart uploads that aren't completed within a specified number of days
+      after being initiated. When a multipart upload isn't completed within the specified time
+      frame, it becomes eligible for an abort operation. Amazon S3 then stops the multipart
+      upload and deletes the parts associated with the multipart upload.
+spec:
+  rules:
+    - name: abort-incomplete-uploads
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-plan
+        - (planned_values.root_module.resources[?type=='aws_s3_bucket'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Use the `aws_s3_bucket_lifecycle_configuration` resource to enable lifecycle configuration.
+          check:
+            (planned_values.root_module.resources[?type=='aws_s3_bucket_lifecycle_configuration'] | length(@) > `0`): true
+        - message: S3 Bucket Lifecycle Configuration 'status' needs to be set to 'Enabled'
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_lifecycle_configuration']):
+              (values.rule[?status=='Enabled'] | length(@) > `0`): true
+        - message: Set the 'days_after_initiation' argument value to a Positive Integer value in 'abort_incomplete_multipart_upload' inside the lifecycle configuration block
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_lifecycle_configuration']):
+              ~.(values.rule[?status=='Enabled'].abort_incomplete_multipart_upload[]):
+                ((days_after_initiation || `-1`) > `0`): true
+

@@ -1,0 +1,182 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-01
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../validate-public-access-block.yaml --payload ./good-payload-01.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: block-s3-public-access-setting
+                rules:
+                - rule:
+                    name: validate-block-s3-public-access-setting
+                  error: ~
+                  violations: ~
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-02
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../validate-public-access-block.yaml --payload ./good-payload-02.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: block-s3-public-access-setting
+                rules:
+                - rule:
+                    name: validate-block-s3-public-access-setting
+                  error: ~
+                  violations: ~
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-01
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../validate-public-access-block.yaml --payload ./bad-payload-01.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: block-s3-public-access-setting
+                rules:
+                - rule:
+                    name: validate-block-s3-public-access-setting
+                  error: ~
+                  violations:
+                  - message: Block Public ACLs should be set to true
+                    errors:
+                    - type: FieldValueInvalid
+                      value: false
+                      detail: 'Expected value: true'
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-02
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../validate-public-access-block.yaml --payload ./bad-payload-02.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: block-s3-public-access-setting
+                rules:
+                - rule:
+                    name: validate-block-s3-public-access-setting
+                  error: ~
+                  violations:
+                  - message: Block Public Policy should be set to true
+                    errors:
+                    - type: FieldValueInvalid
+                      value: false
+                      detail: 'Expected value: true'
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-03
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../validate-public-access-block.yaml --payload ./bad-payload-03.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: block-s3-public-access-setting
+                rules:
+                - rule:
+                    name: validate-block-s3-public-access-setting
+                  error: ~
+                  violations:
+                  - message: Ignore Public ACLs should be set to true
+                    errors:
+                    - type: FieldValueInvalid
+                      value: false
+                      detail: 'Expected value: true'
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-04
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../validate-public-access-block.yaml --payload ./bad-payload-04.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: block-s3-public-access-setting
+                rules:
+                - rule:
+                    name: validate-block-s3-public-access-setting
+                  error: ~
+                  violations:
+                  - message: Restrict Public Buckets should be set to true
+                    errors:
+                    - type: FieldValueInvalid
+                      value: false
+                      detail: 'Expected value: true'

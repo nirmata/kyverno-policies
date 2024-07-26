@@ -1,0 +1,51 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-deprecated-runtime
+  annotations:
+    policies.kyverno.io/title: check-deprecated-runtime 
+    policies.kyverno.io/category: AWS Lambda Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that Lambda Runtime is not deprecated
+spec:
+  rules:
+    - name: check-deprecated-runtime
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-plan
+        - (planned_values.root_module.resources[?type=='aws_lambda_function'] | length(@) > `0`): true
+      context:
+      - name: forbidden_values
+        variable: 
+        - java8
+        - go1.x
+        - provided
+        - ruby2.7
+        - nodejs14.x
+        - python3.7
+        - dotnetcore3.1
+        - nodejs12.x	
+        - python3.6
+        - dotnet5.0
+        - dotnetcore2.1
+        - nodejs10.x
+        - ruby2.5
+        - python2.7
+        - nodejs8.10
+        - ruby2.5
+        - python2.7
+        - nodejs8.10
+        - nodejs4.3
+        - nodejs4.3-edge
+        - nodejs6.10
+        - dotnetcore1.0
+        - dotnetcore2.0
+        - nodejs
+      assert:
+        all:
+        - message: The runtime is deprecated for AWS lambda function, use the another version.
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_lambda_function']):
+              values:
+                (contains($forbidden_values, runtime || '')): false

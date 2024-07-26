@@ -1,0 +1,25 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-url-auth-type
+  annotations:
+    policies.kyverno.io/title: check-url-auth-type 
+    policies.kyverno.io/category: AWS Lambda Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that Lambda function URLs AuthType is not None.
+spec:
+  rules:
+    - name: check-url-auth-type
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-plan
+        - (planned_values.root_module.resources[?type=='aws_lambda_function'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Set the authoriation type of the aws lambda function url is set to `AWS_IAM`
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_lambda_function_url']):
+              values:
+                (authorization_type=='AWS_IAM'): true
+                  

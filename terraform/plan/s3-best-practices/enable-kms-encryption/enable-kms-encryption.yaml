@@ -1,0 +1,34 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: s3-enable-kms-encryption
+  annotations:
+    policies.kyverno.io/title: s3-enable-kms-encryption 
+    policies.kyverno.io/category: AWS S3 Security Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      All Amazon S3 buckets have encryption configured by default,
+      and all new objects that are uploaded to an S3 bucket are automatically 
+      encrypted at rest. Server-side encryption with Amazon S3 managed keys (SSE-S3) 
+      is the default encryption configuration for every bucket in Amazon S3. To use a
+      different type of encryption, you can either specify the type of server-side encryption
+      to use in your S3 PUT requests, or you can set the default encryption configuration in 
+      the destination bucket.
+spec:
+  rules:
+    - name: check-encryption-setting
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-plan
+        - (planned_values.root_module.resources[?type=='aws_s3_bucket'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Use the `aws_s3_bucket_server_side_encryption_configuration ` resource to set the S3 server side encryption to KMS
+          check:
+            (planned_values.root_module.resources[?type=='aws_s3_bucket_server_side_encryption_configuration'] | length(@) > `0`): true
+        - message: S3 server side encryption is not set to KMS
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_server_side_encryption_configuration']):
+                ~.(values.rule[]):
+                    (apply_server_side_encryption_by_default[?sse_algorithm=='aws:kms'] | length(@) > `0`): true
+  

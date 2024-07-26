@@ -1,0 +1,24 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-function-concurrency
+  annotations:
+    policies.kyverno.io/title: check-function-concurrency 
+    policies.kyverno.io/category: AWS Lambda Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks whether concurrency level config is set for the Lambda function.
+spec:
+  rules:
+    - name: check-function-concurrency
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-plan
+        - (planned_values.root_module.resources[?type=='aws_lambda_function'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Configure the AWS Lambda function for function-level concurrent execution limit using 'reserved_concurrent_execution' attribute          
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_lambda_function']):
+              values:
+                (reserved_concurrent_executions > `0`): true
