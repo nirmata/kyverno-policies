@@ -15,16 +15,13 @@ spec:
     - name: check-s3-lifecycle-configuration
       match:
         all:
-        - ($analyzer):
-            resource:
-              type: terraform-config
-        - (planned_values.root_module.resources[?type=='aws_s3_bucket'] | length(@) > `0`): true
+        - ($analyzer.resource.type): terraform-config
+        - (resource.aws_s3_bucket_lifecycle_configuration != null): true
       assert:
         all:
-        - message: Use the `aws_s3_bucket_lifecycle_configuration` resource to enable lifecycle configuration.
-          check:
-            (planned_values.root_module.resources[?type=='aws_s3_bucket_lifecycle_configuration'] | length(@) > `0`): true
         - message: S3 Bucket Lifecycle Configuration 'status' needs to be set to 'Enabled'
           check:
-            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_lifecycle_configuration']):
-              (values.rule[?status=='Enabled'] | length(@) > `0`): true
+            ~.(resource.aws_s3_bucket_lifecycle_configuration.values(@)[]):
+                ~.(rule):
+                    status: Enabled
+

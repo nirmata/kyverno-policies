@@ -2,8 +2,8 @@ apiVersion: v2
 name: best-practices-s3-tf-config
 description: Best practices S3 terraform-config
 type: application
-version: 0.1.0
-appVersion: 0.1.0
+version: 0.1.1
+appVersion: 0.1.1
 keywords:
   - kubernetes
   - nirmata
