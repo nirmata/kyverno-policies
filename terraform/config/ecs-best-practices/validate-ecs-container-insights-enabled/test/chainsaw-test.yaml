@@ -55,6 +55,6 @@ spec:
                   violations:
                   - message: ECS container insights are not enabled
                     errors:
-                    - type: FieldValueInvalid
+                    - type: FieldValueRequired
                       (value != 'enabled'): true
-                      detail: 'Expected value: "enabled"'
+                      detail: 'field not found in the input object'
