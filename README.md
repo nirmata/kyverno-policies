@@ -1,3 +1,5 @@
+<img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=5b0e6ae5-31f7-455c-8938-de55b61d7607" />
+
 # Kyverno Policies
 
 This repository contains a set of Kyverno policies curated and managed by the Nirmata team for use as policy groups within [Nirmata Enterprise for Kyverno](https://nirmata.com/kyverno-enterprise/), and [Nirmata Policy Manager](https://nirmata.com/nirmata-cloud-native-policy-manager/).
