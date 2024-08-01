@@ -57,6 +57,24 @@ entries:
     version: 0.1.0
   best-practices-ecs-tf-config:
   - apiVersion: v2
+    appVersion: 0.1.1
+    created: "2024-08-01T06:18:05.323802303Z"
+    description: Best practices ECS terraform config policy set
+    digest: be754f8a847ed8dd56971e1056a4e930dca532f4db5ce8da9afca9918b4ff9a6
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: best-practices-ecs-tf-config
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/best-practices-ecs-tf-config-0.1.1/best-practices-ecs-tf-config-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: 0.1.0
     created: "2024-05-31T05:26:24.199255719Z"
     description: Best practices ECS terraform config policy set
@@ -75,6 +93,24 @@ entries:
     - https://github.com/nirmata/kyverno-policies/releases/download/best-practices-ecs-tf-config-0.1.0/best-practices-ecs-tf-config-0.1.0.tgz
     version: 0.1.0
   best-practices-s3-tf-config:
+  - apiVersion: v2
+    appVersion: 0.1.1
+    created: "2024-08-01T06:18:05.421879266Z"
+    description: Best practices S3 terraform-config
+    digest: 57d9c7cc3eb7875645fdd7d29e09ceffd2a61d741510fe741136fd4d2baaa260
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: best-practices-s3-tf-config
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/best-practices-s3-tf-config-0.1.1/best-practices-s3-tf-config-0.1.1.tgz
+    version: 0.1.1
   - apiVersion: v2
     appVersion: 0.1.0
     created: "2024-05-31T09:16:38.598411953Z"
@@ -1991,4 +2027,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2024-07-05T13:35:51.642585833Z"
+generated: "2024-08-01T06:18:05.422063701Z"
