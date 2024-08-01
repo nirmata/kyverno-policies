@@ -1,0 +1,28 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-ecs-task-public-ip
+  labels:
+    ecs.aws.tags.kyverno.io: ecs-service
+  annotations:
+    policies.kyverno.io/title: Validate ECS Task Public IP
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      ECS tasks with public IP address enabled, are easily reachable from the internet. 
+      This policy validates whether public IP address is enabled on the ECS task
+spec:
+  rules:
+    - name: validate-ecs-task-public-ip
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-config
+        - (resource.aws_ecs_service != null): true
+      assert:
+        any:
+        - message: Public IP address should not be enabled
+          check:
+            ~.(resource.aws_ecs_service.values(@)[]):
+                ~.(network_configuration[?assign_public_ip] || `[]`):
+                    assign_public_ip: false
+
