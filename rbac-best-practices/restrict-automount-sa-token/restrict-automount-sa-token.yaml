@@ -24,6 +24,62 @@ spec:
       - resources:
           kinds:
           - Pod
+    exclude:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              app: nirmata-kube-controller
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              app: otel-agent
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              app.kubernetes.io/name: nirmata-kyverno-operator
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              app.kubernetes.io/component: admission-controller    
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              app.kubernetes.io/component: cleanup-controller    
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              app.kubernetes.io/component: background-controller    
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              app.kubernetes.io/component: reports-controller    
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              batch.kubernetes.io/job-name: "kyverno-cleanup-admission-reports-*"   
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              batch.kubernetes.io/job-name=kyverno: "cleanup-cluster-admission-reports-*" 
     preconditions:
       all:
       - key: "{{ request.\"object\".metadata.labels.\"app.kubernetes.io/part-of\" || '' }}"
