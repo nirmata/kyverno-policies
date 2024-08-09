@@ -73,13 +73,31 @@ spec:
           - Pod
           selector:
             matchLabels:
-              batch.kubernetes.io/job-name: "kyverno-cleanup-admission-reports-*"   
+              job-name: "kyverno-cleanup-admission-reports-*"   
       - resources:
           kinds:
           - Pod
           selector:
             matchLabels:
-              batch.kubernetes.io/job-name=kyverno: "cleanup-cluster-admission-reports-*" 
+              job-name: "kyverno-cleanup-cluster-admission-reports-*" 
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              job-name: "kyverno-cleanup-ephemeral-reports-*" 
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              job-name: "kyverno-cleanup-cluster-ephemeral-reports-*" 
+      - resources:
+          kinds:
+          - Pod
+          selector:
+            matchLabels:
+              job-name: "kyverno-cleanup-update-requests-*" 
     preconditions:
       all:
       - key: "{{ request.\"object\".metadata.labels.\"app.kubernetes.io/part-of\" || '' }}"
