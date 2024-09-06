@@ -18,9 +18,7 @@ spec:
     - name: check-s3-cross-region-replication
       match:
         all:
-        - ($analyzer):
-            resource:
-              type: terraform-config
+        - ($analyzer.resource.type): terraform-plan
         - (planned_values.root_module.resources[?type=='aws_s3_bucket'] | length(@) > `0`): true
       assert:
         all:
@@ -31,3 +29,4 @@ spec:
           check:
             ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_replication_configuration']):
               (values.rule[?status=='Enabled'] | length(@) > `0`): true
+                   

@@ -18,13 +18,13 @@ spec:
     - name: disable-s3-access-control-list
       match:
         all:
-        - ($analyzer):
-            resource:
-              type: terraform-config
-        - (planned_values.root_module.resources[?type=='aws_s3_bucket_ownership_controls' || type=='aws_s3_bucket'] | length(@) > `0`): true
+        - ($analyzer.resource.type): terraform-config
+        - (resource.aws_s3_bucket_ownership_controls != null): true
       assert:
         all:
         - message: Access Control List(ACL) should be disabled for an S3 Bucket
           check:
-            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_ownership_controls'].values.rule[]):
+            ~.(resource.aws_s3_bucket_ownership_controls.values(@)[]):
+              ~.(rule):
                   object_ownership: BucketOwnerEnforced 
+

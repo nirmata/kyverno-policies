@@ -18,12 +18,11 @@ spec:
     - name: enable-s3-server-access-logging
       match:
         all:
-        - ($analyzer):
-            resource:
-              type: terraform-config
+        - ($analyzer.resource.type): terraform-plan
         - (planned_values.root_module.resources[?type=='aws_s3_bucket'] | length(@) > `0`): true
       assert:
         all:
         - message: Use the aws_s3_bucket_logging resource to enable server access logging
           check:
             (planned_values.root_module.resources[?type=='aws_s3_bucket_logging'] | length(@) > `0`): true
+                   

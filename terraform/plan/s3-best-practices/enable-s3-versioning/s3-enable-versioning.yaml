@@ -18,9 +18,7 @@ spec:
     - name: check-s3-versioning-setting
       match:
         all:
-        - ($analyzer):
-            resource:
-              type: terraform-config
+        - ($analyzer.resource.type): terraform-plan
         - (planned_values.root_module.resources[?type=='aws_s3_bucket'] | length(@) > `0`): true
       assert:
         all:
@@ -31,3 +29,5 @@ spec:
           check:
             ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_versioning']):
               (values.versioning_configuration[?status=='Enabled'] | length(@) > `0`): true
+            
+           

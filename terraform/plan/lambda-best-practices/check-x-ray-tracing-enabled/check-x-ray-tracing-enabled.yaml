@@ -1,0 +1,28 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: enable-x-ray-tracing
+  annotations:
+    policies.kyverno.io/title: enable-x-ray-tracing 
+    policies.kyverno.io/category: AWS Lambda Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      AWS X-Ray to visualize the components of your application,
+      identify performance bottlenecks, and troubleshoot requests that
+      resulted in an error. This policy checks whether X-Ray is enabled
+      for Labmda function.
+spec:
+  rules:
+    - name: check-x-ray-tracing-enabled
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-plan
+        - (planned_values.root_module.resources[?type=='aws_lambda_function'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Use the `tracing_config` block in the `aws_lambda_function` resource to set the mode to `Active` or `PassThrough`
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_lambda_function']):
+              (values.tracing_config[?mode=='Active' || mode=='PassThrough'] || `[]` | length(@) > `0`): true
+            
+           

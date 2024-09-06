@@ -1,0 +1,420 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.7.5",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_iam_policy.iam_policy_for_lambda",
+          "mode": "managed",
+          "type": "aws_iam_policy",
+          "name": "iam_policy_for_lambda",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "description": "AWS IAM Policy for managing aws lambda role",
+            "name": "aws_iam_policy_for_terraform_aws_lambda_role",
+            "path": "/",
+            "policy": "{\"Statement\":[{\"Action\":[\"logs:CreateLogGroup\",\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:logs:*:*:*\"}],\"Version\":\"2012-10-17\"}",
+            "tags": null
+          },
+          "sensitive_values": {
+            "tags_all": {}
+          }
+        },
+        {
+          "address": "aws_iam_role.lambda_role",
+          "mode": "managed",
+          "type": "aws_iam_role",
+          "name": "lambda_role",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Sid\":\"\"}],\"Version\":\"2012-10-17\"}",
+            "description": null,
+            "force_detach_policies": false,
+            "max_session_duration": 3600,
+            "name": "Spacelift_Test_Lambda_Function_Role",
+            "path": "/",
+            "permissions_boundary": null,
+            "tags": null
+          },
+          "sensitive_values": {
+            "inline_policy": [],
+            "managed_policy_arns": [],
+            "role_last_used": [],
+            "tags_all": {}
+          }
+        },
+        {
+          "address": "aws_iam_role_policy_attachment.attach_iam_policy_to_iam_role",
+          "mode": "managed",
+          "type": "aws_iam_role_policy_attachment",
+          "name": "attach_iam_policy_to_iam_role",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "role": "Spacelift_Test_Lambda_Function_Role"
+          },
+          "sensitive_values": {}
+        },
+        {
+          "address": "aws_lambda_function.terraform_lambda_func",
+          "mode": "managed",
+          "type": "aws_lambda_function",
+          "name": "terraform_lambda_func",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "code_signing_config_arn": null,
+            "dead_letter_config": [],
+            "description": null,
+            "environment": [],
+            "file_system_config": [],
+            "filename": "",
+            "function_name": "Spacelift_Test_Lambda_Function",
+            "handler": "index.lambda_handler",
+            "image_config": [],
+            "image_uri": null,
+            "kms_key_arn": null,
+            "layers": null,
+            "memory_size": 128,
+            "package_type": "Zip",
+            "publish": false,
+            "replace_security_groups_on_destroy": null,
+            "replacement_security_group_ids": null,
+            "reserved_concurrent_executions": 1,
+            "runtime": "python3.8",
+            "s3_bucket": null,
+            "s3_key": null,
+            "s3_object_version": null,
+            "skip_destroy": false,
+            "snap_start": [],
+            "tags": null,
+            "timeout": 3,
+            "timeouts": null,
+            "vpc_config": []
+          },
+          "sensitive_values": {
+            "architectures": [],
+            "dead_letter_config": [],
+            "environment": [],
+            "ephemeral_storage": [],
+            "file_system_config": [],
+            "image_config": [],
+            "snap_start": [],
+            "tags_all": {},
+            "tracing_config": [],
+            "vpc_config": []
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_iam_policy.iam_policy_for_lambda",
+      "mode": "managed",
+      "type": "aws_iam_policy",
+      "name": "iam_policy_for_lambda",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "description": "AWS IAM Policy for managing aws lambda role",
+          "name": "aws_iam_policy_for_terraform_aws_lambda_role",
+          "path": "/",
+          "policy": "{\"Statement\":[{\"Action\":[\"logs:CreateLogGroup\",\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:logs:*:*:*\"}],\"Version\":\"2012-10-17\"}",
+          "tags": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "name_prefix": true,
+          "policy_id": true,
+          "tags_all": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "tags_all": {}
+        }
+      }
+    },
+    {
+      "address": "aws_iam_role.lambda_role",
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "lambda_role",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Sid\":\"\"}],\"Version\":\"2012-10-17\"}",
+          "description": null,
+          "force_detach_policies": false,
+          "max_session_duration": 3600,
+          "name": "Spacelift_Test_Lambda_Function_Role",
+          "path": "/",
+          "permissions_boundary": null,
+          "tags": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "create_date": true,
+          "id": true,
+          "inline_policy": true,
+          "managed_policy_arns": true,
+          "name_prefix": true,
+          "role_last_used": true,
+          "tags_all": true,
+          "unique_id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "inline_policy": [],
+          "managed_policy_arns": [],
+          "role_last_used": [],
+          "tags_all": {}
+        }
+      }
+    },
+    {
+      "address": "aws_iam_role_policy_attachment.attach_iam_policy_to_iam_role",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "attach_iam_policy_to_iam_role",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "role": "Spacelift_Test_Lambda_Function_Role"
+        },
+        "after_unknown": {
+          "id": true,
+          "policy_arn": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {}
+      }
+    },
+    {
+      "address": "aws_lambda_function.terraform_lambda_func",
+      "mode": "managed",
+      "type": "aws_lambda_function",
+      "name": "terraform_lambda_func",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "code_signing_config_arn": null,
+          "dead_letter_config": [],
+          "description": null,
+          "environment": [],
+          "file_system_config": [],
+          "filename": "",
+          "function_name": "Spacelift_Test_Lambda_Function",
+          "handler": "index.lambda_handler",
+          "image_config": [],
+          "image_uri": null,
+          "kms_key_arn": null,
+          "layers": null,
+          "memory_size": 128,
+          "package_type": "Zip",
+          "publish": false,
+          "replace_security_groups_on_destroy": null,
+          "replacement_security_group_ids": null,
+          "reserved_concurrent_executions": 1,
+          "runtime": "python3.8",
+          "s3_bucket": null,
+          "s3_key": null,
+          "s3_object_version": null,
+          "skip_destroy": false,
+          "snap_start": [],
+          "tags": null,
+          "timeout": 3,
+          "timeouts": null,
+          "vpc_config": []
+        },
+        "after_unknown": {
+          "architectures": true,
+          "arn": true,
+          "dead_letter_config": [],
+          "environment": [],
+          "ephemeral_storage": true,
+          "file_system_config": [],
+          "id": true,
+          "image_config": [],
+          "invoke_arn": true,
+          "last_modified": true,
+          "qualified_arn": true,
+          "qualified_invoke_arn": true,
+          "role": true,
+          "signing_job_arn": true,
+          "signing_profile_version_arn": true,
+          "snap_start": [],
+          "source_code_hash": true,
+          "source_code_size": true,
+          "tags_all": true,
+          "tracing_config": true,
+          "version": true,
+          "vpc_config": []
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "architectures": [],
+          "dead_letter_config": [],
+          "environment": [],
+          "ephemeral_storage": [],
+          "file_system_config": [],
+          "image_config": [],
+          "snap_start": [],
+          "tags_all": {},
+          "tracing_config": [],
+          "vpc_config": []
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": "~> 4.16",
+        "expressions": {}
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_iam_policy.iam_policy_for_lambda",
+          "mode": "managed",
+          "type": "aws_iam_policy",
+          "name": "iam_policy_for_lambda",
+          "provider_config_key": "aws",
+          "expressions": {
+            "description": {
+              "constant_value": "AWS IAM Policy for managing aws lambda role"
+            },
+            "name": {
+              "constant_value": "aws_iam_policy_for_terraform_aws_lambda_role"
+            },
+            "path": {
+              "constant_value": "/"
+            },
+            "policy": {
+              "constant_value": "{\n \"Version\": \"2012-10-17\",\n \"Statement\": [\n   {\n     \"Action\": [\n       \"logs:CreateLogGroup\",\n       \"logs:CreateLogStream\",\n       \"logs:PutLogEvents\"\n     ],\n     \"Resource\": \"arn:aws:logs:*:*:*\",\n     \"Effect\": \"Allow\"\n   }\n ]\n}\n"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_iam_role.lambda_role",
+          "mode": "managed",
+          "type": "aws_iam_role",
+          "name": "lambda_role",
+          "provider_config_key": "aws",
+          "expressions": {
+            "assume_role_policy": {
+              "constant_value": "{\n \"Version\": \"2012-10-17\",\n \"Statement\": [\n   {\n     \"Action\": \"sts:AssumeRole\",\n     \"Principal\": {\n       \"Service\": \"lambda.amazonaws.com\"\n     },\n     \"Effect\": \"Allow\",\n     \"Sid\": \"\"\n   }\n ]\n}\n"
+            },
+            "name": {
+              "constant_value": "Spacelift_Test_Lambda_Function_Role"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_iam_role_policy_attachment.attach_iam_policy_to_iam_role",
+          "mode": "managed",
+          "type": "aws_iam_role_policy_attachment",
+          "name": "attach_iam_policy_to_iam_role",
+          "provider_config_key": "aws",
+          "expressions": {
+            "policy_arn": {
+              "references": [
+                "aws_iam_policy.iam_policy_for_lambda.arn",
+                "aws_iam_policy.iam_policy_for_lambda"
+              ]
+            },
+            "role": {
+              "references": [
+                "aws_iam_role.lambda_role.name",
+                "aws_iam_role.lambda_role"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_lambda_function.terraform_lambda_func",
+          "mode": "managed",
+          "type": "aws_lambda_function",
+          "name": "terraform_lambda_func",
+          "provider_config_key": "aws",
+          "expressions": {
+            "filename": {
+              "constant_value": ""
+            },
+            "function_name": {
+              "constant_value": "Spacelift_Test_Lambda_Function"
+            },
+            "handler": {
+              "constant_value": "index.lambda_handler"
+            },
+            "reserved_concurrent_executions": {
+              "constant_value": 1
+            },
+            "role": {
+              "references": [
+                "aws_iam_role.lambda_role.arn",
+                "aws_iam_role.lambda_role"
+              ]
+            },
+            "runtime": {
+              "constant_value": "python3.8"
+            }
+          },
+          "schema_version": 0,
+          "depends_on": [
+            "aws_iam_role_policy_attachment.attach_iam_policy_to_iam_role"
+          ]
+        }
+      ]
+    }
+  },
+  "relevant_attributes": [
+    {
+      "resource": "aws_iam_role.lambda_role",
+      "attribute": [
+        "arn"
+      ]
+    },
+    {
+      "resource": "aws_iam_policy.iam_policy_for_lambda",
+      "attribute": [
+        "arn"
+      ]
+    },
+    {
+      "resource": "aws_iam_role.lambda_role",
+      "attribute": [
+        "name"
+      ]
+    }
+  ],
+  "timestamp": "2024-04-02T06:16:45Z",
+  "errored": false
+}
