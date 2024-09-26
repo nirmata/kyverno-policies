@@ -3,7 +3,6 @@ kind: Test
 metadata:
   name: restrict-automount-sa-token-policy
 spec:
-  namespace: default
   steps:
   - name: test-restrict-automount-sa-token
     try:
@@ -11,30 +10,6 @@ spec:
         file: ../restrict-automount-sa-token.yaml
     - assert:
         file: policy-assert.yaml
-    - apply:
-        file: ../remediate-restrict-automount-sa-token.yaml
-    - assert:
-        file: remediation-policy-assert.yaml
-    - apply:
-        file: bad-resource.yaml
-    - sleep:
-        duration: 20s
-    - assert:
-        resource:
-          apiVersion: wgpolicyk8s.io/v1alpha2
-          kind: PolicyReport
-          summary:
-            error: 0
-            fail: 0
-            pass: 1
-    - delete:
-        ref:
-          apiVersion: kyverno.io/v1
-          kind: ClusterPolicy
-          name: remediate-restrict-automount-sa-token
-    - script: 
-        content: |
-          kubectl delete -f bad-resource.yaml
     - script:
         content: |
           sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../restrict-automount-sa-token.yaml | kubectl apply -f - 
@@ -46,4 +21,11 @@ spec:
         expect:
         - check:
             ($error != null): true
+        file: bad-resource.yaml
+    # After creating the remediate policy, we can create the bad resources as they will be mutated to become compliant
+    - apply:
+        file: ../remediate-restrict-automount-sa-token.yaml
+    - assert:
+        file: remediation-policy-assert.yaml
+    - apply:
         file: bad-resource.yaml
