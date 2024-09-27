@@ -79,7 +79,7 @@ spec:
                     name: validate-block-s3-public-access-setting
                   error: ~
                   violations:
-                  - message: Block Public ACLs should be set to true
+                  - message: Block Public ACLs should be set to true (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: false
@@ -111,7 +111,7 @@ spec:
                     name: validate-block-s3-public-access-setting
                   error: ~
                   violations:
-                  - message: Block Public Policy should be set to true
+                  - message: Block Public Policy should be set to true (CHECK=spec.rules[0].assert.all[1])
                     errors:
                     - type: FieldValueInvalid
                       value: false
@@ -143,7 +143,7 @@ spec:
                     name: validate-block-s3-public-access-setting
                   error: ~
                   violations:
-                  - message: Ignore Public ACLs should be set to true
+                  - message: Ignore Public ACLs should be set to true (CHECK=spec.rules[0].assert.all[2])
                     errors:
                     - type: FieldValueInvalid
                       value: false
@@ -175,7 +175,7 @@ spec:
                     name: validate-block-s3-public-access-setting
                   error: ~
                   violations:
-                  - message: Restrict Public Buckets should be set to true
+                  - message: Restrict Public Buckets should be set to true (CHECK=spec.rules[0].assert.all[3])
                     errors:
                     - type: FieldValueInvalid
                       value: false
