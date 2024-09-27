@@ -53,7 +53,7 @@ spec:
                     name: detect-sudo-operations
                   error: ~
                   violations:
-                  - message: Dockerfile contains the 'sudo' operation which is not preferred
+                  - message: Dockerfile contains the 'sudo' operation which is not preferred (CHECK=spec.rules[0].assert.any[0])
                     errors:
                     - type: FieldValueInvalid
                       value: true

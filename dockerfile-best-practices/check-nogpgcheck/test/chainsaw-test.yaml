@@ -109,7 +109,7 @@ spec:
                     name: check-nogpgcheck
                   error: ~
                   violations:
-                  - message: Enable GPG signature checking with yum by not using `--nogpgcheck` flag
+                  - message: Enable GPG signature checking with yum by not using `--nogpgcheck` flag (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: true
@@ -142,7 +142,7 @@ spec:
                     name: check-nogpgcheck
                   error: ~
                   violations:
-                  - message: Enable GPG signature checking with dnf by not using `--nogpgcheck` flag
+                  - message: Enable GPG signature checking with dnf by not using `--nogpgcheck` flag (CHECK=spec.rules[0].assert.all[1])
                     errors:
                     - type: FieldValueInvalid
                       value: true
@@ -175,7 +175,7 @@ spec:
                     name: check-nogpgcheck
                   error: ~
                   violations:
-                  - message: Enable GPG signature checking with tdnf by not using `--nogpgcheck` flag
+                  - message: Enable GPG signature checking with tdnf by not using `--nogpgcheck` flag (CHECK=spec.rules[0].assert.all[2])
                     errors:
                     - type: FieldValueInvalid
                       value: true
