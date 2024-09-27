@@ -53,7 +53,7 @@ spec:
                     name: check-awsvpc-network-mode
                   error: ~
                   violations:
-                  - message: ECS services and tasks are required to use awsvpc network mode.
+                  - message: ECS services and tasks are required to use awsvpc network mode. (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       (value != 'awsvpc'): true
@@ -86,7 +86,7 @@ spec:
                     name: check-awsvpc-network-mode
                   error: ~
                   violations:
-                  - message: ECS services and tasks are required to use awsvpc network mode.
+                  - message: ECS services and tasks are required to use awsvpc network mode. (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       (value != 'awsvpc'): true
