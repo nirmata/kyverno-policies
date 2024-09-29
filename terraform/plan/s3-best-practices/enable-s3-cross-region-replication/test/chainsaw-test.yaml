@@ -52,7 +52,7 @@ spec:
                     name: check-s3-cross-region-replication
                   error: ~
                   violations:
-                  - message: Set S3 Bucket Cross Region Replication status to 'Enabled'
+                  - message: Set S3 Bucket Cross Region Replication status to 'Enabled' (CHECK=spec.rules[0].assert.all[1])
                     errors:
                     - type: FieldValueInvalid
                       value: false
@@ -84,7 +84,7 @@ spec:
                     name: check-s3-cross-region-replication
                   error: ~
                   violations:
-                  - message: Use the `aws_s3_bucket_replication_configuration` resource to set the status to Enabled
+                  - message: Use the `aws_s3_bucket_replication_configuration` resource to set the status to Enabled (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: false

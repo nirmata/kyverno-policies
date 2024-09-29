@@ -52,7 +52,7 @@ spec:
                     name: check-s3-lifecycle-configuration
                   error: ~
                   violations:
-                  - message: S3 Bucket Lifecycle Configuration 'status' needs to be set to 'Enabled'
+                  - message: S3 Bucket Lifecycle Configuration 'status' needs to be set to 'Enabled' (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: Disabled

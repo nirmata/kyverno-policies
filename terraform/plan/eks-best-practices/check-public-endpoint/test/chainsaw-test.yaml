@@ -53,7 +53,7 @@ spec:
                     name: check-public-endpoint
                   error: ~
                   violations:
-                  - message: Public access to EKS cluster endpoint must be explicitly set to false
+                  - message: Public access to EKS cluster endpoint must be explicitly set to false (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: true
@@ -86,7 +86,7 @@ spec:
                     name: check-public-endpoint
                   error: ~
                   violations:
-                  - message: Public access to EKS cluster endpoint must be explicitly set to false
+                  - message: Public access to EKS cluster endpoint must be explicitly set to false (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: true
