@@ -53,7 +53,7 @@ spec:
                     name: check-apt-command-force-yes
                   error: ~
                   violations:
-                  - message: refrain from using the '--force-yes' option with `apt-get` as it bypasses important package validation checks and can potentially compromise the stability and security of your system.
+                  - message: refrain from using the '--force-yes' option with `apt-get` as it bypasses important package validation checks and can potentially compromise the stability and security of your system. (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: true
@@ -87,7 +87,7 @@ spec:
                     name: check-apt-command-force-yes
                   error: ~
                   violations:
-                  - message: refrain from using the '--force-yes' option with `apt` as it bypasses important package validation checks and can potentially compromise the stability and security of your system.
+                  - message: refrain from using the '--force-yes' option with `apt` as it bypasses important package validation checks and can potentially compromise the stability and security of your system. (CHECK=spec.rules[0].assert.all[1])
                     errors:
                     - type: FieldValueInvalid
                       value: true

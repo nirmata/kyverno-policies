@@ -52,7 +52,7 @@ spec:
                     name: validate-any-principal
                   error: ~
                   violations:
-                  - message: Principal should not be set to `*` in the Bucket Policy.
+                  - message: Principal should not be set to `*` in the Bucket Policy. (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: true
@@ -84,7 +84,7 @@ spec:
                     name: validate-any-principal
                   error: ~
                   violations:
-                  - message: AWS should not be set to `*` in the Principal field for Bucket Policy
+                  - message: AWS should not be set to `*` in the Principal field for Bucket Policy (CHECK=spec.rules[0].assert.all[1])
                     errors:
                     - type: FieldValueInvalid
                       value: true

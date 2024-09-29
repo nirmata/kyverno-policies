@@ -81,7 +81,7 @@ spec:
                     name: check-supported-k8s-version
                   error: ~
                   violations:
-                  - message: "Version specified must be one of these suppported versions ['1.23', '1.24', '1.25', '1.26', '1.27', '1.28', '1.29', '1.30']"
+                  - message: "Version specified must be one of these suppported versions ['1.23', '1.24', '1.25', '1.26', '1.27', '1.28', '1.29', '1.30'] (CHECK=spec.rules[0].assert.all[0])"
                     errors:
                     - type: FieldValueInvalid
                       value: false

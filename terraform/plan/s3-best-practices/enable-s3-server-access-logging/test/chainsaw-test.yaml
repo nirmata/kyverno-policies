@@ -52,7 +52,7 @@ spec:
                     name: enable-s3-server-access-logging
                   error: ~
                   violations:
-                  - message: Use the aws_s3_bucket_logging resource to enable server access logging
+                  - message: Use the aws_s3_bucket_logging resource to enable server access logging (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: false

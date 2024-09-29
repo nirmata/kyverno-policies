@@ -25,36 +25,35 @@ spec:
                     name: check-x-ray-tracing-enabled
                   error: ~
                   violations: ~
-# ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
-# apiVersion: chainsaw.kyverno.io/v1alpha1
-# kind: Test
-# metadata:
-#   name: bad-test
-# spec:
-#   steps:
-#     - name: kyverno-json
-#       try:
-#       - script:
-#           content: |
-#             set -e
-#             kyverno-json scan --policy ../check-x-ray-tracing-enabled.yaml --payload ./bad-test/bad-payload.json --output json --bindings ./binding.yaml
-#           check:
-#             ($error): ~
-#             (json_parse($stdout)):
-#             - results:
-#               - policy:
-#                   apiVersion: json.kyverno.io/v1alpha1
-#                   kind: ValidatingPolicy
-#                   metadata:
-#                     name: enable-x-ray-tracing
-#                 rules:
-#                 - rule:
-#                     name: check-x-ray-tracing-enabled
-#                   error: ~
-#                   violations:
-#                   - message: Use the `tracing_config` block in the `aws_lambda_function` resource to set the mode to `Active` or `PassThrough`
-#                     errors:
-#                     - type: FieldValueInvalid
-#                       value: false
-#                       detail: 'Expected value: true'
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../check-x-ray-tracing-enabled.yaml --payload ./bad-test/bad-payload.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: enable-x-ray-tracing
+                rules:
+                - rule:
+                    name: check-x-ray-tracing-enabled
+                  error: ~
+                  violations:
+                  - message: Use the `tracing_config` block in the `aws_lambda_function` resource to set the mode to `Active` or `PassThrough` (CHECK=spec.rules[0].assert.all[0])
+                    errors:
+                    - type: FieldValueInvalid
+                      value: false
+                      detail: 'Expected value: true'

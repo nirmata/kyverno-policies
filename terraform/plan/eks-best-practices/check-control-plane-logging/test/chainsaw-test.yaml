@@ -53,7 +53,7 @@ spec:
                     name: check-control-plane-logging
                   error: ~
                   violations:
-                  - message: EKS control plane logging must be enabled for all log types
+                  - message: EKS control plane logging must be enabled for all log types (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: false
@@ -86,7 +86,7 @@ spec:
                     name: check-control-plane-logging
                   error: ~
                   violations:
-                  - message: EKS control plane logging must be enabled for all log types
+                  - message: EKS control plane logging must be enabled for all log types (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: false

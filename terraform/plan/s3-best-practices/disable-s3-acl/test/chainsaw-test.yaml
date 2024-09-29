@@ -52,7 +52,7 @@ spec:
                     name: disable-s3-access-control-list
                   error: ~
                   violations:
-                  - message: Access Control List(ACL) should be disabled for an S3 Bucket
+                  - message: Access Control List(ACL) should be disabled for an S3 Bucket (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       (value=='BucketOwnerEnforced'): false

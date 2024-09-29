@@ -53,7 +53,7 @@ spec:
                     name: prefer-copy-over-add
                   error: ~
                   violations:
-                  - message: Avoid the use of ADD instructions in Dockerfiles
+                  - message: Avoid the use of ADD instructions in Dockerfiles (CHECK=spec.rules[0].assert.any[0])
                     errors:
                     - type: FieldValueInvalid
                       value: true

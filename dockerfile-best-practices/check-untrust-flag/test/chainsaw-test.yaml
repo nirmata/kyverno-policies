@@ -53,7 +53,7 @@ spec:
                     name: detect-untrusted-flag
                   error: ~
                   violations:
-                  - message: Dockerfile contains the '--allow-untrusted' which is not preferred
+                  - message: Dockerfile contains the '--allow-untrusted' which is not preferred (CHECK=spec.rules[0].assert.any[0])
                     errors:
                     - type: FieldValueInvalid
                       value: true
