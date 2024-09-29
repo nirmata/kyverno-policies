@@ -29,11 +29,10 @@ spec:
                   value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
             patchesJson6902: |-
               - op: add
-                path: /spec/template/spec/containers/{{elementIndex}}/securityContext
+                path: /spec/template/spec/containers/{{elementIndex}}/securityContext/capabilities
                 value:
-                  capabilities:
-                    drop:
-                      - ALL
+                  drop:
+                  - ALL
           - list: request.object.spec.template.spec.initContainers[]
             order: Descending
             preconditions:
@@ -43,11 +42,10 @@ spec:
                   value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
             patchesJson6902: |-
               - op: add
-                path: /spec/template/spec/initContainers/{{elementIndex}}/securityContext
+                path: /spec/template/spec/initContainers/{{elementIndex}}/securityContext/capabilities
                 value:
-                  capabilities:
-                    drop:
-                      - ALL
+                  drop:
+                  - ALL
           - list: request.object.spec.template.spec.ephemeralContainers[]
             order: Descending
             preconditions:
@@ -57,8 +55,88 @@ spec:
                   value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
             patchesJson6902: |-
               - op: add
-                path: /spec/template/spec/ephemeralContainers/{{elementIndex}}/securityContext
+                path: /spec/template/spec/ephemeralContainers/{{elementIndex}}/securityContext/capabilities
                 value:
-                  capabilities:
-                    drop:
-                      - ALL
+                  drop:
+                  - ALL
+    - name: restrict-adding-capabilities-other-than-net-bind-service
+      match:
+        resources:
+          kinds:
+            - Deployment
+            - StatefulSet
+            - Job
+            - DaemonSet
+      mutate:
+        foreach:
+          - list: request.object.spec.template.spec.containers[]
+            order: Descending
+            preconditions:
+              all:
+                - key: NET_BIND_RAW
+                  operator: AnyNotIn
+                  value: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
+            patchesJson6902: |-
+              - op: remove
+                path: /spec/template/spec/containers/{{elementIndex}}/securityContext/capabilities/add
+          
+          - list: request.object.spec.template.spec.containers[]
+            order: Descending
+            preconditions:
+              all:
+                - key: NET_BIND_RAW
+                  operator: In
+                  value: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
+            patchesJson6902: |-
+              - op: replace
+                path: /spec/template/spec/containers/{{elementIndex}}/securityContext/capabilities/add
+                value:
+                  - NET_BIND_RAW
+          
+          - list: request.object.spec.template.spec.initContainers[]
+            order: Descending
+            preconditions:
+              all:
+                - key: NET_BIND_RAW
+                  operator: AnyNotIn
+                  value: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
+            patchesJson6902: |-
+              - op: remove
+                path: /spec/template/spec/initContainers/{{elementIndex}}/securityContext/capabilities/add
+          
+          - list: request.object.spec.template.spec.initContainers[]
+            order: Descending
+            preconditions:
+              all:
+                - key: NET_BIND_RAW
+                  operator: In
+                  value: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
+            patchesJson6902: |-
+              - op: replace
+                path: /spec/template/spec/initContainers/{{elementIndex}}/securityContext/capabilities/add
+                value:
+                  - NET_BIND_RAW
+          
+          - list: request.object.spec.template.spec.ephemeralContainers[]
+            order: Descending
+            preconditions:
+              all:
+                - key: NET_BIND_RAW
+                  operator: AnyNotIn
+                  value: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
+            patchesJson6902: |-
+              - op: remove
+                path: /spec/template/spec/ephemeralContainers/{{elementIndex}}/securityContext/capabilities/add
+          
+          - list: request.object.spec.template.spec.ephemeralContainers[]
+            order: Descending
+            preconditions:
+              all:
+                - key: NET_BIND_RAW
+                  operator: In
+                  value: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
+            patchesJson6902: |-
+              - op: replace
+                path: /spec/template/spec/ephemeralContainers/{{elementIndex}}/securityContext/capabilities/add
+                value:
+                  - NET_BIND_RAW
