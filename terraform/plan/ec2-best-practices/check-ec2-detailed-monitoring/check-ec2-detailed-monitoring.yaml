@@ -1,0 +1,34 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-ec2-detailed-monitoring
+  annotations:
+    policies.kyverno.io/title: check-ec2-detailed-monitoring
+    policies.kyverno.io/category: AWS EC2 Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that detailed monitoring is enabled for the AWS EC2 instance
+spec:
+  rules:
+    - name: check-ec2-detailed-monitoring
+      match:
+        all:
+        - (planned_values.root_module.resources[?type=='aws_instance' || type=='aws_launch_configuration' || type=='aws_launch_template'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: Detailed monitoring must be enabled for the EC2 instance
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_instance']):
+                values:
+                  monitoring: true
+        - message: Detailed monitoring must be enabled in EC2 launch configuration
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_launch_configuration']):
+                values:
+                  enable_monitoring: true
+        - message: Detailed monitoring must be enabled in EC2 launch template
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_launch_template']):
+                values:
+                  ~.(monitoring || `[{}]`): 
+                      enabled: true

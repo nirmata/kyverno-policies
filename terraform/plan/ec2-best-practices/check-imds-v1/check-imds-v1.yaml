@@ -1,0 +1,24 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-imds-v1
+  annotations:
+    policies.kyverno.io/title: check-imds-v1
+    policies.kyverno.io/category: AWS EC2 Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Enabling IMDSv1 exposes cloud environments to significant security risks, and it is recommended to disable it in favor of more secure alternatives such as IMDSv2.
+spec:
+  rules:
+    - name: check-imds-v1
+      match:
+        any:
+        - (planned_values.root_module.resources[?type=='aws_instance' || type=='aws_launch_template' || type=='aws_launch_configuration'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: "IMDSv1 should not be enabled, use IMDSv2 instead"
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_instance' || type=='aws_launch_template' || type=='aws_launch_configuration']):
+                values:
+                  ~.(metadata_options || `[{}]`):
+                        (http_endpoint == 'disabled' || http_tokens == 'required'): true

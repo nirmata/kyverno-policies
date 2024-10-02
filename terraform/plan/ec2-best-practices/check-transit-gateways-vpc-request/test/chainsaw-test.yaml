@@ -1,0 +1,86 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-01
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./good-test/good-payload-01.json --policy ../check-transit-gateways-vpc-request.yaml --output json 
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-transit-gateways-vpc-request
+                rules:
+                - rule:
+                    name: check-transit-gateways-vpc-request
+                  error: ~
+                  violations: ~
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-02
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./good-test/good-payload-02.json --policy ../check-transit-gateways-vpc-request.yaml --output json 
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-transit-gateways-vpc-request
+                rules:
+                - rule:
+                    name: check-transit-gateways-vpc-request
+                  error: ~
+                  violations: ~
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-01
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../check-transit-gateways-vpc-request.yaml --payload ./bad-test/bad-payload-01.json --output json 
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-transit-gateways-vpc-request
+                rules:
+                - rule:
+                    name: check-transit-gateways-vpc-request
+                  error: ~
+                  violations:
+                  - (contains(message, '\'auto_accept_shared_attachments\' should either be omitted or set to \'disable\'')): true
+                    errors:
+                    - type: FieldValueInvalid
+                      value: false
+                      detail: 'Expected value: true'
