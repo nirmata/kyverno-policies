@@ -1,0 +1,24 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-dead-letter-queue-config
+  annotations:
+    policies.kyverno.io/title: check-dead-letter-queue-config 
+    policies.kyverno.io/category: AWS Lambda Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Ensure that AWS Lambda function is configured for a Dead Letter Queue(DLQ)
+spec:
+  rules:
+    - name: check-dead-letter-queue-config
+      match:
+        all:
+        - (planned_values.root_module.resources[?type=='aws_lambda_function'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: AWS Lambda function should be configured for a Dead Letter Queue(DLQ)
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_lambda_function']):
+                values:
+                  (dead_letter_config != `[]`): true
+

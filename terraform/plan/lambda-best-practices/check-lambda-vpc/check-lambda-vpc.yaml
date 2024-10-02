@@ -1,0 +1,25 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-lambda-vpc
+  annotations:
+    policies.kyverno.io/title: check-lambda-vpc 
+    policies.kyverno.io/category: AWS Lambda Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      VPC provides isolation and enhanced security to Lambda functions. 
+      This policy validates whether vpc_config is specified for the Lambda function.
+spec:
+  rules:
+    - name: check-lambda-vpc
+      match:
+        all:
+        - (planned_values.root_module.resources[?type=='aws_lambda_function'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: "'vpc_config' must be present for the Lambda function"
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_lambda_function']):
+                values:
+                  (vpc_config != `[]`): true
+
