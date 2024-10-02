@@ -1,0 +1,31 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-ec2-public-ip
+  annotations:
+    policies.kyverno.io/title: check-ec2-public-ip
+    policies.kyverno.io/category: AWS EC2 Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that the EC2 instance is not assigned a public IP address
+spec:
+  rules:
+    - name: check-ec2-public-ip
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-plan
+        - (planned_values.root_module.resources[?type=='aws_instance' || type=='aws_launch_template' || type=='aws_launch_configuration'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: EC2 instance should not be created or launched with a public IP address to avoid exposing it to the internet
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_instance' || type=='aws_launch_configuration']):
+                values:
+                  associate_public_ip_address: false
+        - message: EC2 launch templates should not assign a public IP address to EC2 instances to avoid exposing them to the internet
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_launch_template']):
+                values:
+                  ~.(network_interfaces || `[{}]`):
+                      associate_public_ip_address: 'false'
+

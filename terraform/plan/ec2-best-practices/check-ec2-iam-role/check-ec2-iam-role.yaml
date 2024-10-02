@@ -1,0 +1,25 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-ec2-iam-role
+  annotations:
+    policies.kyverno.io/title: check-ec2-iam-role
+    policies.kyverno.io/category: AWS EC2 Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that an IAM role is attached to an EC2 instance
+spec:
+  rules:
+    - name: check-ec2-iam-role
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-plan
+        - (planned_values.root_module.resources[?type=='aws_instance'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: "'iam_instance_profile' must be present for the EC2 instance"
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_instance']):
+                values:
+                  (!iam_instance_profile): false
+

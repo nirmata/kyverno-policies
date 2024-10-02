@@ -1,0 +1,27 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-transit-gateways-vpc-request
+  annotations:
+    policies.kyverno.io/title: check-transit-gateways-vpc-request
+    policies.kyverno.io/category: AWS EC2 Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Transit Gateways should not automatically accept VPC attachment requests to maintain control over network access, mitigate security risks, 
+      comply with governance requirements, prevent resource exhaustion, ensure visibility and accountability, 
+      avoid misconfigurations, and adhere to best practices for network security.
+spec:
+  rules:
+    - name: check-transit-gateways-vpc-request
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-plan
+        - (planned_values.root_module.resources[?type=='aws_ec2_transit_gateway'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: "'auto_accept_shared_attachments' should either be omitted or set to 'disable'"
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_ec2_transit_gateway']):
+                values:
+                  (auto_accept_shared_attachments != 'enable'): true
+
