@@ -1,0 +1,342 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.2",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_db_proxy.bad_db_proxy",
+          "mode": "managed",
+          "type": "aws_db_proxy",
+          "name": "bad_db_proxy",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "auth": [
+              {
+                "auth_scheme": "SECRETS",
+                "description": "",
+                "iam_auth": "",
+                "username": ""
+              }
+            ],
+            "debug_logging": null,
+            "engine_family": "POSTGRESQL",
+            "name": "bad-db-proxy-01",
+            "require_tls": false,
+            "role_arn": "arn:aws:iam::xxxx:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
+            "tags": null,
+            "timeouts": null,
+            "vpc_subnet_ids": [
+              "subnet-id-1",
+              "subnet-id-2"
+            ]
+          },
+          "sensitive_values": {
+            "auth": [
+              {}
+            ],
+            "tags_all": {},
+            "vpc_security_group_ids": [],
+            "vpc_subnet_ids": [
+              false,
+              false
+            ]
+          }
+        },
+        {
+          "address": "aws_secretsmanager_secret.rds_secret",
+          "mode": "managed",
+          "type": "aws_secretsmanager_secret",
+          "name": "rds_secret",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "description": null,
+            "force_overwrite_replica_secret": false,
+            "kms_key_id": null,
+            "name": "rds-db-secret",
+            "recovery_window_in_days": 30,
+            "tags": {
+              "Name": "rds-db-secret"
+            },
+            "tags_all": {
+              "Name": "rds-db-secret"
+            }
+          },
+          "sensitive_values": {
+            "replica": [],
+            "tags": {},
+            "tags_all": {}
+          }
+        },
+        {
+          "address": "aws_secretsmanager_secret_version.rds_secret_version",
+          "mode": "managed",
+          "type": "aws_secretsmanager_secret_version",
+          "name": "rds_secret_version",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "secret_binary": null,
+            "secret_string": "{\"password\":\"admin1234\",\"username\":\"admin\"}"
+          },
+          "sensitive_values": {
+            "secret_binary": true,
+            "secret_string": true,
+            "version_stages": []
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_db_proxy.bad_db_proxy",
+      "mode": "managed",
+      "type": "aws_db_proxy",
+      "name": "bad_db_proxy",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "auth": [
+            {
+              "auth_scheme": "SECRETS",
+              "description": "",
+              "iam_auth": "",
+              "username": ""
+            }
+          ],
+          "debug_logging": null,
+          "engine_family": "POSTGRESQL",
+          "name": "bad-db-proxy-01",
+          "require_tls": false,
+          "role_arn": "arn:aws:iam::xxxx:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
+          "tags": null,
+          "timeouts": null,
+          "vpc_subnet_ids": [
+            "subnet-id-1",
+            "subnet-id-2"
+          ]
+        },
+        "after_unknown": {
+          "arn": true,
+          "auth": [
+            {
+              "client_password_auth_type": true,
+              "secret_arn": true
+            }
+          ],
+          "endpoint": true,
+          "id": true,
+          "idle_client_timeout": true,
+          "tags_all": true,
+          "vpc_security_group_ids": true,
+          "vpc_subnet_ids": [
+            false,
+            false
+          ]
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "auth": [
+            {}
+          ],
+          "tags_all": {},
+          "vpc_security_group_ids": [],
+          "vpc_subnet_ids": [
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "address": "aws_secretsmanager_secret.rds_secret",
+      "mode": "managed",
+      "type": "aws_secretsmanager_secret",
+      "name": "rds_secret",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "description": null,
+          "force_overwrite_replica_secret": false,
+          "kms_key_id": null,
+          "name": "rds-db-secret",
+          "recovery_window_in_days": 30,
+          "tags": {
+            "Name": "rds-db-secret"
+          },
+          "tags_all": {
+            "Name": "rds-db-secret"
+          }
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "name_prefix": true,
+          "policy": true,
+          "replica": true,
+          "tags": {},
+          "tags_all": {}
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "replica": [],
+          "tags": {},
+          "tags_all": {}
+        }
+      }
+    },
+    {
+      "address": "aws_secretsmanager_secret_version.rds_secret_version",
+      "mode": "managed",
+      "type": "aws_secretsmanager_secret_version",
+      "name": "rds_secret_version",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "secret_binary": null,
+          "secret_string": "{\"password\":\"admin1234\",\"username\":\"admin\"}"
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "secret_id": true,
+          "version_id": true,
+          "version_stages": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "secret_binary": true,
+          "secret_string": true,
+          "version_stages": []
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": ">= 5.32.0",
+        "expressions": {
+          "region": {
+            "constant_value": "us-west-2"
+          }
+        }
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_db_proxy.bad_db_proxy",
+          "mode": "managed",
+          "type": "aws_db_proxy",
+          "name": "bad_db_proxy",
+          "provider_config_key": "aws",
+          "expressions": {
+            "auth": [
+              {
+                "auth_scheme": {
+                  "constant_value": "SECRETS"
+                },
+                "secret_arn": {
+                  "references": [
+                    "aws_secretsmanager_secret.rds_secret.arn",
+                    "aws_secretsmanager_secret.rds_secret"
+                  ]
+                }
+              }
+            ],
+            "engine_family": {
+              "constant_value": "POSTGRESQL"
+            },
+            "name": {
+              "constant_value": "bad-db-proxy-01"
+            },
+            "require_tls": {
+              "constant_value": false
+            },
+            "role_arn": {
+              "constant_value": "arn:aws:iam::xxxx:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS"
+            },
+            "vpc_subnet_ids": {
+              "constant_value": [
+                "subnet-id-1",
+                "subnet-id-2"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_secretsmanager_secret.rds_secret",
+          "mode": "managed",
+          "type": "aws_secretsmanager_secret",
+          "name": "rds_secret",
+          "provider_config_key": "aws",
+          "expressions": {
+            "name": {
+              "constant_value": "rds-db-secret"
+            },
+            "tags": {
+              "constant_value": {
+                "Name": "rds-db-secret"
+              }
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_secretsmanager_secret_version.rds_secret_version",
+          "mode": "managed",
+          "type": "aws_secretsmanager_secret_version",
+          "name": "rds_secret_version",
+          "provider_config_key": "aws",
+          "expressions": {
+            "secret_id": {
+              "references": [
+                "aws_secretsmanager_secret.rds_secret.id",
+                "aws_secretsmanager_secret.rds_secret"
+              ]
+            },
+            "secret_string": {}
+          },
+          "schema_version": 0
+        }
+      ]
+    }
+  },
+  "relevant_attributes": [
+    {
+      "resource": "aws_secretsmanager_secret.rds_secret",
+      "attribute": [
+        "id"
+      ]
+    },
+    {
+      "resource": "aws_secretsmanager_secret.rds_secret",
+      "attribute": [
+        "arn"
+      ]
+    }
+  ],
+  "timestamp": "2024-10-01T07:48:25Z",
+  "applyable": true,
+  "complete": true,
+  "errored": false
+}
