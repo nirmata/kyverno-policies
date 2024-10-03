@@ -1,0 +1,144 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../validate-efs-volume-encryption.yaml --payload ./good-payload.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: validate-efs-volume-encryption
+                rules:
+                - rule:
+                    name: validate-efs-volume-encryption
+                  error: ~
+                  violations: ~
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-01
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../validate-efs-volume-encryption.yaml --payload ./good-payload1.json --output json --bindings ./binding.yaml 
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: validate-efs-volume-encryption
+                rules:
+                - rule:
+                    name: validate-efs-volume-encryption
+                  error: ~
+                  violations: ~
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-02
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../validate-efs-volume-encryption.yaml --payload ./good-payload2.json --output json --bindings ./binding.yaml 
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: validate-efs-volume-encryption
+                rules:
+                - rule:
+                    name: validate-efs-volume-encryption
+                  error: ~
+                  violations: ~
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../validate-efs-volume-encryption.yaml --payload ./bad-payload.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: validate-efs-volume-encryption
+                rules:
+                - rule:
+                    name: validate-efs-volume-encryption
+                  error: ~
+                  violations:
+                  - (contains(message, 'Transit Encryption is not `ENABLED` for EFS volumes in ECS Task definitions')): true
+                    errors:
+                    - type: FieldValueInvalid
+                      value: false
+                      detail: 'Expected value: true'
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-01
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --policy ../validate-efs-volume-encryption.yaml --payload ./bad-payload1.json --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: validate-efs-volume-encryption
+                rules:
+                - rule:
+                    name: validate-efs-volume-encryption
+                  error: ~
+                  violations:
+                  - (contains(message, 'Transit Encryption is not `ENABLED` for EFS volumes in ECS Task definitions')): true
+                    errors:
+                    - type: FieldValueInvalid
+                      value: false
+                      detail: 'Expected value: true'

@@ -1,0 +1,223 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.2",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_cloudwatch_log_group.example",
+          "mode": "managed",
+          "type": "aws_cloudwatch_log_group",
+          "name": "example",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "kms_key_id": null,
+            "name": "example",
+            "retention_in_days": 0,
+            "skip_destroy": false,
+            "tags": null
+          },
+          "sensitive_values": {
+            "tags_all": {}
+          }
+        },
+        {
+          "address": "aws_ecs_cluster.test",
+          "mode": "managed",
+          "type": "aws_ecs_cluster",
+          "name": "test",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "configuration": [
+              {
+                "execute_command_configuration": [
+                  {
+                    "kms_key_id": null,
+                    "log_configuration": [],
+                    "logging": "NONE"
+                  }
+                ],
+                "managed_storage_configuration": []
+              }
+            ],
+            "name": "example",
+            "service_connect_defaults": [],
+            "tags": null
+          },
+          "sensitive_values": {
+            "configuration": [
+              {
+                "execute_command_configuration": [
+                  {
+                    "log_configuration": []
+                  }
+                ],
+                "managed_storage_configuration": []
+              }
+            ],
+            "service_connect_defaults": [],
+            "setting": [],
+            "tags_all": {}
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_cloudwatch_log_group.example",
+      "mode": "managed",
+      "type": "aws_cloudwatch_log_group",
+      "name": "example",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "kms_key_id": null,
+          "name": "example",
+          "retention_in_days": 0,
+          "skip_destroy": false,
+          "tags": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "log_group_class": true,
+          "name_prefix": true,
+          "tags_all": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "tags_all": {}
+        }
+      }
+    },
+    {
+      "address": "aws_ecs_cluster.test",
+      "mode": "managed",
+      "type": "aws_ecs_cluster",
+      "name": "test",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "configuration": [
+            {
+              "execute_command_configuration": [
+                {
+                  "kms_key_id": null,
+                  "log_configuration": [],
+                  "logging": "NONE"
+                }
+              ],
+              "managed_storage_configuration": []
+            }
+          ],
+          "name": "example",
+          "service_connect_defaults": [],
+          "tags": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "configuration": [
+            {
+              "execute_command_configuration": [
+                {
+                  "log_configuration": []
+                }
+              ],
+              "managed_storage_configuration": []
+            }
+          ],
+          "id": true,
+          "service_connect_defaults": [],
+          "setting": true,
+          "tags_all": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "configuration": [
+            {
+              "execute_command_configuration": [
+                {
+                  "log_configuration": []
+                }
+              ],
+              "managed_storage_configuration": []
+            }
+          ],
+          "service_connect_defaults": [],
+          "setting": [],
+          "tags_all": {}
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": ">= 5.32.0",
+        "expressions": {
+          "region": {
+            "constant_value": "us-west-2"
+          }
+        }
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_cloudwatch_log_group.example",
+          "mode": "managed",
+          "type": "aws_cloudwatch_log_group",
+          "name": "example",
+          "provider_config_key": "aws",
+          "expressions": {
+            "name": {
+              "constant_value": "example"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_ecs_cluster.test",
+          "mode": "managed",
+          "type": "aws_ecs_cluster",
+          "name": "test",
+          "provider_config_key": "aws",
+          "expressions": {
+            "configuration": [
+              {
+                "execute_command_configuration": [
+                  {
+                    "logging": {
+                      "constant_value": "NONE"
+                    }
+                  }
+                ]
+              }
+            ],
+            "name": {
+              "constant_value": "example"
+            }
+          },
+          "schema_version": 0
+        }
+      ]
+    }
+  },
+  "timestamp": "2024-09-05T18:28:33Z",
+  "applyable": true,
+  "complete": true,
+  "errored": false
+}
