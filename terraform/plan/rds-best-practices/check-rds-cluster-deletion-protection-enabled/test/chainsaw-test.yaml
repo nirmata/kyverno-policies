@@ -1,0 +1,91 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-01
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./good-test/good-payload-01.json --policy ../check-rds-cluster-deletion-protection-enabled.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-rds-cluster-deletion-protection-enabled
+                rules:
+                - rule:
+                    name: check-rds-cluster-deletion-protection-enabled
+                  error: ~
+                  violations: ~
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-01
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./bad-test/bad-payload-01.json --policy ../check-rds-cluster-deletion-protection-enabled.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-rds-cluster-deletion-protection-enabled
+                rules:
+                - rule:
+                    name: check-rds-cluster-deletion-protection-enabled
+                  error: ~
+                  violations:
+                  - message: RDS Database Deletion Protection must be enabled (CHECK=spec.rules[0].assert.all[0])
+                    errors:
+                    - type: FieldValueInvalid
+                      value: false
+                      detail: "Expected value: true"
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-02
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./bad-test/bad-payload-02.json --policy ../check-rds-cluster-deletion-protection-enabled.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-rds-cluster-deletion-protection-enabled
+                rules:
+                - rule:
+                    name: check-rds-cluster-deletion-protection-enabled
+                  error: ~
+                  violations:
+                  - message: RDS Database Deletion Protection must be enabled (CHECK=spec.rules[0].assert.all[0])
+                    errors:
+                    - type: FieldValueInvalid
+                      value: false
+                      detail: "Expected value: true"

@@ -1,0 +1,27 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-rds-automatic-minor-version-upgrade-enabled
+  annotations:
+    policies.kyverno.io/title: Check RDS Automatic Minor Version Upgrade Enabled
+    policies.kyverno.io/category: AWS RDS Best Practices
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      This policy checks whether automatic minor version upgrades are enabled for the RDS database instance.
+      Enabling automatic minor version upgrades ensures that the latest minor version updates to the 
+      relational database management system (RDBMS) are installed. These upgrades might include security patches and bug fixes. 
+      Keeping up to date with patch installation is an important step in securing systems.
+spec:
+  rules:
+    - name: check-rds-automatic-minor-version-upgrade-enabled
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-plan
+        - (planned_values.root_module.resources[?type=='aws_db_instance'] || `[]` | length(@) > `0`): true
+      assert:
+        all:
+        - message: RDS instances should have automatic minor version upgrades enabled
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_db_instance']):
+                values:
+                  (auto_minor_version_upgrade): true
