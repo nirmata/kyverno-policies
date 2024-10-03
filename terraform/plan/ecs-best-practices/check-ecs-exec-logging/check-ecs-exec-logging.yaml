@@ -1,0 +1,33 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-ecs-exec-logging
+  annotations:
+    policies.kyverno.io/title: Check ECS Cluster Logging
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      With Amazon ECS Exec, you can directly interact with containers without needing to 
+      first interact with the host container operating system, open inbound ports, or manage SSH keys. 
+      You can use ECS Exec to run commands in or get a shell to a container running on an Amazon EC2 instance or on AWS Fargate. 
+      This makes it easier to collect diagnostic information and quickly troubleshoot errors. 
+      For example, in a development context, you can use ECS Exec to easily interact with various process in your containers and troubleshoot your applications. 
+      And in production scenarios, you can use it to gain break-glass access to your containers to debug issues. 
+      You can audit which user accessed the container using the `ExecuteCommand` event in AWS CloudTrail and log each command (and their output) to Amazon S3 or Amazon CloudWatch Logs. 
+      Amazon ECS provides a default configuration for logging commands run using ECS Exec by sending logs to CloudWatch Logs using the `awslogs` log driver that's configured in your task definition.
+      This policy validates if logging is enabled for the commands executed in the ECS Cluster. It fails if logging is set to None.
+spec:
+  rules:
+    - name: check-ecs-exec-logging
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-plan
+        - (planned_values.root_module.resources[?type=='aws_ecs_cluster'] | length(@) > `0`): true
+      assert:
+        all:
+        - message: ECS Exec must have logging enabled
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_ecs_cluster']):
+                values:
+                  ~.(configuration[].execute_command_configuration[]):
+                      (logging != 'NONE'): true
