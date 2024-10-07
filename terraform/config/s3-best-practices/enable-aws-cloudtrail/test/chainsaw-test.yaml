@@ -79,7 +79,7 @@ spec:
                     name: check-aws-cloudtrail-logging
                   error: ~
                   violations:
-                  - message: Set the enable_logging argument in aws_cloudtrail resource to true
+                  - message: Set the enable_logging argument in aws_cloudtrail resource to true (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: false

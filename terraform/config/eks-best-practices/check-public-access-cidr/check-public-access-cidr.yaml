@@ -1,0 +1,26 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-public-access-cidr
+  annotations:
+    policies.kyverno.io/title: Ensure Amazon EKS public endpoint not accessible to 0.0.0.0/0
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Ensuring that the Amazon EKS public endpoint is not accessible to 0.0.0.0/0 is a fundamental security measure that 
+      helps protect your EKS clusters from unauthorized access, security threats, and compliance violations.
+spec:
+  rules:
+    - name: check-public-access-cidr
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-config
+        - (resource.aws_eks_cluster != null): true
+      assert:
+        all:
+        - message: Public endpoint should not be accessible to 0.0.0.0/0
+          check:
+            ~.(resource.aws_eks_cluster.values(@)[]):
+                ~.(vpc_config[?endpoint_public_access == null || endpoint_public_access == `true`]):
+                    (public_access_cidrs != null && !contains(public_access_cidrs, '0.0.0.0/0')): true
+

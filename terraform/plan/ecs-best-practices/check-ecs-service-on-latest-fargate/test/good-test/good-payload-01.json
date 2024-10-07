@@ -1,0 +1,264 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.9.2",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_ecs_cluster.example_cluster",
+          "mode": "managed",
+          "type": "aws_ecs_cluster",
+          "name": "example_cluster",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "configuration": [],
+            "name": "example-cluster",
+            "service_connect_defaults": [],
+            "tags": null
+          },
+          "sensitive_values": {
+            "configuration": [],
+            "service_connect_defaults": [],
+            "setting": [],
+            "tags_all": {}
+          }
+        },
+        {
+          "address": "aws_ecs_service.example",
+          "mode": "managed",
+          "type": "aws_ecs_service",
+          "name": "example",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 1,
+          "values": {
+            "alarms": [],
+            "capacity_provider_strategy": [],
+            "deployment_circuit_breaker": [],
+            "deployment_controller": [],
+            "deployment_maximum_percent": 200,
+            "deployment_minimum_healthy_percent": 100,
+            "desired_count": null,
+            "enable_ecs_managed_tags": false,
+            "enable_execute_command": false,
+            "force_delete": null,
+            "force_new_deployment": null,
+            "health_check_grace_period_seconds": null,
+            "launch_type": "FARGATE",
+            "load_balancer": [],
+            "name": "example",
+            "network_configuration": [],
+            "ordered_placement_strategy": [],
+            "placement_constraints": [],
+            "platform_version": "LATEST",
+            "propagate_tags": null,
+            "scheduling_strategy": "REPLICA",
+            "service_connect_configuration": [],
+            "service_registries": [],
+            "tags": null,
+            "task_definition": null,
+            "timeouts": null,
+            "volume_configuration": [],
+            "wait_for_steady_state": false
+          },
+          "sensitive_values": {
+            "alarms": [],
+            "capacity_provider_strategy": [],
+            "deployment_circuit_breaker": [],
+            "deployment_controller": [],
+            "load_balancer": [],
+            "network_configuration": [],
+            "ordered_placement_strategy": [],
+            "placement_constraints": [],
+            "service_connect_configuration": [],
+            "service_registries": [],
+            "tags_all": {},
+            "triggers": {},
+            "volume_configuration": []
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_ecs_cluster.example_cluster",
+      "mode": "managed",
+      "type": "aws_ecs_cluster",
+      "name": "example_cluster",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "configuration": [],
+          "name": "example-cluster",
+          "service_connect_defaults": [],
+          "tags": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "configuration": [],
+          "id": true,
+          "service_connect_defaults": [],
+          "setting": true,
+          "tags_all": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "configuration": [],
+          "service_connect_defaults": [],
+          "setting": [],
+          "tags_all": {}
+        }
+      }
+    },
+    {
+      "address": "aws_ecs_service.example",
+      "mode": "managed",
+      "type": "aws_ecs_service",
+      "name": "example",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "alarms": [],
+          "capacity_provider_strategy": [],
+          "deployment_circuit_breaker": [],
+          "deployment_controller": [],
+          "deployment_maximum_percent": 200,
+          "deployment_minimum_healthy_percent": 100,
+          "desired_count": null,
+          "enable_ecs_managed_tags": false,
+          "enable_execute_command": false,
+          "force_delete": null,
+          "force_new_deployment": null,
+          "health_check_grace_period_seconds": null,
+          "launch_type": "FARGATE",
+          "load_balancer": [],
+          "name": "example",
+          "network_configuration": [],
+          "ordered_placement_strategy": [],
+          "placement_constraints": [],
+          "platform_version": "LATEST",
+          "propagate_tags": null,
+          "scheduling_strategy": "REPLICA",
+          "service_connect_configuration": [],
+          "service_registries": [],
+          "tags": null,
+          "task_definition": null,
+          "timeouts": null,
+          "volume_configuration": [],
+          "wait_for_steady_state": false
+        },
+        "after_unknown": {
+          "alarms": [],
+          "capacity_provider_strategy": [],
+          "cluster": true,
+          "deployment_circuit_breaker": [],
+          "deployment_controller": [],
+          "iam_role": true,
+          "id": true,
+          "load_balancer": [],
+          "network_configuration": [],
+          "ordered_placement_strategy": [],
+          "placement_constraints": [],
+          "service_connect_configuration": [],
+          "service_registries": [],
+          "tags_all": true,
+          "triggers": true,
+          "volume_configuration": []
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "alarms": [],
+          "capacity_provider_strategy": [],
+          "deployment_circuit_breaker": [],
+          "deployment_controller": [],
+          "load_balancer": [],
+          "network_configuration": [],
+          "ordered_placement_strategy": [],
+          "placement_constraints": [],
+          "service_connect_configuration": [],
+          "service_registries": [],
+          "tags_all": {},
+          "triggers": {},
+          "volume_configuration": []
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": ">= 5.32.0",
+        "expressions": {
+          "region": {
+            "constant_value": "us-west-2"
+          }
+        }
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_ecs_cluster.example_cluster",
+          "mode": "managed",
+          "type": "aws_ecs_cluster",
+          "name": "example_cluster",
+          "provider_config_key": "aws",
+          "expressions": {
+            "name": {
+              "constant_value": "example-cluster"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "aws_ecs_service.example",
+          "mode": "managed",
+          "type": "aws_ecs_service",
+          "name": "example",
+          "provider_config_key": "aws",
+          "expressions": {
+            "cluster": {
+              "references": [
+                "aws_ecs_cluster.example_cluster.id",
+                "aws_ecs_cluster.example_cluster"
+              ]
+            },
+            "launch_type": {
+              "constant_value": "FARGATE"
+            },
+            "name": {
+              "constant_value": "example"
+            },
+            "platform_version": {
+              "constant_value": "LATEST"
+            }
+          },
+          "schema_version": 1
+        }
+      ]
+    }
+  },
+  "relevant_attributes": [
+    {
+      "resource": "aws_ecs_cluster.example_cluster",
+      "attribute": [
+        "id"
+      ]
+    }
+  ],
+  "timestamp": "2024-09-06T03:56:35Z",
+  "applyable": true,
+  "complete": true,
+  "errored": false
+}

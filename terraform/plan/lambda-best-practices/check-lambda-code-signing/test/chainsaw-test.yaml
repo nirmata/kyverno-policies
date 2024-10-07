@@ -53,7 +53,7 @@ spec:
                     name: check-lambda-code-signing
                   error: ~
                   violations:
-                  - message: Enable the code signing for the AWS Lambda function by specifying correct value to 'code_signing_config_arn' attribute in 'aws_lambda_function' resource block
+                  - message: Enable the code signing for the AWS Lambda function by specifying correct value to 'code_signing_config_arn' attribute in 'aws_lambda_function' resource block (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       (value==''): false

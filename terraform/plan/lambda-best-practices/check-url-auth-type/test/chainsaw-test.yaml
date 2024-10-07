@@ -53,7 +53,7 @@ spec:
                     name: check-url-auth-type
                   error: ~
                   violations:
-                  - message: Set the authoriation type of the aws lambda function url is set to `AWS_IAM`
+                  - message: Set the authoriation type of the aws lambda function url is set to `AWS_IAM` (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: false

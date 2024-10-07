@@ -53,7 +53,7 @@ spec:
                     name: check-npm-config-strict-ssl
                   error: ~
                   violations:
-                  - message: Ensure certificate validation is enabled by setting `NODE_TLS_REJECT_UNAUTHORIZED` env with value set to `true`
+                  - message: Ensure certificate validation is enabled by setting `NODE_TLS_REJECT_UNAUTHORIZED` env with value set to `true` (CHECK=spec.rules[0].assert.any[0])
                     errors:
                     - type: FieldValueInvalid
                       value: false

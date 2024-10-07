@@ -53,7 +53,7 @@ spec:
                     name: validate-ecs-container-insights-enabled
                   error: ~
                   violations:
-                  - message: ECS container insights are not enabled
+                  - message: ECS container insights are not enabled (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueRequired
                       (value != 'enabled'): true

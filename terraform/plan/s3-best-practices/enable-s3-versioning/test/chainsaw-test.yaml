@@ -52,7 +52,7 @@ spec:
                     name: check-s3-versioning-setting
                   error: ~
                   violations:
-                  - message: S3 Bucket Versioning needs to be set to 'Enabled'
+                  - message: S3 Bucket Versioning needs to be set to 'Enabled' (CHECK=spec.rules[0].assert.all[1])
                     errors:
                     - type: FieldValueInvalid
                       value: false
@@ -84,7 +84,7 @@ spec:
                     name: check-s3-versioning-setting
                   error: ~
                   violations:
-                  - message: Use the `aws_s3_bucket_versioning` resource to enable versioning.
+                  - message: Use the `aws_s3_bucket_versioning` resource to enable versioning. (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: false

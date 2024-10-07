@@ -1,0 +1,307 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.8.4",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_autoscaling_group.example",
+          "mode": "managed",
+          "type": "aws_autoscaling_group",
+          "name": "example",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 1,
+          "values": {
+            "availability_zones": [
+              "ap-south-1a"
+            ],
+            "capacity_rebalance": null,
+            "context": null,
+            "default_instance_warmup": null,
+            "desired_capacity_type": null,
+            "enabled_metrics": null,
+            "force_delete": false,
+            "force_delete_warm_pool": false,
+            "health_check_grace_period": 300,
+            "ignore_failed_scaling_activities": false,
+            "initial_lifecycle_hook": [],
+            "instance_maintenance_policy": [],
+            "instance_refresh": [],
+            "launch_configuration": "example-lc",
+            "max_instance_lifetime": null,
+            "max_size": 3,
+            "metrics_granularity": "1Minute",
+            "min_elb_capacity": null,
+            "min_size": 1,
+            "placement_group": null,
+            "protect_from_scale_in": false,
+            "suspended_processes": null,
+            "tag": [],
+            "termination_policies": null,
+            "timeouts": null,
+            "wait_for_capacity_timeout": "10m",
+            "wait_for_elb_capacity": null,
+            "warm_pool": []
+          },
+          "sensitive_values": {
+            "availability_zones": [
+              false
+            ],
+            "initial_lifecycle_hook": [],
+            "instance_maintenance_policy": [],
+            "instance_refresh": [],
+            "launch_template": [],
+            "load_balancers": [],
+            "mixed_instances_policy": [],
+            "tag": [],
+            "target_group_arns": [],
+            "traffic_source": [],
+            "vpc_zone_identifier": [],
+            "warm_pool": []
+          }
+        },
+        {
+          "address": "aws_launch_configuration.example",
+          "mode": "managed",
+          "type": "aws_launch_configuration",
+          "name": "example",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "enable_monitoring": false,
+            "ephemeral_block_device": [],
+            "iam_instance_profile": null,
+            "image_id": "ami-01376101673c89611",
+            "instance_type": "t2.micro",
+            "name": "example-lc",
+            "placement_tenancy": null,
+            "security_groups": null,
+            "spot_price": null,
+            "user_data": null,
+            "user_data_base64": null
+          },
+          "sensitive_values": {
+            "ebs_block_device": [],
+            "ephemeral_block_device": [],
+            "metadata_options": [],
+            "root_block_device": []
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_autoscaling_group.example",
+      "mode": "managed",
+      "type": "aws_autoscaling_group",
+      "name": "example",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "availability_zones": [
+            "ap-south-1a"
+          ],
+          "capacity_rebalance": null,
+          "context": null,
+          "default_instance_warmup": null,
+          "desired_capacity_type": null,
+          "enabled_metrics": null,
+          "force_delete": false,
+          "force_delete_warm_pool": false,
+          "health_check_grace_period": 300,
+          "ignore_failed_scaling_activities": false,
+          "initial_lifecycle_hook": [],
+          "instance_maintenance_policy": [],
+          "instance_refresh": [],
+          "launch_configuration": "example-lc",
+          "max_instance_lifetime": null,
+          "max_size": 3,
+          "metrics_granularity": "1Minute",
+          "min_elb_capacity": null,
+          "min_size": 1,
+          "placement_group": null,
+          "protect_from_scale_in": false,
+          "suspended_processes": null,
+          "tag": [],
+          "termination_policies": null,
+          "timeouts": null,
+          "wait_for_capacity_timeout": "10m",
+          "wait_for_elb_capacity": null,
+          "warm_pool": []
+        },
+        "after_unknown": {
+          "arn": true,
+          "availability_zones": [
+            false
+          ],
+          "default_cooldown": true,
+          "desired_capacity": true,
+          "health_check_type": true,
+          "id": true,
+          "initial_lifecycle_hook": [],
+          "instance_maintenance_policy": [],
+          "instance_refresh": [],
+          "launch_template": true,
+          "load_balancers": true,
+          "mixed_instances_policy": true,
+          "name": true,
+          "name_prefix": true,
+          "predicted_capacity": true,
+          "service_linked_role_arn": true,
+          "tag": [],
+          "target_group_arns": true,
+          "traffic_source": true,
+          "vpc_zone_identifier": true,
+          "warm_pool": [],
+          "warm_pool_size": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "availability_zones": [
+            false
+          ],
+          "initial_lifecycle_hook": [],
+          "instance_maintenance_policy": [],
+          "instance_refresh": [],
+          "launch_template": [],
+          "load_balancers": [],
+          "mixed_instances_policy": [],
+          "tag": [],
+          "target_group_arns": [],
+          "traffic_source": [],
+          "vpc_zone_identifier": [],
+          "warm_pool": []
+        }
+      }
+    },
+    {
+      "address": "aws_launch_configuration.example",
+      "mode": "managed",
+      "type": "aws_launch_configuration",
+      "name": "example",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "enable_monitoring": false,
+          "ephemeral_block_device": [],
+          "iam_instance_profile": null,
+          "image_id": "ami-01376101673c89611",
+          "instance_type": "t2.micro",
+          "name": "example-lc",
+          "placement_tenancy": null,
+          "security_groups": null,
+          "spot_price": null,
+          "user_data": null,
+          "user_data_base64": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "associate_public_ip_address": true,
+          "ebs_block_device": true,
+          "ebs_optimized": true,
+          "ephemeral_block_device": [],
+          "id": true,
+          "key_name": true,
+          "metadata_options": true,
+          "name_prefix": true,
+          "root_block_device": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "ebs_block_device": [],
+          "ephemeral_block_device": [],
+          "metadata_options": [],
+          "root_block_device": []
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": ">= 5.32.0",
+        "expressions": {
+          "region": {
+            "constant_value": "ap-south-1"
+          }
+        }
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_autoscaling_group.example",
+          "mode": "managed",
+          "type": "aws_autoscaling_group",
+          "name": "example",
+          "provider_config_key": "aws",
+          "expressions": {
+            "availability_zones": {
+              "constant_value": [
+                "ap-south-1a"
+              ]
+            },
+            "launch_configuration": {
+              "references": [
+                "aws_launch_configuration.example.name",
+                "aws_launch_configuration.example"
+              ]
+            },
+            "max_size": {
+              "constant_value": 3
+            },
+            "min_size": {
+              "constant_value": 1
+            }
+          },
+          "schema_version": 1
+        },
+        {
+          "address": "aws_launch_configuration.example",
+          "mode": "managed",
+          "type": "aws_launch_configuration",
+          "name": "example",
+          "provider_config_key": "aws",
+          "expressions": {
+            "enable_monitoring": {
+              "constant_value": false
+            },
+            "image_id": {
+              "constant_value": "ami-01376101673c89611"
+            },
+            "instance_type": {
+              "constant_value": "t2.micro"
+            },
+            "name": {
+              "constant_value": "example-lc"
+            }
+          },
+          "schema_version": 0
+        }
+      ]
+    }
+  },
+  "relevant_attributes": [
+    {
+      "resource": "aws_launch_configuration.example",
+      "attribute": [
+        "name"
+      ]
+    }
+  ],
+  "timestamp": "2024-07-09T19:25:30Z",
+  "applyable": true,
+  "complete": true,
+  "errored": false
+}

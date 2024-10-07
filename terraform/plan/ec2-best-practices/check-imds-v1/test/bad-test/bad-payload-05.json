@@ -1,0 +1,236 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.8.4",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_launch_template.example",
+          "mode": "managed",
+          "type": "aws_launch_template",
+          "name": "example",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "block_device_mappings": [],
+            "capacity_reservation_specification": [],
+            "cpu_options": [],
+            "credit_specification": [],
+            "description": null,
+            "disable_api_stop": null,
+            "disable_api_termination": null,
+            "ebs_optimized": null,
+            "elastic_gpu_specifications": [],
+            "elastic_inference_accelerator": [],
+            "enclave_options": [],
+            "hibernation_options": [],
+            "iam_instance_profile": [],
+            "image_id": null,
+            "instance_initiated_shutdown_behavior": null,
+            "instance_market_options": [],
+            "instance_requirements": [],
+            "instance_type": null,
+            "kernel_id": null,
+            "key_name": null,
+            "license_specification": [],
+            "maintenance_options": [],
+            "metadata_options": [
+              {
+                "http_tokens": "optional"
+              }
+            ],
+            "monitoring": [],
+            "network_interfaces": [],
+            "placement": [],
+            "private_dns_name_options": [],
+            "ram_disk_id": null,
+            "security_group_names": null,
+            "tag_specifications": [],
+            "tags": null,
+            "update_default_version": null,
+            "user_data": null,
+            "vpc_security_group_ids": null
+          },
+          "sensitive_values": {
+            "block_device_mappings": [],
+            "capacity_reservation_specification": [],
+            "cpu_options": [],
+            "credit_specification": [],
+            "elastic_gpu_specifications": [],
+            "elastic_inference_accelerator": [],
+            "enclave_options": [],
+            "hibernation_options": [],
+            "iam_instance_profile": [],
+            "instance_market_options": [],
+            "instance_requirements": [],
+            "license_specification": [],
+            "maintenance_options": [],
+            "metadata_options": [
+              {}
+            ],
+            "monitoring": [],
+            "network_interfaces": [],
+            "placement": [],
+            "private_dns_name_options": [],
+            "tag_specifications": [],
+            "tags_all": {}
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_launch_template.example",
+      "mode": "managed",
+      "type": "aws_launch_template",
+      "name": "example",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "block_device_mappings": [],
+          "capacity_reservation_specification": [],
+          "cpu_options": [],
+          "credit_specification": [],
+          "description": null,
+          "disable_api_stop": null,
+          "disable_api_termination": null,
+          "ebs_optimized": null,
+          "elastic_gpu_specifications": [],
+          "elastic_inference_accelerator": [],
+          "enclave_options": [],
+          "hibernation_options": [],
+          "iam_instance_profile": [],
+          "image_id": null,
+          "instance_initiated_shutdown_behavior": null,
+          "instance_market_options": [],
+          "instance_requirements": [],
+          "instance_type": null,
+          "kernel_id": null,
+          "key_name": null,
+          "license_specification": [],
+          "maintenance_options": [],
+          "metadata_options": [
+            {
+              "http_tokens": "optional"
+            }
+          ],
+          "monitoring": [],
+          "network_interfaces": [],
+          "placement": [],
+          "private_dns_name_options": [],
+          "ram_disk_id": null,
+          "security_group_names": null,
+          "tag_specifications": [],
+          "tags": null,
+          "update_default_version": null,
+          "user_data": null,
+          "vpc_security_group_ids": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "block_device_mappings": [],
+          "capacity_reservation_specification": [],
+          "cpu_options": [],
+          "credit_specification": [],
+          "default_version": true,
+          "elastic_gpu_specifications": [],
+          "elastic_inference_accelerator": [],
+          "enclave_options": [],
+          "hibernation_options": [],
+          "iam_instance_profile": [],
+          "id": true,
+          "instance_market_options": [],
+          "instance_requirements": [],
+          "latest_version": true,
+          "license_specification": [],
+          "maintenance_options": [],
+          "metadata_options": [
+            {
+              "http_endpoint": true,
+              "http_protocol_ipv6": true,
+              "http_put_response_hop_limit": true,
+              "instance_metadata_tags": true
+            }
+          ],
+          "monitoring": [],
+          "name": true,
+          "name_prefix": true,
+          "network_interfaces": [],
+          "placement": [],
+          "private_dns_name_options": [],
+          "tag_specifications": [],
+          "tags_all": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "block_device_mappings": [],
+          "capacity_reservation_specification": [],
+          "cpu_options": [],
+          "credit_specification": [],
+          "elastic_gpu_specifications": [],
+          "elastic_inference_accelerator": [],
+          "enclave_options": [],
+          "hibernation_options": [],
+          "iam_instance_profile": [],
+          "instance_market_options": [],
+          "instance_requirements": [],
+          "license_specification": [],
+          "maintenance_options": [],
+          "metadata_options": [
+            {}
+          ],
+          "monitoring": [],
+          "network_interfaces": [],
+          "placement": [],
+          "private_dns_name_options": [],
+          "tag_specifications": [],
+          "tags_all": {}
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": ">= 5.32.0",
+        "expressions": {
+          "region": {
+            "constant_value": "us-west-2"
+          }
+        }
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_launch_template.example",
+          "mode": "managed",
+          "type": "aws_launch_template",
+          "name": "example",
+          "provider_config_key": "aws",
+          "expressions": {
+            "metadata_options": [
+              {
+                "http_tokens": {
+                  "constant_value": "optional"
+                }
+              }
+            ]
+          },
+          "schema_version": 0
+        }
+      ]
+    }
+  },
+  "timestamp": "2024-07-02T18:08:06Z",
+  "applyable": true,
+  "complete": true,
+  "errored": false
+}

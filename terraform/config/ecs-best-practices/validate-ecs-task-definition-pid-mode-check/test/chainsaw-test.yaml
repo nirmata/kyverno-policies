@@ -53,7 +53,7 @@ spec:
                     name: validate-ecs-task-definition-pid-mode-check
                   error: ~
                   violations:
-                  - message: ECS task definitions shares the host's process namespace
+                  - message: ECS task definitions shares the host's process namespace (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       (value != 'task'): true

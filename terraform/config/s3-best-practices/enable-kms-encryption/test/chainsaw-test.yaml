@@ -52,7 +52,7 @@ spec:
                     name: check-encryption-setting
                   error: ~
                   violations:
-                  - message: S3 server side encryption is not set to KMS
+                  - message: S3 server side encryption is not set to KMS (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: false
@@ -84,7 +84,7 @@ spec:
                     name: check-encryption-setting
                   error: ~
                   violations:
-                  - message: S3 server side encryption is not set to KMS
+                  - message: S3 server side encryption is not set to KMS (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: false

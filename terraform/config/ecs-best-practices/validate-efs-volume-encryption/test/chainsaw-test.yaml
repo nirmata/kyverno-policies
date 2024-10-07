@@ -107,7 +107,7 @@ spec:
                     name: validate-efs-volume-encryption
                   error: ~
                   violations:
-                  - message: "Transit Encryption is not `ENABLED` for EFS volumes in ECS Task definitions"
+                  - message: "Transit Encryption is not `ENABLED` for EFS volumes in ECS Task definitions (CHECK=spec.rules[0].assert.all[0])"
                     errors:
                     - type: FieldValueInvalid
                       value: false
@@ -139,7 +139,7 @@ spec:
                     name: validate-efs-volume-encryption
                   error: ~
                   violations:
-                  - message: "Transit Encryption is not `ENABLED` for EFS volumes in ECS Task definitions"
+                  - message: "Transit Encryption is not `ENABLED` for EFS volumes in ECS Task definitions (CHECK=spec.rules[0].assert.all[0])"
                     errors:
                     - type: FieldValueInvalid
                       value: false
