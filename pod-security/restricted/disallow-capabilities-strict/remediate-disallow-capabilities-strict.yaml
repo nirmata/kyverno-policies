@@ -29,9 +29,8 @@ spec:
                   value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
             patchesJson6902: |-
               - op: add
-                path: /spec/template/spec/containers/{{elementIndex}}/securityContext/capabilities
+                path: /spec/template/spec/containers/{{elementIndex}}/securityContext/capabilities/drop
                 value:
-                  drop:
                   - ALL
           - list: request.object.spec.template.spec.initContainers[]
             order: Descending
@@ -42,9 +41,8 @@ spec:
                   value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
             patchesJson6902: |-
               - op: add
-                path: /spec/template/spec/initContainers/{{elementIndex}}/securityContext/capabilities
+                path: /spec/template/spec/initContainers/{{elementIndex}}/securityContext/capabilities/drop
                 value:
-                  drop:
                   - ALL
           - list: request.object.spec.template.spec.ephemeralContainers[]
             order: Descending
@@ -55,10 +53,9 @@ spec:
                   value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
             patchesJson6902: |-
               - op: add
-                path: /spec/template/spec/ephemeralContainers/{{elementIndex}}/securityContext/capabilities
-                value:
-                  drop:
-                  - ALL
+                path: /spec/template/spec/ephemeralContainers/{{elementIndex}}/securityContext/capabilities/drop
+                value:  
+                - ALL
     - name: restrict-adding-capabilities-other-than-net-bind-service
       match:
         resources:
@@ -73,6 +70,9 @@ spec:
             order: Descending
             preconditions:
               all:
+                - key: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
+                  operator: NotEquals
+                  value: []
                 - key: NET_BIND_RAW
                   operator: AnyNotIn
                   value: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
@@ -84,11 +84,16 @@ spec:
             order: Descending
             preconditions:
               all:
+                - key: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
+                  operator: NotEquals
+                  value: []
                 - key: NET_BIND_RAW
                   operator: In
                   value: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
             patchesJson6902: |-
-              - op: replace
+              - op: remove
+                path: /spec/template/spec/containers/{{elementIndex}}/securityContext/capabilities/add
+              - op: add
                 path: /spec/template/spec/containers/{{elementIndex}}/securityContext/capabilities/add
                 value:
                   - NET_BIND_RAW
@@ -97,6 +102,9 @@ spec:
             order: Descending
             preconditions:
               all:
+                - key: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
+                  operator: NotEquals
+                  value: []
                 - key: NET_BIND_RAW
                   operator: AnyNotIn
                   value: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
@@ -108,11 +116,16 @@ spec:
             order: Descending
             preconditions:
               all:
+                - key: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
+                  operator: NotEquals
+                  value: []
                 - key: NET_BIND_RAW
                   operator: In
                   value: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
             patchesJson6902: |-
-              - op: replace
+              - op: remove
+                path: /spec/template/spec/initContainers/{{elementIndex}}/securityContext/capabilities/add
+              - op: add
                 path: /spec/template/spec/initContainers/{{elementIndex}}/securityContext/capabilities/add
                 value:
                   - NET_BIND_RAW
@@ -121,6 +134,9 @@ spec:
             order: Descending
             preconditions:
               all:
+                - key: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
+                  operator: NotEquals
+                  value: []
                 - key: NET_BIND_RAW
                   operator: AnyNotIn
                   value: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
@@ -132,11 +148,16 @@ spec:
             order: Descending
             preconditions:
               all:
+                - key: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
+                  operator: NotEquals
+                  value: []
                 - key: NET_BIND_RAW
                   operator: In
                   value: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
             patchesJson6902: |-
-              - op: replace
+              - op: remove
+                path: /spec/template/spec/ephemeralContainers/{{elementIndex}}/securityContext/capabilities/add
+              - op: add
                 path: /spec/template/spec/ephemeralContainers/{{elementIndex}}/securityContext/capabilities/add
                 value:
                   - NET_BIND_RAW
