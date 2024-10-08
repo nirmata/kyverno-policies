@@ -53,7 +53,7 @@ spec:
                     name: check-deprecated-runtime
                   error: ~
                   violations:
-                  - message: The runtime is deprecated for AWS lambda function, use the another version.
+                  - message: The runtime is deprecated for AWS lambda function, use the another version. (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: true

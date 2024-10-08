@@ -16,7 +16,7 @@ jobs:
       fail-fast: false    
       matrix:
         k8s-version: [v1.30.0, v1.29.4, v1.28.9]
-        n4k-chart-version: [3.0.31]
+        n4k-chart-version: [3.0.33]    # nirmata kyverno chart version for 1.10.n4k
 
     steps:
       - name: Checkout
@@ -39,7 +39,7 @@ jobs:
         run: make wait-for-kyverno
 
       - name: Install chainsaw
-        uses: kyverno/action-install-chainsaw@v0.1.6
+        uses: kyverno/action-install-chainsaw@7ad918efe13995d01bafa59aef8203a5246f5d04 # v0.2.7
 
       - name: Verify Chainsaw Installation
         run: chainsaw version
@@ -54,7 +54,7 @@ jobs:
       fail-fast: false    
       matrix:
         k8s-version: [v1.30.0, v1.29.4, v1.28.9]
-        n4k-chart-version: [3.1.18, 3.2.2]
+        n4k-chart-version: [3.1.21, 3.2.4] # nirmata kyverno chart version for 1.11 and 1.12 n4k
 
     steps:
       - name: Checkout
@@ -77,7 +77,7 @@ jobs:
         run: make wait-for-kyverno
 
       - name: Install chainsaw
-        uses: kyverno/action-install-chainsaw@v0.1.6
+        uses: kyverno/action-install-chainsaw@7ad918efe13995d01bafa59aef8203a5246f5d04 # v0.2.7
 
       - name: Verify Chainsaw Installation
         run: chainsaw version
@@ -92,7 +92,7 @@ jobs:
       fail-fast: false    
       matrix:
         k8s-version: [v1.27.3, v1.26.3]
-        n4k-chart-version: [3.1.18, 3.2.2]
+        n4k-chart-version: [3.1.21, 3.2.4] # nirmata kyverno chart version for 1.11 and 1.12 n4k
 
     steps:
       - name: Checkout
@@ -110,7 +110,7 @@ jobs:
         run: make wait-for-kyverno
 
       - name: Install chainsaw
-        uses: kyverno/action-install-chainsaw@v0.1.6
+        uses: kyverno/action-install-chainsaw@7ad918efe13995d01bafa59aef8203a5246f5d04 # v0.2.7
 
       - name: Verify Chainsaw Installation
         run: chainsaw version
@@ -125,7 +125,7 @@ jobs:
       fail-fast: false    
       matrix:
         k8s-version: [v1.30.0, v1.29.4, v1.28.9]
-        n4k-chart-version: [3.1.18, 3.2.2]
+        n4k-chart-version: [3.1.21, 3.2.4] # nirmata kyverno chart version for 1.11 and 1.12 n4k
 
     steps:
       - name: Checkout
@@ -143,7 +143,7 @@ jobs:
         run: make wait-for-kyverno
 
       - name: Install chainsaw
-        uses: kyverno/action-install-chainsaw@v0.1.6
+        uses: kyverno/action-install-chainsaw@7ad918efe13995d01bafa59aef8203a5246f5d04 # v0.2.7
 
       - name: Verify Chainsaw Installation
         run: chainsaw version

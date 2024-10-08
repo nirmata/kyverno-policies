@@ -1,0 +1,151 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.8.4",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_launch_configuration.example",
+          "mode": "managed",
+          "type": "aws_launch_configuration",
+          "name": "example",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "values": {
+            "enable_monitoring": true,
+            "ephemeral_block_device": [],
+            "iam_instance_profile": null,
+            "image_id": "",
+            "instance_type": "t2.micro",
+            "metadata_options": [
+              {
+                "http_endpoint": "enabled",
+                "http_tokens": "optional"
+              }
+            ],
+            "placement_tenancy": null,
+            "security_groups": null,
+            "spot_price": null,
+            "user_data": null,
+            "user_data_base64": null
+          },
+          "sensitive_values": {
+            "ebs_block_device": [],
+            "ephemeral_block_device": [],
+            "metadata_options": [
+              {}
+            ],
+            "root_block_device": []
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_launch_configuration.example",
+      "mode": "managed",
+      "type": "aws_launch_configuration",
+      "name": "example",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "enable_monitoring": true,
+          "ephemeral_block_device": [],
+          "iam_instance_profile": null,
+          "image_id": "",
+          "instance_type": "t2.micro",
+          "metadata_options": [
+            {
+              "http_endpoint": "enabled",
+              "http_tokens": "optional"
+            }
+          ],
+          "placement_tenancy": null,
+          "security_groups": null,
+          "spot_price": null,
+          "user_data": null,
+          "user_data_base64": null
+        },
+        "after_unknown": {
+          "arn": true,
+          "associate_public_ip_address": true,
+          "ebs_block_device": true,
+          "ebs_optimized": true,
+          "ephemeral_block_device": [],
+          "id": true,
+          "key_name": true,
+          "metadata_options": [
+            {
+              "http_put_response_hop_limit": true
+            }
+          ],
+          "name": true,
+          "name_prefix": true,
+          "root_block_device": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "ebs_block_device": [],
+          "ephemeral_block_device": [],
+          "metadata_options": [
+            {}
+          ],
+          "root_block_device": []
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "version_constraint": ">= 5.32.0",
+        "expressions": {
+          "region": {
+            "constant_value": "us-west-2"
+          }
+        }
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_launch_configuration.example",
+          "mode": "managed",
+          "type": "aws_launch_configuration",
+          "name": "example",
+          "provider_config_key": "aws",
+          "expressions": {
+            "image_id": {
+              "constant_value": ""
+            },
+            "instance_type": {
+              "constant_value": "t2.micro"
+            },
+            "metadata_options": [
+              {
+                "http_endpoint": {
+                  "constant_value": "enabled"
+                },
+                "http_tokens": {
+                  "constant_value": "optional"
+                }
+              }
+            ]
+          },
+          "schema_version": 0
+        }
+      ]
+    }
+  },
+  "timestamp": "2024-07-02T18:06:23Z",
+  "applyable": true,
+  "complete": true,
+  "errored": false
+}

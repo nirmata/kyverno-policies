@@ -53,7 +53,7 @@ spec:
                     name: check-function-concurrency
                   error: ~
                   violations:
-                  - message: Configure the AWS Lambda function for function-level concurrent execution limit using 'reserved_concurrent_execution' attribute
+                  - message: Configure the AWS Lambda function for function-level concurrent execution limit using 'reserved_concurrent_execution' attribute (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: false
@@ -86,7 +86,7 @@ spec:
                     name: check-function-concurrency
                   error: ~
                   violations:
-                  - message: Configure the AWS Lambda function for function-level concurrent execution limit using 'reserved_concurrent_execution' attribute
+                  - message: Configure the AWS Lambda function for function-level concurrent execution limit using 'reserved_concurrent_execution' attribute (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: null

@@ -1,0 +1,37 @@
+apiVersion: json.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: rds-instance-iam-authentication-enabled
+  annotations:
+    policies.kyverno.io/title: RDS Instance IAM Authentication Enabled
+    policies.kyverno.io/category: AWS RDS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks whether an RDS DB instance has IAM database authentication enabled. 
+      The policy fails if IAM authentication is not configured for RDS DB instances. 
+      This policy only evaluates RDS instances with the following engine types: mysql, postgres, aurora, aurora-mysql, aurora-postgresql, and mariadb. 
+      IAM database authentication allows authentication to database instances with an authentication token instead of a password. Network traffic to and from the database is encrypted using SSL.
+spec:
+  rules:
+    - name: rds-instance-iam-authentication-enabled
+      match:
+        all:
+        - ($analyzer.resource.type): terraform-plan
+        - (planned_values.root_module.resources[?type=='aws_db_instance' && contains($engineTypes, values.engine)] || `[]` | length(@) > `0`): true
+      context:
+      - name: engineTypes
+        variable:
+        - 'mysql'
+        - 'postgres'
+        - 'aurora'
+        - 'aurora-mysql'
+        - 'aurora-postgresql'
+        - 'mariadb'
+      assert:
+        all:
+        - message: IAM authentication should be configured for RDS instances
+          check:
+            ~.(planned_values.root_module.resources[?type=='aws_db_instance' && contains($engineTypes, values.engine)]):
+                values:
+                  (!!iam_database_authentication_enabled): true
+                

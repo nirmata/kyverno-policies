@@ -1,0 +1,306 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-01
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./good-test/good-payload-01.json --policy ../check-ec2-public-ip.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-ec2-public-ip
+                rules:
+                - rule:
+                    name: check-ec2-public-ip
+                  error: ~
+                  violations: ~
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-02
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./good-test/good-payload-02.json --policy ../check-ec2-public-ip.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-ec2-public-ip
+                rules:
+                - rule:
+                    name: check-ec2-public-ip
+                  error: ~
+                  violations: ~
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-03
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./good-test/good-payload-03.json --policy ../check-ec2-public-ip.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-ec2-public-ip
+                rules:
+                - rule:
+                    name: check-ec2-public-ip
+                  error: ~
+                  violations: ~
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-01
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./bad-test/bad-payload-01.json --policy ../check-ec2-public-ip.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-ec2-public-ip
+                rules:
+                - rule:
+                    name: check-ec2-public-ip
+                  error: ~
+                  violations:
+                  - (contains(message, 'EC2 instance should not be created or launched with a public IP address to avoid exposing it to the internet')): true
+                    errors:
+                    - type: FieldValueInvalid
+                      (value != `false`): true
+                      detail: 'Expected value: false'
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-02
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./bad-test/bad-payload-02.json --policy ../check-ec2-public-ip.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-ec2-public-ip
+                rules:
+                - rule:
+                    name: check-ec2-public-ip
+                  error: ~
+                  violations:
+                  - (contains(message, 'EC2 instance should not be created or launched with a public IP address to avoid exposing it to the internet')): true
+                    errors:
+                    - type: FieldValueRequired
+                      (value != `false`): true
+                      detail: 'field not found in the input object'
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-03
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./bad-test/bad-payload-03.json --policy ../check-ec2-public-ip.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-ec2-public-ip
+                rules:
+                - rule:
+                    name: check-ec2-public-ip
+                  error: ~
+                  violations:
+                  - (contains(message, 'EC2 launch templates should not assign a public IP address to EC2 instances to avoid exposing them to the internet')): true
+                    errors:
+                    - type: FieldValueInvalid
+                      (value != 'false'): true
+                      detail: "Expected value: \"false\""
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-04
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./bad-test/bad-payload-04.json --policy ../check-ec2-public-ip.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-ec2-public-ip
+                rules:
+                - rule:
+                    name: check-ec2-public-ip
+                  error: ~
+                  violations:
+                  - (contains(message, 'EC2 launch templates should not assign a public IP address to EC2 instances to avoid exposing them to the internet')): true
+                    errors:
+                    - type: FieldValueInvalid
+                      (value != 'false'): true
+                      detail: "Expected value: \"false\""
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-05
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./bad-test/bad-payload-05.json --policy ../check-ec2-public-ip.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-ec2-public-ip
+                rules:
+                - rule:
+                    name: check-ec2-public-ip
+                  error: ~
+                  violations:
+                  - (contains(message, 'EC2 launch templates should not assign a public IP address to EC2 instances to avoid exposing them to the internet')): true
+                    errors:
+                    - type: FieldValueRequired
+                      (value != 'false'): true
+                      detail: "field not found in the input object"
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-06
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./bad-test/bad-payload-06.json --policy ../check-ec2-public-ip.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-ec2-public-ip
+                rules:
+                - rule:
+                    name: check-ec2-public-ip
+                  error: ~
+                  violations:
+                  - (contains(message, 'EC2 instance should not be created or launched with a public IP address to avoid exposing it to the internet')): true
+                    errors:
+                    - type: FieldValueRequired
+                      (value != `false`): true
+                      detail: 'field not found in the input object'
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-07
+spec:
+  steps:
+    - name: kyverno-json
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno-json scan --payload ./bad-test/bad-payload-07.json --policy ../check-ec2-public-ip.yaml --output json --bindings ./binding.yaml
+          check:
+            ($error): ~
+            (json_parse($stdout)):
+            - results:
+              - policy:
+                  apiVersion: json.kyverno.io/v1alpha1
+                  kind: ValidatingPolicy
+                  metadata:
+                    name: check-ec2-public-ip
+                rules:
+                - rule:
+                    name: check-ec2-public-ip
+                  error: ~
+                  violations:
+                  - (contains(message, 'EC2 instance should not be created or launched with a public IP address to avoid exposing it to the internet')): true
+                    errors:
+                    - type: FieldValueInvalid
+                      (value != `false`): true
+                      detail: 'Expected value: false'
+

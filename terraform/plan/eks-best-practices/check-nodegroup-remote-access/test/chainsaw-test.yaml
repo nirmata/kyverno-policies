@@ -137,7 +137,7 @@ spec:
                   - message: >-
                       AWS EKS node group should not have implicit SSH access from 0.0.0.0/0
                       If `ec2_ssh_key` is specified and `source_security_group_ids` is not specified for the EKS Node Group, 
-                      either port 3389 for Windows or port 22 for other operating systems will be opened on the worker nodes to the Internet which can lead to unauthorized access
+                      either port 3389 for Windows or port 22 for other operating systems will be opened on the worker nodes to the Internet which can lead to unauthorized access (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: true
@@ -173,7 +173,7 @@ spec:
                   - message: >-
                       AWS EKS node group should not have implicit SSH access from 0.0.0.0/0
                       If `ec2_ssh_key` is specified and `source_security_group_ids` is not specified for the EKS Node Group, 
-                      either port 3389 for Windows or port 22 for other operating systems will be opened on the worker nodes to the Internet which can lead to unauthorized access
+                      either port 3389 for Windows or port 22 for other operating systems will be opened on the worker nodes to the Internet which can lead to unauthorized access (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: true

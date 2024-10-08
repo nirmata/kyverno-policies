@@ -52,7 +52,7 @@ spec:
                     name: abort-incomplete-uploads
                   error: ~
                   violations:
-                  - message: Use the `aws_s3_bucket_lifecycle_configuration` resource to enable lifecycle configuration.
+                  - message: Use the `aws_s3_bucket_lifecycle_configuration` resource to enable lifecycle configuration. (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: false
@@ -84,7 +84,7 @@ spec:
                     name: abort-incomplete-uploads
                   error: ~
                   violations:
-                  - message: S3 Bucket Lifecycle Configuration 'status' needs to be set to 'Enabled'
+                  - message: S3 Bucket Lifecycle Configuration 'status' needs to be set to 'Enabled' (CHECK=spec.rules[0].assert.all[1])
                     errors:
                     - type: FieldValueInvalid
                       value: false
@@ -116,7 +116,7 @@ spec:
                     name: abort-incomplete-uploads
                   error: ~
                   violations:
-                  - message: Set the 'days_after_initiation' argument value to a Positive Integer value in 'abort_incomplete_multipart_upload' inside the lifecycle configuration block
+                  - message: Set the 'days_after_initiation' argument value to a Positive Integer value in 'abort_incomplete_multipart_upload' inside the lifecycle configuration block (CHECK=spec.rules[0].assert.all[2])
                     errors:
                     - type: FieldValueInvalid
                       value: false

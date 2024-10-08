@@ -53,7 +53,7 @@ spec:
                     name: check-certificate-validation-pip3
                   error: ~
                   violations:
-                  - message: Ensure certificate validation is enabled by not using `--trusted-host` option with pip3
+                  - message: Ensure certificate validation is enabled by not using `--trusted-host` option with pip3 (CHECK=spec.rules[0].assert.all[1])
                     errors:
                     - type: FieldValueInvalid
                       value: true
@@ -86,7 +86,7 @@ spec:
                     name: check-certificate-validation-pip3
                   error: ~
                   violations:
-                  - message: Ensure certificate validation is enabled by not using `--trusted-host` option with pip
+                  - message: Ensure certificate validation is enabled by not using `--trusted-host` option with pip (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: true

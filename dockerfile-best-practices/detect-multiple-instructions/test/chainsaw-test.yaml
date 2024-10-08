@@ -53,7 +53,7 @@ spec:
                     name: detect-multiple-instructions
                   error: ~
                   violations:
-                  - message: Found multiple instructions in a single line
+                  - message: Found multiple instructions in a single line (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       value: true

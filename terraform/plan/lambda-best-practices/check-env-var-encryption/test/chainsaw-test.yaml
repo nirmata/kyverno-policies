@@ -53,7 +53,7 @@ spec:
                     name: check-env-var-encryption
                   error: ~
                   violations:
-                  - message: Enable the encryption of environment variable for the AWS Lambda function by specifying correct value to 'kms_key_arn' attribute in 'aws_lambda_function' resource block
+                  - message: Enable the encryption of environment variable for the AWS Lambda function by specifying correct value to 'kms_key_arn' attribute in 'aws_lambda_function' resource block (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       (value==''): false
@@ -86,7 +86,7 @@ spec:
                     name: check-env-var-encryption
                   error: ~
                   violations:
-                  - message: Enable the encryption of environment variable for the AWS Lambda function by specifying correct value to 'kms_key_arn' attribute in 'aws_lambda_function' resource block
+                  - message: Enable the encryption of environment variable for the AWS Lambda function by specifying correct value to 'kms_key_arn' attribute in 'aws_lambda_function' resource block (CHECK=spec.rules[0].assert.all[0])
                     errors:
                     - type: FieldValueInvalid
                       (value==''): false

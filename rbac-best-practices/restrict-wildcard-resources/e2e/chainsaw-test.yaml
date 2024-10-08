@@ -22,3 +22,10 @@ spec:
         - check:
             ($error != null): true
         file: bad-resource.yaml
+    # After creating the remediate policy, we can create the bad resources as they will be mutated to become compliant
+    - apply:
+        file: ../remediate-restrict-wildcard-resources.yaml
+    - assert:
+        file: remediation-policy-assert.yaml
+    - apply:
+        file: bad-resource.yaml
