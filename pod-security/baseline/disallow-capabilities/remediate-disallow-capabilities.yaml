@@ -1,0 +1,139 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: remediate-disallow-capabilities
+  annotations:
+    policies.kyverno.io/title: Remediate Capabilities Baseline
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/description: >-
+      This policy remediates the disallow-capabilities baseline policy by automatically removing any unpermitted capabilities.
+spec:
+  background: false
+  rules:
+    - name: remove-unpermitted-capabilities
+      match:
+        resources:
+          kinds:
+            - Deployment
+            - StatefulSet
+            - Job
+            - DaemonSet
+      mutate:
+        foreach:
+          - list: request.object.spec.template.spec.containers[]
+            order: Descending
+            preconditions:
+              all:
+                - key: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
+                  operator: AnyNotIn
+                  value:
+                    - AUDIT_WRITE
+                    - CHOWN
+                    - DAC_OVERRIDE
+                    - FOWNER
+                    - FSETID
+                    - KILL
+                    - MKNOD
+                    - NET_BIND_SERVICE
+                    - SETFCAP
+                    - SETGID
+                    - SETPCAP
+                    - SETUID
+                    - SYS_CHROOT
+            patchesJson6902: |-
+              - op: remove
+                path: /spec/template/spec/containers/{{elementIndex}}/securityContext/capabilities/add
+              - op: add
+                path: /spec/template/spec/containers/{{elementIndex}}/securityContext/capabilities/add
+                value:
+                  - AUDIT_WRITE
+                  - CHOWN
+                  - DAC_OVERRIDE
+                  - FOWNER
+                  - FSETID
+                  - KILL
+                  - MKNOD
+                  - NET_BIND_SERVICE
+                  - SETFCAP
+                  - SETGID
+                  - SETPCAP
+                  - SETUID
+                  - SYS_CHROOT
+          - list: request.object.spec.template.spec.initContainers[]
+            order: Descending
+            preconditions:
+              all:
+                - key: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
+                  operator: AnyNotIn
+                  value:
+                    - AUDIT_WRITE
+                    - CHOWN
+                    - DAC_OVERRIDE
+                    - FOWNER
+                    - FSETID
+                    - KILL
+                    - MKNOD
+                    - NET_BIND_SERVICE
+                    - SETFCAP
+                    - SETGID
+                    - SETPCAP
+                    - SETUID
+                    - SYS_CHROOT
+            patchesJson6902: |-
+              - op: remove
+                path: /spec/template/spec/initContainers/{{elementIndex}}/securityContext/capabilities/add
+              - op: add
+                path: /spec/template/spec/initContainers/{{elementIndex}}/securityContext/capabilities/add
+                value:
+                  - AUDIT_WRITE
+                  - CHOWN
+                  - DAC_OVERRIDE
+                  - FOWNER
+                  - FSETID
+                  - KILL
+                  - MKNOD
+                  - NET_BIND_SERVICE
+                  - SETFCAP
+                  - SETGID
+                  - SETPCAP
+                  - SETUID
+                  - SYS_CHROOT
+          - list: request.object.spec.template.spec.ephemeralContainers[]
+            order: Descending
+            preconditions:
+              all:
+                - key: "{{ element.securityContext.capabilities.add[].to_upper(@) || `[]` }}"
+                  operator: AnyNotIn
+                  value:
+                    - AUDIT_WRITE
+                    - CHOWN
+                    - DAC_OVERRIDE
+                    - FOWNER
+                    - FSETID
+                    - KILL
+                    - MKNOD
+                    - NET_BIND_SERVICE
+                    - SETFCAP
+                    - SETGID
+                    - SETPCAP
+                    - SETUID
+                    - SYS_CHROOT
+            patchesJson6902: |-
+              - op: remove
+                path: /spec/template/spec/ephemeralContainers/{{elementIndex}}/securityContext/capabilities/add
+              - op: add
+                path: /spec/template/spec/ephemeralContainers/{{elementIndex}}/securityContext/capabilities/add
+                value:
+                  - AUDIT_WRITE
+                  - CHOWN
+                  - DAC_OVERRIDE
+                  - FOWNER
+                  - FSETID
+                  - KILL
+                  - MKNOD
+                  - NET_BIND_SERVICE
+                  - SETFCAP
+                  - SETGID
+                  - SETPCAP
+                  - SETUID
+                  - SYS_CHROOT
