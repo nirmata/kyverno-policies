@@ -2,7 +2,7 @@ apiVersion: v2
 name: kubernetes-best-practice-policies
 description: Kubernetes Best Practice policy set
 type: application
-version: 0.3.0-rc1
+version: 0.3.1-rc1
 appVersion: 0.1.0
 keywords:
   - kubernetes
