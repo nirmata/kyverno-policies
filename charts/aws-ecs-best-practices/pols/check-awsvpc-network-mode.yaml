@@ -1,0 +1,33 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-awsvpc-network-mode
+  annotations:
+    policies.kyverno.io/title: Check Awsvpc Network Mode
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      The awsvpc network mode restricts the flow of traffic between different 
+      tasks or between your tasks and other services that run within your Amazon VPC.
+      The awsvpc network mode provides task-level network isolation for tasks 
+      that run on Amazon EC2.
+  labels:
+    app: kyverno
+spec:
+  failureAction: Audit
+  scan: true
+  rules:
+    - name: check-awsvpc-network-mode
+      identifier: payload.family
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): ECS
+        - (metadata.resource): TaskDefinition
+      assert:
+        all:
+        - message: >- 
+            ECS task definitions are required to use awsvpc network mode.
+          check:
+            payload:
+              networkMode: awsvpc

@@ -1,0 +1,34 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-ecs-task-definition-user-for-host-mode-check
+  annotations:
+    policies.kyverno.io/title: Validate ECS Task Definition User for Host Mode
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that ECS task definitions avoid using the root user for the host network mode when privileged is set to false or is not specified. 
+      In scenarios where tasks employ the `host` network mode, it's crucial to avoid running containers with the root user (UID 0) for enhanced security. 
+      As a recommended security practice, it is recommended to opt for a non-root user.
+  labels:
+    app: kyverno
+spec:
+  failureAction: Audit
+  scan: true
+  rules:
+    - name: validate-ecs-task-definition-user-for-host-mode-check
+      identifier: payload.family
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): ECS
+        - (metadata.resource): TaskDefinition
+      assert:
+        all:
+        - message: >- 
+            User should be set to a non-root user when NetworkMode is set to host and privileged is set to false or not specified
+          check:
+            payload:
+              ~.(containerDefinitions[?!privileged]):
+                  (user == null || user == 'root' || user == '0' || starts_with(user, '0:') || ends_with(user, ':0')): false
+              
