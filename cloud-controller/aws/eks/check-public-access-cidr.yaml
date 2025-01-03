@@ -1,0 +1,30 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-public-access-cidr
+  annotations:
+    policies.kyverno.io/title: Check Public Access Cidr
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Ensuring that the Amazon EKS public endpoint is not accessible to 0.0.0.0/0 is a fundamental security measure that helps protect your EKS clusters from unauthorized access, security threats, and compliance violations.
+  labels:
+    app: kyverno
+spec:
+  failureAction: Audit
+  scan: true
+  rules:
+    - name: check-public-access-cidr
+      identifier: payload.clusterName
+      match:
+        all:
+        - (metadata.provider): "AWS"
+        - (metadata.service): EKS
+        - (metadata.resource): "Cluster"
+      assert:
+        all:
+        - message: "Ensuring that the Amazon EKS public endpoint is not accessible to 0.0.0.0/0"
+          check:
+            payload:
+              resourcesVpcConfig:
+                ((endpointPublicAccess == `false`) || (endpointPublicAccess == `true` && publicAccessCidrs[?@ == '0.0.0.0/0'] | length(@) == `0`)): true

@@ -1,0 +1,34 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-ecs-task-definition-pid-mode-check
+  annotations:
+    policies.kyverno.io/title: Validate ECS Task Definition PID Mode Check
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that Amazon ECS Task Definitions do not share the host's process namespace with its containers. 
+      If the host's process namespace is shared with containers, it would allow containers to see all of the processes on the host system. 
+      This reduces the benefit of process level isolation between the host and the containers. 
+      These circumstances could lead to unauthorized access to processes on the host itself, including 
+      the ability to manipulate and terminate them. Customers shouldn't share the host's process namespace with containers running on it.
+  labels:
+    app: kyverno
+spec:
+  failureAction: Audit
+  scan: true
+  rules:
+    - name: validate-ecs-task-definition-pid-mode-check
+      identifier: payload.family
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): ECS
+        - (metadata.resource): TaskDefinition
+      assert:
+        all:
+        - message: >- 
+            ECS task definitions containers should not share the host's process namespace
+          check:
+            payload:
+              (pidMode != 'host'): true
