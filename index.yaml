@@ -132,6 +132,24 @@ entries:
   kubernetes-best-practice-policies:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2025-01-03T15:26:53.607719117Z"
+    description: Kubernetes Best Practice policy set
+    digest: ca115c26286c4b66bb9a8ae5688e939d29a455f7100103bf35e931d2973d0d8d
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: kubernetes-best-practice-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/kubernetes-best-practice-policies-0.3.1/kubernetes-best-practice-policies-0.3.1.tgz
+    version: 0.3.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2023-07-20T13:53:42.988587337Z"
     description: Kubernetes Best Practice policy set
     digest: d5a1855de7b03a070d83f8267f38f2abd71acd3c8980e789fa824d7871055c10
@@ -529,6 +547,24 @@ entries:
     - https://github.com/nirmata/kyverno-policies/releases/download/pss-baseline-policies-0.1.0/pss-baseline-policies-0.1.0.tgz
     version: 0.1.0
   pss-restricted-policies:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-01-03T15:26:53.733669199Z"
+    description: Pod Security Standards (restricted) policy set
+    digest: d5a8cfdc069b2cb0e3e83d453b6b9601da4daa8940336e00104428ca30c64e8b
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: pss-restricted-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/pss-restricted-policies-0.4.2/pss-restricted-policies-0.4.2.tgz
+    version: 0.4.2
   - apiVersion: v2
     appVersion: 0.1.0
     created: "2024-03-11T08:23:52.080452518Z"
@@ -2027,4 +2063,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2024-08-01T06:18:05.422063701Z"
+generated: "2025-01-03T15:26:53.733946437Z"
