@@ -1,0 +1,34 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-ecs-task-public-ip
+  annotations:
+    policies.kyverno.io/title: Validate ECS Task Public IP
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      ECS tasks with public IP address enabled, are easily reachable from the internet. 
+      This policy validates whether public IP address is enabled on the ECS task
+  labels:
+    app: kyverno
+spec:
+  failureAction: Audit
+  scan: true
+  rules:
+    - name: validate-ecs-task-public-ip
+      identifier: payload.family
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): ECS
+        - (metadata.resource): Service
+      assert:
+        all:
+        - message: >- 
+            Public IP address should not be enabled
+          check:
+            payload:
+              networkConfiguration:
+                    awsvpcConfiguration:
+                        assignPublicIp: DISABLED
+              
