@@ -1,0 +1,15 @@
+apiVersion: v2
+name: aws-eks-best-practices
+description: Aws EKS Best Practices CloudController Policy Set
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+keywords:
+  - kubernetes
+  - nirmata
+  - kyverno
+  - policy
+  - cloud-controller
+maintainers:
+  - name: Nirmata
+    url: https://nirmata.com/
