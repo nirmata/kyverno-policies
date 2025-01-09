@@ -1,0 +1,17 @@
+{{- define "parenttemplate" }}
+{{- if .Values.enabled }}
+{{- range $path, $file := .Files.Glob "pols/**.yaml" }}
+{{- $content := $.Files.Get $path }}
+{{- $yaml := fromYaml $content }}
+apiVersion: {{ $yaml.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ $yaml.kind | default "ValidatingPolicy" }}
+metadata: {{ $yaml.metadata | toYaml | nindent 2 }}
+spec:
+  failureAction: {{ $.Values.failureAction | default "Audit" }}
+  scan: {{ if hasKey $.Values "scanner" }}{{ $.Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey $.Values "admission" }}{{ $.Values.admission }}{{ else }}true{{ end }}
+  rules: {{ $yaml.spec.rules | toYaml | nindent 4 }}
+---
+{{- end }}
+{{- end }}
+{{- end }}

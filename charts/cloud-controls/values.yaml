@@ -1,0 +1,17 @@
+aws-lambda-best-practices:
+  failureAction: "Enforce"
+  enabled: true
+  scanner: true
+  admission: true
+
+aws-ecs-best-practices:
+  failureAction: "Enforce"
+  enabled: true
+  scanner: true
+  admission: true
+
+aws-eks-best-practices:
+  failureAction: "Enforce"
+  enabled: true
+  scanner: true
+  admission: true
