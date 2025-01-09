@@ -1,0 +1,36 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "checkEnvVarEncryption" }}
+{{- $name := "check-env-var-encryption" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+        policies.kyverno.io/title: check-env-var-encryption
+        policies.kyverno.io/category: AWS Lambda Best Practices
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/description: >-
+            This policy ensures that if environment variables are used in a Lambda function, they should be encrypted.
+  labels:
+    app: kyverno
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.functionName
+      match:
+        all:
+        - (metadata.provider): "AWS"
+        - (metadata.service): "Lambda"
+        - (metadata.resource): "Function"
+      assert:
+        all:
+        - message: Enable the encryption of environment variable for the AWS Lambda function by specifying correct value to "kms_key_arn" attribute.
+          check:
+            payload:
+              ((environment.variables == null && kmsKeyArn == null && kMSKeyArn == null) || (environment.variables != null && (kmsKeyArn != null || kMSKeyArn != null))): true
+{{- end }}
+{{- end }}

@@ -1,0 +1,26 @@
+apiVersion: v2
+name: cloud-controls
+description: Cloud Controls Helm Chart
+version: 0.0.1
+keywords:
+  - kubernetes
+  - nirmata
+  - kyverno
+  - policy
+  - cloud-controller
+maintainers:
+  - name: Nirmata
+    url: https://nirmata.com/
+dependencies:
+  - name: aws-ecs-best-practices
+    condition: aws-ecs-best-practices.enabled
+    version: 0.0.1
+    repository: file://charts/ecs
+  - name: aws-eks-best-practices
+    condition: aws-eks-best-practices.enabled
+    version: 0.0.1
+    repository: file://charts/eks
+  - name: aws-lambda-best-practices
+    condition: aws-lambda-best-practices.enabled
+    version: 0.0.1
+    repository: file://charts/lambda
