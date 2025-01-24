@@ -1,0 +1,29 @@
+aws-eks-best-practices:
+  failureAction: Audit
+  enabled: true
+  scanner: true
+  admission: true
+  disabledPolicies: []
+
+aws-ecs-best-practices:
+  failureAction: Audit
+  enabled: true
+  scanner: true
+  admission: true
+  disabledPolicies: []
+  # For policy-specific values, use the policy name in CamelCase format.
+  # Example:
+  #   checkAwsvpcNetworkMode:
+  #     failureAction: Enforce
+  #     scanner: false
+
+aws-lambda-best-practices:
+  failureAction: Audit
+  enabled: true
+  scanner: true
+  admission: true
+  disabledPolicies: []
+
+global:
+  policyKind: ValidatingPolicy
+  apiVersion: nirmata.io/v1alpha1

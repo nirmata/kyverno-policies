@@ -1,0 +1,38 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "checkDeadLetterQueueConfig" }}
+{{- $name := "check-dead-letter-queue-config" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+        policies.kyverno.io/title: check-dead-letter-queue-config 
+        policies.kyverno.io/category: AWS Lambda Best Practices
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/description: >-
+          Ensure that AWS Lambda function is configured for a Dead Letter Queue(DLQ).
+  labels:
+    app: kyverno
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.functionName
+      match:
+        all:
+        - (metadata.provider): "AWS"
+        - (metadata.service): "Lambda"
+        - (metadata.resource): "Function"
+      assert:
+        all:
+        - message: AWS Lambda function should be configured for a Dead Letter Queue.
+          check:
+            payload:
+              deadLetterConfig:
+                (targetArn != null): true
+{{- end }}
+{{- end }}
+

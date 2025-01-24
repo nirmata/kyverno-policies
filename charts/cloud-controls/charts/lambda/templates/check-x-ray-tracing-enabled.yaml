@@ -1,0 +1,40 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "checkXRayTracingEnabled" }}
+{{- $name := "check-x-ray-tracing-enabled" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+        policies.kyverno.io/title: check-x-ray-tracing-enabled
+        policies.kyverno.io/category: AWS Lambda Best Practices
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/description: >-
+          AWS X-Ray to visualize the components of your application,
+          identify performance bottlenecks, and troubleshoot requests that
+          resulted in an error. This policy checks whether X-Ray is enabled
+          for Labmda function.
+  labels:
+    app: kyverno
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.functionName
+      match:
+        all:
+        - (metadata.provider): "AWS"
+        - (metadata.service): "Lambda"
+        - (metadata.resource): "Function"
+      assert:
+        all:
+        - message: Use the `tracing_config` block in the `aws_lambda_function` resource to set the mode to `Active`
+          check:
+            payload:
+              tracingConfig:
+                (mode == 'Active'): true
+{{- end }}
+{{- end }}
