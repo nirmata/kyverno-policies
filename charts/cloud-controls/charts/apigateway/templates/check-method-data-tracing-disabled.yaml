@@ -1,0 +1,37 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "checkMethodDataTracingDisabled" }}
+{{- $name := "check-method-data-tracing-disabled" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+    policies.kyverno.io/title: Ensure API Gateway has Caching Enabled in Method Settings.
+    policies.kyverno.io/category: ApiGateway Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that data tracing is disabled in API Gateway method settings to prevent sensitive data from being logged. 
+      Enforcing this practice helps enhance security, protect user privacy, and reduce the risk of exposing sensitive information in logs.
+  labels:
+    app: kyverno
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.stageName
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): ApiGateway
+        - (metadata.resource): Stage
+      assert:
+        all:
+        - message: "Ensure API Gateway has Caching Enabled in Method Settings."
+          check:
+            payload:
+              (contains(keys(@), 'methodSettings') && !contains(methodSettings[*].dataTraceEnabled, `true`)): true
+{{- end }}
+{{- end }}

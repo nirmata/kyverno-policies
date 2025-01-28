@@ -24,3 +24,7 @@ dependencies:
     condition: aws-lambda-best-practices.enabled
     version: 0.0.1
     repository: file://charts/lambda
+  - name: aws-apigateway-best-practices
+    condition: aws-apigateway-best-practices.enabled
+    version: 0.0.1
+    repository: file://charts/apigateway

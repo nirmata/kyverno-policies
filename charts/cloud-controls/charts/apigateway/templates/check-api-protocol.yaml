@@ -1,0 +1,39 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "checkApiProtocol" }}
+{{- $name := "check-api-protocol" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+    policies.kyverno.io/title: Ensure API has Correct ProtocolType
+    policies.kyverno.io/category: ApiGateway Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      APIs can use either the HTTP or WebSocket protocol. HTTP is generally more cost-effective as 
+      it is stateless and suitable for typical client-server interactions. WebSocket, while ideal for real-time, 
+      low-latency communication, requires persistent connections, which can increase costs. For cost-effectiveness, 
+      choose HTTP unless real-time communication is critical to your application.
+  labels:
+    app: kyverno
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.name
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): ApiGatewayV2
+        - (metadata.resource): Api
+      assert:
+        all:
+        - message: "Ensure API has Correct ProtocolType."
+          check:
+            payload:
+              protocolType: {{ if hasKey .Values $camelCaseName }}{{ $protocolType := index (index .Values $camelCaseName) "protocolType" }}{{ if or (eq $protocolType "HTTP") (eq $protocolType "WEBSOCKET") }}{{ $protocolType }}{{ else }}"HTTP"{{ end }}{{ else }}"HTTP"{{ end }}
+{{- end }}
+{{- end }}
