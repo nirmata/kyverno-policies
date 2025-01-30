@@ -24,6 +24,18 @@ aws-lambda-best-practices:
   admission: true
   disabledPolicies: []
 
+aws-apigateway-best-practices:
+  failureAction: Audit
+  enabled: true
+  scanner: true
+  admission: true
+  disabledPolicies: []
+  checkApiProtocol:
+    protocolType: HTTP
+  checkMethodThrottlingLimit:
+    burstLimit: 1500
+    rateLimit: 2000
+
 global:
   policyKind: ValidatingPolicy
   apiVersion: nirmata.io/v1alpha1
