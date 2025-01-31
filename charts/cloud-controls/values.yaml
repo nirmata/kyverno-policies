@@ -43,6 +43,13 @@ aws-sqs-best-practices:
   admission: true
   disabledPolicies: []
 
+aws-rds-best-practices:
+  failureAction: Audit
+  enabled: true
+  scanner: true
+  admission: true
+  disabledPolicies: []
+
 global:
   policyKind: ValidatingPolicy
   apiVersion: nirmata.io/v1alpha1
