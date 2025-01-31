@@ -28,3 +28,7 @@ dependencies:
     condition: aws-apigateway-best-practices.enabled
     version: 0.0.1
     repository: file://charts/apigateway
+  - name: aws-sqs-best-practices
+    condition: aws-sqs-best-practices.enabled
+    version: 0.0.1
+    repository: file://charts/sqs
