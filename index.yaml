@@ -131,6 +131,48 @@ entries:
     version: 0.1.0
   cloud-controls:
   - apiVersion: v2
+    created: "2025-02-05T14:04:22.837877627Z"
+    dependencies:
+    - condition: aws-ecs-best-practices.enabled
+      name: aws-ecs-best-practices
+      repository: file://charts/ecs
+      version: 0.0.1
+    - condition: aws-eks-best-practices.enabled
+      name: aws-eks-best-practices
+      repository: file://charts/eks
+      version: 0.0.1
+    - condition: aws-lambda-best-practices.enabled
+      name: aws-lambda-best-practices
+      repository: file://charts/lambda
+      version: 0.0.1
+    - condition: aws-apigateway-best-practices.enabled
+      name: aws-apigateway-best-practices
+      repository: file://charts/apigateway
+      version: 0.0.1
+    - condition: aws-sqs-best-practices.enabled
+      name: aws-sqs-best-practices
+      repository: file://charts/sqs
+      version: 0.0.1
+    - condition: aws-rds-best-practices.enabled
+      name: aws-rds-best-practices
+      repository: file://charts/rds
+      version: 0.0.1
+    description: Cloud Controls Helm Chart
+    digest: f8236c0d679e519649b32a2c85ef98901c157817f46a510b69c5bdf233a1caa9
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    - cloud-controller
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: cloud-controls
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/cloud-controls-0.0.3/cloud-controls-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
     created: "2025-01-30T14:08:57.979261036Z"
     dependencies:
     - condition: aws-ecs-best-practices.enabled
@@ -2128,4 +2170,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2025-01-30T14:08:57.979530719Z"
+generated: "2025-02-05T14:04:22.838118437Z"
