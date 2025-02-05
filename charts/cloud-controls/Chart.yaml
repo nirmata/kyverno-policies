@@ -1,7 +1,7 @@
 apiVersion: v2
 name: cloud-controls
 description: Cloud Controls Helm Chart
-version: 0.0.2
+version: 0.0.3
 keywords:
   - kubernetes
   - nirmata
@@ -28,3 +28,11 @@ dependencies:
     condition: aws-apigateway-best-practices.enabled
     version: 0.0.1
     repository: file://charts/apigateway
+  - name: aws-sqs-best-practices
+    condition: aws-sqs-best-practices.enabled
+    version: 0.0.1
+    repository: file://charts/sqs
+  - name: aws-rds-best-practices
+    condition: aws-rds-best-practices.enabled
+    version: 0.0.1
+    repository: file://charts/rds

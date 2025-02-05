@@ -1,0 +1,44 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "checkRdsStorageEncrypted" }}
+{{- $name := "check-rds-storage-encrypted" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+    policies.kyverno.io/title: Check RDS Storage Encrypted
+    policies.kyverno.io/category: AWS RDS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks whether storage encryption is enabled for your Amazon RDS DB instances.
+      For an added layer of security for your sensitive data in RDS DB instances, you should configure your 
+      RDS DB instances to be encrypted at rest. To encrypt your RDS DB instances and snapshots at rest, enable the 
+      encryption option for your RDS DB instances. Data that is encrypted at rest includes the underlying storage 
+      for DB instances, its automated backups, read replicas, and snapshots. RDS encrypted DB instances use the open 
+      standard AES-256 encryption algorithm to encrypt your data on the server that hosts your RDS DB instances. 
+      After your data is encrypted, Amazon RDS handles authentication of access and decryption of your data transparently 
+      with a minimal impact on performance. You do not need to modify your database client applications to use encryption.
+  labels:
+    app: kyverno
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.dBInstanceIdentifier
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): RDS
+        - (metadata.resource): DBInstance
+      assert:
+        all:
+        - message: >- 
+            RDS DB instances should have encryption at-rest enabled
+          check:
+            payload:
+              storageEncrypted: true
+{{- end }}
+{{- end }}

@@ -1,0 +1,39 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "checkVisiblityTimeout" }}
+{{- $name := "check-visiblity-timeout" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+        policies.kyverno.io/title: check-visiblity-timeout
+        policies.kyverno.io/category: AWS SQS Best Practices
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/description: >-
+          Check if the VisiblityTimemout is greater than 30 sec or not
+  labels:
+    app: kyverno
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.queueName
+      match:
+        all:
+        - (metadata.provider): "AWS"
+        - (metadata.service): "SQS"
+        - (metadata.resource): "Queue"
+      context:
+      - name: visibilityTimeout
+        variable: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "visibilityTimeout" }}{{ index (index .Values $camelCaseName) "visibilityTimeout" }}{{ else }}30{{ end }}{{ else }}30{{ end }}
+      assert:
+        all:
+        - message: The Visiblity Timemout is more than 30 sec.
+          check:
+            payload:
+              (visibilityTimeout <= $visibilityTimeout): true
+{{- end }}
+{{- end }}

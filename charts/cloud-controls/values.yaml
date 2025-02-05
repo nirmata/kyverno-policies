@@ -36,6 +36,20 @@ aws-apigateway-best-practices:
     burstLimit: 1500
     rateLimit: 2000
 
+aws-sqs-best-practices:
+  failureAction: Audit
+  enabled: true
+  scanner: true
+  admission: true
+  disabledPolicies: []
+
+aws-rds-best-practices:
+  failureAction: Audit
+  enabled: true
+  scanner: true
+  admission: true
+  disabledPolicies: []
+
 global:
   policyKind: ValidatingPolicy
   apiVersion: nirmata.io/v1alpha1
