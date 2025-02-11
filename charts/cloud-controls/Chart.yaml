@@ -1,7 +1,7 @@
 apiVersion: v2
 name: cloud-controls
 description: Cloud Controls Helm Chart
-version: 0.0.3
+version: 0.0.4
 keywords:
   - kubernetes
   - nirmata
