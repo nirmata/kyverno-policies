@@ -14,7 +14,7 @@ metadata:
       ECS tasks with public IP address enabled, are easily reachable from the internet. 
       This policy validates whether public IP address is enabled on the ECS task
   labels:
-    app: kyverno
+    app: cloud-control-point
 spec:
   failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
   scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}

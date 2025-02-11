@@ -14,7 +14,7 @@ metadata:
      Amazon EFS file systems can be used with Amazon ECS to export file system data across your fleet of container instances. 
      To ensure encryption is enabled in transit, this policy validates whether `transitEncryption` is set to ENABLED in the task definition.
   labels:
-    app: kyverno
+    app: cloud-control-point
 spec:
   failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
   scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}

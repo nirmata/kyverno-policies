@@ -14,7 +14,7 @@ metadata:
       This policy ensures that data tracing is disabled in API Gateway method settings to prevent sensitive data from being logged. 
       Enforcing this practice helps enhance security, protect user privacy, and reduce the risk of exposing sensitive information in logs.
   labels:
-    app: kyverno
+    app: cloud-control-point
 spec:
   failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
   scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
