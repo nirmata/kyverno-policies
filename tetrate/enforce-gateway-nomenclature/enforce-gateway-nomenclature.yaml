@@ -1,0 +1,27 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-gateway-nomenclature
+  annotations:
+    policies.kyverno.io/title: Enforce Gateway Nomenclature
+    policies.kyverno.io/category: Istio Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: VirtualService
+    policies.kyverno.io/description: >-
+      The preferred Istio nomenclature for referencing gateways is [gateway namespace]/[gateway name], 
+      which provides clarity and avoids conflicts when gateways with the same name exist in different namespaces.
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: enforce-gateway-format
+      match:
+        any:
+          - resources:
+              kinds:
+                - VirtualService
+      validate:
+        message: "Gateways in VirtualService must follow the format: [namespace]/[gateway name]."
+        pattern:
+          spec:
+            gateways:
+              - "*/*"
