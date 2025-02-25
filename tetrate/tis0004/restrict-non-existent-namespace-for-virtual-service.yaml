@@ -1,0 +1,38 @@
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+    annotations:
+        policies.kyverno.io/category: Other
+        policies.kyverno.io/description: This policy ensures that any namespace specified in the spec.exportTo field of a VirtualService actually exists in the cluster.
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/subject: VirtualService, Namespace
+        policies.kyverno.io/title: Check VirtualService ExportTo Namespace Exists
+    name: check-virtualservice-export-to-namespace-exists
+spec:
+    background: true
+    rules:
+        - context:
+            - apiCall:
+                jmesPath: items[].metadata.name
+                urlPath: /api/v1/namespaces
+              name: namespaces
+          match:
+            any:
+                - resources:
+                    kinds:
+                        - VirtualService
+          name: validate-export-to-namespaces
+          validate:
+            foreach:
+                - deny:
+                    conditions:
+                        all:
+                            - key: '{{ element }}'
+                              operator: NotEquals
+                              value: "."
+                            - key: '{{ element }}'
+                              operator: AnyNotIn
+                              value: '{{ namespaces }}'
+                  list: request.object.spec.exportTo[]
+            message: The namespace(s) specified in the exportTo field must exist in the cluster.
+    validationFailureAction: Enforce

@@ -1,0 +1,43 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+    annotations:
+        policies.kyverno.io/category: Security
+        policies.kyverno.io/description: When multiple Telemetry objects exist, they must have unique spec.selector.matchLabels to avoid conflicts in authentication policies.
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/title: Detect Duplicate Telemetry
+    name: detect-duplicate-telemetry
+spec:
+    background: true
+    rules:
+        - context:
+            - apiCall:
+                jmesPath: items
+                urlPath: /apis/telemetry.istio.io/v1alpha1/namespaces/{{request.namespace}}/telemetries
+              name: telemetryList
+          match:
+            any:
+                - resources:
+                    kinds:
+                        - Telemetry
+          name: detect-duplicate-telemetry
+          preconditions:
+            all:
+                - key: '{{ telemetryList | length(@) }}'
+                  operator: GreaterThan
+                  value: 0
+                - key: "{{ request.operation || 'BACKGROUND' }}"
+                  operator: NotEquals
+                  value: DELETE
+          validate:
+            deny:
+                conditions:
+                    any:
+                        - key: "{{ request.object.spec.selector.matchLabels || 'null' }}"
+                          operator: Equals
+                          value: "null"
+                        - key: "{{ request.object.spec.selector.matchLabels.app }}"
+                          operator: AnyIn
+                          value: "{{ telemetryList[].spec.selector.matchLabels.app }}"
+            message: When multiple Telemetry objects exist, they must have unique spec.selector.matchLabels
+    validationFailureAction: Enforce

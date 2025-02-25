@@ -1,0 +1,43 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+    annotations:
+        policies.kyverno.io/category: Security
+        policies.kyverno.io/description: When multiple RequestAuthentication objects exist, they must have unique spec.selector.matchLabels to avoid conflicts in authentication policies.
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/title: Detect Duplicate RequestAuthentication
+    name: detect-duplicate-request-authentication
+spec:
+    background: true
+    rules:
+        - context:
+            - apiCall:
+                jmesPath: items
+                urlPath: /apis/security.istio.io/v1beta1/namespaces/{{request.namespace}}/requestauthentications
+              name: requestAuthList
+          match:
+            any:
+                - resources:
+                    kinds:
+                        - RequestAuthentication
+          name: detect-duplicate-request-authentication
+          preconditions:
+            all:
+                - key: '{{ requestAuthList | length(@) }}'
+                  operator: GreaterThan
+                  value: 0
+                - key: "{{ request.operation || 'BACKGROUND' }}"
+                  operator: NotEquals
+                  value: DELETE
+          validate:
+            deny:
+                conditions:
+                    any:
+                        - key: "{{ request.object.spec.selector.matchLabels || 'null' }}"
+                          operator: Equals
+                          value: "null"
+                        - key: "{{ request.object.spec.selector.matchLabels.app }}"
+                          operator: AnyIn
+                          value: "{{ requestAuthList[].spec.selector.matchLabels.app }}"
+            message: When multiple RequestAuthentication objects exist, they must have unique spec.selector.matchLabels
+    validationFailureAction: Enforce
