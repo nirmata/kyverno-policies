@@ -1,0 +1,48 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+    annotations:
+        policies.kyverno.io/category: Security
+        policies.kyverno.io/description: |
+            This policy ensures that in AuthorizationPolicy resources, the spec.rules[].to[].operation.method[] field contains only valid HTTP methods or properly formatted gRPC method names in the form /package.service/method.
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/title: Validate Authorization Policy Methods
+    name: validate-authorization-policy-methods
+spec:
+  background: true
+  rules:
+    - match:
+        any:
+          - resources:
+              kinds:
+                  - AuthorizationPolicy
+      name: validate-methods
+      validate:
+        foreach:
+          - elementScope: rules
+            foreach:
+              - elementScope: to
+                foreach:
+                  - deny:
+                      conditions:
+                          all:
+                              - key: '{{ element }}'
+                                operator: AnyNotIn
+                                value:
+                                  - GET
+                                  - POST
+                                  - PUT
+                                  - DELETE
+                                  - PATCH
+                                  - HEAD
+                                  - OPTIONS
+                                  - CONNECT
+                                  - TRACE
+                              - key: '{{ regex_match(''^/[a-zA-Z0-9.]+/[a-zA-Z0-9]+$'', element) }}'
+                                operator: Equals
+                                value: false
+                    list: to.operation.methods || []
+                list: rules.to
+            list: request.object.spec.rules
+        message: Methods must be either valid HTTP methods (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS, CONNECT, TRACE) or valid gRPC methods in the form /package.service/method
+  validationFailureAction: Enforce
