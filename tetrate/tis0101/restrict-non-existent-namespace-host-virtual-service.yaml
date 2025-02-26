@@ -1,0 +1,35 @@
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+    annotations:
+        policies.kyverno.io/category: Service Mesh
+        policies.kyverno.io/description: Ensures that VirtualService hosts reference existing namespaces
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/subject: VirtualService
+        policies.kyverno.io/title: Validate VirtualService Host Namespace
+    name: validate-virtualservice-host-namespace
+spec:
+    background: true
+    rules:
+        - context:
+            - apiCall:
+                jmesPath: items[].metadata.name
+                urlPath: /api/v1/namespaces
+              name: namespaces
+          match:
+            any:
+                - resources:
+                    kinds:
+                        - VirtualService
+          name: validate-host-namespace
+          validate:
+            foreach:
+                - deny:
+                    conditions:
+                        all:
+                            - key: "{{ regex_split('^[^.]+\\.([^.]+)\\.svc\\.cluster\\.local$', \nelement)[1] }}\n"
+                              operator: AnyNotIn
+                              value: '{{ namespaces }}'
+                  list: request.object.spec.hosts[]
+            message: Host '{{ element }}' references a non-existent namespace
+    validationFailureAction: Audit
