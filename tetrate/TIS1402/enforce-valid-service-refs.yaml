@@ -1,0 +1,42 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-valid-service-refs
+  annotations:
+    policies.kyverno.io/title: Enforce Valid Service References
+    policies.kyverno.io/category: Istio Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: HTTPRoute
+    policies.kyverno.io/description: >-
+      Ensures that backendRefs in HTTPRoute point to existing services within the same namespace.
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: enforce-valid-service-refs
+      match:
+        any:
+          - resources:
+              kinds:
+              - HTTPRoute
+              operations:
+              - CREATE
+              - UPDATE
+      context:
+        - name: namespace
+          variable:
+            value: "{{ request.object.metadata.namespace }}"
+        - name: serviceNames
+          variable:
+            jmesPath: "request.object.spec.rules[*].backendRefs[?kind=='Service' || kind==null].name | []"
+        - name: existingServices
+          apiCall:
+            urlPath: "/api/v1/namespaces/{{ namespace }}/services"
+            jmesPath: "items[*].metadata.name"
+      validate:
+        message: "One or more referenced services do not exist in namespace '{{ namespace }}'. Referenced: '{{ serviceNames }}', Existing: '{{ existingServices }}'."
+        deny:
+          conditions:
+            any:
+              - key: "{{ serviceNames }}"
+                operator: AnyNotIn
+                value: "{{ existingServices }}"
