@@ -1,0 +1,43 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+    annotations:
+        policies.kyverno.io/category: Security
+        policies.kyverno.io/description: When multiple PeerAuthentication objects exist, they must have unique spec.selector.matchLabels to avoid conflicts in authentication policies.
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/title: Detect Duplicate PeerAuthentication
+    name: detect-duplicate-peer-authentication
+spec:
+    background: true
+    rules:
+        - context:
+            - apiCall:
+                jmesPath: items
+                urlPath: /apis/security.istio.io/v1beta1/namespaces/{{request.namespace}}/peerauthentications
+              name: peerAuthList
+          match:
+            any:
+                - resources:
+                    kinds:
+                        - PeerAuthentication
+          name: detect-duplicate-peer-authentication
+          preconditions:
+            all:
+                - key: '{{ peerAuthList | length(@) }}'
+                  operator: GreaterThan
+                  value: 0
+                - key: "{{ request.operation || 'BACKGROUND' }}"
+                  operator: NotEquals
+                  value: DELETE
+          validate:
+            deny:
+                conditions:
+                    any:
+                        - key: "{{ request.object.spec.selector.matchLabels || 'null' }}"
+                          operator: Equals
+                          value: "null"
+                        - key: "{{ request.object.spec.selector.matchLabels.app }}"
+                          operator: AnyIn
+                          value: "{{ peerAuthList[].spec.selector.matchLabels.app }}"
+            message: When multiple PeerAuthentication objects exist, they must have unique spec.selector.matchLabels
+    validationFailureAction: Enforce

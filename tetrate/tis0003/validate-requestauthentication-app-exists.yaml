@@ -1,0 +1,32 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+    annotations:
+        policies.kyverno.io/category: Security
+        policies.kyverno.io/description: This policy ensures that the app specified in RequestAuthentication's selector exists as a Pod in the cluster.
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/title: Validate RequestAuthentication App Exists
+    name: validate-request-auth-app-exists
+spec:
+    background: true
+    rules:
+        - context:
+            - apiCall:
+                jmesPath: items[?metadata.labels.app=='{{request.object.spec.selector.matchLabels.app}}'] | length(@)
+                urlPath: /api/v1/namespaces/{{request.namespace}}/pods
+              name: pods
+          match:
+            any:
+                - resources:
+                    kinds:
+                        - RequestAuthentication
+          name: check-app-exists
+          validate:
+            deny:
+                conditions:
+                    all:
+                        - key: '{{ pods }}'
+                          operator: Equals
+                          value: 0
+          message: The app '{{request.object.spec.selector.matchLabels.app}}' specified in RequestAuthentication selector must exist as a Pod in the cluster
+    validationFailureAction: Enforce

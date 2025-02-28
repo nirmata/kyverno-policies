@@ -1,0 +1,38 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+      policies.kyverno.io/category: Security
+      policies.kyverno.io/description: Ensures that HTTP methods specified in VirtualService resources are from an allowed set
+      policies.kyverno.io/severity: medium
+      policies.kyverno.io/title: Validate VirtualService HTTP Methods
+  name: validate-vs-http-methods
+spec:
+  background: true
+  rules:
+      - match:
+          any:
+            - resources:
+                kinds:
+                    - VirtualService
+        name: validate-http-methods
+        validate:
+          foreach:
+              - deny:
+                  conditions:
+                      all:
+                        - key: '{{ element }}'
+                          operator: NotIn
+                          value:
+                            - GET
+                            - HEAD
+                            - POST
+                            - PUT
+                            - DELETE
+                            - CONNECT
+                            - OPTIONS
+                            - TRACE
+                            - PATCH
+                list: request.object.spec.http[*].match[*].method.type
+          message: 'The HTTP method must be one of: GET, HEAD, POST, PUT, DELETE, CONNECT, OPTIONS, TRACE, PATCH'
+  validationFailureAction: Enforce

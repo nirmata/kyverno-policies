@@ -1,0 +1,32 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+    name: validate-root-ca-cert
+spec:
+    background: false
+    rules:
+        - match:
+            any:
+                - resources:
+                    kinds:
+                        - Secret
+                    names:
+                        - root-ca
+                    namespaces:
+                        - istio-system
+          name: validate-root-ca-cert
+          validate:
+            deny:
+                conditions:
+                    any:
+                        - key: "{{ request.object.data.\"ca-cert.pem\" | base64_decode(@) \n   | parse_x509(\"notAfter\") | date_before(\"now\") }}"
+                          operator: Equals
+                          value: true
+                        - key: "{{ request.object.data.\"ca-cert.pem\" | base64_decode(@) \n   | parse_x509(\"subject\") | length(@) }}"
+                          operator: Equals
+                          value: 0
+                        - key: "{{ request.object.data.\"ca-cert.pem\" | base64_decode(@) \n   | parse_x509(\"san\") | length(@) }}"
+                          operator: Equals
+                          value: 0
+            message: The root CA certificate must be valid and properly formatted
+    validationFailureAction: Enforce
