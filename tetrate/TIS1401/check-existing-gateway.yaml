@@ -1,0 +1,40 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-existing-gateway
+  annotations:
+    policies.kyverno.io/title: Check Existing Gateways
+    policies.kyverno.io/category: Istio Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: HTTPRoute
+    policies.kyverno.io/description: >-
+      Ensures that parentRefs in HTTPRoute point to existing Gateways within the same namespace.
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: check-existing-gateway
+      match:
+        any:
+          - resources:
+              kinds:
+                - HTTPRoute
+      context:
+        - name: namespace
+          variable:
+            value: "{{ request.object.metadata.namespace }}"
+        - name: manifestGateways
+          variable:
+            value: "{{ request.object.spec.parentRefs[].name || [] }}"
+        - name: existingGateways
+          apiCall:
+            urlPath: "/apis/gateway.networking.k8s.io/v1/namespaces/{{ namespace }}/gateways"
+            jmesPath: "items[].metadata.name"
+
+      validate:
+        message: "Referenced gateway '{{ manifestGateways }}' does not exist in namespaces '{{ namespace }}'. Existing gateways: {{ existingGateways }}."
+        deny:
+          conditions:
+            all:
+              - key: "{{ manifestGateways }}"
+                operator: AnyNotIn
+                value: "{{ existingGateways }}"
