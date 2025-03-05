@@ -1,0 +1,35 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-envoyfilter-patch-operations
+  annotations:
+    policies.kyverno.io/title: Validate EnvoyFilter Patch Operations
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that if patch.operation is ADD, then configPatches.applyTo is not set to
+      ROUTE_CONFIGURATION or HTTP_ROUTE, as the ADD operation will be ignored for these types.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: check-add-operation-compatibility
+      match:
+        resources:
+          kinds:
+            - EnvoyFilter
+      validate:
+        message: "When patch.operation is ADD, configPatches.applyTo should not be ROUTE_CONFIGURATION or HTTP_ROUTE as it will be ignored."
+        foreach:
+          - list: "request.object.spec.configPatches"
+            deny:
+              conditions:
+                all:
+                  - key: "{{ element.patch.operation }}"
+                    operator: Equals
+                    value: ADD
+                  - key: "{{ element.applyTo }}"
+                    operator: AnyIn
+                    value:
+                      - ROUTE_CONFIGURATION
+                      - HTTP_ROUTE

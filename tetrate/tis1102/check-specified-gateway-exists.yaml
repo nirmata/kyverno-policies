@@ -1,0 +1,37 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-virtualservice-gateway-exists
+  annotations:
+    policies.kyverno.io/title: Validate VirtualService Gateway Existence
+    policies.kyverno.io/category: Istio
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks if the Gateway specified in a VirtualService's gateways field exists in the cluster.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: check-gateway-existence
+      match:
+        resources:
+          kinds:
+            - VirtualService
+      context:
+        - name: existingGateways
+          apiCall:
+            urlPath: /apis/networking.istio.io/v1beta1/gateway
+            jmesPath: items[].metadata.name
+      validate:
+        message: "The specified gateway(s) do not exist in the cluster. Ensure VirtualService references valid Gateways."
+        foreach:
+          - list: request.object.spec.gateways[]
+            deny:
+              conditions:
+                all:
+                  - key: "{{ element }}"
+                    operator: AnyNotIn
+                    value: "{{ existingGateways }}"
+                  - key: "{{ request.object.metadata.namespace }}/{{ element }}"
+                    operator: AnyNotIn
+                    value: "{{ getResource('Gateway', request.object.metadata.namespace, element).metadata.namespace }}/{{ element }}"

@@ -1,0 +1,19 @@
+# The GatewayClass that should exist in the cluster
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: GatewayClass
+metadata:
+  name: existing-class
+spec:
+  controllerName: "example.gateway.controller"
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: Gateway
+metadata:
+  name: my-gateway-good
+  namespace: example-namespace
+spec:
+  gatewayClassName: "existing-class"
+  listeners:
+  - name: http
+    port: 80
+    protocol: HTTP

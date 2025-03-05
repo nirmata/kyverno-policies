@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: my-good-virtualservice
+  namespace: default
+spec:
+  hosts:
+  - "good.example.com"
+  gateways:
+  - "existing-gateway"
+  http:
+  - route:
+    - destination:
+        host: "my-service.default.svc.cluster.local"

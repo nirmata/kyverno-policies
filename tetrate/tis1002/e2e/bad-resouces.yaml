@@ -1,0 +1,12 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Sidecar
+metadata:
+  name: global-sidecar-with-selector
+  namespace: default
+spec:
+  workloadSelector:
+    labels:
+      app: my-global-app
+  egress:
+  - hosts:
+    - "*/*"

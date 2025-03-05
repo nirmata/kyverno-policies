@@ -1,0 +1,35 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-envoyfilter-replace-operations
+  annotations:
+    policies.kyverno.io/title: Validate EnvoyFilter Replace Operations
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that if patch.operation is REPLACE, then configPatches.applyTo is set to
+      either HTTP_FILTER or NETWORK_FILTER, as the REPLACE operation is only valid for these types.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: check-replace-operation-compatibility
+      match:
+        resources:
+          kinds:
+            - EnvoyFilter
+      validate:
+        message: "When patch.operation is REPLACE, configPatches.applyTo must be HTTP_FILTER or NETWORK_FILTER as it's only valid for these types."
+        foreach:
+          - list: "request.object.spec.configPatches"
+            deny:
+              conditions:
+                all:
+                  - key: "{{ element.patch.operation }}"
+                    operator: Equals
+                    value: REPLACE
+                  - key: "{{ element.applyTo }}"
+                    operator: AnyNotIn
+                    value:
+                      - HTTP_FILTER
+                      - NETWORK_FILTER

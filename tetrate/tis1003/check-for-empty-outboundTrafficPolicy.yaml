@@ -1,0 +1,36 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-outbound-traffic-policy
+  annotations:
+    policies.kyverno.io/title: Validate Outbound Traffic Policy Mode
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Ensures that Sidecar resources have an explicitly defined outboundTrafficPolicy mode
+      set to either ALLOW_ANY or REGISTRY_ONLY.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: check-outbound-traffic-policy-mode
+      match:
+        resources:
+          kinds:
+            - Sidecar
+      validate:
+        message: "OutboundTrafficPolicy must have a mode explicitly set to either ALLOW_ANY or REGISTRY_ONLY."
+        deny:
+          conditions:
+            any:
+              - key: "{{ request.object.spec.outboundTrafficPolicy || '' }}"
+                operator: Equals
+                value: ""
+              - key: "{{ request.object.spec.outboundTrafficPolicy.mode || '' }}"
+                operator: Equals
+                value: ""
+              - key: "{{ request.object.spec.outboundTrafficPolicy.mode }}"
+                operator: AnyNotIn
+                value:
+                  - ALLOW_ANY
+                  - REGISTRY_ONLY

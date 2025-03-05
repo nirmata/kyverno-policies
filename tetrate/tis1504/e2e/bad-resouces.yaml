@@ -1,0 +1,11 @@
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: Gateway
+metadata:
+  name: my-gateway-bad
+  namespace: istio-system
+spec:
+  gatewayClassName: "non-existent-class"
+  listeners:
+  - name: http
+    port: 80
+    protocol: HTTP
