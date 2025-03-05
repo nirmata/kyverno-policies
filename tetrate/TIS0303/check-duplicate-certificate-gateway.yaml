@@ -25,14 +25,14 @@ spec:
       context:
         - name: manifestNamespace
           variable:
-            value: "{{ request.object.metadata.namespace }}"
+            value: "{{ request.object.metadata.namespace || default }}"
         - name: manifestTLS
           variable:
-            jmesPath: "request.object.spec.servers[].tls.credentialName | [?@ != null] | [*]"
+            jmesPath: "request.object.spec.servers[].tls.credentialName || []"
         - name: existingTLS
           apiCall:
             urlPath: "/apis/networking.istio.io/v1/namespaces/{{ manifestNamespace }}/gateways"
-            jmesPath: "items[].spec.servers[].tls.credentialName | [?@ != null] | [*]"
+            jmesPath: "items[].spec.servers[].tls.credentialName || []"
       validate:
         message: "TLS credentials are being reused across Gateways in namespace '{{ manifestNamespace }}'. This may cause 404 errors when clients reuse HTTP2 connections. TLS used in manifest: {{ manifestTLS }}, existingTLS: {{ existingTLS }}"
         deny:
