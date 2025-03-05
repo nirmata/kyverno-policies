@@ -1,0 +1,44 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-gateway-tls-fips
+  annotations:
+    policies.kyverno.io/title: Restrict Gateway TLS to FIPS 140-2
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/description: >-
+      This policy restricts Gateway TLS configuration to comply with strict
+      FIPS 140-2 requirements. It ensures that TLS version is 1.2 and only
+      FIPS-approved cipher suites are used.
+spec:
+  rules:
+  - name: validate-tls-version
+    match:
+      any:
+      - resources:
+          kinds:
+          - networking.istio.io/v1alpha3/Gateway
+    validate:
+      message: "Gateway TLS configuration must adhere to FIPS 140-2: TLS version must be 1.2."
+      pattern:
+        spec:
+          servers:
+          - tls:
+              minProtocolVersion: TLSV1_2
+              maxProtocolVersion: TLSV1_2
+  - name: validate-cipher-suites
+    match:
+      any:
+      - resources:
+          kinds:
+          - networking.istio.io/v1alpha3/Gateway
+    validate:
+      message: "Gateway TLS configuration must adhere to FIPS 140-2: Only FIPS-approved cipher suites are allowed."
+      pattern:
+        spec:
+          servers:
+          - tls:
+              cipherSuites:
+                - ECDHE-ECDSA-AES128-GCM-SHA256
+                - ECDHE-RSA-AES128-GCM-SHA256
+                - ECDHE-ECDSA-AES256-GCM-SHA384
+                - ECDHE-RSA-AES256-GCM-SHA384

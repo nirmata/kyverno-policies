@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-good-service
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    name: http-web          # Changed from 'web' to 'http-web' for HTTP protocol
+  - port: 443
+    name: https-frontend    # Changed from 'frontend' to 'https-frontend' for HTTPS protocol
+  - port: 3306
+    name: mysql-db          # Changed from 'database' to 'mysql-db' for MySQL protocol

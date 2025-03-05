@@ -1,0 +1,31 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-global-sidecar-configuration
+  annotations:
+    policies.kyverno.io/title: Validate Global Sidecar Configuration
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Ensures that Sidecars with global egress configuration (hosts: "*/*") 
+      do not include a workloadSelector, especially in the istio-system namespace.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: check-global-sidecar-no-workload-selector
+      match:
+        resources:
+          kinds:
+            - Sidecar
+      validate:
+        message: "Global Sidecar with '*/*' egress hosts should not have a workloadSelector."
+        deny:
+          conditions:
+            all:
+              - key: "{{ request.object.spec.egress[0].hosts[0] }}"
+                operator: Equals
+                value: "*/*"
+              - key: "{{ request.object.spec.workloadSelector || '' }}"
+                operator: NotEquals
+                value: ""

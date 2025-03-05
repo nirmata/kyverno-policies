@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: invalid-add-operation
+  namespace: default
+spec:
+  configPatches:
+  - applyTo: ROUTE_CONFIGURATION
+    match:
+      context: GATEWAY
+    patch:
+      operation: ADD
+      value:
+        name: "new-route-config"

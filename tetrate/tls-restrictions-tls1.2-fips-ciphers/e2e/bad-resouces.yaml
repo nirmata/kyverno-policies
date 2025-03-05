@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: missing-ciphers-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      hosts:
+        - "*"
+      tls:
+        mode: SIMPLE
+        credentialName: my-tls-secret
+        minProtocolVersion: TLSV1_2
+        maxProtocolVersion: TLSV1_2
+        cipherSuites:
+          - ECDHE-RSA-AES128-GCM-SHA256  # ✅ Allowed
+          - ECDHE-RSA-AES256-GCM-SHA384  # ✅ Allowed
+          # ❌ Missing ECDHE-ECDSA-AES128-GCM-SHA256 and ECDHE-ECDSA-AES256-GCM-SHA384

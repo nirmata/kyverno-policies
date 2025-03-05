@@ -1,0 +1,31 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-service-port-names-regex
+  annotations:
+    policies.kyverno.io/title: Validate Service Port Names (Regex)
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy validates that Service port names follow the 'protocol[-suffix]' format,
+      where protocol is one of: HTTP, http2, https, tcp, tls, grpc, grpc-web, mongo, mysql, redis,
+      using regex_match.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: check-port-name-format-regex
+      match:
+        resources:
+          kinds:
+            - Service
+      validate:
+        message: "Service port names must follow the 'protocol[-suffix]' format, where protocol is one of: http, http2, https, tcp, tls, grpc, grpc-web, mongo, mysql, redis."
+        foreach:
+          - list: request.object.spec.ports[]
+            deny:
+              conditions:
+                all:
+                  - key: "{{ regex_match('^(http|http2|https|tcp|tls|grpc|grpc-web|mongo|mysql|redis)(-[a-zA-Z0-9-]+)?$', element.name || 'empty') }}"
+                    operator: Equals
+                    value: false
