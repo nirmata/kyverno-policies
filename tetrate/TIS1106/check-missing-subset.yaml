@@ -1,0 +1,47 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-missing-subsets
+  annotations:
+    policies.kyverno.io/title: Validate Subset References in VirtualService
+    policies.kyverno.io/category: Istio Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: VirtualService
+    policies.kyverno.io/description: >-
+      Ensures that subsets referenced in a VirtualService exist in the corresponding
+      DestinationRule before allowing creation or updates. This helps prevent misconfigurations
+      that could cause traffic routing failures in Istio.
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: check-missing-subsets
+      match:
+        any:
+          - resources:
+              kinds:
+                - VirtualService
+              operations:
+                - CREATE
+                - UPDATE
+      context:
+        - name: manifestNamespace
+          variable:
+            jmesPath: "request.object.metadata.namespace || 'default'"
+
+        - name: manifestSubsets
+          variable:
+            jmesPath: "request.object.spec.http[].route[].destination.subset || []"
+
+        - name: existingSubsets
+          apiCall:
+            urlPath: "/apis/networking.istio.io/v1/namespaces/{{manifestNamespace}}/destinationrules"
+            jmesPath: "items[].spec.subsets[].name || []"
+
+      validate:
+        message: "The following subsets {{ manifestSubsets }} referenced in the VirtualService do not exist in namespace {{ manifestNamespace }}. Existing subsets: {{ existingSubsets }}."
+        deny:
+          conditions:
+            any:
+              - key: "{{ manifestSubsets }}"
+                operator: AnyNotIn
+                value: "{{ existingSubsets }}"
