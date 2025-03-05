@@ -1,0 +1,34 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: bad-resource-1
+  namespace: test
+spec:
+  host: "my-service.example-namespace.svc.cluster.local"
+  subsets:
+    - name: version-subset-1
+    - name: version-subset-2
+      labels:
+        version: v1
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: good-resource-1
+  namespace: test
+spec:
+  host: "my-service.example-namespace.svc.cluster.local"
+  subsets:
+    - name: version-subset
+      labels:
+        version: v1
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: good-resource-2
+  namespace: test
+spec:
+  host: "my-service.example-namespace.svc.cluster.local"
+  
+    
