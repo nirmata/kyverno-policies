@@ -1,0 +1,33 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-subset-labels
+  annotations:
+    policies.kyverno.io/title: Subset Lacks Labels
+    policies.kyverno.io/category: Istio Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: DestinationRule
+    policies.kyverno.io/description: >-
+      Ensures that when subsets are defined in a DestinationRule, each subset must have labels.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: validate-subset-labels
+      match:
+        any:
+          - resources:
+              kinds:
+                - DestinationRule
+      preconditions:
+        all:
+          - key: "{{ request.object.spec.subsets || `[]` }}"
+            operator: NotEquals
+            value: []
+      validate:
+        message: "Each subset in DestinationRule must have labels to enable proper routing."
+        anyPattern:
+          - spec:
+              subsets:
+                - name: "*"
+                  labels: "*"
