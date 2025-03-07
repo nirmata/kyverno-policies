@@ -1,0 +1,32 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: allow-permissive-peerauth
+  annotations:
+    policies.kyverno.io/title: PeerAuth Permissive Mode Policy
+    policies.kyverno.io/category: Istio Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: PeerAuthentication
+    policies.kyverno.io/description: >-
+      Ensures that when mTLS is configured in PeerAuthentication resources, it uses PERMISSIVE mode 
+      to allow both mTLS and plaintext traffic. Resources without mTLS configuration are allowed.
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: allow-permissive-peerauth
+    match:
+      any:
+      - resources:
+          kinds:
+          - PeerAuthentication
+    preconditions:
+      all:
+      - key: "{{ request.object.spec.mtls || '' }}"
+        operator: NotEquals
+        value: ""
+    validate:
+      message: "When mTLS is configured, PeerAuthentication must be set to PERMISSIVE mode."
+      pattern:
+        spec:
+          mtls:
+            mode: PERMISSIVE
