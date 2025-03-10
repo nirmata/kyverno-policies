@@ -1,7 +1,0 @@
-resources:
-  - application-field-validation/application-field-validation.yaml
-  - application-prevent-default-project/application-prevent-default-project.yaml
-  - application-prevent-updates-project/application-prevent-updates-project.yaml
-  - applicationset-name-matches-project/applicationset-name-matches-project.yaml
-  - appproject-clusterresourceblacklist/appproject-clusterresourceblacklist.yaml
-  - argo-cluster-generation-from-rancher-capi/argo-cluster-generation-from-rancher-capi.yaml
