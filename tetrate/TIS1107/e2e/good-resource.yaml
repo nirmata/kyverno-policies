@@ -1,16 +1,6 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: bad-virtual-service
-spec:
-  hosts:
-  - "my-app.example.com"
-  gateways:
-  - "my-gateway" 
----
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
   name: good-virtual-service
 spec:
   hosts:
