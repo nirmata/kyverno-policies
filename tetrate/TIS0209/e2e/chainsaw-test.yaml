@@ -1,0 +1,25 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: test-check-subset-labels
+spec:
+  steps:
+    - name: apply-subset-policy
+      try:
+        - apply:
+            file: ../check-subset-labels.yaml
+        - assert:
+            file: policy-assert.yaml
+
+    - name: apply-good-resource
+      try:
+        - apply:
+            file: good-resource.yaml
+
+    - name: apply-bad-resource (should fail)
+      try:
+        - apply:
+            expect:
+              - check:
+                  ($error != null): true
+            file: bad-resource.yaml

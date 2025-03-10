@@ -1,0 +1,6 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-duplicate-certificate-gateway
+spec:
+  validationFailureAction: Enforce

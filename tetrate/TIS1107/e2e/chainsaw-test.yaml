@@ -1,0 +1,25 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: test-enforce-gateway-nomenclature
+spec:
+  steps:
+    - name: apply-gateway-policy
+      try:
+        - apply:
+            file: ../enforce-gateway-nomenclature.yaml
+        - assert:
+            file: policy-assert.yaml
+
+    - name: apply-good-resource
+      try:
+        - apply:
+            file: good-resource.yaml
+
+    - name: apply-bad-resource (should fail)
+      try:
+        - apply:
+            expect:
+              - check:
+                  ($error != null): true
+            file: bad-resource.yaml
