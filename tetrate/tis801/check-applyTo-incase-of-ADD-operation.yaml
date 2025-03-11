@@ -1,7 +1,7 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: validate-envoyfilter-patch-operations
+  name: validate-envoyfilter-add-operations
   annotations:
     policies.kyverno.io/title: Validate EnvoyFilter Patch Operations
     policies.kyverno.io/category: Best Practices

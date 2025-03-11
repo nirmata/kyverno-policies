@@ -1,0 +1,40 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-virtualservice-namespace
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: check-destination-namespace-exists
+      match:
+        resources:
+          kinds:
+            - VirtualService
+      preconditions:
+        all:
+        - key: "{{ request.object.spec.http[].route[].destination.host || '' }}"
+          operator: NotEquals
+          value: ""
+      context:
+        - name: extractedNamespace
+          apiCall:
+            urlPath: "/api/v1/namespaces"
+            jmesPath: "items[*].metadata.name"
+        - name: destinationHost
+          variable:
+            value: "{{ request.object.spec.http[0].route[0].destination.host }}"
+        - name: hostParts
+          variable:
+            value: "{{ split(destinationHost, '.') }}"
+        - name: namespaceFromHost
+          variable:
+            # The namespace is the second part in the service.namespace.svc.cluster.local format
+            value: "{{ hostParts[1] }}"
+      validate:
+        message: "The namespace '{{ namespaceFromHost }}' referenced in destination host '{{ destinationHost }}' does not exist in the cluster."
+        deny:
+          conditions:
+            - key: "{{ namespaceFromHost }}"
+              operator: AnyNotIn
+              value: "{{ extractedNamespace }}"

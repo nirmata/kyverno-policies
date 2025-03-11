@@ -1,0 +1,25 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: check-fips-registry
+spec:
+  steps:
+    - name: apply-fips-policy
+      try:
+        - apply:
+            file: ../enforce-fips-compliant-images.yaml
+        - assert:
+            file: policy-assert.yaml
+
+    - name: apply-good-deployment
+      try:
+        - apply:
+            file: good-resource.yaml
+
+    - name: apply-bad-deployment (should fail)
+      try:
+        - apply:
+            expect:
+              - check:
+                  ($error != null): true
+            file: bad-resource.yaml

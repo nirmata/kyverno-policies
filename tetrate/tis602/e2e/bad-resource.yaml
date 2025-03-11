@@ -7,4 +7,4 @@ spec:
   ports:
   - port: 80
     name: "http-port"
-    appProtocol: "http"
+    appProtocol: "invalid-protocol-name"
