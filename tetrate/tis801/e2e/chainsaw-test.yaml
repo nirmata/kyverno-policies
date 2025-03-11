@@ -1,0 +1,32 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: validate-envoyfilter-add-operations-test
+spec:
+  steps:
+    - name: apply-rbac-policy
+      try:
+        - apply:
+            file: rbac-policy.yaml
+
+
+    - name: apply-kyverno-policy
+      try:
+        - apply:
+            file: ../check-applyTo-incase-of-ADD-operation.yaml
+        - assert:
+            file: policy-assert.yaml
+
+    - name: apply-good-deployment
+      try:
+        - apply:
+            file: good-resource.yaml
+
+    - name: apply-bad-deployment (should fail)
+      try:
+        - apply:
+            expect:
+              - check:
+                  ($error != null): true
+            file: bad-resource.yaml
+

@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: istiod-good
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: istiod
+  template:
+    metadata:
+      labels:
+        app: istiod
+    spec:
+      containers:
+        - name: discovery
+          image: busybox
+          env:
+            - name: COMPLIANCE_POLICY
+              value: fips-140-2

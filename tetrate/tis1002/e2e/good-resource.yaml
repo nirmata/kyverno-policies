@@ -1,0 +1,9 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Sidecar
+metadata:
+  name: global-sidecar-without-selector
+  namespace: istio-system
+spec:
+  egress:
+  - hosts:
+    - "*/*"

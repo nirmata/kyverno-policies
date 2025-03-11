@@ -1,0 +1,67 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-fips-tls-settings
+  annotations:
+    policies.kyverno.io/title: Restrict TLS to FIPS-Compliant Settings
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Gateway
+    policies.kyverno.io/description: >-
+      This policy ensures that all Istio Gateways use TLS 1.2 and only
+      FIPS-approved cipher suites for compliance with FIPS 140-2 requirements.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: validate-tls-version
+      match:
+        resources:
+          kinds:
+            - networking.istio.io/v1alpha3/Gateway
+            - networking.istio.io/v1beta1/Gateway
+      validate:
+        message: "Gateway must use TLS 1.2 only (both minProtocolVersion and maxProtocolVersion must be TLSV1_2) for FIPS 140-2 compliance."
+        foreach:
+          - list: "request.object.spec.servers[*]"
+            deny:
+              conditions:
+                all:
+                  - key: "{{ element.tls }}"
+                    operator: NotEquals
+                    value: null
+                any:
+                  - key: "{{ element.tls.minProtocolVersion }}"
+                    operator: NotEquals
+                    value: TLSV1_2
+                  - key: "{{ element.tls.maxProtocolVersion }}"
+                    operator: NotEquals
+                    value: TLSV1_2
+
+    - name: validate-fips-cipher-suites
+      match:
+        resources:
+          kinds:
+            - networking.istio.io/v1alpha3/Gateway
+            - networking.istio.io/v1beta1/Gateway
+      validate:
+        message: "Gateway must use only FIPS-approved cipher suites: ECDHE-ECDSA-AES128-GCM-SHA256, ECDHE-RSA-AES128-GCM-SHA256, ECDHE-ECDSA-AES256-GCM-SHA384, ECDHE-RSA-AES256-GCM-SHA384."
+        foreach:
+          - list: "request.object.spec.servers[*]"
+            deny:
+              conditions:
+                all:
+                  - key: "{{ element.tls }}"
+                    operator: NotEquals
+                    value: null
+                  - key: "{{ element.tls.cipherSuites }}"
+                    operator: NotEquals
+                    value: null
+                any:
+                  - key: "{{ element.tls.cipherSuites }}"
+                    operator: AnyNotIn
+                    value: 
+                      - ECDHE-ECDSA-AES128-GCM-SHA256
+                      - ECDHE-RSA-AES128-GCM-SHA256
+                      - ECDHE-ECDSA-AES256-GCM-SHA384
+                      - ECDHE-RSA-AES256-GCM-SHA384

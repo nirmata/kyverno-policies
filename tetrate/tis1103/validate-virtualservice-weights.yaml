@@ -1,0 +1,34 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-virtualservice-weights
+  annotations:
+    policies.kyverno.io/title: Validate VirtualService Weights
+    policies.kyverno.io/category: Istio
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy validates that weight fields are only used in VirtualService resources
+      when there are multiple destinations. When there's only one destination, the weight
+      field should be omitted as Istio automatically assigns a weight of 100.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: single-destination-no-weight
+      match:
+        resources:
+          kinds:
+            - "VirtualService"
+      validate:
+        message: "Weight field should only be used when there are multiple destinations. For single destinations, omit the weight field."
+        foreach:
+          - list: "request.object.spec.http || []"
+            deny:
+              conditions:
+                all:
+                  - key: "{{ length(element.route) }}"
+                    operator: Equals
+                    value: 1
+                  - key: "{{ element.route[0].weight || null }}"
+                    operator: NotEquals
+                    value: null
