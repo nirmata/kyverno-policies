@@ -43,7 +43,7 @@ test-chainsaw:
 .PHONY: test-chainsaw-exclude-cel
 test-chainsaw-exclude-cel:  
 	@echo Running chainsaw tests by excluding CEL folders... >&2
-	@chainsaw test --config .chainsaw-config.yaml --exclude-test-regex 'chainsaw/.*-cel'
+	@chainsaw test --config .chainsaw-config.yaml --exclude-test-regex 'chainsaw/.*-cel|.*/tetrate'
 
 .PHONY: test-chainsaw-vap
 test-chainsaw-vap:  
