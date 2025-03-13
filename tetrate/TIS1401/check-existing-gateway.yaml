@@ -21,7 +21,7 @@ spec:
       context:
         - name: namespace
           variable:
-            value: "{{ request.object.metadata.namespace || default }}"
+            value: "{{ request.object.metadata.namespace || 'default' }}"
         - name: manifestGateways
           variable:
             value: "{{ request.object.spec.parentRefs[].name || [] }}"

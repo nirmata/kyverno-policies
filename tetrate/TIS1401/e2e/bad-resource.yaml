@@ -1,26 +1,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: good-resource-1
-  namespace: test
-spec:
-  parentRefs:
-  - name: existing-gateway-1
-    namespace: test
-  rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: "/myapp"
-    backendRefs:
-    - name: my-app-service
-      port: 80
----
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
-metadata:
   name: bad-resource-1
-  namespace: test
 spec:
   parentRefs:
   - name: non-existing-gateway-1

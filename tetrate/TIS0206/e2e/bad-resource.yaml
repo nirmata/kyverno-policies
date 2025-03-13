@@ -2,7 +2,6 @@ apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
 metadata:
   name: mode-disabled
-  namespace: test
 spec:
   mtls:
     mode: DISABLE

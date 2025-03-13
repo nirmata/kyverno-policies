@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tis0302
+  labels:
+    istio: ingressgateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      istio: ingressgateway 
+  template:
+    metadata:
+      labels:
+        istio: ingressgateway 
+    spec:
+      containers:
+      - name: istio-proxy
+        image: istio/proxyv2

@@ -2,7 +2,6 @@ apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
 metadata:
   name: strict-peer-auth-2
-  namespace: test
 spec:
   mtls:
     mode: STRICT
@@ -11,7 +10,6 @@ apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
 metadata:
   name: permissive-peer-auth-2
-  namespace: test
 spec:
   mtls:
     mode: PERMISSIVE

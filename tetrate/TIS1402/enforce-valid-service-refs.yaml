@@ -24,7 +24,7 @@ spec:
       context:
         - name: namespace
           variable:
-            value: "{{ request.object.metadata.namespace }}"
+            value: "{{ request.object.metadata.namespace || 'default' }}"
         - name: serviceNames
           variable:
             jmesPath: "request.object.spec.rules[*].backendRefs[?kind=='Service' || kind==null].name | []"
