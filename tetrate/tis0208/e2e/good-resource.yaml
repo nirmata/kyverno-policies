@@ -1,0 +1,13 @@
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: mtls-notfound
+spec:
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: permissive-peer-auth-1
+spec:
+  mtls:
+    mode: PERMISSIVE

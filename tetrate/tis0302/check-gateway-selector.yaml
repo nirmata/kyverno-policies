@@ -1,0 +1,44 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: check-gateway-selector
+  annotations:
+    policies.kyverno.io/title: Check Gateway Selector
+    policies.kyverno.io/category: Istio Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Gateway
+    policies.kyverno.io/description: >-
+      Ensures that the Gateway selector matches a valid workload in the same namespace.
+      If the selector does not match any running pods, the Gateway will be ineffective,
+      potentially leading to misconfigurations or unreachable services.
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: check-gateway-selector
+      match:
+        any:
+          - resources:
+              kinds:
+                - Gateway
+              operations:
+                - CREATE
+                - UPDATE
+      context:
+        - name: manifestNamespace
+          variable:
+            value: "{{ request.object.metadata.namespace || 'default' }}"
+        - name: manifestIstioLabel
+          variable:
+            jmesPath: "request.object.spec.selector.istio"
+        - name: matchingPods
+          apiCall:
+            urlPath: "/api/v1/namespaces/{{ manifestNamespace }}/pods?labelSelector=istio={{ manifestIstioLabel }}"
+            jmesPath: "length(items)"
+      validate:
+        message: "No matching workloads found for Gateway selector 'istio={{ manifestIstioLabel }}' in namespace '{{ manifestNamespace }}'. Ensure an ingress gateway with this label exists."
+        deny:
+          conditions:
+            all:
+            - key: "{{ matchingPods }}"
+              operator: Equals
+              value: 0

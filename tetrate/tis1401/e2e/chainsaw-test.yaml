@@ -1,0 +1,45 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: test-check-existing-gateway
+spec:
+  steps:
+    - name: apply-httproute-crd
+      try: 
+        - apply:
+            file: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/heads/main/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
+
+    - name: apply-gateway-crd
+      try: 
+        - apply:
+            file: https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/heads/main/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
+
+    - name: apply-rbac-manifest
+      try:
+        - apply:
+            file: rbac.yaml
+
+    - name: apply-httproute-policy
+      try:
+        - apply:
+            file: ../check-existing-gateway.yaml
+        - assert:
+            file: policy-assert.yaml
+
+    - name: apply-gateway-resource
+      try: 
+        - apply:
+            file: gateway-resource.yaml
+            
+    - name: apply-good-resource
+      try:
+        - apply:
+            file: good-resource.yaml
+
+    - name: apply-bad-resource (should fail)
+      try:
+        - apply:
+            expect:
+              - check:
+                  ($error != null): true
+            file: bad-resource.yaml

@@ -1,0 +1,35 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: test-check-duplicate-certificate-gateway
+spec:
+  steps:
+    - name: apply-gateway-policy
+      try:
+        - apply:
+            file: ../check-duplicate-certificate-gateway.yaml
+        - assert:
+            file: policy-assert.yaml
+        
+    - name: apply-gateway-rbac
+      try: 
+        - apply:
+            file: rbac.yaml
+
+    - name: apply-gateway-resource
+      try: 
+        - apply:
+            file: gateway-resource.yaml
+            
+    - name: apply-good-resource
+      try:
+        - apply:
+            file: good-resource.yaml
+
+    - name: apply-bad-resource (should fail)
+      try:
+        - apply:
+            expect:
+              - check:
+                  ($error != null): true
+            file: bad-resource.yaml
