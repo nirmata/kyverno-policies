@@ -1,0 +1,125 @@
+# GOOD EXAMPLE 1: Deployment with proper rolling update strategy
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: good-deployment-example
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.19
+        ports:
+        - containerPort: 80
+---
+# GOOD EXAMPLE 2: Deployment with rolling update using percentage values
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: good-deployment-percentage
+  namespace: default
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: "25%"
+      maxUnavailable: "25%"
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: myapp/frontend:v2
+        ports:
+        - containerPort: 8080
+---
+# BAD EXAMPLE 1: Deployment with "Recreate" strategy
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bad-deployment-recreate
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+  strategy:
+    type: Recreate  # This violates the policy which requires RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: myapp/backend:v1
+        ports:
+        - containerPort: 8080
+---
+# BAD EXAMPLE 2: Deployment with missing rollingUpdate configuration
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bad-deployment-incomplete
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api
+  strategy:
+    type: RollingUpdate
+    # Missing rollingUpdate section with maxSurge and maxUnavailable
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: api
+        image: myapp/api:v1
+        ports:
+        - containerPort: 3000
+---
+# BAD EXAMPLE 3: Deployment with default strategy (implicitly RollingUpdate, but not explicit)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bad-deployment-default
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cache
+  # Missing strategy section completely - defaults to RollingUpdate but not explicit
+  template:
+    metadata:
+      labels:
+        app: cache
+    spec:
+      containers:
+      - name: redis
+        image: redis:6
+        ports:
+        - containerPort: 6379
