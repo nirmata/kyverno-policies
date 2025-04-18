@@ -1,4 +1,4 @@
-name: require-labels
+name: require_rolling_update_strategy
 policies:
   - require_rolling_update_strategy.yaml
 resources:
