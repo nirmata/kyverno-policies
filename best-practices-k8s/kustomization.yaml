@@ -18,3 +18,5 @@ resources:
   - restrict_image_registries/restrict_image_registries.yaml
   - restrict_node_port/restrict_node_port.yaml
   - restrict-service-external-ips/restrict-service-external-ips.yaml
+  - require_pod_antiaffinity/require_pod_antiaffinity.yaml
+  - require_rolling_update_strategy/require_rolling_update_strategy.yaml
