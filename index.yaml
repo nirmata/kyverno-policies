@@ -499,6 +499,24 @@ entries:
   pss-baseline-policies:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2025-05-07T13:17:42.703949148Z"
+    description: Pod Security Standards (baseline) policy set
+    digest: 4d5ff6b6cdc26e9159ce503a4b7865f8d3eeaf8a17734265ab3e9e6acdf2e7ae
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: pss-baseline-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/pss-baseline-policies-0.4.1/pss-baseline-policies-0.4.1.tgz
+    version: 0.4.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2024-05-28T12:31:48.846806893Z"
     description: Pod Security Standards (baseline) policy set
     digest: 4396c7d12b09cbfa2d912121f39288745fe1a202a4a95c894da6d883d7e708a9
@@ -696,6 +714,24 @@ entries:
     - https://github.com/nirmata/kyverno-policies/releases/download/pss-baseline-policies-0.1.0/pss-baseline-policies-0.1.0.tgz
     version: 0.1.0
   pss-restricted-policies:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-05-07T13:17:42.83013045Z"
+    description: Pod Security Standards (restricted) policy set
+    digest: 135990983fcb1ebdfa05ad8d80f0e968da06309f660108f1dc6947b2df536ded
+    keywords:
+    - kubernetes
+    - nirmata
+    - kyverno
+    - policy
+    maintainers:
+    - name: Nirmata
+      url: https://nirmata.com/
+    name: pss-restricted-policies
+    type: application
+    urls:
+    - https://github.com/nirmata/kyverno-policies/releases/download/pss-restricted-policies-0.4.3/pss-restricted-policies-0.4.3.tgz
+    version: 0.4.3
   - apiVersion: v2
     appVersion: 0.1.0
     created: "2025-01-03T15:26:53.733669199Z"
@@ -2212,4 +2248,4 @@ entries:
     urls:
     - https://github.com/nirmata/kyverno-policies/releases/download/workload-security-best-practice-policies-0.1.0/workload-security-best-practice-policies-0.1.0.tgz
     version: 0.1.0
-generated: "2025-02-11T15:33:49.404454592Z"
+generated: "2025-05-07T13:17:42.830451352Z"
