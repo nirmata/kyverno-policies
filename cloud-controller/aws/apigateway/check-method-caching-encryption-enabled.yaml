@@ -1,0 +1,31 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-method-caching-encryption-enabled
+  annotations:
+    policies.kyverno.io/title: Ensure API Gateway has Caching Encryption Enabled in Method Settings.
+    policies.kyverno.io/category: ApiGateway Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that caching encryption is enabled in API Gateway method settings, 
+      safeguarding sensitive data stored in the cache. Enforcing this practice enhances the security 
+      and compliance of your API by preventing unauthorized access to cached data.
+  labels:
+    app: kyverno
+spec:
+  failureAction: Audit
+  scan: true
+  rules:
+    - name: check-method-caching-encryption-enabled
+      identifier: payload.stageName
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): ApiGateway
+        - (metadata.resource): Stage
+      assert:
+        all:
+        - message: "Ensure API Gateway has Caching Encryption Enabled in Method Settings."
+          check:
+            payload:
+              (contains(keys(@), 'methodSettings') && !contains(methodSettings[?cachingEnabled == `true`].cacheDataEncrypted, `false`)): true

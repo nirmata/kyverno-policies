@@ -1,0 +1,31 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-stage-cache-cluster-enabled
+  annotations:
+    policies.kyverno.io/title: Ensure API Gateway caching is enabled
+    policies.kyverno.io/category: ApiGateway Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that caching is enabled for API Gateway stages, 
+      which enhances performance by reducing backend load and improving response times. 
+      Enforcing this best practice helps optimize resource utilization and provides a better user experience for API consumers.
+  labels:
+    app: kyverno
+spec:
+  failureAction: Audit
+  scan: true
+  rules:
+    - name: check-stage-cache-cluster-enabled
+      identifier: payload.stageName
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): ApiGateway
+        - (metadata.resource): Stage
+      assert:
+        all:
+        - message: "Ensure API Gateway caching is enabled"
+          check:
+            payload:
+              cacheClusterEnabled: true

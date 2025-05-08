@@ -1,0 +1,28 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-message-retention-period
+  annotations:
+        policies.kyverno.io/title: check-message-retention-period
+        policies.kyverno.io/category: AWS SQS Best Practices
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/description: >-
+          This policy checks whether Message Retention Period is under 4 Days.
+  labels:
+    app: kyverno
+spec:
+  scan: true
+  rules:
+    - name: check-message-retention-period
+      identifier: payload.queueName
+      match:
+        all:
+        - (metadata.provider): "AWS"
+        - (metadata.service): "SQS"
+        - (metadata.resource): "Queue"
+      assert:
+        all:
+        - message: The MessageRetentionPeriod is more than 4 Days.
+          check:
+            payload:
+              (messageRetentionPeriod <= `345600`): true

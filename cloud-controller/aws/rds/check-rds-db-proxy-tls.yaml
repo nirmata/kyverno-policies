@@ -1,0 +1,33 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-rds-db-proxy-tls
+  annotations:
+    policies.kyverno.io/title: Check RDS DB Proxy TLS
+    policies.kyverno.io/category: AWS RDS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      RDS Proxy can use security mechanisms such as TLS to add an additional layer of security between client applications and the underlying database. 
+      Database connections often involve sensitive information, such as personally identifiable information (PII), financial data, or confidential business data. 
+      Protecting this data in transit is important to maintain security of the data.
+      This policy checks if the RDS Proxy is using TLS.
+  labels:
+    app: kyverno
+spec:
+  failureAction: Audit
+  scan: true
+  rules:
+    - name: check-rds-db-proxy-tls
+      identifier: payload.dBProxyName
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): RDS
+        - (metadata.resource): DBProxy
+      assert:
+        all:
+        - message: >- 
+            RDS Database Proxy should use TLS
+          check:
+            payload:
+              requireTLS: true
