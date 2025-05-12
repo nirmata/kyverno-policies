@@ -1,0 +1,21 @@
+name: require_pod_antiaffinity
+policies:
+  - require_pod_antiaffinity.yaml
+resources:
+  - resource.yaml
+results:
+  - policy: require_pod_antiaffinity
+    rule: require-either-hard-or-soft-antiaffinity
+    resource: good-pod-required
+    kind: Pod
+    result: pass
+  - policy: require_pod_antiaffinity
+    rule: require-either-hard-or-soft-antiaffinity
+    resource: good-pod-pref
+    kind: Pod
+    result: pass
+  - policy: require_pod_antiaffinity
+    rule: require-either-hard-or-soft-antiaffinity
+    resource: bad-pod-no-affinity
+    kind: Pod
+    result: fail

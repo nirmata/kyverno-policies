@@ -1,0 +1,31 @@
+name: require_rolling_update_strategy
+policies:
+  - require_rolling_update_strategy.yaml
+resources:
+  - resource.yaml
+results:
+  - policy: require_rolling_update_strategy
+    rule: validate-rolling-update-strategy
+    resource: good-deployment-example
+    kind: Deployment
+    result: pass
+  - policy: require_rolling_update_strategy
+    rule: validate-rolling-update-strategy
+    resource: good-deployment-percentage
+    kind: Deployment
+    result: pass
+  - policy: require_rolling_update_strategy
+    rule: validate-rolling-update-strategy
+    resource: bad-deployment-recreate
+    kind: Deployment
+    result: fail
+  - policy: require_rolling_update_strategy
+    rule: validate-rolling-update-strategy
+    resource: bad-deployment-incomplete
+    kind: Deployment
+    result: fail
+  - policy: require_rolling_update_strategy
+    rule: validate-rolling-update-strategy
+    resource: bad-deployment-default
+    kind: Deployment
+    result: fail
