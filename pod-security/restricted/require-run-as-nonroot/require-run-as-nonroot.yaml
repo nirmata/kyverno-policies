@@ -25,21 +25,43 @@ spec:
               operations: ["CREATE", "UPDATE"]
     validations:
         - expression: >
-            has(object.spec.securityContext) && has(object.spec.securityContext.runAsNonRoot) && object.spec.securityContext.runAsNonRoot == true ||
+            (has(object.spec.securityContext) && 
+            has(object.spec.securityContext.runAsNonRoot) && 
+            object.spec.securityContext.runAsNonRoot == true &&
 
             object.spec.containers.all(c,
+              !has(c.securityContext) ||
+              !has(c.securityContext.runAsNonRoot) ||
+              c.securityContext.runAsNonRoot == true) &&
 
+            (!has(object.spec.initContainers) ||
+              object.spec.initContainers.all(c,
+                !has(c.securityContext) ||
+                !has(c.securityContext.runAsNonRoot) ||
+                c.securityContext.runAsNonRoot == true)) &&
+
+            (!has(object.spec.ephemeralContainers) ||
+              object.spec.ephemeralContainers.all(c,
+                !has(c.securityContext) ||
+                !has(c.securityContext.runAsNonRoot) ||
+                c.securityContext.runAsNonRoot == true))) ||
+
+            (!has(object.spec.securityContext) ||
+            !has(object.spec.securityContext.runAsNonRoot) ||
+            object.spec.securityContext.runAsNonRoot != true) &&
+
+            object.spec.containers.all(c,
               has(c.securityContext) &&
               has(c.securityContext.runAsNonRoot) &&
               c.securityContext.runAsNonRoot == true) &&
-            (!has(object.spec.initContainers) ||
 
+            (!has(object.spec.initContainers) ||
               object.spec.initContainers.all(c,
                 has(c.securityContext) &&
                 has(c.securityContext.runAsNonRoot) &&
                 c.securityContext.runAsNonRoot == true)) &&
-            (!has(object.spec.ephemeralContainers) ||
 
+            (!has(object.spec.ephemeralContainers) ||
               object.spec.ephemeralContainers.all(c,
                 has(c.securityContext) &&
                 has(c.securityContext.runAsNonRoot) &&

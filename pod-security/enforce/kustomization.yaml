@@ -6,8 +6,8 @@ resources:
 patches:
 - patch: |-
     - op: replace
-      path: /spec/validationFailureAction
-      value: Enforce
+      path: /spec/validationActions
+      value: [Deny]
   target:
-    kind: ClusterPolicy
+    kind: ValidatingPolicy
 
