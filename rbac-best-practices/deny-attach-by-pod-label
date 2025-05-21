@@ -1,0 +1,41 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: deny-attach-by-pod-label
+  annotations:
+    policies.kyverno.io/title: Block Pod Attach by Pod Label
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      The `exec` command may be used to gain shell access, or run other commands, in a Pod's container. While this can
+      be useful for troubleshooting purposes, it could represent an attack vector and is discouraged.
+      This policy blocks Pod exec commands to Pods having the label `attach=false`.      
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+  - name: deny-attach-by-label
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod/attach
+    context:
+    - name: podattachlabel
+      apiCall:
+        urlPath: "/api/v1/namespaces/{{request.namespace}}/pods/{{request.name}}"
+        jmesPath: "metadata.labels.attach || ''"
+    preconditions:
+      all:
+      - key: "{{ request.operation || 'BACKGROUND' }}"
+        operator: Equals
+        value: CONNECT
+    validate:
+      message: Attaching to Pods protected with the label `attach=false` is forbidden.
+      deny:
+        conditions:
+          all:
+          - key: "{{ podattachlabel }}"
+            operator: Equals
+            value: "false"
