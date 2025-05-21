@@ -15,8 +15,8 @@ jobs:
     strategy:
       fail-fast: false    
       matrix:
-        k8s-version: [v1.30.0, v1.29.4, v1.28.9]
-        n4k-chart-version: [3.0.33]    # nirmata kyverno chart version for 1.10.n4k
+        k8s-version: [v1.32.0, v1.31.0, v1.30.0, v1.29.4, v1.28.9]
+        n4k-chart-version: [3.3.17]    # nirmata kyverno chart version for 1.13.n4k
 
     steps:
       - name: Checkout
