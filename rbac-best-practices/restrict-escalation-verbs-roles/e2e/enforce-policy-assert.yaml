@@ -1,11 +1,7 @@
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
 metadata:
   name: restrict-escalation-verbs-roles
 spec:
-  validationFailureAction: Enforce
-status:
-  conditions:
-  - reason: Succeeded
-    status: "True"
-    type: Ready
+  validationActions:
+    - Deny

@@ -13,7 +13,7 @@ metadata:
             The verbs `impersonate`, `bind`, and `escalate` may all potentially lead to privilege escalation and should be tightly controlled. This policy prevents use of these verbs in Role or ClusterRole resources.
 spec:
     validationActions:
-        - Deny
+        - Audit
     evaluation:
         background:
             enabled: true
