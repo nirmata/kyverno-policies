@@ -1,41 +1,29 @@
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
 metadata:
-  name: disallow-latest-tag
-  annotations:
-    policies.kyverno.io/title: Disallow Latest Tag
-    policies.kyverno.io/category: Best Practices
-    policies.kyverno.io/severity: medium
-    policies.kyverno.io/subject: Pod
-    kyverno.io/kyverno-version: 1.10.0
-    policies.kyverno.io/description: >-
-      The ':latest' tag is mutable and can lead to unexpected errors if the
-      image changes. A best practice is to use an immutable tag that maps to
-      a specific version of an application Pod. This policy validates that the image
-      specifies a tag and that it is not called `latest`.
+    name: disallow-latest-tag
+    annotations:
+        policies.kyverno.io/title: Disallow Latest Tag
+        policies.kyverno.io/category: Best Practices
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/subject: Pod
+        kyverno.io/kyverno-version: 1.14.1
+        policies.kyverno.io/description: >-
+            The ':latest' tag is mutable and can lead to unexpected errors if the image changes. A best practice is to use an immutable tag that maps to a specific version of an application Pod. This policy validates that the image specifies a tag and that it is not called `latest`.
 spec:
-  validationFailureAction: Audit
-  background: true
-  rules:
-  - name: require-image-tag
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: "An image tag is required."
-      pattern:
-        spec:
-          containers:
-          - image: "*:*"
-  - name: validate-image-tag
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: "Using a mutable image tag e.g. 'latest' is not allowed."
-      pattern:
-        spec:
-          containers:
-          - image: "!*:latest"
+    validationActions:
+        - Audit
+    evaluation:
+        background:
+            enabled: true
+    matchConstraints:
+        resourceRules:
+            - apiGroups: [""]
+              apiVersions: ["v1"]
+              resources: ["pods"]
+              operations: ["CREATE", "UPDATE"]
+    validations:
+        - expression: "object.spec.containers.all(c, c.image.contains(':'))"
+          message: "An image tag is required."
+        - expression: "object.spec.containers.all(c, !c.image.endsWith(':latest'))"
+          message: "Using a mutable image tag e.g. 'latest' is not allowed."
