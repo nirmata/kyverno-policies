@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-imds-v1
@@ -9,17 +9,43 @@ metadata:
     policies.kyverno.io/description: >-
       Enabling IMDSv1 exposes cloud environments to significant security risks, and it is recommended to disable it in favor of more secure alternatives such as IMDSv2.
 spec:
-  rules:
-    - name: check-imds-v1
-      match:
-        any:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_instance' || type=='aws_launch_template' || type=='aws_launch_configuration'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: "IMDSv1 should not be enabled, use IMDSv2 instead"
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_instance' || type=='aws_launch_template' || type=='aws_launch_configuration']):
-                values:
-                  ~.(metadata_options || `[{}]`):
-                        (http_endpoint == 'disabled' || http_tokens == 'required'): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-ec2-resources
+      expression: |
+        has(object.planned_values) && 
+        has(object.planned_values.root_module) && 
+        has(object.planned_values.root_module.resources) && 
+        object.planned_values.root_module.resources.exists(r, 
+          r.type == 'aws_instance' || 
+          r.type == 'aws_launch_template' || 
+          r.type == 'aws_launch_configuration'
+        )
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, 
+          r.type == 'aws_instance' || 
+          r.type == 'aws_launch_template' || 
+          r.type == 'aws_launch_configuration'
+        ).all(resource,
+          has(resource.values.metadata_options) &&
+          resource.values.metadata_options != null &&
+          resource.values.metadata_options.exists(metadata_option,
+            (has(metadata_option.http_endpoint) && metadata_option.http_endpoint == 'disabled') ||
+            (has(metadata_option.http_tokens) && metadata_option.http_tokens == 'required')
+          )
+        )
+      message: "IMDSv1 should not be enabled, use IMDSv2 instead"
