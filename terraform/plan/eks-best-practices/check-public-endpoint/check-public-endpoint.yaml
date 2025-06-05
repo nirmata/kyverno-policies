@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-public-endpoint
@@ -11,18 +11,30 @@ metadata:
       It protects against external threats and enforces network segmentation, restricting access to only trusted entities within the network environment. 
       This measure helps organizations meet compliance requirements, maintains operational security, and safeguards the reliability and performance of Kubernetes clusters.
 spec:
-  rules:
-    - name: check-public-endpoint
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_eks_cluster'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Public access to EKS cluster endpoint must be explicitly set to false
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_eks_cluster']):
-                values:
-                  ~.(vpc_config):
-                      (endpoint_public_access): false
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-eks-cluster
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_eks_cluster')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_eks_cluster').all(cluster,
+          !has(cluster.values.vpc_config) ||
+          cluster.values.vpc_config.all(vpc,
+            !has(vpc.endpoint_public_access) || vpc.endpoint_public_access == false
+          )
+        )
+      message: "Public access to EKS cluster endpoint must be explicitly set to false"
 
