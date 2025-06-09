@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: validate-base-image-tag
@@ -10,16 +10,28 @@ metadata:
     policies.kyverno.io/description: >-
       This policy checks whether the base image tag is defined with a specific version or digest in the Dockerfile.
 spec:
-  rules:
-    - name: validate-base-image-tag
-      match:
-        all:
-        - ($analyzer.resource.type): dockerfile
-        - (Stages[].From | length(@) > `0`): true
-      assert:
-        any:
-        - message: Base Image is missing version tags/digests
-          check:
-            ~.(Stages[].From.Image):
-                (contains(@, ':') || contains(@, '@sha')): true
-                (contains(@, ':latest')): false
+  validationActions:
+    - Audit
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: has-dockerfile-structure
+      expression: "has(object.Stages)"
+    - name: has-from-commands
+      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.From) && has(stage.From.Image))"
+  validations:
+    - expression: |
+        object.Stages.all(stage,
+          !has(stage.From) || !has(stage.From.Image) ||
+          (stage.From.Image.contains(':') || stage.From.Image.contains('@sha')) &&
+          !stage.From.Image.contains(':latest')
+        )
+      message: "Base Image is missing version tags/digests"

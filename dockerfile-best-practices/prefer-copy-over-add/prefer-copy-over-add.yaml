@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: prefer-copy-over-add
@@ -10,14 +10,28 @@ metadata:
     policies.kyverno.io/description: >-
       This policy ensures that COPY instructions are used instead of ADD instructions in Dockerfiles.
 spec:
-  rules:
-    - name: prefer-copy-over-add
-      match:
-        all:
-        - ($analyzer.resource.type): dockerfile
-        - (Stages[].Commands[] | length(@) > `0`): true
-      assert:
-        any:
-        - message: Avoid the use of ADD instructions in Dockerfiles
-          check:
-            (Stages[].Commands[?Name=='ADD'].Link[] | length(@) > `0`): false
+  validationActions:
+    - Audit
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: has-dockerfile-structure
+      expression: "has(object.Stages)"
+    - name: has-commands
+      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.Commands) && size(stage.Commands) > 0)"
+  validations:
+    - expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'ADD' && has(cmd.Link) && size(cmd.Link) > 0
+          )
+        )
+      message: "Avoid the use of ADD instructions in Dockerfiles"

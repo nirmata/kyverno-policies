@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-nogpgcheck
@@ -15,23 +15,48 @@ metadata:
         potentially exposing the system to security risks if the packages have been
         tampered with or are not from trusted sources.
 spec:
-  rules:
-    - name: check-nogpgcheck
-      match:
-        all:
-        - ($analyzer.resource.type): dockerfile
-        - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Enable GPG signature checking with yum by not using `--nogpgcheck` flag
-          check:
-            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
-               ((starts_with(@, 'yum ') || contains(@, ' yum '))  && contains(@, ' --nogpgcheck')): false
-        - message: Enable GPG signature checking with dnf by not using `--nogpgcheck` flag 
-          check: 
-            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
-               ((starts_with(@, 'dnf ') || contains(@, ' dnf '))  && contains(@, ' --nogpgcheck')): false
-        - message: Enable GPG signature checking with tdnf by not using `--nogpgcheck` flag 
-          check: 
-            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
-               ((starts_with(@, 'tdnf ') || contains(@, ' tdnf '))  && contains(@, ' --nogpgcheck')): false       
+  validationActions:
+    - Audit
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: has-dockerfile-structure
+      expression: "has(object.Stages)"
+    - name: has-run-commands
+      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.Commands) && stage.Commands.exists(cmd, cmd.Name == 'RUN' && has(cmd.CmdLine) && size(cmd.CmdLine) > 0))"
+  validations:
+    - expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'RUN' && has(cmd.CmdLine) && cmd.CmdLine.exists(cmdLine,
+              (cmdLine.startsWith('yum ') || cmdLine.contains(' yum ')) && cmdLine.contains(' --nogpgcheck')
+            )
+          )
+        )
+      message: "Enable GPG signature checking with yum by not using `--nogpgcheck` flag"
+    - expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'RUN' && has(cmd.CmdLine) && cmd.CmdLine.exists(cmdLine,
+              (cmdLine.startsWith('dnf ') || cmdLine.contains(' dnf ')) && cmdLine.contains(' --nogpgcheck')
+            )
+          )
+        )
+      message: "Enable GPG signature checking with dnf by not using `--nogpgcheck` flag"
+    - expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'RUN' && has(cmd.CmdLine) && cmd.CmdLine.exists(cmdLine,
+              (cmdLine.startsWith('tdnf ') || cmdLine.contains(' tdnf ')) && cmdLine.contains(' --nogpgcheck')
+            )
+          )
+        )
+      message: "Enable GPG signature checking with tdnf by not using `--nogpgcheck` flag"       
