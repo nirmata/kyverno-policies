@@ -26,12 +26,15 @@ spec:
     - name: has-dockerfile-structure
       expression: "has(object.Stages)"
     - name: has-from-commands
-      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.From) && has(stage.From.Image))"
+      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.From))"
   validations:
     - expression: |
         object.Stages.all(stage,
-          !has(stage.From) || !has(stage.From.Image) ||
-          (stage.From.Image.contains(':') || stage.From.Image.contains('@sha')) &&
-          !stage.From.Image.contains(':latest')
+          !has(stage.From) || 
+          has(stage.From.Scratch) || 
+          has(stage.From.Stage) ||
+          (has(stage.From.Image) && 
+           (stage.From.Image.contains(':') || stage.From.Image.contains('@sha')) &&
+           !stage.From.Image.contains(':latest'))
         )
       message: "Base Image is missing version tags/digests"

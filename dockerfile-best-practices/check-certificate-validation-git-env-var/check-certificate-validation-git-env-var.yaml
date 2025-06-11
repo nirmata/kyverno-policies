@@ -27,15 +27,18 @@ spec:
   matchConditions:
     - name: has-dockerfile-structure
       expression: "has(object.Stages)"
-    - name: has-env-commands
-      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.Commands) && stage.Commands.exists(cmd, cmd.Name == 'ENV'))"
+    - name: has-env-or-arg-commands
+      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.Commands) && stage.Commands.exists(cmd, cmd.Name == 'ENV' || cmd.Name == 'ARG'))"
   validations:
     - expression: |
         !object.Stages.exists(stage,
           has(stage.Commands) && stage.Commands.exists(cmd,
-            cmd.Name == 'ENV' && has(cmd.Env) && cmd.Env.exists(env,
+            (cmd.Name == 'ENV' && has(cmd.Env) && cmd.Env.exists(env,
               env.Key == 'GIT_SSL_NO_VERIFY' && (env.Value == '1' || env.Value == 'true')
-            )
+            )) ||
+            (cmd.Name == 'ARG' && has(cmd.Args) && cmd.Args.exists(arg,
+              arg.Key == 'GIT_SSL_NO_VERIFY' && (arg.Value == '1' || arg.Value == 'true')
+            ))
           )
         )
       message: "Ensure certificate validation is enabled by using `GIT_SSL_NO_VERIFY` env with value set to '0' or 'false'"

@@ -31,7 +31,7 @@ spec:
     - expression: |
         !object.Stages.exists(stage,
           has(stage.Commands) && stage.Commands.exists(cmd,
-            cmd.Name == 'ADD' && has(cmd.Link) && size(cmd.Link) > 0
+            cmd.Name == 'ADD'
           )
         )
       message: "Avoid the use of ADD instructions in Dockerfiles"

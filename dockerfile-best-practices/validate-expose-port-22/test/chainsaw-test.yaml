@@ -10,7 +10,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno apply ../check-missing-signature-options.yaml --json './good-test/good-payload.json'
+            kyverno apply ../validate-expose-port-22.yaml --json './good-test/good-payload.json'
           check: 
             "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
 ---
@@ -18,7 +18,7 @@ spec:
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: bad-test-01-digest
+  name: bad-test
 spec:
   steps:
     - name: kyverno
@@ -26,7 +26,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno apply ../check-missing-signature-options.yaml --json './bad-test/01-digest/bad-payload.json'
+            kyverno apply ../validate-expose-port-22.yaml --json './bad-test/bad-payload.json'
           check: 
             "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
 ---
@@ -34,7 +34,7 @@ spec:
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: bad-test-02-signature
+  name: bad-test-1
 spec:
   steps:
     - name: kyverno
@@ -42,7 +42,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno apply ../check-missing-signature-options.yaml --json './bad-test/02-signature/bad-payload.json'
+            kyverno apply ../validate-expose-port-22.yaml --json './bad-test1/bad-payload.json'
           check: 
             "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
 ---
@@ -50,7 +50,7 @@ spec:
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: bad-test-03-verify
+  name: bad-test-2
 spec:
   steps:
     - name: kyverno
@@ -58,24 +58,6 @@ spec:
       - script:
           content: |
             set -e
-            kyverno apply ../check-missing-signature-options.yaml --json './bad-test/03-verify/bad-payload.json'
+            kyverno apply ../validate-expose-port-22.yaml --json './bad-test2/bad-payload.json'
           check: 
-            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
----
-# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
-apiVersion: chainsaw.kyverno.io/v1alpha1
-kind: Test
-metadata:
-  name: bad-test-04-filedigest
-spec:
-  steps:
-    - name: kyverno
-      try:
-      - script:
-          content: |
-            set -e
-            kyverno apply ../check-missing-signature-options.yaml --json './bad-test/04-filedigest/bad-payload.json'
-          check: 
-            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
-
-
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true 
