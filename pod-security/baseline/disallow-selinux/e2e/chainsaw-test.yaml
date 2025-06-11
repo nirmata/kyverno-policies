@@ -10,20 +10,13 @@ spec:
         file: ../disallow-selinux.yaml
     - assert:
         file: policy-assert.yaml
-    - patch:
-        resource:
-          apiVersion: policies.kyverno.io/v1alpha1
-          kind: ValidatingPolicy
-          metadata:
-            name: disallow-selinux
-          spec:
-            validationActions: [Deny]
+    - script:
+        content: |
+          sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../disallow-selinux.yaml | kubectl apply -f - 
     - assert:
         file: enforce-policy-assert.yaml
     - apply:
         file: good-resource.yaml
-    - sleep:
-        duration: 20s
     - apply:
         expect:
         - check:

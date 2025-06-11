@@ -1,0 +1,117 @@
+###### Pods - Bad
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: badpod01
+spec:
+  containers:
+  - name: container01
+    image: nginx
+  securityContext:
+    sysctls:
+    - name: kernel.shm_next_id
+      value: "4"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: badpod02
+spec:
+  containers:
+  - name: container01
+    image: nginx
+  securityContext:
+    sysctls:
+    - name: kernel.shm_rmid_forced
+      value: "2"
+    - name: kernel.shm_next_id
+      value: "4"
+---
+###### Deployments - Bad
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baddeployment01
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+      securityContext:
+        sysctls:
+        - name: kernel.shm_next_id
+          value: "4"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baddeployment02
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+      securityContext:
+        sysctls:
+        - name: kernel.shm_rmid_forced
+          value: "2"
+        - name: kernel.shm_next_id
+          value: "4"
+---
+###### CronJobs - Bad
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: badcronjob01
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+          securityContext:
+            sysctls:
+            - name: kernel.shm_next_id
+              value: "4"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: badcronjob02
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+          securityContext:
+            sysctls:
+            - name: kernel.shm_rmid_forced
+              value: "2"
+            - name: kernel.shm_next_id
+              value: "4"

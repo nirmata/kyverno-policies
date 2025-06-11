@@ -1,0 +1,608 @@
+###### Pods - Good
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod01
+spec:
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod02
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    volumeMounts:
+    - name: udev
+      mountPath: /data
+  volumes:
+  - name: udev
+    emptyDir: {}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod03
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    volumeMounts:
+    - name: mysettings
+      mountPath: /settings
+  volumes:
+  - name: mysettings
+    configMap:
+      name: settings
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod04
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    volumeMounts:
+    - name: warehouse
+      mountPath: /warehouse
+  volumes:
+  - name: warehouse
+    csi:
+      driver: disk.csi.azure.com
+      readOnly: true
+      fsType: xfs
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod05
+  labels:
+    foo: bar
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    volumeMounts:
+    - name: labels
+      mountPath: /labels
+  volumes:
+  - name: labels
+    downwardAPI:
+      items:
+      - path: labels
+        fieldRef:
+          fieldPath: metadata.labels
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod06
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    volumeMounts:
+    - name: ephem
+      mountPath: /ephem
+  volumes:
+  - name: ephem
+    ephemeral:
+      volumeClaimTemplate:
+        metadata:
+          labels:
+            type: my-frontend-volume
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: "scratch-storage-class"
+          resources:
+            requests:
+              storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod07
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    volumeMounts:
+    - name: foo
+      mountPath: /foo
+  volumes:
+  - name: foo
+    persistentVolumeClaim:
+      claimName: fooclaim
+      readOnly: true
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod08
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    volumeMounts:
+    - mountPath: /var/run/secrets/tokens
+      name: vault-token
+  volumes:
+  - name: vault-token
+    projected:
+      sources:
+      - serviceAccountToken:
+          path: vault-token
+          expirationSeconds: 7200
+          audience: vault
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod09
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    volumeMounts:
+    - mountPath: /mysecret
+      name: mysecret
+  volumes:
+  - name: mysecret
+    secret:
+      secretName: mysecret
+---
+###### Deployments - Good
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment01
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment02
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        volumeMounts:
+        - name: udev
+          mountPath: /data
+      volumes:
+      - name: udev
+        emptyDir: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment03
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        volumeMounts:
+        - name: mysettings
+          mountPath: /settings
+      volumes:
+      - name: mysettings
+        configMap:
+          name: settings
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment04
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        volumeMounts:
+        - name: warehouse
+          mountPath: /warehouse
+      volumes:
+      - name: warehouse
+        csi:
+          driver: disk.csi.azure.com
+          readOnly: true
+          fsType: xfs
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment05
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+        foo: bar
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        volumeMounts:
+        - name: labels
+          mountPath: /labels
+      volumes:
+      - name: labels
+        downwardAPI:
+          items:
+          - path: labels
+            fieldRef:
+              fieldPath: metadata.labels
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment06
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        volumeMounts:
+        - name: ephem
+          mountPath: /ephem
+      volumes:
+      - name: ephem
+        ephemeral:
+          volumeClaimTemplate:
+            metadata:
+              labels:
+                type: my-frontend-volume
+            spec:
+              accessModes: [ "ReadWriteOnce" ]
+              storageClassName: "scratch-storage-class"
+              resources:
+                requests:
+                  storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment07
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        volumeMounts:
+        - name: foo
+          mountPath: /foo
+      volumes:
+      - name: foo
+        persistentVolumeClaim:
+          claimName: fooclaim
+          readOnly: true
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment08
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        volumeMounts:
+        - mountPath: /var/run/secrets/tokens
+          name: vault-token
+      volumes:
+      - name: vault-token
+        projected:
+          sources:
+          - serviceAccountToken:
+              path: vault-token
+              expirationSeconds: 7200
+              audience: vault
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment09
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        volumeMounts:
+        - mountPath: /mysecret
+          name: mysecret
+      volumes:
+      - name: mysecret
+        secret:
+          secretName: mysecret
+---
+###### CronJobs - Good
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob01
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob02
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            volumeMounts:
+            - name: udev
+              mountPath: /data
+          volumes:
+          - name: udev
+            emptyDir: {}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob03
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            volumeMounts:
+            - name: mysettings
+              mountPath: /settings
+          volumes:
+          - name: mysettings
+            configMap:
+              name: settings
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob04
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            volumeMounts:
+            - name: warehouse
+              mountPath: /warehouse
+          volumes:
+          - name: warehouse
+            csi:
+              driver: disk.csi.azure.com
+              readOnly: true
+              fsType: xfs
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob05
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            foo: bar
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            volumeMounts:
+            - name: labels
+              mountPath: /labels
+          volumes:
+          - name: labels
+            downwardAPI:
+              items:
+              - path: labels
+                fieldRef:
+                  fieldPath: metadata.labels
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob06
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            volumeMounts:
+            - name: ephem
+              mountPath: /ephem
+          volumes:
+          - name: ephem
+            ephemeral:
+              volumeClaimTemplate:
+                metadata:
+                  labels:
+                    type: my-frontend-volume
+                spec:
+                  accessModes: [ "ReadWriteOnce" ]
+                  storageClassName: "scratch-storage-class"
+                  resources:
+                    requests:
+                      storage: 1Gi
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob07
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            volumeMounts:
+            - name: foo
+              mountPath: /foo
+          volumes:
+          - name: foo
+            persistentVolumeClaim:
+              claimName: fooclaim
+              readOnly: true
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob08
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            volumeMounts:
+            - mountPath: /var/run/secrets/tokens
+              name: vault-token
+          volumes:
+          - name: vault-token
+            projected:
+              sources:
+              - serviceAccountToken:
+                  path: vault-token
+                  expirationSeconds: 7200
+                  audience: vault
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob09
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            volumeMounts:
+            - mountPath: /mysecret
+              name: mysecret
+          volumes:
+          - name: mysecret
+            secret:
+              secretName: mysecret
