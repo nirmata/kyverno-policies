@@ -1,5 +1,5 @@
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
 metadata:
   name: disallow-privileged-containers
   annotations:
@@ -9,31 +9,37 @@ metadata:
     policies.kyverno.io/subject: Pod
     kyverno.io/kubernetes-version: "1.22-1.23"
     policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/podsecurity/baseline/disallow-privileged-containers/"
+    policies.nirmata.io/remediation: "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-privileged-containers/remediate-disallow-privileged-containers.yaml"
     policies.kyverno.io/description: >-
       Privileged mode disables most security mechanisms and must not be allowed. This policy
-      ensures the fields spec.containers[*].securityContext.privileged and spec.initContainers[*].securityContext.privileged must be unset or set to `false`.
-    policies.nirmata.io/remediation: "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-privileged-containers/remediate-disallow-privileged-containers.yaml"
+      ensures the fields spec.containers[*].securityContext.privileged and
+      spec.initContainers[*].securityContext.privileged must be unset or set to `false`.
 spec:
-  validationFailureAction: Audit
-  background: true
-  rules:
-    - name: privileged-containers
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      validate:
-        message: >-
-          Privileged mode is disallowed.
-        pattern:
-          spec:
-            =(ephemeralContainers):
-              - =(securityContext):
-                  =(privileged): "false"
-            =(initContainers):
-              - =(securityContext):
-                  =(privileged): "false"
-            containers:
-              - =(securityContext):
-                  =(privileged): "false"
+  validationActions: [Audit]
+  evaluation:
+    background:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+        operations: ["CREATE", "UPDATE"]
+  validations:
+    - expression: >-
+        !object.spec.containers.exists(c,
+          has(c.securityContext) &&
+          has(c.securityContext.privileged) &&
+          c.securityContext.privileged == true) &&
+        (!has(object.spec.initContainers) ||
+         !object.spec.initContainers.exists(c,
+           has(c.securityContext) &&
+           has(c.securityContext.privileged) &&
+           c.securityContext.privileged == true)) &&
+        (!has(object.spec.ephemeralContainers) ||
+         !object.spec.ephemeralContainers.exists(c,
+           has(c.securityContext) &&
+           has(c.securityContext.privileged) &&
+           c.securityContext.privileged == true))
+      message: >-
+        Privileged mode is disallowed.
