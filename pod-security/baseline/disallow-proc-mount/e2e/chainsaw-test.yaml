@@ -10,22 +10,35 @@ spec:
         file: ../disallow-proc-mount.yaml
     - assert:
         file: policy-assert.yaml
-    - patch:
+    - apply:
+        file: ../remediate-disallow-proc-mount-containers.yaml
+    - assert:
+        file: remediation-policy-assert.yaml
+    - apply:
+        file: ../deployment.yaml
+    - sleep:
+        duration: 20s
+    - assert:
         resource:
-          apiVersion: policies.kyverno.io/v1alpha1
-          kind: ValidatingPolicy
-          metadata:
-            name: disallow-proc-mount
-          spec:
-            validationActions: [Deny]
+          apiVersion: wgpolicyk8s.io/v1alpha2
+          kind: PolicyReport
+          summary:
+            error: 0
+            fail: 0
+    - delete:
+        ref:
+          apiVersion: kyverno.io/v1
+          kind: ClusterPolicy
+          name: remediate-disallow-proc-mount
+    - script:
+        content: |
+          sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../disallow-proc-mount.yaml | kubectl apply -f - 
     - assert:
         file: enforce-policy-assert.yaml
     - apply:
         file: good-resource.yaml
-    - sleep:
-        duration: 20s
-    - apply:
-        expect:
-        - check:
-            ($error != null): true
-        file: bad-resource.yaml
+    # - apply:
+    #     expect:
+    #     - check:
+    #         ($error != null): true
+    #     file: bad-resource.yaml

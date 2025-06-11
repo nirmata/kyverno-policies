@@ -1,0 +1,54 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: remediate-require-run-as-nonroot
+  annotations:
+    policies.kyverno.io/title: Require runAsNonRoot
+    policies.kyverno.io/category: Pod Security Standards (Restricted)
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    kyverno.io/kyverno-version: 1.6.0
+    kyverno.io/kubernetes-version: "1.22-1.23"
+    policies.kyverno.io/description: >-
+      Containers must be required to run as non-root users. This policy mutates the field 
+      spec.securityContext.runAsNonRoot to `true`,
+      and the fields spec.containers[*].securityContext.runAsNonRoot,
+      spec.initContainers[*].securityContext.runAsNonRoot, and spec.ephemeralContainers[*].securityContext.runAsNonRoot
+      if exists, is set to `true`.
+spec:
+  background: false
+  rules:
+    - name: add-run-as-nonroot
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+                - StatefulSet
+                - Job
+                - DaemonSet
+      mutate:
+        foreach:
+        - list: "request.object.spec.template.spec.[containers, initContainers, ephemeralContainers][]"
+          order: Descending
+          patchStrategicMerge:
+            spec:
+              template:
+                spec:
+                  securityContext:
+                    runAsNonRoot: true
+                  containers:
+                    - (name): "{{ element.name }}"
+                      securityContext:
+                        (runAsNonRoot): "false"
+                        runAsNonRoot: true
+                  initContainers:
+                    - (name): "{{ element.name }}"
+                      securityContext:
+                        (runAsNonRoot): "false"
+                        runAsNonRoot: true
+                  ephemeralContainers:
+                    - (name): "{{ element.name }}"
+                      securityContext:
+                        (runAsNonRoot): "false"
+                        runAsNonRoot: true

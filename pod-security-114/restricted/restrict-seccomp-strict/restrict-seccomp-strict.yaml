@@ -1,0 +1,62 @@
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: restrict-seccomp-strict
+  annotations:
+    policies.kyverno.io/title: Restrict Seccomp (Strict)
+    policies.kyverno.io/category: Pod Security Standards (Restricted)
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    kyverno.io/kubernetes-version: "1.22-1.23"
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/podsecurity/restricted/restrict-seccomp-strict/"
+    policies.kyverno.io/description: >-
+      The seccomp profile in the Restricted group must not be explicitly set to Unconfined
+      but additionally must also not allow an unset value. This policy, 
+      requiring Kubernetes v1.19 or later, ensures that the fields
+      spec.securityContext.seccompProfile.type,
+      spec.containers[*].securityContext.seccompProfile.type,
+      spec.initContainers[*].securityContext.seccompProfile.type, and
+      spec.ephemeralContainers[*].securityContext.seccompProfile.type
+      is set to `RuntimeDefault` or `Localhost`.
+spec:
+    validationActions: [Audit]
+    evaluation:
+        background:
+            enabled: true
+    matchConstraints:
+        resourceRules:
+            - apiGroups: [""]
+              apiVersions: ["v1"]
+              resources: ["pods"]
+              operations: ["CREATE", "UPDATE"]
+    variables:
+        - name: allowedTypes
+          expression: >
+            ["RuntimeDefault", "Localhost"]
+
+    validations:
+        - expression: >
+            (has(object.spec.securityContext) && has(object.spec.securityContext.seccompProfile) && has(object.spec.securityContext.seccompProfile.type) && object.spec.securityContext.seccompProfile.type in variables.allowedTypes) ||
+
+            (object.spec.containers.all(c,
+
+              has(c.securityContext) &&
+              has(c.securityContext.seccompProfile) &&
+              has(c.securityContext.seccompProfile.type) &&
+              c.securityContext.seccompProfile.type in variables.allowedTypes) &&
+
+            (!has(object.spec.initContainers) || object.spec.initContainers.all(c,
+
+              has(c.securityContext) &&
+              has(c.securityContext.seccompProfile) &&
+              has(c.securityContext.seccompProfile.type) &&
+              c.securityContext.seccompProfile.type in variables.allowedTypes)) &&
+
+            (!has(object.spec.ephemeralContainers) || object.spec.ephemeralContainers.all(c,
+
+              has(c.securityContext) &&
+              has(c.securityContext.seccompProfile) &&
+              has(c.securityContext.seccompProfile.type) &&
+              c.securityContext.seccompProfile.type in variables.allowedTypes)))
+          message: >-
+            Use of custom Seccomp profiles is disallowed. The seccomp profile type must be set to 'RuntimeDefault' or 'Localhost' for the Pod security context and all container security contexts.

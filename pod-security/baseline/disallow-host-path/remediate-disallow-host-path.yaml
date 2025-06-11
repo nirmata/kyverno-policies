@@ -1,0 +1,33 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: remediate-disallow-host-path
+  annotations:
+    policies.kyverno.io/title: Remediate Disallow hostPath
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/description: >-
+      This policy remediates the disallow-host-path violation
+spec:
+  background: false
+  rules:
+    - name: remove-hostpath-all
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+                - StatefulSet
+                - Job
+                - DaemonSet
+      mutate:
+        foreach:
+          - list: request.object.spec.template.spec.volumes[]
+            order: Descending
+            preconditions:
+              all:
+              - key: hostPath
+                operator: AnyIn
+                value: "{{ element.keys(@) }}"
+            patchesJson6902: |-
+              - path: /spec/template/spec/volumes/{{elementIndex}}
+                op: remove
