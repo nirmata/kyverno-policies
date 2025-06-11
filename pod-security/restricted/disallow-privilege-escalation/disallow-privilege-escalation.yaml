@@ -1,47 +1,43 @@
-apiVersion: policies.kyverno.io/v1alpha1
-kind: ValidatingPolicy
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
 metadata:
-    name: disallow-privilege-escalation
-    annotations:
-        policies.kyverno.io/title: Disallow Privilege Escalation
-        policies.kyverno.io/category: Pod Security Standards (Restricted)
-        policies.kyverno.io/severity: critical
-        policies.kyverno.io/subject: Pod
-        kyverno.io/kubernetes-version: "1.22-1.23"
-        policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/podsecurity/restricted/disallow-privilege-escalation/"
-        policies.nirmata.io/remediation: "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/restricted/disallow-privilege-escalation/remediate-disallow-privilege-escalation.yaml"
-        policies.kyverno.io/description: >
-            Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed. This policy ensures the fields spec.containers[*].securityContext.allowPrivilegeEscalation, spec.initContainers[*].securityContext.allowPrivilegeEscalation, and spec.ephemeralContainers[*].securityContext.allowPrivilegeEscalation is set to `false`.
-
+  name: disallow-privilege-escalation
+  annotations:
+    policies.kyverno.io/title: Disallow Privilege Escalation
+    policies.kyverno.io/category: Pod Security Standards (Restricted)
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/subject: Pod
+    kyverno.io/kubernetes-version: "1.22-1.23"
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/podsecurity/restricted/disallow-privilege-escalation/"
+    policies.nirmata.io/remediation: "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/restricted/disallow-privilege-escalation/remediate-disallow-privilege-escalation.yaml"
+    policies.kyverno.io/description: >-
+      Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed.
+      This policy ensures the fields
+      spec.containers[*].securityContext.allowPrivilegeEscalation,
+      spec.initContainers[*].securityContext.allowPrivilegeEscalation,
+      and spec.ephemeralContainers[*].securityContext.allowPrivilegeEscalation
+      is set to `false`.
 spec:
-    validationActions: [Audit]
-    evaluation:
-        background:
-            enabled: true
-    matchConstraints:
-        resourceRules:
-            - apiGroups: [""]
-              apiVersions: ["v1"]
-              resources: ["pods"]
-              operations: ["CREATE", "UPDATE"]
-    validations:
-        - expression: >
-            object.spec.containers.orValue([]).all(c,
-
-              has(c.securityContext) &&
-              has(c.securityContext.allowPrivilegeEscalation) &&
-              c.securityContext.allowPrivilegeEscalation == false) &&
-            (!has(object.spec.initContainers) ||
-
-              object.spec.initContainers.all(c,
-                has(c.securityContext) &&
-                has(c.securityContext.allowPrivilegeEscalation) &&
-                c.securityContext.allowPrivilegeEscalation == false)) &&
-            (!has(object.spec.ephemeralContainers) ||
-
-              object.spec.ephemeralContainers.all(c,
-                has(c.securityContext) &&
-                has(c.securityContext.allowPrivilegeEscalation) &&
-                c.securityContext.allowPrivilegeEscalation == false))
-          message: >-
-            Privilege escalation is disallowed. The fields spec.containers[*].securityContext.allowPrivilegeEscalation, spec.initContainers[*].securityContext.allowPrivilegeEscalation, and spec.ephemeralContainers[*].securityContext.allowPrivilegeEscalation must be set to 'false'.
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: privilege-escalation
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: >-
+          Privilege escalation is disallowed.
+        pattern:
+          spec:
+            =(ephemeralContainers):
+              - securityContext:
+                  allowPrivilegeEscalation: "false"
+            =(initContainers):
+              - securityContext:
+                  allowPrivilegeEscalation: "false"
+            containers:
+              - securityContext:
+                  allowPrivilegeEscalation: "false"

@@ -1,0 +1,51 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: remediate-disallow-host-ports
+  annotations:
+    policies.kyverno.io/title: Remediate Disallow hostPorts
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/description: >-
+      This policy remediates the disallow-host-ports violation
+spec:
+  background: false
+  rules:
+    - name: remove-hostports-all
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+                - StatefulSet
+                - Job
+                - DaemonSet
+      mutate:
+        foreach: 
+          - list: request.object.spec.template.spec.containers[]
+            order: Descending
+            foreach:
+            - list: "element.ports[]"
+              order: Descending
+              preconditions:
+                all:
+                - key: hostPort
+                  operator: AnyIn
+                  value: "{{ element.keys(@) }}"
+              patchesJson6902: |-
+                - path: /spec/template/spec/containers/{{elementIndex0}}/ports/{{elementIndex1}}/hostPort
+                  op: replace
+                  value: 0
+          - list: request.object.spec.template.spec.initContainers[]
+            order: Descending
+            foreach:
+            - list: "element.ports[]"
+              order: Descending
+              preconditions:
+                all:
+                - key: hostPort
+                  operator: AnyIn
+                  value: "{{ element.keys(@) }}"
+              patchesJson6902: |-
+                - path: /spec/template/spec/initContainers/{{elementIndex0}}/ports/{{elementIndex1}}/hostPort
+                  op: replace
+                  value: 0

@@ -1,5 +1,5 @@
-apiVersion: policies.kyverno.io/v1alpha1
-kind: ValidatingPolicy
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
 metadata:
   name: disallow-host-namespaces
   annotations:
@@ -16,21 +16,20 @@ metadata:
       fields which make use of these host namespaces are unset or set to `false`.
     policies.nirmata.io/remediation: "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-host-namespaces/remediate-disallow-host-namespaces.yaml"
 spec:
-  validationActions: [Audit]
-  evaluation:
-    background:
-      enabled: true
-  matchConstraints:
-    resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE", "UPDATE"]
-  validations:
-    - expression: >-
-        ( object.spec.?hostNetwork.orValue(false) == false) &&
-        ( object.spec.?hostIPC.orValue(false) == false) &&
-        ( object.spec.?hostPID.orValue(false) == false)
-      message: >-
-        Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
-        spec.hostIPC, and spec.hostPID must be unset or set to `false`.
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: host-namespaces
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: >-
+          Sharing the host namespaces is disallowed.
+        pattern:
+          spec:
+            =(hostPID): "false"
+            =(hostIPC): "false"
+            =(hostNetwork): "false"

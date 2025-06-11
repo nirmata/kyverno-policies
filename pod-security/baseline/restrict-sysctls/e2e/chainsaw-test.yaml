@@ -10,20 +10,13 @@ spec:
         file: ../restrict-sysctls.yaml
     - assert:
         file: policy-assert.yaml
-    - patch:
-        resource:
-          apiVersion: policies.kyverno.io/v1alpha1
-          kind: ValidatingPolicy
-          metadata:
-            name: restrict-sysctls
-          spec:
-            validationActions: [Deny]
+    - script:
+        content: |
+          sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../restrict-sysctls.yaml | kubectl apply -f - 
     - assert:
         file: enforce-policy-assert.yaml
     - apply:
         file: good-resource.yaml
-    - sleep:
-        duration: 20s
     - apply:
         expect:
         - check:

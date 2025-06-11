@@ -1,9 +1,11 @@
-apiVersion: policies.kyverno.io/v1alpha1
-kind: ValidatingPolicy
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
 metadata:
   name: disallow-privileged-containers
 spec:
-  validationActions: [Deny]
+  validationFailureAction: Enforce
 status:
-  conditionStatus:
-    ready: true
+  conditions:
+  - reason: Succeeded
+    status: "True"
+    type: Ready
