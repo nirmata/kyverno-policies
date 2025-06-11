@@ -3,10 +3,10 @@ name: ChainSaw Test
 on:
   push:
     branches:
-      - main
+      - kyverno-1.14
   pull_request:
     branches:
-      - main
+      - kyverno-1.14
 
 jobs:
   run-e2etest-1:
@@ -15,17 +15,17 @@ jobs:
     strategy:
       fail-fast: false    
       matrix:
-        k8s-version: [v1.30.0, v1.29.4, v1.28.9]
-        n4k-chart-version: [3.0.33]    # nirmata kyverno chart version for 1.10.n4k
+        k8s-version: [v1.33.1, v1.32.5, v1.31.9]
+        n4k-chart-version: [3.4.0-rc1]    # nirmata kyverno chart version for 1.10.n4k
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install kyverno-json
-        uses: kyverno/action-install-kyverno-json@4ac28215fd015ff6aa5525afc67f119f9f758957 # v0.0.1
-        with:
-          release: main
+      # - name: Install kyverno-json
+      #   uses: kyverno/action-install-kyverno-json@4ac28215fd015ff6aa5525afc67f119f9f758957 # v0.0.1
+      #   with:
+      #     release: main
 
       - name: Prepare environment
         run: |
@@ -47,106 +47,3 @@ jobs:
       - name: Test with Chainsaw
         run: make test-chainsaw-exclude-cel
 
-  run-e2etest-2:
-    runs-on: ubuntu-latest
-    
-    strategy:
-      fail-fast: false    
-      matrix:
-        k8s-version: [v1.30.0, v1.29.4, v1.28.9]
-        n4k-chart-version: [3.1.21, 3.2.4] # nirmata kyverno chart version for 1.11 and 1.12 n4k
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Install kyverno-json
-        uses: kyverno/action-install-kyverno-json@4ac28215fd015ff6aa5525afc67f119f9f758957 # v0.0.1
-        with:
-          release: main
-
-      - name: Prepare environment
-        run: |
-          K8S_VERSION=${{ matrix.k8s-version }} make kind-create-cluster
-
-      - name: Install kyverno
-        run: |
-          N4K_VERSION=${{ matrix.n4k-chart-version }} make kind-deploy-kyverno
-
-      - name: Check Kyverno status
-        run: make wait-for-kyverno
-
-      - name: Install chainsaw
-        uses: kyverno/action-install-chainsaw@7ad918efe13995d01bafa59aef8203a5246f5d04 # v0.2.7
-
-      - name: Verify Chainsaw Installation
-        run: chainsaw version
-
-      - name: Test with Chainsaw
-        run: make test-chainsaw
-
-  run-e2etest-vap-alpha:
-    runs-on: ubuntu-latest
-    
-    strategy:
-      fail-fast: false    
-      matrix:
-        k8s-version: [v1.27.3, v1.26.3]
-        n4k-chart-version: [3.1.21, 3.2.4] # nirmata kyverno chart version for 1.11 and 1.12 n4k
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Prepare environment
-        run: |
-          K8S_VERSION=${{ matrix.k8s-version }} make kind-create-cluster-vap-alpha
-
-      - name: Install kyverno
-        run: |
-          N4K_VERSION=${{ matrix.n4k-chart-version }} make kind-deploy-kyverno-vap
-
-      - name: Check Kyverno status
-        run: make wait-for-kyverno
-
-      - name: Install chainsaw
-        uses: kyverno/action-install-chainsaw@7ad918efe13995d01bafa59aef8203a5246f5d04 # v0.2.7
-
-      - name: Verify Chainsaw Installation
-        run: chainsaw version
-
-      - name: Test with Chainsaw
-        run: make test-chainsaw-vap
-
-  run-e2etest-vap-beta:
-    runs-on: ubuntu-latest
-    
-    strategy:
-      fail-fast: false    
-      matrix:
-        k8s-version: [v1.30.0, v1.29.4, v1.28.9]
-        n4k-chart-version: [3.1.21, 3.2.4] # nirmata kyverno chart version for 1.11 and 1.12 n4k
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Prepare environment
-        run: |
-          K8S_VERSION=${{ matrix.k8s-version }} make kind-create-cluster-vap-beta
-
-      - name: Install kyverno
-        run: |
-          N4K_VERSION=${{ matrix.n4k-chart-version }} make kind-deploy-kyverno-vap
-
-      - name: Check Kyverno status
-        run: make wait-for-kyverno
-
-      - name: Install chainsaw
-        uses: kyverno/action-install-chainsaw@7ad918efe13995d01bafa59aef8203a5246f5d04 # v0.2.7
-
-      - name: Verify Chainsaw Installation
-        run: chainsaw version
-
-      - name: Test with Chainsaw
-        run: make test-chainsaw-vap

@@ -6,7 +6,7 @@ spec:
   steps:
   - name: test-disallow-capabilities
     try:
-    - apply:
+    - create:
         file: ../disallow-capabilities.yaml
     - assert:
         file: policy-assert.yaml
