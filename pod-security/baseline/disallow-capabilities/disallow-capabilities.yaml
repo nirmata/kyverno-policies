@@ -3,8 +3,8 @@ kind: ValidatingPolicy
 metadata:
   name: disallow-capabilities
   annotations:
-    policies.kyverno.io/title: Disallow Capabilities in ValidatingPolicy
-    policies.kyverno.io/category: Pod Security Standards (Baseline) in ValidatingPolicy
+    policies.kyverno.io/title: Disallow Capabilities
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.14.0
     kyverno.io/kubernetes-version: "1.30+"
