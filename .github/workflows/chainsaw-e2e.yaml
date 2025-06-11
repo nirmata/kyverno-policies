@@ -27,6 +27,12 @@ jobs:
         with:
           release: main
 
+      - name: Install Kyverno CLI
+        uses: kyverno/action-install-cli@v0.2.0
+
+      - name: Check Kyverno CLI install
+        run: kyverno version
+
       - name: Prepare environment
         run: |
           K8S_VERSION=${{ matrix.k8s-version }} make kind-create-cluster
@@ -64,6 +70,12 @@ jobs:
         uses: kyverno/action-install-kyverno-json@4ac28215fd015ff6aa5525afc67f119f9f758957 # v0.0.1
         with:
           release: main
+
+      - name: Install Kyverno CLI
+        uses: kyverno/action-install-cli@v0.2.0
+
+      - name: Check Kyverno CLI install
+        run: kyverno version
 
       - name: Prepare environment
         run: |
