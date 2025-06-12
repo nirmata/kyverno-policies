@@ -5,26 +5,14 @@ metadata:
   name: good-test
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-env-var-encryption.yaml --payload ./good-test/good-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-env-var-encryption
-                rules:
-                - rule:
-                    name: check-env-var-encryption
-                  error: ~
-                  violations: ~
+            kyverno apply ../check-env-var-encryption.yaml --json './good-test/good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -33,31 +21,14 @@ metadata:
   name: bad-test-01
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-env-var-encryption.yaml --payload ./bad-test/bad-payload-01.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-env-var-encryption
-                rules:
-                - rule:
-                    name: check-env-var-encryption
-                  error: ~
-                  violations:
-                  - message: Enable the encryption of environment variable for the AWS Lambda function by specifying correct value to 'kms_key_arn' attribute in 'aws_lambda_function' resource block (CHECK=spec.rules[0].assert.all[0])
-                    errors:
-                    - type: FieldValueInvalid
-                      (value==''): false
-                      detail: 'Expected value: true'
+            kyverno apply ../check-env-var-encryption.yaml --json './bad-test/bad-payload-01.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -66,28 +37,11 @@ metadata:
   name: bad-test-02
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-env-var-encryption.yaml --payload ./bad-test/bad-payload-02.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-env-var-encryption
-                rules:
-                - rule:
-                    name: check-env-var-encryption
-                  error: ~
-                  violations:
-                  - message: Enable the encryption of environment variable for the AWS Lambda function by specifying correct value to 'kms_key_arn' attribute in 'aws_lambda_function' resource block (CHECK=spec.rules[0].assert.all[0])
-                    errors:
-                    - type: FieldValueInvalid
-                      (value==''): false
-                      detail: 'Expected value: true'
+            kyverno apply ../check-env-var-encryption.yaml --json './bad-test/bad-payload-02.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true

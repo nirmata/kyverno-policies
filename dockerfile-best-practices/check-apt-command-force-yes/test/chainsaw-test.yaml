@@ -1,94 +1,44 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
   name: good-test
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-apt-command-force-yes.yaml --payload ./good-test/good-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-apt-command-force-yes
-                rules:
-                - rule:
-                    name: check-apt-command-force-yes
-                  error: ~
-                  violations: ~
+            kyverno apply ../check-apt-command-force-yes.yaml --json './good-test/good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
   name: bad-test
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-apt-command-force-yes.yaml --payload ./bad-test/bad-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-apt-command-force-yes
-                rules:
-                - rule:
-                    name: check-apt-command-force-yes
-                  error: ~
-                  violations:
-                  - message: refrain from using the '--force-yes' option with `apt-get` as it bypasses important package validation checks and can potentially compromise the stability and security of your system. (CHECK=spec.rules[0].assert.all[0])
-                    errors:
-                    - type: FieldValueInvalid
-                      value: true
-                      detail: 'Expected value: false'
+            kyverno apply ../check-apt-command-force-yes.yaml --json './bad-test/bad-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
 ---
----
-# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: bad-test-02
+  name: bad-test-2
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-apt-command-force-yes.yaml --payload ./bad-test/bad-payload-02.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-apt-command-force-yes
-                rules:
-                - rule:
-                    name: check-apt-command-force-yes
-                  error: ~
-                  violations:
-                  - message: refrain from using the '--force-yes' option with `apt` as it bypasses important package validation checks and can potentially compromise the stability and security of your system. (CHECK=spec.rules[0].assert.all[1])
-                    errors:
-                    - type: FieldValueInvalid
-                      value: true
-                      detail: 'Expected value: false'
+            kyverno apply ../check-apt-command-force-yes.yaml --json './bad-test/bad-payload-02.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true

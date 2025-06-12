@@ -1,25 +1,36 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-lambda-public-access
   annotations:
-    policies.kyverno.io/title: check-lambda-public-access 
+    policies.kyverno.io/title: Check Lambda Public Access
     policies.kyverno.io/category: AWS Lambda Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       This policy ensures that AWS Lambda function is not publicly accessible
 spec:
-  rules:
-    - name: check-lambda-public-access
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_lambda_function'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Principal must be set to a specific resource or user account and not '*'
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_lambda_permission']):
-                values:
-                  (principal != '*'): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-lambda-permission
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_lambda_permission')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_lambda_permission').all(perm,
+          !has(perm.values.principal) ||
+          perm.values.principal != '*'
+        )
+      message: "Principal must be set to a specific resource or user account and not '*'"
 

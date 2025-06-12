@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-certificate-validation-pip3
@@ -10,20 +10,40 @@ metadata:
     policies.kyverno.io/description: >-
       This policy checks whether certificate validation is disabled in the Dockerfile using --trusted-host option when running the pip3 command
 spec:
-  rules:
-    - name: check-certificate-validation-pip3
-      match:
-        all:
-        - ($analyzer.resource.type): dockerfile
-        - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Ensure certificate validation is enabled by not using `--trusted-host` option with pip
-          check:
-            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
-               ((starts_with(@, 'pip ') || contains(@, ' pip '))  && contains(@, ' --trusted-host')): false
-        - message: Ensure certificate validation is enabled by not using `--trusted-host` option with pip3
-          check:
-            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
-               ((starts_with(@, 'pip3 ') || contains(@, ' pip3 '))  && contains(@, ' --trusted-host')): false
+  validationActions:
+    - Audit
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: has-dockerfile-structure
+      expression: "has(object.Stages)"
+    - name: has-run-commands
+      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.Commands) && stage.Commands.exists(cmd, cmd.Name == 'RUN' && has(cmd.CmdLine) && size(cmd.CmdLine) > 0))"
+  validations:
+    - expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'RUN' && has(cmd.CmdLine) && cmd.CmdLine.exists(cmdLine,
+              (cmdLine.startsWith('pip ') || cmdLine.contains(' pip ')) && cmdLine.contains(' --trusted-host')
+            )
+          )
+        )
+      message: "Ensure certificate validation is enabled by not using `--trusted-host` option with pip"
+    - expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'RUN' && has(cmd.CmdLine) && cmd.CmdLine.exists(cmdLine,
+              (cmdLine.startsWith('pip3 ') || cmdLine.contains(' pip3 ')) && cmdLine.contains(' --trusted-host')
+            )
+          )
+        )
+      message: "Ensure certificate validation is enabled by not using `--trusted-host` option with pip3"
                

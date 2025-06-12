@@ -1,24 +1,36 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-function-concurrency
   annotations:
-    policies.kyverno.io/title: check-function-concurrency 
+    policies.kyverno.io/title: Check Function Concurrency
     policies.kyverno.io/category: AWS Lambda Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       This policy checks whether concurrency level config is set for the Lambda function.
 spec:
-  rules:
-    - name: check-function-concurrency
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_lambda_function'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Configure the AWS Lambda function for function-level concurrent execution limit using 'reserved_concurrent_execution' attribute          
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_lambda_function']):
-              values:
-                (reserved_concurrent_executions > `0`): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-lambda-function
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_lambda_function')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_lambda_function').all(func,
+          has(func.values.reserved_concurrent_executions) && 
+          func.values.reserved_concurrent_executions != null && 
+          func.values.reserved_concurrent_executions > 0
+        )
+      message: "Configure the AWS Lambda function for function-level concurrent execution limit using 'reserved_concurrent_execution' attribute"
