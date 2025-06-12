@@ -3,10 +3,10 @@ name: ChainSaw Test
 on:
   push:
     branches:
-      - kyverno-1.14
+      - main
   pull_request:
     branches:
-      - kyverno-1.14
+      - main
 
 jobs:
   run-e2etest-1:
