@@ -1,0 +1,429 @@
+###### Pods - Bad
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: badpod01
+spec:
+  containers:
+  - name: container01
+    image: nginx
+  securityContext:
+    seccompProfile:
+      type: Unconfined
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: badpod02
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      seccompProfile:
+        type: Unconfined
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: badpod03
+spec:
+  containers:
+  - name: container01
+    image: nginx
+  - name: container02
+    image: nginx
+    securityContext:
+      seccompProfile:
+        type: Unconfined
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: badpod04
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+  - name: container02
+    image: nginx
+    securityContext:
+      seccompProfile:
+        type: Unconfined
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: badpod05
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+    securityContext:
+      seccompProfile:
+        type: Unconfined
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: badpod06
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+  - name: initcontainer02
+    image: nginx
+    securityContext:
+      seccompProfile:
+        type: Unconfined
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: badpod07
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+  - name: initcontainer02
+    image: nginx
+    securityContext:
+      seccompProfile:
+        type: Unconfined
+  containers:
+  - name: container01
+    image: nginx
+---
+###### Deployments - Bad
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baddeployment01
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+      securityContext:
+        seccompProfile:
+          type: Unconfined
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baddeployment02
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          seccompProfile:
+            type: Unconfined
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baddeployment03
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+      - name: container02
+        image: nginx
+        securityContext:
+          seccompProfile:
+            type: Unconfined
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baddeployment04
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
+      - name: container02
+        image: nginx
+        securityContext:
+          seccompProfile:
+            type: Unconfined
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baddeployment05
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+        securityContext:
+          seccompProfile:
+            type: Unconfined
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baddeployment06
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+      - name: initcontainer02
+        image: nginx
+        securityContext:
+          seccompProfile:
+            type: Unconfined
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baddeployment07
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault
+      - name: initcontainer02
+        image: nginx
+        securityContext:
+          seccompProfile:
+            type: Unconfined
+      containers:
+      - name: container01
+        image: nginx
+---
+###### CronJobs - Bad
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: badcronjob01
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+          securityContext:
+            seccompProfile:
+              type: Unconfined
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: badcronjob02
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              seccompProfile:
+                type: Unconfined
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: badcronjob03
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+          - name: container02
+            image: nginx
+            securityContext:
+              seccompProfile:
+                type: Unconfined
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: badcronjob04
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              seccompProfile:
+                type: RuntimeDefault
+          - name: container02
+            image: nginx
+            securityContext:
+              seccompProfile:
+                type: Unconfined
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: badcronjob05
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+            securityContext:
+              seccompProfile:
+                type: Unconfined
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: badcronjob06
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+          - name: initcontainer02
+            image: nginx
+            securityContext:
+              seccompProfile:
+                type: Unconfined
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: badcronjob07
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+            securityContext:
+              seccompProfile:
+                type: RuntimeDefault
+          - name: initcontainer02
+            image: nginx
+            securityContext:
+              seccompProfile:
+                type: Unconfined
+          containers:
+          - name: container01
+            image: nginx

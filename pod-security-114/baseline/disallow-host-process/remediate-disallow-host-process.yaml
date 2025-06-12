@@ -1,0 +1,56 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: remediate-disallow-host-process
+  annotations:
+    policies.kyverno.io/title: Remediate Disallow hostProcess
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/description: >-
+      This policy remediates the disallow-host-process violation
+spec:
+  background: false
+  rules:
+    - name: remove-hostprocess-containers
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+                - StatefulSet
+                - Job
+                - DaemonSet
+      mutate:
+        foreach: 
+          - list: request.object.spec.template.spec.containers[]
+            order: Descending
+            preconditions:
+              all:
+              - key: "{{ element.securityContext && element.securityContext.windowsOptions && element.securityContext.windowsOptions.hostProcess }}"
+                operator: Equals
+                value: true
+            patchesJson6902: |-
+              - path: /spec/template/spec/containers/{{elementIndex}}/securityContext/windowsOptions/hostProcess
+                op: replace
+                value: false
+          - list: request.object.spec.template.spec.initContainers[]
+            order: Descending
+            preconditions:
+              all:
+              - key: "{{ element.securityContext && element.securityContext.windowsOptions && element.securityContext.windowsOptions.hostProcess }}"
+                operator: Equals
+                value: true
+            patchesJson6902: |-
+              - path: /spec/template/spec/initContainers/{{elementIndex}}/securityContext/windowsOptions/hostProcess
+                op: replace
+                value: false
+          - list: request.object.spec.template.spec.ephemeralContainers[]
+            order: Descending
+            preconditions:
+              all:
+              - key: "{{ element.securityContext && element.securityContext.windowsOptions && element.securityContext.windowsOptions.hostProcess }}"
+                operator: Equals
+                value: true
+            patchesJson6902: |-
+              - path: /spec/template/spec/ephemeralContainers/{{elementIndex}}/securityContext/windowsOptions/hostProcess
+                op: replace
+                value: false

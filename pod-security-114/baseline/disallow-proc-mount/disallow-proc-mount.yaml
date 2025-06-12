@@ -1,0 +1,48 @@
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-proc-mount
+  annotations:
+    policies.kyverno.io/title: Disallow procMount
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    kyverno.io/kubernetes-version: "1.22-1.23"
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/podsecurity/baseline/disallow-proc-mount/"
+    policies.nirmata.io/remediation: "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-proc-mount/remediate-disallow-proc-mount-containers.yaml"
+    policies.kyverno.io/description: >-
+      The default /proc masks are set up to reduce attack surface and should be required.
+      This policy ensures nothing but the default procMount can be specified for the fields
+      spec.containers[*].securityContext.procMount, spec.initContainers[*].securityContext.procMount,
+      and spec.ephemeralContainers[*].securityContext.procMount.
+      Note that in order for users to deviate from the `Default` procMount requires setting
+      a feature gate at the API server.
+spec:
+  validationActions: [Audit]
+  evaluation:
+    background:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+        operations: ["CREATE", "UPDATE"]
+  validations:
+    - expression: >-
+        !object.spec.containers.exists(c,
+          has(c.securityContext) &&
+          has(c.securityContext.procMount) &&
+          c.securityContext.procMount != "Default") &&
+        (!has(object.spec.initContainers) ||
+         !object.spec.initContainers.exists(c,
+           has(c.securityContext) &&
+           has(c.securityContext.procMount) &&
+           c.securityContext.procMount != "Default")) &&
+        (!has(object.spec.ephemeralContainers) ||
+         !object.spec.ephemeralContainers.exists(c,
+           has(c.securityContext) &&
+           has(c.securityContext.procMount) &&
+           c.securityContext.procMount != "Default"))
+      message: >-
+        Changing the proc mount from the default is not allowed.
