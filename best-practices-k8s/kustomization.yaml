@@ -1,24 +1,11 @@
 resources:
-//Some of these do not exist. Please either remove them or create them.
-
-  - add_network_policy/add_network_policy.yaml
-  - add_networkpolicy_dns/add-networkpolicy-dns.yaml
-  - add_ns_quota/add_ns_quota.yaml
-  - add_rolebinding/add_rolebinding.yaml
-  - add_safe_to_evict/add_safe_to_evict.yaml
-  - check_deprecated_apis/check_deprecated_apis.yaml
-  - disallow_cri_sock_mount/disallow_cri_sock_mount.yaml
-  - disallow_default_namespace/disallow_default_namespace.yaml
+  - disallow-default-namespace/disallow-default-namespace.yaml
   - disallow_latest_tag/disallow_latest_tag.yaml
   - disallow-empty-ingress-host/disallow_empty_ingress_host.yaml
-  - require_drop_all/require_drop_all.yaml
-  - require_drop_cap_net_raw/require_drop_cap_net_raw.yaml
   - require_labels/require_labels.yaml
+  - require_pod_antiaffinity/require_pod_antiaffinity.yaml
   - require_pod_requests_limits/require_pod_requests_limits.yaml
   - require_probes/require_probes.yaml
   - require_ro_rootfs/require_ro_rootfs.yaml
-  - restrict_image_registries/restrict_image_registries.yaml
-  - restrict_node_port/restrict_node_port.yaml
-  - restrict-service-external-ips/restrict-service-external-ips.yaml
-  - require_pod_antiaffinity/require_pod_antiaffinity.yaml
   - require_rolling_update_strategy/require_rolling_update_strategy.yaml
+  - restrict_node_port/restrict_node_port.yaml
