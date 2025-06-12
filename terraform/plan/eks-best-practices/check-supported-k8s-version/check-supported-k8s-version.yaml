@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-supported-k8s-version
@@ -9,27 +9,27 @@ metadata:
     policies.kyverno.io/description: >-
       This policy checks that EKS clusters are on a supported Kubernetes version
 spec:
-  rules:
-    - name: check-supported-k8s-version
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_eks_cluster'] | length(@) > `0`): true
-      context:
-      - name: supported_k8s_versions
-        variable: 
-        - '1.23'
-        - '1.24'
-        - '1.25'
-        - '1.26'
-        - '1.27'
-        - '1.28'
-        - '1.29'
-        - '1.30'
-      assert:
-        all:
-        - message: "Version specified must be one of these suppported versions ['1.23', '1.24', '1.25', '1.26', '1.27', '1.28', '1.29', '1.30']"
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_eks_cluster']):
-                values:
-                  (!version == `true` || contains($supported_k8s_versions, version)): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-eks-cluster
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_eks_cluster')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_eks_cluster').all(cluster, 
+          !has(cluster.values.version) || 
+          cluster.values.version in ['1.28', '1.29', '1.30', '1.31']
+        )
+      message: "Version specified must be one of these supported versions ['1.28', '1.29', '1.30', '1.31']"

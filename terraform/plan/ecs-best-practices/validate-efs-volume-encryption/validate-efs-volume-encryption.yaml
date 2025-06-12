@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: validate-efs-volume-encryption
@@ -11,18 +11,36 @@ metadata:
     policies.kyverno.io/description: >-
       This policy validates whether transit_encryption is set to ENABLED in the task definition.
 spec:
-  rules:
-    - name: validate-efs-volume-encryption
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_ecs_task_definition'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Transit Encryption is not `ENABLED` for EFS volumes in ECS Task definitions
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_ecs_task_definition']):
-                ~.(values.volume[] || `[]`):
-                    ~.(efs_volume_configuration[] || `[]`):
-                        (transit_encryption == 'ENABLED'): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-ecs-task-definition
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_ecs_task_definition')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_ecs_task_definition').all(task_def,
+          !has(task_def.values.volume) ||
+          task_def.values.volume == null ||
+          task_def.values.volume.all(volume,
+            !has(volume.efs_volume_configuration) ||
+            volume.efs_volume_configuration == null ||
+            volume.efs_volume_configuration.all(efs_config,
+              has(efs_config.transit_encryption) &&
+              efs_config.transit_encryption == 'ENABLED'
+            )
+          )
+        )
+      message: "Transit Encryption is not `ENABLED` for EFS volumes in ECS Task definitions"
 

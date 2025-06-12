@@ -1,9 +1,9 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: enable-s3-versioning
   annotations:
-    policies.kyverno.io/title: enable-s3-versioning 
+    policies.kyverno.io/title: Enable S3 Versioning
     policies.kyverno.io/category: AWS S3 Security Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
@@ -14,20 +14,35 @@ metadata:
       failures. After versioning is enabled for a bucket, if Amazon S3 receives multiple
       write requests for the same object simultaneously, it stores all of those objects.
 spec:
-  rules:
-    - name: check-s3-versioning-setting
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_s3_bucket'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Use the `aws_s3_bucket_versioning` resource to enable versioning.
-          check:
-            (planned_values.root_module.resources[?type=='aws_s3_bucket_versioning'] | length(@) > `0`): true
-        - message: S3 Bucket Versioning needs to be set to 'Enabled'
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_versioning']):
-              (values.versioning_configuration[?status=='Enabled'] | length(@) > `0`): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-s3-bucket
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket_versioning')
+      message: "Use the 'aws_s3_bucket_versioning' resource to enable versioning."
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_s3_bucket_versioning').all(versioning,
+          has(versioning.values.versioning_configuration) && 
+          versioning.values.versioning_configuration != null &&
+          versioning.values.versioning_configuration.exists(config, 
+            has(config.status) && config.status == 'Enabled'
+          )
+        )
+      message: "S3 Bucket Versioning needs to be set to 'Enabled'"
             
            

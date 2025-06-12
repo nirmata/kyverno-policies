@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: detect-unauthenticated-flag
@@ -10,15 +10,30 @@ metadata:
     policies.kyverno.io/description: >-
       This policy ensures that Dockerfile do not contain the '--allow-unauthenticated' flag.
 spec:
-  rules:
-    - name: detect-unauthenticated-flag
-      match:
-        all:
-        - ($analyzer.resource.type): dockerfile
-        - (Stages[].Commands[?Name=='RUN'].CmdLine[] | length(@) > `0`): true
-      assert:
-        any:
-        - message: Dockerfile contains the '--allow-unauthenticated' which is not preferred
-          check:
-            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
-               (contains(@, '--allow-unauthenticated') && (contains(@, 'apt-get') || contains(@, 'apt'))): false
+  validationActions:
+    - Audit
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: has-dockerfile-structure
+      expression: "has(object.Stages)"
+    - name: has-run-commands
+      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.Commands) && stage.Commands.exists(cmd, cmd.Name == 'RUN' && has(cmd.CmdLine) && size(cmd.CmdLine) > 0))"
+  validations:
+    - expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'RUN' && has(cmd.CmdLine) && cmd.CmdLine.exists(cmdLine,
+              cmdLine.contains('--allow-unauthenticated') && (cmdLine.contains('apt-get') || cmdLine.contains('apt'))
+            )
+          )
+        )
+      message: "Dockerfile contains the '--allow-unauthenticated' flag which is not preferred"

@@ -1,9 +1,9 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-rds-aurora-mysql-audit-logging-enabled
   annotations:
-    policies.kyverno.io/title: Check RDS Aurora Mysql Audit Logging Enabled
+    policies.kyverno.io/title: Check RDS Aurora MySQL Audit Logging Enabled
     policies.kyverno.io/category: AWS RDS Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
@@ -14,16 +14,33 @@ metadata:
       audit logs to a log group in Amazon CloudWatch Logs, you can perform real-time analysis of the log data. 
       CloudWatch Logs retains logs in highly durable storage. You can also create alarms and view metrics in CloudWatch.
 spec:
-  rules:
-    - name: check-rds-aurora-mysql-audit-logging-enabled
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_rds_cluster' && contains('aurora-mysql', values.engine) && !contains('serverless', values.engine_mode)] || `[]` | length(@) > `0`): true
-      assert:
-        all:
-        - message: Aurora MySQL DB clusters should publish audit logs to CloudWatch Logs
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_rds_cluster' && contains('aurora-mysql', values.engine) && !contains('serverless', values.engine_mode)]):
-                values:
-                  (enabled_cloudwatch_logs_exports != `null` && length(enabled_cloudwatch_logs_exports) > `0`): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-aurora-mysql-cluster
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_rds_cluster' && has(r.values.engine) && r.values.engine.contains('aurora-mysql') && (!has(r.values.engine_mode) || !r.values.engine_mode.contains('serverless')))"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, 
+          r.type == 'aws_rds_cluster' && 
+          has(r.values.engine) && 
+          r.values.engine.contains('aurora-mysql') && 
+          (!has(r.values.engine_mode) || !r.values.engine_mode.contains('serverless'))
+        ).all(cluster,
+          has(cluster.values.enabled_cloudwatch_logs_exports) && 
+          cluster.values.enabled_cloudwatch_logs_exports != null && 
+          cluster.values.enabled_cloudwatch_logs_exports.size() > 0
+        )
+      message: "Aurora MySQL DB clusters should publish audit logs to CloudWatch Logs"
