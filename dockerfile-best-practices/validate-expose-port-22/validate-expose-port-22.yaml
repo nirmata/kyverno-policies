@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: validate-expose-port-22
@@ -10,16 +10,30 @@ metadata:
     policies.kyverno.io/description: >-
       This policy checks whether Dockerfiles exposes port 22.
 spec:
-  rules:
-    - name: prefer-copy-over-add
-      match:
-        all:
-        - ($analyzer.resource.type): dockerfile
-        - (Stages[].Commands[?Name=='EXPOSE'][] | length(@) > `0`): true
-      assert:
-        any:
-        - message: Port 22 should not be exposed
-          check:
-            (Stages[].Commands[?Name=='EXPOSE'].Ports[][]):
-                (contains(@, '22')): false
-                (contains(@, '22/tcp')): false
+  validationActions:
+    - Audit
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: has-dockerfile-structure
+      expression: "has(object.Stages)"
+    - name: has-expose-commands
+      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.Commands) && stage.Commands.exists(cmd, cmd.Name == 'EXPOSE' && has(cmd.Ports) && size(cmd.Ports) > 0))"
+  validations:
+    - expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'EXPOSE' && has(cmd.Ports) && cmd.Ports.exists(port,
+              port == '22' || port == '22/tcp'
+            )
+          )
+        )
+      message: "Port 22 should not be exposed"

@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-certificate-validation-wget
@@ -10,15 +10,30 @@ metadata:
     policies.kyverno.io/description: >-
       This policy checks whether certificate validation is disabled in the Dockerfile using --no-check-certificate option when running the wget command
 spec:
-  rules:
-    - name: check-certificate-validation-wget
-      match:
-        all:
-        - ($analyzer.resource.type): dockerfile
-        - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
-      assert:
-        any:
-        - message: Ensure certificate validation is enabled by not using `--no-check-certificate` option
-          check:
-            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
-               ((starts_with(@, 'wget ') || contains(@, ' wget ')) && (contains(@, ' --no-check-certificate'))): false
+  validationActions:
+    - Audit
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: has-dockerfile-structure
+      expression: "has(object.Stages)"
+    - name: has-run-commands
+      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.Commands) && stage.Commands.exists(cmd, cmd.Name == 'RUN' && has(cmd.CmdLine) && size(cmd.CmdLine) > 0))"
+  validations:
+    - expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'RUN' && has(cmd.CmdLine) && cmd.CmdLine.exists(cmdLine,
+              (cmdLine.startsWith('wget ') || cmdLine.contains(' wget ')) && cmdLine.contains(' --no-check-certificate')
+            )
+          )
+        )
+      message: "Ensure certificate validation is enabled by not using `--no-check-certificate` option"

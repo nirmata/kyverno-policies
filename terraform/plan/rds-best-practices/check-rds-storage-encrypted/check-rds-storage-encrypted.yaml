@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-rds-storage-encrypted
@@ -16,16 +16,27 @@ metadata:
       After your data is encrypted, Amazon RDS handles authentication of access and decryption of your data transparently 
       with a minimal impact on performance. You do not need to modify your database client applications to use encryption.
 spec:
-  rules:
-    - name: check-rds-storage-encrypted
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_db_instance'] || `[]` | length(@) > `0`): true
-      assert:
-        all:
-        - message: RDS DB instances should have encryption at-rest enabled
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_db_instance']):
-                values:
-                  (!!storage_encrypted): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-rds-instance
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_db_instance')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_db_instance').all(instance,
+          has(instance.values.storage_encrypted) && 
+          instance.values.storage_encrypted == true
+        )
+      message: "RDS DB instances should have encryption at-rest enabled"

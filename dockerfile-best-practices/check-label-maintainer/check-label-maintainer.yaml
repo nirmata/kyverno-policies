@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-label-maintainer
@@ -12,16 +12,35 @@ metadata:
       LABEL instruction to provide the maintainer name in the Dockerfile. This policy checks
       if LABEL instruction has been specified with maintainer name.
 spec:
-  rules:
-  - assert:
-      all:
-      - check:
-          (Stages[].Commands[?Name=='MAINTAINER'][] | length(@) > `0`): false
-        message: MAINTAINER instruction is deprecated, use LABELS instruction to mention maintainer name
-      - check:
-          (Stages[].Commands[].Labels[?Key=='maintainer' || Key=='owner' || Key=='author'][] | length(@) > `0`): true
-        message: Use the LABELS instruction to set the MAINTAINER name
-    name: dockerfile-allow-label-maintainer-instruction
-    match:
-        all:
-        - ($analyzer.resource.type): dockerfile
+  validationActions:
+    - Audit
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: has-dockerfile-structure
+      expression: "has(object.Stages)"
+  validations:
+    - expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'MAINTAINER'
+          )
+        )
+      message: "MAINTAINER instruction is deprecated, use LABELS instruction to mention maintainer name"
+    - expression: |
+        object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            has(cmd.Labels) && cmd.Labels.exists(label,
+              label.Key == 'maintainer' || label.Key == 'owner' || label.Key == 'author'
+            )
+          )
+        )
+      message: "Use the LABELS instruction to set the MAINTAINER name"

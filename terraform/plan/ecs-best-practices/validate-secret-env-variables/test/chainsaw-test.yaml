@@ -5,146 +5,75 @@ metadata:
   name: good-test-01
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../validate-secret-env-variables.yaml --payload ./good-test/good-payload-01.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: validate-secret-env-variables
-                rules:
-                - rule:
-                    name: validate-secret-env-variables
-                  error: ~
-                  violations: ~
+            kyverno apply ../validate-secret-env-variables.yaml --json './good-test/good-payload-01.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
   name: good-test-02
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../validate-secret-env-variables.yaml --payload ./good-test/good-payload-02.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: validate-secret-env-variables
-                rules:
-                - rule:
-                    name: validate-secret-env-variables
-                  error: ~
-                  violations: ~
+            kyverno apply ../validate-secret-env-variables.yaml --json './good-test/good-payload-02.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
   name: bad-test-01
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../validate-secret-env-variables.yaml --payload ./bad-test/bad-payload-01.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: validate-secret-env-variables
-                rules:
-                - rule:
-                    name: validate-secret-env-variables
-                  error: ~
-                  violations:
-                  - (contains(message, 'ECS task definitions should not contain sensitive environment variables like AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, or ECS_ENGINE_AUTH_DATA.')): true
-                    errors:
-                    - type: FieldValueInvalid
-                      value: false
-                      detail: 'Expected value: true'
+            kyverno apply ../validate-secret-env-variables.yaml --json './bad-test/bad-payload-01.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
   name: bad-test-02
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../validate-secret-env-variables.yaml --payload ./bad-test/bad-payload-02.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: validate-secret-env-variables
-                rules:
-                - rule:
-                    name: validate-secret-env-variables
-                  error: ~
-                  violations:
-                  - (contains(message, 'ECS task definitions should not contain sensitive environment variables like AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, or ECS_ENGINE_AUTH_DATA.')): true
-                    errors:
-                    - type: FieldValueInvalid
-                      value: false
-                      detail: 'Expected value: true'
+            kyverno apply ../validate-secret-env-variables.yaml --json './bad-test/bad-payload-02.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
   name: bad-test-03
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../validate-secret-env-variables.yaml --payload ./bad-test/bad-payload-03.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: validate-secret-env-variables
-                rules:
-                - rule:
-                    name: validate-secret-env-variables
-                  error: ~
-                  violations:
-                  - (contains(message, 'ECS task definitions should not contain sensitive environment variables like AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, or ECS_ENGINE_AUTH_DATA.')): true
-                    errors:
-                    - type: FieldValueInvalid
-                      value: false
-                      detail: 'Expected value: true'
+            kyverno apply ../validate-secret-env-variables.yaml --json './bad-test/bad-payload-03.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true

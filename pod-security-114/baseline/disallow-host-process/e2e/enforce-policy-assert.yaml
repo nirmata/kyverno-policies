@@ -1,0 +1,9 @@
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-host-process
+spec:
+  validationActions: [Deny]
+status:
+  conditionStatus:
+    ready: true

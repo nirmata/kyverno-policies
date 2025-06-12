@@ -1,9 +1,9 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: enable-aws-cloudtrail
   annotations:
-    policies.kyverno.io/title: enable-aws-cloudtrail
+    policies.kyverno.io/title: Enable AWS CloudTrail
     policies.kyverno.io/category: AWS S3 Security Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
@@ -13,16 +13,28 @@ metadata:
       analysis. AWS Organizations helps you create an AWS account that is linked to 
       the account that owns the bucket that you're monitoring.
 spec:
-  rules:
-    - name: check-aws-cloudtrail-logging
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_s3_bucket'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Set the enable_logging argument in aws_cloudtrail resource to true
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_cloudtrail']):
-              (values.enable_logging): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-s3-bucket
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_cloudtrail').all(trail,
+          has(trail.values.enable_logging) && 
+          trail.values.enable_logging == true
+        )
+      message: "Set the enable_logging argument in aws_cloudtrail resource to true"
                    

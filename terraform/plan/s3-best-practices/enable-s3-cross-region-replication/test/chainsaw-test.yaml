@@ -5,87 +5,43 @@ metadata:
   name: good-test
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../s3-cross-region-replication.yaml --payload ./good-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: enable-s3-cross-region-replication
-                rules:
-                - rule:
-                    name: check-s3-cross-region-replication
-                  error: ~
-                  violations: ~
+            kyverno apply ../s3-cross-region-replication.yaml --json './good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: bad-test
+  name: bad-test-01
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../s3-cross-region-replication.yaml --payload ./bad-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: enable-s3-cross-region-replication
-                rules:
-                - rule:
-                    name: check-s3-cross-region-replication
-                  error: ~
-                  violations:
-                  - message: Set S3 Bucket Cross Region Replication status to 'Enabled' (CHECK=spec.rules[0].assert.all[1])
-                    errors:
-                    - type: FieldValueInvalid
-                      value: false
-                      detail: 'Expected value: true'
+            kyverno apply ../s3-cross-region-replication.yaml --json './bad-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: bad-test
+  name: bad-test-02
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../s3-cross-region-replication.yaml --payload ./bad-payload-02.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: enable-s3-cross-region-replication
-                rules:
-                - rule:
-                    name: check-s3-cross-region-replication
-                  error: ~
-                  violations:
-                  - message: Use the `aws_s3_bucket_replication_configuration` resource to set the status to Enabled (CHECK=spec.rules[0].assert.all[0])
-                    errors:
-                    - type: FieldValueInvalid
-                      value: false
-                      detail: 'Expected value: true'
+            kyverno apply ../s3-cross-region-replication.yaml --json './bad-payload-02.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
