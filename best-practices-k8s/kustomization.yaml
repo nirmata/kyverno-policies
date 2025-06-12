@@ -1,4 +1,6 @@
 resources:
+//Some of these do not exist. Please either remove them or create them.
+
   - add_network_policy/add_network_policy.yaml
   - add_networkpolicy_dns/add-networkpolicy-dns.yaml
   - add_ns_quota/add_ns_quota.yaml
