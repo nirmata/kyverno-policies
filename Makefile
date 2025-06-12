@@ -7,10 +7,7 @@ USE_CONFIG           ?= standard
 
 TOOLS_DIR                          := $(PWD)/.tools
 KIND                               := $(TOOLS_DIR)/kind
-KIND_VERSION                       := v0.23.0
-KIND_VAP_ALPHA_CONFIG			   := $(PWD)/.github/scripts/config/kind/vap-v1alpha1.yaml
-KIND_VAP_BETA_CONFIG			   := $(PWD)/.github/scripts/config/kind/vap-v1beta1.yaml
-HELM_VALUES_VAP					   := $(PWD)/.github/scripts/config/helm/values-vap.yaml
+KIND_VERSION                       := v0.27.0
 HELM                               := $(TOOLS_DIR)/helm
 HELM_VERSION                       := v3.10.1
 TOOLS                              := $(KIND) $(HELM)
@@ -45,33 +42,11 @@ test-chainsaw-exclude-cel:
 	@echo Running chainsaw tests by excluding CEL folders... >&2
 	@chainsaw test --config .chainsaw-config.yaml --exclude-test-regex 'chainsaw/.*-cel'
 
-.PHONY: test-chainsaw-vap
-test-chainsaw-vap:  
-	@echo Running chainsaw tests for VAPs... >&2
-	@chainsaw test --config .chainsaw-config.yaml --test-file chainsaw-test-vap.yaml
-
 ## Create kind cluster
 .PHONY: kind-create-cluster
 kind-create-cluster: $(KIND)
 	@echo Create kind cluster... >&2
-ifeq ($(K8S_VERSION),v1.22.17)
-	@echo Create kind cluster with kind-config-2.yaml... >&2
-	@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE) --config kind-config-1-22.yaml
-else
-	@echo Create kind cluster with default configuration... >&2
 	@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE)
-endif
-## Create kind cluster with alpha VAP enabled
-.PHONY: kind-create-cluster-vap-alpha
-kind-create-cluster-vap-alpha: $(KIND) 
-	@echo Create kind cluster... >&2
-	@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE) --config $(KIND_VAP_ALPHA_CONFIG)
-
-## Create kind cluster with beta VAP enabled
-.PHONY: kind-create-cluster-vap-beta
-kind-create-cluster-vap-beta: $(KIND) 
-	@echo Create kind cluster... >&2
-	@$(KIND) create cluster --name $(KIND_NAME) --image $(KIND_IMAGE) --config $(KIND_VAP_BETA_CONFIG)
 
 ## Delete kind cluster
 .PHONY: kind-delete-cluster
@@ -87,31 +62,8 @@ kind-deploy-kyverno: $(HELM)
 	@$(HELM) repo update
 	@$(HELM) install kyverno nirmata/kyverno -n kyverno --create-namespace --version=$(N4K_VERSION)
 
-## Deploy Enterprise Kyverno with VAP generation enabled
-.PHONY: kind-deploy-kyverno-vap
-kind-deploy-kyverno-vap: $(HELM) 
-	@echo Install kyverno chart... >&2
-	@$(HELM) repo add nirmata https://nirmata.github.io/kyverno-charts
-	@$(HELM) repo update
-	@$(HELM) install kyverno nirmata/kyverno -n kyverno --create-namespace --version=$(N4K_VERSION) --values=$(HELM_VALUES_VAP)
-
 ## Check Kyverno status 
 .PHONY: wait-for-kyverno
 wait-for-kyverno: 
 	@echo Check kyverno status to be ready... >&2
 	@kubectl wait --namespace kyverno --for=condition=ready pod --all --timeout=180s
-
-#####################
-# Kyverno CLI TESTS #
-#####################
-
-.PHONY: get-kyverno-binary
-get-kyverno-binary: 
-	@echo Download kyverno binary ... >&2
-	@curl -LO https://github.com/nirmata/kyverno/releases/download/$(N4K_BINARY_VERSION)/kyverno-cli_$(N4K_BINARY_VERSION)_linux_x86_64.tar.gz
-	@tar -xvf kyverno-cli_$(N4K_BINARY_VERSION)_linux_x86_64.tar.gz
-
-.PHONY: run-cli-test
-run-cli-test: 
-	@echo wait kyverno pod status installation... >&2
-	@./kyverno test .
