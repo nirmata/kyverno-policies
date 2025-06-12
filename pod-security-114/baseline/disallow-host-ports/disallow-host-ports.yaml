@@ -1,0 +1,43 @@
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-host-ports
+  annotations:
+    policies.kyverno.io/title: Disallow hostPorts
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    kyverno.io/kubernetes-version: "1.22-1.23"
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/podsecurity/baseline/disallow-host-ports/"
+    policies.nirmata.io/remediation: "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/baseline/disallow-host-ports/remediate-disallow-host-ports.yaml"
+    policies.kyverno.io/description: >-
+      Access to host ports allows potential snooping of network traffic and should not be
+      allowed, or at minimum restricted to a known list. This policy ensures the fields
+      spec.containers[*].ports[*].hostPort, spec.initContainers[*].ports[*].hostPort,
+      and spec.ephemeralContainers[*].ports[*].hostPort are unset or set to `0`.
+spec:
+  validationActions: [Audit]
+  evaluation:
+    background:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+        operations: ["CREATE", "UPDATE"]
+  validations:
+    - expression: >-
+        !object.spec.containers.exists(c,
+          has(c.ports) && c.ports.exists(p,
+            has(p.hostPort) && p.hostPort != 0)) &&
+        (!has(object.spec.initContainers) ||
+         !object.spec.initContainers.exists(c,
+           has(c.ports) && c.ports.exists(p,
+             has(p.hostPort) && p.hostPort != 0))) &&
+        (!has(object.spec.ephemeralContainers) ||
+         !object.spec.ephemeralContainers.exists(c,
+           has(c.ports) && c.ports.exists(p,
+             has(p.hostPort) && p.hostPort != 0)))
+      message: >-
+        Use of host ports is disallowed.
