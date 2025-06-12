@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-rds-automatic-minor-version-upgrade-enabled
@@ -12,16 +12,27 @@ metadata:
       relational database management system (RDBMS) are installed. These upgrades might include security patches and bug fixes. 
       Keeping up to date with patch installation is an important step in securing systems.
 spec:
-  rules:
-    - name: check-rds-automatic-minor-version-upgrade-enabled
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_db_instance'] || `[]` | length(@) > `0`): true
-      assert:
-        all:
-        - message: RDS instances should have automatic minor version upgrades enabled
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_db_instance']):
-                values:
-                  (auto_minor_version_upgrade): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-rds-instance
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_db_instance')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_db_instance').all(instance,
+          has(instance.values.auto_minor_version_upgrade) && 
+          instance.values.auto_minor_version_upgrade == true
+        )
+      message: "RDS instances should have automatic minor version upgrades enabled"

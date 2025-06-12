@@ -1,9 +1,9 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: enable-s3-server-access-logging
   annotations:
-    policies.kyverno.io/title: enable-s3-server-access-logging
+    policies.kyverno.io/title: Enable S3 Server Access Logging
     policies.kyverno.io/category: AWS S3 Security Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
@@ -14,15 +14,25 @@ metadata:
       This information can also help you learn about your customer
       base and understand your Amazon S3 bill.
 spec:
-  rules:
-    - name: enable-s3-server-access-logging
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_s3_bucket'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Use the aws_s3_bucket_logging resource to enable server access logging
-          check:
-            (planned_values.root_module.resources[?type=='aws_s3_bucket_logging'] | length(@) > `0`): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-s3-bucket
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket_logging')
+      message: "Use the aws_s3_bucket_logging resource to enable server access logging"
                    

@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: rds-instance-iam-authentication-enabled
@@ -12,26 +12,32 @@ metadata:
       This policy only evaluates RDS instances with the following engine types: mysql, postgres, aurora, aurora-mysql, aurora-postgresql, and mariadb. 
       IAM database authentication allows authentication to database instances with an authentication token instead of a password. Network traffic to and from the database is encrypted using SSL.
 spec:
-  rules:
-    - name: rds-instance-iam-authentication-enabled
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_db_instance' && contains($engineTypes, values.engine)] || `[]` | length(@) > `0`): true
-      context:
-      - name: engineTypes
-        variable:
-        - 'mysql'
-        - 'postgres'
-        - 'aurora'
-        - 'aurora-mysql'
-        - 'aurora-postgresql'
-        - 'mariadb'
-      assert:
-        all:
-        - message: IAM authentication should be configured for RDS instances
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_db_instance' && contains($engineTypes, values.engine)]):
-                values:
-                  (!!iam_database_authentication_enabled): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-rds-instance-supported-engine
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_db_instance' && has(r.values.engine) && r.values.engine in ['mysql', 'postgres', 'aurora', 'aurora-mysql', 'aurora-postgresql', 'mariadb'])"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, 
+          r.type == 'aws_db_instance' && 
+          has(r.values.engine) && 
+          r.values.engine in ['mysql', 'postgres', 'aurora', 'aurora-mysql', 'aurora-postgresql', 'mariadb']
+        ).all(instance,
+          has(instance.values.iam_database_authentication_enabled) && 
+          instance.values.iam_database_authentication_enabled == true
+        )
+      message: "IAM authentication should be configured for RDS instances"
                 

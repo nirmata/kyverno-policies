@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: validate-healthcheck-instruction
@@ -10,14 +10,28 @@ metadata:
     policies.kyverno.io/description: >-
       This policy checks if the HEALTHCHECK instruction is defined in the Dockerfile.
 spec:
-  rules:
-    - name: validate-healthcheck-instruction
-      match:
-        all:
-        - ($analyzer.resource.type): dockerfile
-        - (Stages[].Commands[] | length(@) > `0`): true
-      assert:
-        any:
-        - message: HEALTHCHECK instruction is not defined
-          check:
-            (Stages[].Commands[?Name=='HEALTHCHECK'][] | length(@) > `0`): true
+  validationActions:
+    - Audit
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: has-dockerfile-structure
+      expression: "has(object.Stages)"
+    - name: has-commands
+      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.Commands) && size(stage.Commands) > 0)"
+  validations:
+    - expression: |
+        object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'HEALTHCHECK'
+          )
+        )
+      message: "HEALTHCHECK instruction is not defined"

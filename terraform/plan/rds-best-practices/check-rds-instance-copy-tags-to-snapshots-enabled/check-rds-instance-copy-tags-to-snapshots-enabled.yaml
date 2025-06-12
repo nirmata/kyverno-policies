@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-rds-instance-copy-tags-to-snapshots-enabled
@@ -13,16 +13,27 @@ metadata:
       potential areas of weakness. Snapshots should be tagged in the same way as their parent RDS database instances. 
       Enabling this setting ensures that snapshots inherit the tags of their parent database instances.
 spec:
-  rules:
-    - name: check-rds-instance-copy-tags-to-snapshots-enabled
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_db_instance'] || `[]` | length(@) > `0`): true
-      assert:
-        all:
-        - message: RDS DB instances should be configured to copy tags to snapshots
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_db_instance']):
-                values:
-                  copy_tags_to_snapshot: true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-rds-instance
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_db_instance')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_db_instance').all(instance,
+          has(instance.values.copy_tags_to_snapshot) && 
+          instance.values.copy_tags_to_snapshot == true
+        )
+      message: "RDS DB instances should be configured to copy tags to snapshots"

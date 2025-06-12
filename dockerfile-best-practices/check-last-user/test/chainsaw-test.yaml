@@ -10,7 +10,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno apply ../enable-kms-encryption.yaml --json './good-payload.json'
+            kyverno apply ../check-last-user.yaml --json './good-test/good-payload.json'
           check: 
             "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
 ---
@@ -18,7 +18,7 @@ spec:
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: bad-test-01
+  name: bad-test
 spec:
   steps:
     - name: kyverno
@@ -26,7 +26,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno apply ../enable-kms-encryption.yaml --json './bad-payload-01.json'
+            kyverno apply ../check-last-user.yaml --json './bad-test/bad-payload.json'
           check: 
             "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
 ---
@@ -34,7 +34,7 @@ spec:
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: bad-test-02
+  name: bad-test-1
 spec:
   steps:
     - name: kyverno
@@ -42,7 +42,7 @@ spec:
       - script:
           content: |
             set -e
-            kyverno apply ../enable-kms-encryption.yaml --json './bad-payload-02.json'
+            kyverno apply ../check-last-user.yaml --json './bad-test1/bad-payload.json'
           check: 
             "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
 ---
@@ -50,7 +50,7 @@ spec:
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: bad-test-03
+  name: bad-test-2
 spec:
   steps:
     - name: kyverno
@@ -58,6 +58,22 @@ spec:
       - script:
           content: |
             set -e
-            kyverno apply ../enable-kms-encryption.yaml --json './bad-payload-03.json'
+            kyverno apply ../check-last-user.yaml --json './bad-test2/bad-payload.json'
           check: 
             "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-3
+spec:
+  steps:
+    - name: kyverno
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno apply ../check-last-user.yaml --json './bad-test3/bad-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true 

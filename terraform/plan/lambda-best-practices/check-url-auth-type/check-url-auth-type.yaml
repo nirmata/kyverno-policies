@@ -1,25 +1,36 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-url-auth-type
   annotations:
-    policies.kyverno.io/title: check-url-auth-type 
+    policies.kyverno.io/title: Check URL Authorization Type
     policies.kyverno.io/category: AWS Lambda Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       This policy ensures that Lambda function URLs AuthType is not None.
 spec:
-  rules:
-    - name: check-url-auth-type
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_lambda_function'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Set the authoriation type of the aws lambda function url is set to `AWS_IAM`
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_lambda_function_url']):
-              values:
-                (authorization_type=='AWS_IAM'): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-lambda-function-url
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_lambda_function_url')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_lambda_function_url').all(url,
+          has(url.values.authorization_type) && 
+          url.values.authorization_type == 'AWS_IAM'
+        )
+      message: "Set the authorization type of the aws lambda function url to 'AWS_IAM'"
                   

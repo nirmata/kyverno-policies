@@ -2,181 +2,94 @@
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: good-test
+  name: good-test-01-yum
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./good-test/01-yum/good-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-nogpgcheck
-                rules:
-                - rule:
-                    name: check-nogpgcheck
-                  error: ~
-                  violations: ~
+            kyverno apply ../check-nogpgcheck.yaml --json './good-test/01-yum/good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: good-test
+  name: good-test-02-dnf
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./good-test/02-dnf/good-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-nogpgcheck
-                rules:
-                - rule:
-                    name: check-nogpgcheck
-                  error: ~
-                  violations: ~
+            kyverno apply ../check-nogpgcheck.yaml --json './good-test/02-dnf/good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: good-test
+  name: good-test-03-tdnf
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./good-test/03-tdnf/good-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-nogpgcheck
-                rules:
-                - rule:
-                    name: check-nogpgcheck
-                  error: ~
-                  violations: ~
+            kyverno apply ../check-nogpgcheck.yaml --json './good-test/03-tdnf/good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: bad-test
+  name: bad-test-01-yum
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./bad-test/01-yum/bad-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-nogpgcheck
-                rules:
-                - rule:
-                    name: check-nogpgcheck
-                  error: ~
-                  violations:
-                  - message: Enable GPG signature checking with yum by not using `--nogpgcheck` flag (CHECK=spec.rules[0].assert.all[0])
-                    errors:
-                    - type: FieldValueInvalid
-                      value: true
-                      detail: 'Expected value: false'
+            kyverno apply ../check-nogpgcheck.yaml --json './bad-test/01-yum/bad-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: bad-test
+  name: bad-test-02-dnf
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./bad-test/02-dnf/bad-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-nogpgcheck
-                rules:
-                - rule:
-                    name: check-nogpgcheck
-                  error: ~
-                  violations:
-                  - message: Enable GPG signature checking with dnf by not using `--nogpgcheck` flag (CHECK=spec.rules[0].assert.all[1])
-                    errors:
-                    - type: FieldValueInvalid
-                      value: true
-                      detail: 'Expected value: false'
+            kyverno apply ../check-nogpgcheck.yaml --json './bad-test/02-dnf/bad-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: bad-test
+  name: bad-test-03-tdnf
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-nogpgcheck.yaml --payload ./bad-test/03-tdnf/bad-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-nogpgcheck
-                rules:
-                - rule:
-                    name: check-nogpgcheck
-                  error: ~
-                  violations:
-                  - message: Enable GPG signature checking with tdnf by not using `--nogpgcheck` flag (CHECK=spec.rules[0].assert.all[2])
-                    errors:
-                    - type: FieldValueInvalid
-                      value: true
-                      detail: 'Expected value: false'
+            kyverno apply ../check-nogpgcheck.yaml --json './bad-test/03-tdnf/bad-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
