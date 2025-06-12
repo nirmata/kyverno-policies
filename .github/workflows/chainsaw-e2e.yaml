@@ -22,11 +22,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install kyverno-json
-        uses: kyverno/action-install-kyverno-json@4ac28215fd015ff6aa5525afc67f119f9f758957 # v0.0.1
-        with:
-          release: main
-
       - name: Prepare environment
         run: |
           K8S_VERSION=${{ matrix.k8s-version }} make kind-create-cluster
