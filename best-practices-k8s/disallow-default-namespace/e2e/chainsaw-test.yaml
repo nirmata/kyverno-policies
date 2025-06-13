@@ -10,14 +10,9 @@ spec:
     try:
     - apply:
         file: ../disallow-default-namespace.yaml
-    - patch:
-        resource:
-          apiVersion: kyverno.io/v1
-          kind: ClusterPolicy
-          metadata:
-            name: disallow-default-namespace
-          spec:
-            validationFailureAction: Enforce
+    - script:
+        content: |
+          kubectl patch validatingpolicy disallow-default-namespace --type=json -p='[{"op": "replace", "path": "/spec/validationActions", "value": ["Deny"]}]'
     - assert:
         file: policy-ready.yaml
   - name: step-02

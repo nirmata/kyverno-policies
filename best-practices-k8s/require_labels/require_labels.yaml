@@ -1,30 +1,27 @@
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
 metadata:
-  name: require-labels
-  annotations:
-    policies.kyverno.io/title: Require Labels
-    policies.kyverno.io/category: Best Practices
-    policies.kyverno.io/severity: medium
-    kyverno.io/kyverno-version: 1.10.0
-    policies.kyverno.io/subject: Pod, Label
-    policies.kyverno.io/description: >-
-      Define and use labels that identify semantic attributes of your application or Deployment.
-      A common set of labels allows tools to work collaboratively, describing objects in a common manner that
-      all tools can understand. The recommended labels describe applications in a way that can be
-      queried. This policy validates that the label `app.kubernetes.io/name` is specified with some value.
+    name: require-labels
+    annotations:
+        policies.kyverno.io/title: Require Labels
+        policies.kyverno.io/category: Best Practices
+        policies.kyverno.io/severity: medium
+        kyverno.io/kyverno-version: 1.14.1
+        policies.kyverno.io/subject: Pod, Label
+        policies.kyverno.io/description: >-
+            Define and use labels that identify semantic attributes of your application or Deployment. A common set of labels allows tools to work collaboratively, describing objects in a common manner that all tools can understand. The recommended labels describe applications in a way that can be queried. This policy validates that the label `app.kubernetes.io/name` is specified with some value.
 spec:
-  validationFailureAction: Audit
-  background: true
-  rules:
-  - name: check-for-labels
-    match:
-      resources:
-        kinds:
-        - Pod
-    validate:
-      message: "The label `app.kubernetes.io/name` is required."
-      pattern:
-        metadata:
-          labels:
-            app.kubernetes.io/name: "?*"
+    validationActions:
+        - Audit
+    evaluation:
+        background:
+            enabled: true
+    matchConstraints:
+        resourceRules:
+            - apiGroups: [""]
+              apiVersions: ["v1"]
+              resources: ["pods"]
+              operations: ["CREATE", "UPDATE"]
+    validations:
+        - expression: "has(object.metadata.labels) && ('app.kubernetes.io/name' in object.metadata.labels)"
+          message: "The label `app.kubernetes.io/name` is required."
