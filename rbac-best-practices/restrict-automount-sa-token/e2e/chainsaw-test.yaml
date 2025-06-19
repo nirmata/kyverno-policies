@@ -10,8 +10,11 @@ spec:
         file: ../restrict-automount-sa-token.yaml
     - assert:
         file: policy-assert.yaml
-    - apply:
-        file: serviceaccount.yaml
+    - script:
+        content: |
+          sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../restrict-automount-sa-token.yaml | kubectl apply -f - 
+    - assert:
+        file: enforce-policy-assert.yaml
     - apply:
         file: good-resource.yaml
     - apply:

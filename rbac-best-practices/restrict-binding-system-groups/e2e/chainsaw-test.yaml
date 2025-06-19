@@ -12,7 +12,7 @@ spec:
         file: policy-assert.yaml
     - script:
         content: |
-          kubectl patch validatingpolicy restrict-binding-system-groups --type=json -p='[{"op": "replace", "path": "/spec/validationActions", "value": ["Deny"]}]'
+          sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../restrict-binding-system-groups.yaml | kubectl apply -f - 
     - assert:
         file: enforce-policy-assert.yaml
     - apply:
