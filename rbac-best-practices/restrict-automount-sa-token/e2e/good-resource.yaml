@@ -21,9 +21,20 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
+  name: goodpod03-named-sa
+spec:
+  serviceAccountName: my-service-account
+  automountServiceAccountToken: true
+  containers:
+    - name: busybox
+      image: busybox:1.35
+---
+apiVersion: v1
+kind: Pod
+metadata:
   labels:
     app.kubernetes.io/part-of: policy-reporter
-  name: goodpod03
+  name: goodpod05-policy-reporter
 spec:
   containers:
     - name: busybox

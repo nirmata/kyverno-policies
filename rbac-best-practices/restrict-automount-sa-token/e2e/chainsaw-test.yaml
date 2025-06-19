@@ -11,6 +11,8 @@ spec:
     - assert:
         file: policy-assert.yaml
     - apply:
+        file: serviceaccount.yaml
+    - apply:
         file: good-resource.yaml
     - apply:
         expect:

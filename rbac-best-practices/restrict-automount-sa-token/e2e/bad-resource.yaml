@@ -11,8 +11,6 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  labels:
-    app.kubernetes.io/part-of: blah-reporter
   name: badpod02
 spec:
   containers:
@@ -22,7 +20,20 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: badpod03
+  name: badpod03-default-sa
+spec:
+  serviceAccountName: default
+  automountServiceAccountToken: true
+  containers:
+    - name: busybox
+      image: busybox:1.35
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/part-of: blah-reporter
+  name: badpod05
 spec:
   containers:
     - name: busybox

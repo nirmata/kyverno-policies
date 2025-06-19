@@ -28,12 +28,12 @@ spec:
             object.metadata.labels['app.kubernetes.io/part-of'] != 'policy-reporter'
 
     validations:
-        - expression: >- 
-                has(object.spec) && 
-                has(object.spec.automountServiceAccountToken) && 
-                object.spec.automountServiceAccountToken == false
-
-          message: "Auto-mounting of Service Account tokens is not allowed."
+        - expression: >-
+            has(object.spec) && (
+            (has(object.spec.serviceAccountName) && object.spec.serviceAccountName != 'default') ||
+            (has(object.spec.automountServiceAccountToken) && object.spec.automountServiceAccountToken == false)
+            )
+          message: "Auto-mounting of Service Account tokens is not allowed unless a custom ServiceAccount is used."
     evaluation:
         background:
             enabled: true
