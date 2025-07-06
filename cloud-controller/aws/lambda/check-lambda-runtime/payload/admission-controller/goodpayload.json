@@ -1,0 +1,25 @@
+{
+    "Architectures": ["x86_64"],
+    "Description": "",
+    "EphemeralStorage": {
+       "Size": 512
+    },
+    "FileSystemConfigs": [],
+    "FunctionName": "BadLambdaFunction",
+    "Handler": "index.lambda_handler",
+    "LoggingConfig": {
+       "LogFormat": "Text",
+       "LogGroup": "/aws/lambda/BadLambdaFunction"
+    },
+    "MemorySize": 128,
+    "PackageType": "Zip",
+    "Role": "arn:aws:iam::844333597536:role/Spacelift_Test_Lambda_Function_Roless",
+    "Runtime": "python3.9",
+    "SnapStart": {
+       "ApplyOn": "None"
+    },
+    "Timeout": 3,
+    "TracingConfig": {
+       "Mode": "PassThrough"
+    }
+ }

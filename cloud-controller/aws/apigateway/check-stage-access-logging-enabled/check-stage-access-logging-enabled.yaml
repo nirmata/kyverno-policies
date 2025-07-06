@@ -1,0 +1,38 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-stage-access-logging-enabled
+  annotations:
+    policies.kyverno.io/title: Ensure API Gateway has Access Logging enabled
+    policies.kyverno.io/category: ApiGateway Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that access logging is enabled in API Gateway stages, 
+      which is critical for monitoring and auditing API activity. Enforcing this practice improves observability, 
+      aids in troubleshooting issues, and enhances security by maintaining a detailed record of API access and usage.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-apigateway-stage
+      expression: >
+        object.TypeName == 'AWS::ApiGateway::Stage'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.accessLogSetting) &&
+          object.ResourceDescription.Properties.accessLogSetting != null &&
+          size(object.ResourceDescription.Properties.accessLogSetting) > 0
+        ) :
+        (
+          has(object.accessLogSetting) &&
+          object.accessLogSetting != null &&
+          size(object.accessLogSetting) > 0
+        )
+      message: "Ensure API Gateway has Access Logging enabled"

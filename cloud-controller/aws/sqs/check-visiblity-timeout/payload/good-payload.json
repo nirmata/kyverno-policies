@@ -1,0 +1,17 @@
+{
+    "TypeName": "AWS::SQS::Queue",
+    "ResourceDescription": {
+      "Identifier": "https://sqs.us-west-2.amazonaws.com/844333597536/Good-Visiblity-Timeout",
+      "Properties": {
+        "SqsManagedSseEnabled": true,
+        "ReceiveMessageWaitTimeSeconds": 0,
+        "DelaySeconds": 0,
+        "MessageRetentionPeriod": 259200,
+        "MaximumMessageSize": 262144,
+        "VisibilityTimeout": 20,
+        "Arn": "arn:aws:sqs:us-west-2:844333597536:Good-Visiblity-Timeout",
+        "QueueName": "Good-Visiblity-Timeout",
+        "QueueUrl": "https://sqs.us-west-2.amazonaws.com/844333597536/Good-Visiblity-Timeout"
+      }
+    }
+  }

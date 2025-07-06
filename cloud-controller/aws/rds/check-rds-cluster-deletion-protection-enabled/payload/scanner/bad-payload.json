@@ -1,0 +1,54 @@
+{
+    "TypeName": "AWS::RDS::DBCluster",
+    "ResourceDescription": {
+      "Identifier": "deletion-protection-disabled",
+      "Properties": {
+        "DatabaseInsightsMode": "standard",
+        "StorageEncrypted": false,
+        "AssociatedRoles": [],
+        "EnableHttpEndpoint": false,
+        "EngineMode": "provisioned",
+        "Port": 3306,
+        "DBClusterIdentifier": "deletion-protection-disabled",
+        "PreferredBackupWindow": "12:04-12:34",
+        "Endpoint": {
+          "Address": "deletion-protection-disabled.cluster-xxxx.us-west-2.rds.amazonaws.com",
+          "Port": "3306"
+        },
+        "NetworkType": "IPV4",
+        "VpcSecurityGroupIds": [
+          "sg-1"
+        ],
+        "CopyTagsToSnapshot": false,
+        "Engine": "aurora-mysql",
+        "Tags": [],
+        "EngineLifecycleSupport": "open-source-rds-extended-support",
+        "EngineVersion": "8.0.mysql_aurora.3.05.2",
+        "StorageType": "aurora",
+        "AvailabilityZones": [
+          "us-west-2c",
+          "us-west-2a",
+          "us-west-2b"
+        ],
+        "DBClusterArn": "arn:aws:rds:us-west-2:xxxx:cluster:deletion-protection-disabled",
+        "EnableLocalWriteForwarding": false,
+        "PreferredMaintenanceWindow": "mon:08:35-mon:09:05",
+        "DBClusterResourceId": "cluster-BWTM4AZBQU44XSBR3FLH52CNCM",
+        "AutoMinorVersionUpgrade": true,
+        "DBSubnetGroupName": "default",
+        "DeletionProtection": false,
+        "AllocatedStorage": 1,
+        "ManageMasterUserPassword": false,
+        "MasterUserSecret": {},
+        "MasterUsername": "admin",
+        "ReadEndpoint": {
+          "Address": "deletion-protection-disabled.cluster-ro-xxxxx.us-west-2.rds.amazonaws.com"
+        },
+        "EnableIAMDatabaseAuthentication": false,
+        "DBClusterParameterGroupName": "default.aurora-mysql8.0",
+        "BackupRetentionPeriod": 1,
+        "EnableCloudwatchLogsExports": []
+      }
+    }
+  }
+  

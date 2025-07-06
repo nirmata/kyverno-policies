@@ -1,0 +1,52 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-assume-role-to-all-aws
+  annotations:
+    policies.kyverno.io/title: Disallow AssumeRole Permission to All AWS Principals
+    policies.kyverno.io/category: AWS IAM Best Practices
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Ensure AWS IAM role trust policy does not allow assume role permission to all AWS principals ("*").
+      Allowing "Principal": {"AWS": "*"} in the trust policy is a major security risk.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Enforce
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-iam-role
+      expression: >
+        object.TypeName == 'AWS::IAM::Role'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.assumeRolePolicyDocument) &&
+          has(object.ResourceDescription.Properties.assumeRolePolicyDocument.statement) &&
+          !object.ResourceDescription.Properties.assumeRolePolicyDocument.statement.exists(stmt,
+            has(stmt.effect) && stmt.effect != 'Deny' &&
+            has(stmt.principal) && has(stmt.principal.aws) &&
+            (
+              (type(stmt.principal.aws) == string && stmt.principal.aws == '*') ||
+              (type(stmt.principal.aws) == list && stmt.principal.aws.exists(principal, principal == '*'))
+            )
+          )
+        ) :
+        (
+          has(object.assumeRolePolicyDocument) &&
+          has(object.assumeRolePolicyDocument.statement) &&
+          !object.assumeRolePolicyDocument.statement.exists(stmt,
+            has(stmt.effect) && stmt.effect != 'Deny' &&
+            has(stmt.principal) && has(stmt.principal.aws) &&
+            (
+              (type(stmt.principal.aws) == string && stmt.principal.aws == '*') ||
+              (type(stmt.principal.aws) == list && stmt.principal.aws.exists(principal, principal == '*'))
+            )
+          )
+        )
+      message: 'IAM role trust policy should not allow assume role permission to all AWS principals ("*").'
+

@@ -1,0 +1,37 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-rds-cluster-deletion-protection-enabled
+  annotations:
+    policies.kyverno.io/title: Check RDS Cluster Deletion Protection Enabled
+    policies.kyverno.io/category: AWS RDS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Preventing accidental deletion of an RDS database through the AWS Management Console, AWS CLI, or the RDS API is essential for avoiding data loss. 
+      The database can't be deleted when deletion protection is enabled. This ensures an extra layer of protection for your data, preventing 
+      unintended actions from impacting availability or causing data loss. By enabling deletion protection, you ensure that the database 
+      remains intact until deliberate action is taken to disable this setting.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-rds-dbcluster
+      expression: >
+        object.TypeName == 'AWS::RDS::DBCluster'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.deletionProtection) &&
+          object.ResourceDescription.Properties.deletionProtection == true
+        ) :
+        (
+          has(object.deletionProtection) &&
+          object.deletionProtection == true
+        )
+      message: "RDS Database Deletion Protection must be enabled"

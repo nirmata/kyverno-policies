@@ -1,0 +1,41 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-efs-volume-encryption
+  annotations:
+    policies.kyverno.io/title: Validate EFS Volume Encryption
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+     Amazon EFS file systems can be used with Amazon ECS to export file system data across your fleet of container instances. 
+     To ensure encryption is enabled in transit, this policy validates whether `transitEncryption` is set to ENABLED in the task definition.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-ecs-taskdefinition
+      expression: >
+        object.TypeName == 'AWS::ECS::TaskDefinition'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.volumes) &&
+          object.ResourceDescription.Properties.volumes.all(volume,
+            !has(volume.eFSVolumeConfiguration) || 
+            (has(volume.eFSVolumeConfiguration.transitEncryption) && volume.eFSVolumeConfiguration.transitEncryption == 'ENABLED')
+          )
+        ) :
+        (
+          has(object.volumes) &&
+          object.volumes.all(volume,
+            !has(volume.eFSVolumeConfiguration) || 
+            (has(volume.eFSVolumeConfiguration.transitEncryption) && volume.eFSVolumeConfiguration.transitEncryption == 'ENABLED')
+          )
+        )
+      message: "Transit Encryption should be set to ENABLED for EFS volumes in ECS Task Definitions"

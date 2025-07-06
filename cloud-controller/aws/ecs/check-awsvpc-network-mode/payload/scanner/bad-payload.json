@@ -1,0 +1,51 @@
+{
+  "TypeName": "AWS::ECS::TaskDefinition",
+  "ResourceDescription": {
+    "Identifier": "arn:aws:ecs:us-west-2:xxxx:task-definition/test-task:3",
+    "Properties": {
+      "Volumes": [],
+      "InferenceAccelerators": [],
+      "PlacementConstraints": [],
+      "ContainerDefinitions": [
+        {
+          "ExtraHosts": [],
+          "Secrets": [],
+          "Memory": 128,
+          "VolumesFrom": [],
+          "Cpu": 128,
+          "EntryPoint": [],
+          "DnsServers": [],
+          "Image": "nginx:latest",
+          "Essential": true,
+          "ResourceRequirements": [],
+          "EnvironmentFiles": [],
+          "Name": "nginx",
+          "MountPoints": [],
+          "DependsOn": [],
+          "DockerLabels": {},
+          "PortMappings": [
+            {
+              "HostPort": 80,
+              "ContainerPort": 80,
+              "Protocol": "tcp"
+            }
+          ],
+          "DockerSecurityOptions": [],
+          "SystemControls": [],
+          "Command": [],
+          "DnsSearchDomains": [],
+          "Environment": [],
+          "Links": [],
+          "CredentialSpecs": [],
+          "Ulimits": []
+        }
+      ],
+      "Family": "test-task",
+      "RequiresCompatibilities": [],
+      "NetworkMode": "bridge",
+      "Tags": [],
+      "TaskDefinitionArn": "arn:aws:ecs:us-west-2:xxxx:task-definition/test-task:3",
+      "EnableFaultInjection": false
+    }
+  }
+}

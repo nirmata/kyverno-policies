@@ -1,0 +1,46 @@
+{
+    "TypeName": "AWS::Lambda::Function",
+    "ResourceDescription": {
+      "Identifier": "GoodLambdaFunctionENV",
+      "Properties": {
+        "MemorySize": 128,
+        "Description": "",
+        "TracingConfig": {
+          "Mode": "PassThrough"
+        },
+        "Timeout": 3,
+        "RuntimeManagementConfig": {
+          "UpdateRuntimeOn": "Auto"
+        },
+        "Handler": "index.lambda_handler",
+        "SnapStartResponse": {
+          "OptimizationStatus": "Off",
+          "ApplyOn": "None"
+        },
+        "Role": "arn:aws:iam::844333597536:role/Spacelift_Test_Lambda_Function_Roless",
+        "FileSystemConfigs": [],
+        "FunctionName": "GoodLambdaFunctionENV",
+        "Runtime": "python3.8",
+        "KmsKeyArn": "arn:aws:kms:us-west-2:844333597536:key/fb305c6f-e3ef-4402-a2ad-e8afc92588e2",
+        "PackageType": "Zip",
+        "LoggingConfig": {
+          "LogFormat": "Text",
+          "LogGroup": "/aws/lambda/GoodLambdaFunctionENV"
+        },
+        "RecursiveLoop": "Terminate",
+        "Environment": {
+          "Variables": {
+            "SECRET_KEY": "Terraform key"
+          }
+        },
+        "Arn": "arn:aws:lambda:us-west-2:844333597536:function:GoodLambdaFunctionENV",
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "Architectures": [
+          "x86_64"
+        ]
+      }
+    }
+  }
+  

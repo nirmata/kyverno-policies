@@ -1,0 +1,36 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-iam-instance-profile
+  annotations:
+    policies.kyverno.io/title: Check IAM Instance Profile
+    policies.kyverno.io/category: IAM Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that AWS EC2 instances have an IAM Instance Profile attached,
+      which is critical for assigning proper IAM roles and secure access to AWS services.
+      If no IAM Instance Profile is attached, a default profile will be used but user can detach it from the instance.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-ec2-instance
+      expression: >
+        object.TypeName == 'AWS::EC2::Instance'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.iamInstanceProfile)
+        ) :
+        (
+          has(object.iamInstanceProfile)
+        )
+      message: "Ensure EC2 instance has an IAM Instance Profile attached."
+
+              

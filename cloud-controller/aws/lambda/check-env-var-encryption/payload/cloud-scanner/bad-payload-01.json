@@ -1,0 +1,49 @@
+{
+    "TypeName": "AWS::Lambda::Function",
+    "ResourceDescription": {
+      "Identifier": "populate_NLB_TG_with_ALB",
+      "Properties": {
+        "MemorySize": 128,
+        "Description": "",
+        "TracingConfig": {
+          "Mode": "PassThrough"
+        },
+        "Timeout": 300,
+        "RuntimeManagementConfig": {
+          "UpdateRuntimeOn": "Auto"
+        },
+        "Handler": "populate_NLB_TG_with_ALB.lambda_handler",
+        "SnapStartResponse": {
+          "OptimizationStatus": "Off",
+          "ApplyOn": "None"
+        },
+        "Role": "arn:aws:iam::844333597536:role/lambda_nlb_alb_role",
+        "FileSystemConfigs": [],
+        "FunctionName": "populate_NLB_TG_with_ALB",
+        "Runtime": "python3.8",
+        "PackageType": "Zip",
+        "LoggingConfig": {
+          "LogFormat": "Text",
+          "LogGroup": "/aws/lambda/populate_NLB_TG_with_ALB"
+        },
+        "RecursiveLoop": "Terminate",
+        "Environment": {
+          "Variables": {
+            "S3_BUCKET": "nlb-alb-lambda-state",
+            "CW_METRIC_FLAG_IP_COUNT": "True",
+            "MAX_LOOKUP_PER_INVOCATION": "50",
+            "SAME_VPC": "True",
+            "ALB_LISTENER": "443",
+            "INVOCATIONS_BEFORE_DEREGISTRATION": "300"
+          }
+        },
+        "Arn": "arn:aws:lambda:us-west-2:844333597536:function:populate_NLB_TG_with_ALB",
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "Architectures": [
+          "x86_64"
+        ]
+      }
+    }
+  }

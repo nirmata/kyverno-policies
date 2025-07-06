@@ -1,0 +1,45 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-allowed-registries
+  annotations:
+    policies.kyverno.io/title: Validate Allowed Registries
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Images from unknown, public registries can be of dubious quality and may not be
+      scanned and secured, representing a high degree of risk. Requiring use of known, approved
+      registries helps reduce threat exposure by ensuring image pulls only come from them. This
+      policy validates that container images only originate from the allowed list of registries.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-ecs-cluster
+      expression: >
+        object.TypeName == 'AWS::ECS::Cluster'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.taskDefinition) &&
+          has(object.ResourceDescription.Properties.taskDefinition.containerDefinitions) &&
+          object.ResourceDescription.Properties.taskDefinition.containerDefinitions.all(container,
+            has(container.image) &&
+            (['eu.foo.io', 'eu.bar.io'].exists(registry, container.image.startsWith(registry)))
+          )
+        ) :
+        (
+          has(object.taskDefinition) &&
+          has(object.taskDefinition.containerDefinitions) &&
+          object.taskDefinition.containerDefinitions.all(container,
+            has(container.image) &&
+            (['eu.foo.io', 'eu.bar.io'].exists(registry, container.image.startsWith(registry)))
+          )
+        )
+      message: "Images must be pulled from allowed registries"

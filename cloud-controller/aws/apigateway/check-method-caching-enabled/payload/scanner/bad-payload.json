@@ -1,0 +1,13 @@
+{
+    "TypeName": "AWS::ApiGateway::Stage",
+    "ResourceDescription": {
+      "Identifier": "mqii623s87|method-caching-disabled",
+      "Properties": {
+        "DeploymentId": "lfe8tg",
+        "StageName": "method-caching-disabled",
+        "TracingEnabled": false,
+        "RestApiId": "mqii623s87",
+        "CacheClusterEnabled": false
+      }
+    }
+  }

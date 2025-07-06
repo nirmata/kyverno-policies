@@ -1,0 +1,72 @@
+{
+    "accessConfig": { 
+      "authenticationMode": "API"
+    },
+    "clientRequestToken": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "computeConfig": { 
+      "enabled": true,
+      "nodePools": [
+        "general-purpose",
+        "system"
+      ],
+      "nodeRoleArn": "arn:aws:iam::account_number:role/AmazonEKSAutoNodeRole"
+    },
+    "encryptionConfig": [ 
+      { 
+        "provider": { 
+          "keyArn": "arn:aws:kms:us-west-2:account_number:key/xxxx"
+        },
+        "resources": [ 
+          "secrets"
+        ]
+      }
+    ],
+    "kubernetesNetworkConfig": { 
+      "elasticLoadBalancing": { 
+        "enabled": true
+      },
+      "ipFamily": "ipv4",
+      "serviceIpv4Cidr": "172.20.0.0/16"
+    },
+    "logging": { 
+      "clusterLogging": [ 
+        { 
+          "enabled": true,
+          "types": [
+            "api",
+            "audit",
+            "authenticator",
+            "controllerManager",
+            "scheduler"
+          ]
+        }
+      ]
+    },
+    "name": "good-cluster",
+    "resourcesVpcConfig": { 
+      "endpointPrivateAccess": false,
+      "endpointPublicAccess": true,
+      "publicAccessCidrs": [ 
+        "0.0.0.0/0"
+      ],
+      "securityGroupIds": [],
+      "subnetIds": [ 
+        "subnet-id1",
+        "subnet-id2"
+      ]
+    },
+    "roleArn": "arn:aws:iam::account_number:role/AmazonEKSAutoClusterRole",
+    "storageConfig": { 
+      "blockStorage": { 
+        "enabled": true
+      }
+    },
+    "upgradePolicy": { 
+      "supportType": "STANDARD"
+    },
+    "version": "1.31",
+    "zonalShiftConfig": { 
+      "enabled": false
+    }
+  }
+  

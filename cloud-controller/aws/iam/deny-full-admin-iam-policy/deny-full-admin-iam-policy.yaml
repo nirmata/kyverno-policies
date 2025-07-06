@@ -1,0 +1,64 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: deny-full-admin-iam-policy
+  annotations:
+    policies.kyverno.io/title: Block Full Admin IAM Policies
+    policies.kyverno.io/category: AWS IAM Best Practices
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Deny IAM policies that allow all actions on all resources, as they pose a major security risk.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-iam-role
+      expression: >
+        object.TypeName == 'AWS::IAM::Role'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          (!has(object.ResourceDescription.Properties.policies) ||
+           !object.ResourceDescription.Properties.policies.exists(policy,
+             has(policy.policyDocument) && has(policy.policyDocument.statement) &&
+             policy.policyDocument.statement.exists(stmt,
+               has(stmt.effect) && stmt.effect == 'Allow' &&
+               has(stmt.action) && 
+               (
+                 (type(stmt.action) == string && stmt.action == '*') ||
+                 (type(stmt.action) == list && stmt.action.exists(action, action == '*'))
+               ) &&
+               has(stmt.resource) &&
+               (
+                 (type(stmt.resource) == string && stmt.resource == '*') ||
+                 (type(stmt.resource) == list && stmt.resource.exists(resource, resource == '*'))
+               )
+             )
+           ))
+        ) :
+        (
+          !has(object.policies) ||
+          !object.policies.exists(policy,
+            has(policy.policyDocument) && has(policy.policyDocument.statement) &&
+            policy.policyDocument.statement.exists(stmt,
+              has(stmt.effect) && stmt.effect == 'Allow' &&
+              has(stmt.action) && 
+              (
+                (type(stmt.action) == string && stmt.action == '*') ||
+                (type(stmt.action) == list && stmt.action.exists(action, action == '*'))
+              ) &&
+              has(stmt.resource) &&
+              (
+                (type(stmt.resource) == string && stmt.resource == '*') ||
+                (type(stmt.resource) == list && stmt.resource.exists(resource, resource == '*'))
+              )
+            )
+          )
+        )
+      message: 'IAM role policy should not allow Action: "*" and Resource: "*"'

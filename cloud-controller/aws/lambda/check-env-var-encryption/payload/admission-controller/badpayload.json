@@ -1,0 +1,36 @@
+{
+    "Architectures": ["x86_64"],
+    "Description": "",
+    "EphemeralStorage": {
+       "Size": 512
+    },
+    "Environment": {
+       "Variables": {
+          "S3_BUCKET": "nlb-alb-lambda-state",
+          "CW_METRIC_FLAG_IP_COUNT": "True",
+          "MAX_LOOKUP_PER_INVOCATION": "50",
+          "SAME_VPC": "True",
+          "ALB_LISTENER": "443",
+          "INVOCATIONS_BEFORE_DEREGISTRATION": "300"
+       }
+    },
+    "FileSystemConfigs": [],
+    "FunctionName": "populate_NLB_TG_with_ALB",
+    "Handler": "populate_NLB_TG_with_ALB.lambda_handler",
+    "LoggingConfig": {
+       "LogFormat": "Text",
+       "LogGroup": "/aws/lambda/populate_NLB_TG_with_ALB"
+    },
+    "MemorySize": 128,
+    "PackageType": "Zip",
+    "Role": "arn:aws:iam::844333597536:role/lambda_nlb_alb_role",
+    "Runtime": "python3.8",
+    "SnapStart": {
+       "ApplyOn": "None"
+    },
+    "Timeout": 300,
+    "TracingConfig": {
+       "Mode": "PassThrough"
+    }
+ }
+ 

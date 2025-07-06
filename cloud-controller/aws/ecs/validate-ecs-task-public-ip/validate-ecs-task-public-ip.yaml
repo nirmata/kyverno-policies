@@ -1,0 +1,40 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-ecs-task-public-ip
+  annotations:
+    policies.kyverno.io/title: Validate ECS Task Public IP
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      ECS tasks with public IP address enabled, are easily reachable from the internet. 
+      This policy validates whether public IP address is enabled on the ECS task
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-ecs-service
+      expression: >
+        object.TypeName == 'AWS::ECS::Service'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.networkConfiguration) &&
+          has(object.ResourceDescription.Properties.networkConfiguration.awsvpcConfiguration) &&
+          has(object.ResourceDescription.Properties.networkConfiguration.awsvpcConfiguration.assignPublicIp) &&
+          object.ResourceDescription.Properties.networkConfiguration.awsvpcConfiguration.assignPublicIp == 'DISABLED'
+        ) :
+        (
+          has(object.networkConfiguration) &&
+          has(object.networkConfiguration.awsvpcConfiguration) &&
+          has(object.networkConfiguration.awsvpcConfiguration.assignPublicIp) &&
+          object.networkConfiguration.awsvpcConfiguration.assignPublicIp == 'DISABLED'
+        )
+      message: "Public IP address should not be enabled"
+              

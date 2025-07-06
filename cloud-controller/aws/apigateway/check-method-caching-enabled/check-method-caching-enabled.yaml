@@ -1,0 +1,40 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-method-caching-enabled
+  annotations:
+    policies.kyverno.io/title: Ensure API Gateway has Caching Enabled in Method Settings.
+    policies.kyverno.io/category: ApiGateway Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that caching is enabled in API Gateway method settings, 
+      which helps improve performance, reduce latency, and lower operational costs by minimizing redundant 
+      requests to the backend services. Enforcing this best practice enhances the efficiency and reliability of your API.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-apigateway-stage
+      expression: >
+        object.TypeName == 'AWS::ApiGateway::Stage'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.methodSettings) &&
+          object.ResourceDescription.Properties.methodSettings.all(method,
+            !has(method.cachingEnabled) || method.cachingEnabled == true
+          )
+        ) :
+        (
+          has(object.methodSettings) &&
+          object.methodSettings.all(method,
+            !has(method.cachingEnabled) || method.cachingEnabled == true
+          )
+        )
+      message: "Ensure API Gateway has Caching Enabled in Method Settings."

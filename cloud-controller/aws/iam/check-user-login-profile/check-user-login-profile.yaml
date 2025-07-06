@@ -1,0 +1,34 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-iam-user-no-console-access
+  annotations:
+    policies.kyverno.io/title: Check IAM User No Console Access
+    policies.kyverno.io/category: IAM Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that AWS IAM users do not have console access.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-iam-user
+      expression: >
+        object.TypeName == 'AWS::IAM::User'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          !has(object.ResourceDescription.Properties.loginProfile)
+        ) :
+        (
+          !has(object.loginProfile)
+        )
+      message: "Ensure IAM user does not have console access."
+
+              
