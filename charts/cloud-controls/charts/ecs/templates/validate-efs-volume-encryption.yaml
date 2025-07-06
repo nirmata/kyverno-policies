@@ -1,0 +1,40 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "validateEfsVolumeEncryption" }}
+{{- $name := "validate-efs-volume-encryption" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+    policies.kyverno.io/title: Validate EFS Volume Encryption
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+     Amazon EFS file systems can be used with Amazon ECS to export file system data across your fleet of container instances. 
+     To ensure encryption is enabled in transit, this policy validates whether `transitEncryption` is set to ENABLED in the task definition.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.family
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): ECS
+        - (metadata.resource): TaskDefinition
+      assert:
+        all:
+        - message: >- 
+            Transit Encryption should be set to ENABLED for EFS volumes in ECS Task Definitions
+          check:
+            payload:
+              ~.(volumes[?eFSVolumeConfiguration || efsVolumeConfiguration]):
+                    (eFSVolumeConfiguration || efsVolumeConfiguration):
+                        transitEncryption: ENABLED
+{{- end }}
+{{- end }}

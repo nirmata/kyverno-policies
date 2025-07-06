@@ -1,0 +1,40 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "checkRdsClusterDeletionProtectionEnabled" }}
+{{- $name := "check-rds-cluster-deletion-protection-enabled" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+    policies.kyverno.io/title: Check RDS Cluster Deletion Protection Enabled
+    policies.kyverno.io/category: AWS RDS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Preventing accidental deletion of an RDS database through the AWS Management Console, AWS CLI, or the RDS API is essential for avoiding data loss. 
+      The database can't be deleted when deletion protection is enabled. This ensures an extra layer of protection for your data, preventing 
+      unintended actions from impacting availability or causing data loss. By enabling deletion protection, you ensure that the database 
+      remains intact until deliberate action is taken to disable this setting.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.dBClusterIdentifier
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): RDS
+        - (metadata.resource): DBCluster
+      assert:
+        all:
+        - message: >- 
+            RDS Database Deletion Protection must be enabled
+          check:
+            payload:
+              deletionProtection: true
+{{- end }}
+{{- end }}

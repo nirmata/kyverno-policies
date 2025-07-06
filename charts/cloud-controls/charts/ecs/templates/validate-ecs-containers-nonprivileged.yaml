@@ -1,0 +1,39 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "validateEcsContainersNonprivileged" }}
+{{- $name := "validate-ecs-containers-nonprivileged" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+    policies.kyverno.io/title: Validate ECS Containers Are Set to Non-Privileged
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      When privileged is set to true, the container is given elevated permissions on the host container instance (similar to the root user). 
+      This policy checks that the privileged parameter in the container definition is set to false.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.family
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): ECS
+        - (metadata.resource): TaskDefinition
+      assert:
+        all:
+        - message: >- 
+            The `privileged` field, if present, should be set to `false`
+          check:
+            payload:
+              ~.(containerDefinitions):
+                  (!!privileged): false
+{{- end }}
+{{- end }}

@@ -1,9 +1,9 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: s3-lifecycle-configuration
   annotations:
-    policies.kyverno.io/title: s3-lifecycle-configuration 
+    policies.kyverno.io/title: S3 Lifecycle Configuration
     policies.kyverno.io/category: AWS S3 Security Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
@@ -11,19 +11,34 @@ metadata:
       throughout their lifecycle. This policy ensures the lifecycle_configuration
       is set when creating an S3 bucket.
 spec:
-  rules:
-    - name: check-s3-lifecycle-configuration
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_s3_bucket'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Use the `aws_s3_bucket_lifecycle_configuration` resource to enable lifecycle configuration.
-          check:
-            (planned_values.root_module.resources[?type=='aws_s3_bucket_lifecycle_configuration'] | length(@) > `0`): true
-        - message: S3 Bucket Lifecycle Configuration 'status' needs to be set to 'Enabled'
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_lifecycle_configuration']):
-              (values.rule[?status=='Enabled'] | length(@) > `0`): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-s3-bucket
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket_lifecycle_configuration')
+      message: "Use the 'aws_s3_bucket_lifecycle_configuration' resource to enable lifecycle configuration."
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_s3_bucket_lifecycle_configuration').all(config,
+          has(config.values.rule) && 
+          config.values.rule != null &&
+          config.values.rule.exists(rule, 
+            has(rule.status) && rule.status == 'Enabled'
+          )
+        )
+      message: "S3 Bucket Lifecycle Configuration 'status' needs to be set to 'Enabled'"
 

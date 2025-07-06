@@ -1,0 +1,52 @@
+###### Pods - Bad
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: badpod01
+  annotations:
+    container.apparmor.security.beta.kubernetes.io/container01: unconfined
+spec:
+  containers:
+  - name: container01
+    image: nginx
+---
+###### Deployments - Bad
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: baddeployment01
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/container01: unconfined
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+---
+###### CronJobs - Bad
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: badcronjob01
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            container.apparmor.security.beta.kubernetes.io/container01: unconfined
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx

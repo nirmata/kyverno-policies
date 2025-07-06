@@ -1,0 +1,14 @@
+apiVersion: v2
+name: aws-lambda-best-practices
+description: Aws Lambda Best Practices CloudController Policy Set
+type: application
+version: 0.0.1
+keywords:
+  - kubernetes
+  - nirmata
+  - kyverno
+  - policy
+  - cloud-controller
+maintainers:
+  - name: Nirmata
+    url: https://nirmata.com/

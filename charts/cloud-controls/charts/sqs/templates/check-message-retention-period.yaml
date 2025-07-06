@@ -1,0 +1,39 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "checkMessageRetentionPeriod" }}
+{{- $name := "check-message-retention-period" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+        policies.kyverno.io/title: check-message-retention-period
+        policies.kyverno.io/category: AWS SQS Best Practices
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/description: >-
+          This policy checks whether Message Retention Period is under 4 Days.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.queueName
+      match:
+        all:
+        - (metadata.provider): "AWS"
+        - (metadata.service): "SQS"
+        - (metadata.resource): "Queue"
+      context:
+      - name: messageRetentionPeriod
+        variable: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "messageRetentionPeriod" }}{{ index (index .Values $camelCaseName) "messageRetentionPeriod" }}{{ else }}345600{{ end }}{{ else }}345600{{ end }}
+      assert:
+        all:
+        - message: The MessageRetentionPeriod is more than 4 Days.
+          check:
+            payload:
+              (messageRetentionPeriod <= $messageRetentionPeriod): true
+{{- end }}
+{{- end }}

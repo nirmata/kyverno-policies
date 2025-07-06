@@ -1,0 +1,42 @@
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-rds-storage-encrypted
+  annotations:
+    policies.kyverno.io/title: Check RDS Storage Encrypted
+    policies.kyverno.io/category: AWS RDS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks whether storage encryption is enabled for your Amazon RDS DB instances.
+      For an added layer of security for your sensitive data in RDS DB instances, you should configure your 
+      RDS DB instances to be encrypted at rest. To encrypt your RDS DB instances and snapshots at rest, enable the 
+      encryption option for your RDS DB instances. Data that is encrypted at rest includes the underlying storage 
+      for DB instances, its automated backups, read replicas, and snapshots. RDS encrypted DB instances use the open 
+      standard AES-256 encryption algorithm to encrypt your data on the server that hosts your RDS DB instances. 
+      After your data is encrypted, Amazon RDS handles authentication of access and decryption of your data transparently 
+      with a minimal impact on performance. You do not need to modify your database client applications to use encryption.
+spec:
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-rds-instance
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_db_instance')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_db_instance').all(instance,
+          has(instance.values.storage_encrypted) && 
+          instance.values.storage_encrypted == true
+        )
+      message: "RDS DB instances should have encryption at-rest enabled"

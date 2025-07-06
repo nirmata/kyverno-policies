@@ -5,26 +5,14 @@ metadata:
   name: good-test
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-url-auth-type.yaml --payload ./good-test/good-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-url-auth-type
-                rules:
-                - rule:
-                    name: check-url-auth-type
-                  error: ~
-                  violations: ~
+            kyverno apply ../check-url-auth-type.yaml --json './good-test/good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -33,28 +21,11 @@ metadata:
   name: bad-test
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-url-auth-type.yaml --payload ./bad-test/bad-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-url-auth-type
-                rules:
-                - rule:
-                    name: check-url-auth-type
-                  error: ~
-                  violations:
-                  - message: Set the authoriation type of the aws lambda function url is set to `AWS_IAM`
-                    errors:
-                    - type: FieldValueInvalid
-                      value: false
-                      detail: 'Expected value: true'
+            kyverno apply ../check-url-auth-type.yaml --json './bad-test/bad-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true

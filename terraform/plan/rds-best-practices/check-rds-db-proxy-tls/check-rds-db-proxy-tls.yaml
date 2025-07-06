@@ -1,0 +1,38 @@
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-rds-db-proxy-tls
+  annotations:
+    policies.kyverno.io/title: Check RDS DB Proxy TLS
+    policies.kyverno.io/category: AWS RDS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      RDS Proxy can use security mechanisms such as TLS to add an additional layer of security between client applications and the underlying database. 
+      Database connections often involve sensitive information, such as personally identifiable information (PII), financial data, or confidential business data. 
+      Protecting this data in transit is important to maintain security of the data.
+      This policy checks if the RDS Proxy is using TLS.
+spec:
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-rds-db-proxy
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_db_proxy')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_db_proxy').all(proxy,
+          has(proxy.values.require_tls) && 
+          proxy.values.require_tls == true
+        )
+      message: "RDS Database Proxy should use TLS"

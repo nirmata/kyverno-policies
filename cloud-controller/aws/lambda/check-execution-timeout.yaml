@@ -1,0 +1,29 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-execution-timeout
+  annotations:
+        policies.kyverno.io/title: check-execution-timeout
+        policies.kyverno.io/category: AWS Lambda Best Practices
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/description: >-
+          Ensure that AWS Lambda Timeout is not more than 5 sec.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  scan: true
+  rules:
+    - name: check-execution-timeout
+      identifier: payload.functionName
+      match:
+        all:
+        - (metadata.provider): "AWS"
+        - (metadata.service): "Lambda"
+        - (metadata.resource): "Function"
+      assert:
+        all:
+        - message: AWS Lambda function timeout should be less than 5 sec.
+          check:
+            payload:
+              (timeout <= `5`): true

@@ -1,0 +1,143 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test
+spec:
+  steps:
+    - name: kyverno
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno apply ../validate-base-image-tag.yaml --json './good-test/good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-1
+spec:
+  steps:
+    - name: kyverno
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno apply ../validate-base-image-tag.yaml --json './good-test1/good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-2
+spec:
+  steps:
+    - name: kyverno
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno apply ../validate-base-image-tag.yaml --json './good-test2/good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-3
+spec:
+  steps:
+    - name: kyverno
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno apply ../validate-base-image-tag.yaml --json './good-test3/good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-4
+spec:
+  steps:
+    - name: kyverno
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno apply ../validate-base-image-tag.yaml --json './good-test4/good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-5
+spec:
+  steps:
+    - name: kyverno
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno apply ../validate-base-image-tag.yaml --json './good-test5/good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-6
+spec:
+  steps:
+    - name: kyverno
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno apply ../validate-base-image-tag.yaml --json './good-test6/good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test
+spec:
+  steps:
+    - name: kyverno
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno apply ../validate-base-image-tag.yaml --json './bad-test/bad-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-1
+spec:
+  steps:
+    - name: kyverno
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno apply ../validate-base-image-tag.yaml --json './bad-test1/bad-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true 

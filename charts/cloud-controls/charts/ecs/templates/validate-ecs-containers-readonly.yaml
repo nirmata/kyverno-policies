@@ -1,0 +1,40 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "validateEcsContainersReadonly" }}
+{{- $name := "validate-ecs-containers-readonly" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+    policies.kyverno.io/title: Validate if ECS Containers only have read-only access to its root filesystem
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      When managing containers within AWS ECS, it's crucial to enforce security measures to prevent unauthorized modifications. 
+      One significant aspect is restricting write access to the containers' root filesystem.
+      This policy checks if ECS Containers have read-only access to its root filesystem.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.family
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): ECS
+        - (metadata.resource): TaskDefinition
+      assert:
+        all:
+        - message: >- 
+            ECS Containers should have read-only access to its root filesystem
+          check:
+            payload:
+              ~.(containerDefinitions):
+                  readonlyRootFilesystem: true
+{{- end }}
+{{- end }}

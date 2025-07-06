@@ -1,51 +1,40 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-deprecated-runtime
   annotations:
-    policies.kyverno.io/title: check-deprecated-runtime 
+    policies.kyverno.io/title: Check Deprecated Runtime
     policies.kyverno.io/category: AWS Lambda Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       This policy ensures that Lambda Runtime is not deprecated
 spec:
-  rules:
-    - name: check-deprecated-runtime
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_lambda_function'] | length(@) > `0`): true
-      context:
-      - name: forbidden_values
-        variable: 
-        - java8
-        - go1.x
-        - provided
-        - ruby2.7
-        - nodejs14.x
-        - python3.7
-        - dotnetcore3.1
-        - nodejs12.x	
-        - python3.6
-        - dotnet5.0
-        - dotnetcore2.1
-        - nodejs10.x
-        - ruby2.5
-        - python2.7
-        - nodejs8.10
-        - ruby2.5
-        - python2.7
-        - nodejs8.10
-        - nodejs4.3
-        - nodejs4.3-edge
-        - nodejs6.10
-        - dotnetcore1.0
-        - dotnetcore2.0
-        - nodejs
-      assert:
-        all:
-        - message: The runtime is deprecated for AWS lambda function, use the another version.
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_lambda_function']):
-              values:
-                (contains($forbidden_values, runtime || '')): false
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-lambda-function
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_lambda_function')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_lambda_function').all(func,
+          !has(func.values.runtime) || 
+          !(func.values.runtime in [
+            'java8', 'go1.x', 'provided', 'ruby2.7', 'nodejs14.x', 'python3.7', 
+            'dotnetcore3.1', 'nodejs12.x', 'python3.6', 'dotnet5.0', 'dotnetcore2.1', 
+            'nodejs10.x', 'ruby2.5', 'python2.7', 'nodejs8.10', 'nodejs4.3', 
+            'nodejs4.3-edge', 'nodejs6.10', 'dotnetcore1.0', 'dotnetcore2.0', 'nodejs'
+          ])
+        )
+      message: "The runtime is deprecated for AWS lambda function, use another version."

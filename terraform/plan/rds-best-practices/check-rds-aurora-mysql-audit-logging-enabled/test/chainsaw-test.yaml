@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: good-test-01
+spec:
+  steps:
+    - name: kyverno
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno apply ../check-rds-aurora-mysql-audit-logging-enabled.yaml --json './good-test/good-payload-01.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-01
+spec:
+  steps:
+    - name: kyverno
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno apply ../check-rds-aurora-mysql-audit-logging-enabled.yaml --json './bad-test/bad-payload-01.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: skip-test-01
+spec:
+  steps:
+    - name: kyverno
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno apply ../check-rds-aurora-mysql-audit-logging-enabled.yaml --json './skip-test/skip-payload-01.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 0, warn: 0, error: 0, skip: 1'))": true

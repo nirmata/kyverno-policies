@@ -1,0 +1,40 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "checkAwsvpcNetworkMode" }}
+{{- $name := "check-awsvpc-network-mode" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+    policies.kyverno.io/title: Check Awsvpc Network Mode
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      The awsvpc network mode restricts the flow of traffic between different 
+      tasks or between your tasks and other services that run within your Amazon VPC.
+      The awsvpc network mode provides task-level network isolation for tasks 
+      that run on Amazon EC2.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.family
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): ECS
+        - (metadata.resource): TaskDefinition
+      assert:
+        all:
+        - message: >- 
+            ECS task definitions are required to use awsvpc network mode.
+          check:
+            payload:
+              networkMode: awsvpc
+{{- end }}
+{{- end }}

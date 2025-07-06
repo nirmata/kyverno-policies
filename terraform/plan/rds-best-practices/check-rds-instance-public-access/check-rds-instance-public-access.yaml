@@ -1,0 +1,39 @@
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-rds-instance-public-access
+  annotations:
+    policies.kyverno.io/title: Check RDS Instance Public Access
+    policies.kyverno.io/category: AWS RDS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      The `PubliclyAccessible` value in the RDS instance configuration indicates whether the DB instance is publicly accessible. 
+      When the DB instance is configured with `PubliclyAccessible`, it is an Internet-facing instance with a publicly resolvable DNS name, 
+      which resolves to a public IP address. When the DB instance isn't publicly accessible, it is an internal instance with a DNS name 
+      that resolves to a private IP address. Unless you intend for your RDS instance to be publicly accessible, the RDS instance 
+      should not be configured with `PubliclyAccessible` value. Doing so might allow unnecessary traffic to your database instance.
+spec:
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-rds-instance
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_db_instance')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_db_instance').all(instance,
+          !has(instance.values.publicly_accessible) || 
+          instance.values.publicly_accessible == false
+        )
+      message: "RDS Database Instance should not be publicly accessible"

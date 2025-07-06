@@ -1,0 +1,28 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: remediate-restrict-automount-sa-token
+  annotations:
+    policies.kyverno.io/title: Remediate Restrict Auto-Mount of Service Account Tokens
+    policies.kyverno.io/category: RBAC Best Practices
+    policies.kyverno.io/description: >-
+      This policy remediates the restrict-automount-sa-token violation
+spec:
+  background: false
+  rules:
+    - name: remediate-restrict-automount-sa-token
+      match:
+        any:
+        - resources:
+            kinds:
+            - Pod
+      preconditions:
+        all:
+        - key: "{{ request.\"object\".metadata.labels.\"app.kubernetes.io/part-of\" || '' }}"
+          operator: NotEquals
+          value: policy-reporter
+      mutate:
+        patchStrategicMerge:
+          spec:
+            automountServiceAccountToken: false
+

@@ -5,26 +5,14 @@ metadata:
   name: good-test
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-lambda-code-signing.yaml --payload ./good-test/good-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-lambda-code-signing
-                rules:
-                - rule:
-                    name: check-lambda-code-signing
-                  error: ~
-                  violations: ~
+            kyverno apply ../check-lambda-code-signing.yaml --json './good-test/good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -33,28 +21,27 @@ metadata:
   name: bad-test
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../check-lambda-code-signing.yaml --payload ./bad-test/bad-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: check-lambda-code-signing
-                rules:
-                - rule:
-                    name: check-lambda-code-signing
-                  error: ~
-                  violations:
-                  - message: Enable the code signing for the AWS Lambda function by specifying correct value to 'code_signing_config_arn' attribute in 'aws_lambda_function' resource block
-                    errors:
-                    - type: FieldValueInvalid
-                      (value==''): false
-                      detail: 'Expected value: true'
+            kyverno apply ../check-lambda-code-signing.yaml --json './bad-test/bad-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: bad-test-02
+spec:
+  steps:
+    - name: kyverno
+      try:
+      - script:
+          content: |
+            set -e
+            kyverno apply ../check-lambda-code-signing.yaml --json './bad-test/bad-payload-02.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true

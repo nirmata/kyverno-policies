@@ -1,0 +1,59 @@
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-ec2-detailed-monitoring
+  annotations:
+    policies.kyverno.io/title: check-ec2-detailed-monitoring
+    policies.kyverno.io/category: AWS EC2 Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that detailed monitoring is enabled for the AWS EC2 instance
+spec:
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-ec2-resources
+      expression: |
+        has(object.planned_values) && 
+        has(object.planned_values.root_module) && 
+        has(object.planned_values.root_module.resources) && 
+        object.planned_values.root_module.resources.exists(r, 
+          r.type == 'aws_instance' || 
+          r.type == 'aws_launch_configuration' || 
+          r.type == 'aws_launch_template'
+        )
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_instance').all(instance,
+          has(instance.values.monitoring) &&
+          instance.values.monitoring == true
+        )
+      message: "Detailed monitoring must be enabled for the EC2 instance"
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_launch_configuration').all(launch_config,
+          has(launch_config.values.enable_monitoring) &&
+          launch_config.values.enable_monitoring == true
+        )
+      message: "Detailed monitoring must be enabled in EC2 launch configuration"
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_launch_template').all(launch_template,
+          has(launch_template.values.monitoring) &&
+          launch_template.values.monitoring != null &&
+          launch_template.values.monitoring.exists(monitor,
+            has(monitor.enabled) &&
+            monitor.enabled == true
+          )
+        )
+      message: "Detailed monitoring must be enabled in EC2 launch template"

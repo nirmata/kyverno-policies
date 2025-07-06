@@ -1,0 +1,44 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "validateEcsTaskDefinitionNonrootUser" }}
+{{- $name := "validate-ecs-task-definition-nonroot-user" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+    policies.kyverno.io/title: Validate ECS Task Definition Nonroot User for EC2 Instances
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks if ECSTaskDefinitions specify a user for 
+      Amazon Elastic Container Service (Amazon ECS) EC2 launch type 
+      containers to run on. The rule fails if the `user` parameter is not present or is `root`.
+      Running containers as non-root users can help prevent running commands with root privileges 
+      which adds an extra layer of security by limiting the potential damage a compromised container can do. 
+      It also follows the security principle of least privilege, which dictates that applications and processes 
+      should operate with minimum privileges necessary to perform their functions.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.family
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): ECS
+        - (metadata.resource): TaskDefinition
+      assert:
+        all:
+        - message: >- 
+            For ECS EC2 containers, `user` parameter should not be unset or be root
+          check:
+            payload:
+              ~.(containerDefinitions):
+                  (user == null || user == 'root' || user == '0' || starts_with(user, '0:') || ends_with(user, ':0')): false
+{{- end }}
+{{- end }}

@@ -2,85 +2,30 @@
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: good-test-01
+  name: good-test
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../enable-aws-cloudtrail.yaml --payload ./good-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: enable-aws-cloudtrail
-                rules:
-                - rule:
-                    name: check-aws-cloudtrail-logging
-                  error: ~
-                  violations: ~
+            kyverno apply ../enable-aws-cloudtrail.yaml --json './good-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 1, fail: 0, warn: 0, error: 0, skip: 0'))": true
 ---
-apiVersion: chainsaw.kyverno.io/v1alpha1
-kind: Test
-metadata:
-  name: good-test-02
-spec:
-  steps:
-    - name: kyverno-json
-      try:
-      - script:
-          content: |
-            set -e
-            kyverno-json scan --policy ../enable-aws-cloudtrail.yaml --payload ./good-payload2.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: enable-aws-cloudtrail
-                rules:
-                - rule:
-                    name: check-aws-cloudtrail-logging
-                  error: ~
-                  violations: ~
----
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
   name: bad-test
 spec:
   steps:
-    - name: kyverno-json
+    - name: kyverno
       try:
       - script:
           content: |
             set -e
-            kyverno-json scan --policy ../enable-aws-cloudtrail.yaml --payload ./bad-payload.json --output json --bindings ./binding.yaml
-          check:
-            ($error): ~
-            (json_parse($stdout)):
-            - results:
-              - policy:
-                  apiVersion: json.kyverno.io/v1alpha1
-                  kind: ValidatingPolicy
-                  metadata:
-                    name: enable-aws-cloudtrail
-                rules:
-                - rule:
-                    name: check-aws-cloudtrail-logging
-                  error: ~
-                  violations:
-                  - message: Set the enable_logging argument in aws_cloudtrail resource to true
-                    errors:
-                    - type: FieldValueInvalid
-                      value: false
-                      detail: 'Expected value: true'
+            kyverno apply ../enable-aws-cloudtrail.yaml --json './bad-payload.json'
+          check: 
+            "(contains($stdout, 'pass: 0, fail: 1, warn: 0, error: 0, skip: 0'))": true

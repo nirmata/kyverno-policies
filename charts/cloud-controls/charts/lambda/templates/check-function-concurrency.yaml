@@ -1,0 +1,37 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "checkFunctionConcurrency" }}
+{{- $name := "check-function-concurrency" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+        policies.kyverno.io/title: check-function-concurrency
+        policies.kyverno.io/category: AWS Lambda Best Practicess
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/description: >-
+          This policy checks whether concurrency level config is set for the Lambda function.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.functionName
+      match:
+        all:
+        - (metadata.provider): "AWS"
+        - (metadata.service): "Lambda"
+        - (metadata.resource): "Function"
+      assert:
+        all:
+        - message: Configure the AWS Lambda function for function-level concurrent execution limit using reserved_concurrent_execution attribute.
+          check:
+            payload:
+              (reservedConcurrentExecutions > `0`): true
+{{- end }}
+{{- end }}
+

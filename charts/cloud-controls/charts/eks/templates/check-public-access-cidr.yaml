@@ -1,0 +1,37 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "checkPublicAccessCidr" }}
+{{- $name := "check-public-access-cidr" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+    policies.kyverno.io/title: Check Public Access Cidr
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Ensuring that the Amazon EKS public endpoint is not accessible to 0.0.0.0/0 is a fundamental security measure that helps protect your EKS clusters from unauthorized access, security threats, and compliance violations.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.clusterName
+      match:
+        all:
+          - (metadata.provider): "AWS"
+          - (metadata.service): EKS
+          - (metadata.resource): "Cluster"
+      assert:
+        all:
+          - message: "Ensuring that the Amazon EKS public endpoint is not accessible to 0.0.0.0/0"
+            check:
+              payload:
+                resourcesVpcConfig:
+                  ((endpointPublicAccess == `false`) || (endpointPublicAccess == `true` && publicAccessCidrs[?@ == '0.0.0.0/0'] | length(@) == `0`)): true
+{{- end }}
+{{- end }}

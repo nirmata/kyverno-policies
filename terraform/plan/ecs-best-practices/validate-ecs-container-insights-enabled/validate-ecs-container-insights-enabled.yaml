@@ -1,0 +1,42 @@
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-ecs-container-insights-enabled
+  annotations:
+    policies.kyverno.io/title: Validate ECS container insights are enabled
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This Policy ensures that ECS clusters have container
+      insights enabled.
+spec:
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-ecs-cluster
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_ecs_cluster')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_ecs_cluster').all(cluster,
+          has(cluster.values.setting) &&
+          cluster.values.setting != null &&
+          cluster.values.setting.exists(setting,
+            has(setting.name) &&
+            setting.name == 'containerInsights' &&
+            has(setting.value) &&
+            setting.value == 'enabled'
+          )
+        )
+      message: "ECS container insights are not enabled"

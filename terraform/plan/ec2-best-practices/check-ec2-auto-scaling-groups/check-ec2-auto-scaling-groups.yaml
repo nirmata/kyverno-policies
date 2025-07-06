@@ -1,0 +1,36 @@
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-ec2-auto-scaling-groups
+  annotations:
+    policies.kyverno.io/title: check-ec2-auto-scaling-groups
+    policies.kyverno.io/category: AWS EC2 Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Using EC2 launch templates in EC2 Auto Scaling groups provides standardization, 
+      simplified management, versioning, customization, integration with AWS services, enhanced security, and cost optimization benefits.
+spec:
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-autoscaling-group
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_autoscaling_group')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_autoscaling_group').all(asg,
+          has(asg.values.launch_template) &&
+          asg.values.launch_template != null
+        )
+      message: "Auto Scaling Groups should use EC2 launch templates instead of launch configurations"

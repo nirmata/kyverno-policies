@@ -1,0 +1,43 @@
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: rds-instance-iam-authentication-enabled
+  annotations:
+    policies.kyverno.io/title: RDS Instance IAM Authentication Enabled
+    policies.kyverno.io/category: AWS RDS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks whether an RDS DB instance has IAM database authentication enabled. 
+      The policy fails if IAM authentication is not configured for RDS DB instances. 
+      This policy only evaluates RDS instances with the following engine types: mysql, postgres, aurora, aurora-mysql, aurora-postgresql, and mariadb. 
+      IAM database authentication allows authentication to database instances with an authentication token instead of a password. Network traffic to and from the database is encrypted using SSL.
+spec:
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-rds-instance-supported-engine
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_db_instance' && has(r.values.engine) && r.values.engine in ['mysql', 'postgres', 'aurora', 'aurora-mysql', 'aurora-postgresql', 'mariadb'])"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, 
+          r.type == 'aws_db_instance' && 
+          has(r.values.engine) && 
+          r.values.engine in ['mysql', 'postgres', 'aurora', 'aurora-mysql', 'aurora-postgresql', 'mariadb']
+        ).all(instance,
+          has(instance.values.iam_database_authentication_enabled) && 
+          instance.values.iam_database_authentication_enabled == true
+        )
+      message: "IAM authentication should be configured for RDS instances"
+                

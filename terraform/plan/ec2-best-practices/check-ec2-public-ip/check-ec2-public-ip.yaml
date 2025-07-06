@@ -1,0 +1,58 @@
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-ec2-public-ip
+  annotations:
+    policies.kyverno.io/title: check-ec2-public-ip
+    policies.kyverno.io/category: AWS EC2 Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that the EC2 instance is not assigned a public IP address
+spec:
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-ec2-resources
+      expression: |
+        has(object.planned_values) && 
+        has(object.planned_values.root_module) && 
+        has(object.planned_values.root_module.resources) && 
+        object.planned_values.root_module.resources.exists(r, 
+          r.type == 'aws_instance' || 
+          r.type == 'aws_launch_template' || 
+          r.type == 'aws_launch_configuration'
+        )
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, 
+          r.type == 'aws_instance' || r.type == 'aws_launch_configuration'
+        ).all(resource,
+          has(resource.values.associate_public_ip_address) &&
+          resource.values.associate_public_ip_address == false
+        )
+      message: "EC2 instance should not be created or launched with a public IP address to avoid exposing it to the internet"
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_launch_template').all(launch_template,
+          has(launch_template.values.network_interfaces) &&
+          launch_template.values.network_interfaces != null &&
+          size(launch_template.values.network_interfaces) > 0 &&
+          launch_template.values.network_interfaces.all(network_interface,
+            has(network_interface.associate_public_ip_address) &&
+            (network_interface.associate_public_ip_address == 'false' ||
+             network_interface.associate_public_ip_address == false)
+          )
+        )
+      message: "EC2 launch templates should not assign a public IP address to EC2 instances to avoid exposing them to the internet"
+

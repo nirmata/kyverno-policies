@@ -1,0 +1,11 @@
+resources:
+  - disallow-default-namespace/disallow-default-namespace.yaml
+  - disallow_latest_tag/disallow_latest_tag.yaml
+  - disallow-empty-ingress-host/disallow_empty_ingress_host.yaml
+  - require_labels/require_labels.yaml
+  - require_pod_antiaffinity/require_pod_antiaffinity.yaml
+  - require_pod_requests_limits/require_pod_requests_limits.yaml
+  - require_probes/require_probes.yaml
+  - require_ro_rootfs/require_ro_rootfs.yaml
+  - require_rolling_update_strategy/require_rolling_update_strategy.yaml
+  - restrict_node_port/restrict_node_port.yaml

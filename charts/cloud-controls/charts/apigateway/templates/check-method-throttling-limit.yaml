@@ -1,0 +1,48 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "checkMethodThrottlingLimit" }}
+{{- $name := "check-method-throttling-limit" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+    policies.kyverno.io/title: Ensure API Gateway has Throttling Limit Set in Method Settings.
+    policies.kyverno.io/category: ApiGateway Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that throttling limits, including ThrottlingBurstLimit and ThrottlingRateLimit, 
+      are properly configured in API Gateway method settings. Enforcing this practice prevents resource overuse, 
+      enhances API reliability, and ensures fair usage by controlling the request rates to backend services.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.stageName
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): ApiGateway
+        - (metadata.resource): Stage
+      context:
+      - name: burstLimit
+        variable: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "burstLimit" }}{{ index (index .Values $camelCaseName) "burstLimit" }}{{ else }}1500{{ end }}{{ else }}1500{{ end }}
+      - name: rateLimit
+        variable: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "rateLimit" }}{{ index (index .Values $camelCaseName) "rateLimit" }}{{ else }}2000{{ end }}{{ else }}2000{{ end }}
+      assert:
+        all:
+        - message: "Ensure ThrottlingBurstLimit is configured properly"
+          check:
+            payload:
+              (contains(keys(@), 'methodSettings') && (length(methodSettings[?throttlingBurstLimit > $burstLimit]) == `0`)): true
+
+        - message: "Ensure ThrottlingRateLimit is configured properly"
+          check:
+            payload:
+              (contains(keys(@), 'methodSettings') && (length(methodSettings[?throttlingRateLimit > $rateLimit]) == `0`)): true
+{{- end }}
+{{- end }}

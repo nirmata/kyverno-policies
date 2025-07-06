@@ -10,6 +10,26 @@ spec:
         file: ../restrict-seccomp-strict.yaml
     - assert:
         file: policy-assert.yaml
+    - apply:
+        file: ../remediate-restrict-seccomp-strict.yaml
+    - assert:
+        file: remediation-policy-assert.yaml
+    - apply:
+        file: ../deployment.yaml
+    - sleep:
+        duration: 20s
+    - assert:
+        resource:
+          apiVersion: wgpolicyk8s.io/v1alpha2
+          kind: PolicyReport
+          summary:
+            error: 0
+            fail: 0
+    - delete:
+        ref:
+          apiVersion: kyverno.io/v1
+          kind: ClusterPolicy
+          name: remediate-restrict-seccomp-strict
     - script:
         content: |
           sed 's/validationFailureAction: Audit/validationFailureAction: Enforce/' ../restrict-seccomp-strict.yaml | kubectl apply -f - 

@@ -1,9 +1,9 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: validate-any-principal
   annotations:
-    policies.kyverno.io/title: validate-any-principal
+    policies.kyverno.io/title: Validate Any Principal
     policies.kyverno.io/category: AWS S3 Security Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
@@ -12,25 +12,31 @@ metadata:
      to an S3 bucket, this policy validates if the Principal allowed is
      `*`, which means ANY Principal is allowed access to the resource.
 spec:
-  rules:
-    - name: validate-any-principal
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_s3_bucket_policy'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Principal should not be set to `*` in the Bucket Policy.
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_policy']):
-              values:
-                (json_parse(policy)):
-                  (Statement[?Principal=='*'] | length(@) > `0`): false
-        - message: AWS should not be set to `*` in the Principal field for Bucket Policy
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_policy']):
-              values:
-                (json_parse(policy)):
-                  ~.(Statement):
-                      Principal:
-                        (AWS=='*'): false
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-s3-bucket-policy
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket_policy')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_s3_bucket_policy').all(policy,
+          has(policy.values.policy) && 
+          policy.values.policy != null &&
+          !(policy.values.policy.contains('"Principal":"*"') || 
+            policy.values.policy.contains('"Principal": "*"') ||
+            policy.values.policy.contains('"AWS":"*"') ||
+            policy.values.policy.contains('"AWS": "*"'))
+        )
+      message: "Principal should not be set to '*' in the Bucket Policy."

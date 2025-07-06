@@ -1,0 +1,54 @@
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-ecs-service-on-latest-fargate
+  annotations:
+    policies.kyverno.io/title: Check ECS Service on Latest FARGATE
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      AWS Fargate platform versions are used to refer to a specific runtime environment for Fargate task infrastructure. 
+      It is a combination of the kernel and container runtime versions. You select a platform version when you run a task or when you create a service to maintain a number of identical tasks.
+      New revisions of platform versions are released as the runtime environment evolves, for example, if there are kernel or operating system updates, new features, bug fixes, or security updates. 
+      A Fargate platform version is updated by making a new platform version revision. Each task runs on one platform version revision during its lifecycle. 
+      If you want to use the latest platform version revision, then you must start a new task. 
+      A new task that runs on Fargate always runs on the latest revision of a platform version, this ensures that tasks are always started on secure and patched infrastructure.
+      This policy ensures the AWS ECS services are running on the latest Fargate platform version
+spec:
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-fargate-ecs-service
+      expression: |
+        has(object.planned_values) && 
+        has(object.planned_values.root_module) && 
+        has(object.planned_values.root_module.resources) && 
+        object.planned_values.root_module.resources.exists(r, 
+          r.type == 'aws_ecs_service' && 
+          has(r.values.launch_type) && 
+          r.values.launch_type == 'FARGATE'
+        )
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, 
+          r.type == 'aws_ecs_service' && 
+          has(r.values.launch_type) && 
+          r.values.launch_type == 'FARGATE'
+        ).all(service,
+          !has(service.values.platform_version) ||
+          service.values.platform_version == null ||
+          service.values.platform_version == 'LATEST'
+        )
+      message: "ECS services must run on the latest Fargate platform version"

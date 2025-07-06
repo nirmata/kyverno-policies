@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-last-user
@@ -10,18 +10,31 @@ metadata:
     policies.kyverno.io/description: >-
       This policy validates that the last USER is not root.
 spec:
-  rules:
-    - name: check-last-user
-      match:
-        all:
-        - ($analyzer.resource.type): dockerfile
-        - (Stages[].Commands[?Name=='USER'][] | length(@) > `0`): true
-      assert:
-        any:
-        - message: Default user for the container should not be root
-          check:
-            (Stages[].Commands[?Name=='USER'][]):
-                (@)->array:
-                    (subtract(length($array), `1`))->want:
-                        ~index.($array):
-                            (to_number($index) != $want || !(starts_with(User, '0:') || ends_with(User, ':0') || User == 'root' || User == '0' ) ): true
+  validationActions:
+    - Audit
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: has-dockerfile-structure
+      expression: "has(object.Stages)"
+    - name: has-user-commands
+      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.Commands) && stage.Commands.exists(cmd, cmd.Name == 'USER'))"
+  validations:
+    - expression: |
+        object.Stages.all(stage,
+          !has(stage.Commands) || 
+          stage.Commands.filter(cmd, cmd.Name == 'USER').size() == 0 ||
+          !stage.Commands.filter(cmd, cmd.Name == 'USER')[stage.Commands.filter(cmd, cmd.Name == 'USER').size() - 1].User.startsWith('0:') &&
+          !stage.Commands.filter(cmd, cmd.Name == 'USER')[stage.Commands.filter(cmd, cmd.Name == 'USER').size() - 1].User.endsWith(':0') &&
+          stage.Commands.filter(cmd, cmd.Name == 'USER')[stage.Commands.filter(cmd, cmd.Name == 'USER').size() - 1].User != 'root' &&
+          stage.Commands.filter(cmd, cmd.Name == 'USER')[stage.Commands.filter(cmd, cmd.Name == 'USER').size() - 1].User != '0'
+        )
+      message: "Default user for the container should not be root"

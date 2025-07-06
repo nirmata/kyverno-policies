@@ -1,0 +1,38 @@
+{{- if .Values.enabled }}
+{{- $camelCaseName := "checkMethodCachingEncryptionEnabled" }}
+{{- $name := "check-method-caching-encryption-enabled" }}
+{{- if not (has $name .Values.disabledPolicies) }}
+apiVersion: {{ .Values.global.apiVersion | default "nirmata.io/v1alpha1" }}
+kind: {{ .Values.global.policyKind | default "ValidatingPolicy" }}
+metadata:
+  name: {{ $name }}
+  annotations:
+    policies.kyverno.io/title: Ensure API Gateway has Caching Encryption Enabled in Method Settings.
+    policies.kyverno.io/category: ApiGateway Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that caching encryption is enabled in API Gateway method settings, 
+      safeguarding sensitive data stored in the cache. Enforcing this practice enhances the security 
+      and compliance of your API by preventing unauthorized access to cached data.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "failureAction" }}{{ index (index .Values $camelCaseName) "failureAction" }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}{{ else }}{{ .Values.failureAction | default "Audit" }}{{ end }}
+  scan: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "scanner" }}{{ index (index .Values $camelCaseName) "scanner" }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}{{ else if hasKey .Values "scanner" }}{{ .Values.scanner }}{{ else }}true{{ end }}
+  admission: {{ if hasKey .Values $camelCaseName }}{{ if hasKey (index .Values $camelCaseName) "admission" }}{{ index (index .Values $camelCaseName) "admission" }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}{{ else if hasKey .Values "admission" }}{{ .Values.admission }}{{ else }}true{{ end }}
+  rules:
+    - name: {{ $name }}
+      identifier: payload.stageName
+      match:
+        all:
+        - (metadata.provider): AWS
+        - (metadata.service): ApiGateway
+        - (metadata.resource): Stage
+      assert:
+        all:
+        - message: "Ensure API Gateway has Caching Encryption Enabled in Method Settings."
+          check:
+            payload:
+              (contains(keys(@), 'methodSettings') && !contains(methodSettings[?cachingEnabled == `true`].cacheDataEncrypted, `false`)): true
+{{- end }}
+{{- end }}
