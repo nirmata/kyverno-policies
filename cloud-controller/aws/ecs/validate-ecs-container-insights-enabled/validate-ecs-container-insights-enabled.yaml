@@ -1,0 +1,53 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-ecs-container-insights-enabled
+  annotations:
+    policies.kyverno.io/title: Validate ECS Container Insights are Enabled
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Container Insights enhances the operational visibility of ECS clusters, allowing for proactive issue resolution. 
+      Enabling this feature ensures that diagnostic information is readily available, contributing to a more efficient and reliable containerized environment.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-ecs-cluster
+      expression: >
+        object.TypeName == 'AWS::ECS::Cluster'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          (
+            (has(object.ResourceDescription.Properties.clusterSettings) &&
+             object.ResourceDescription.Properties.clusterSettings.exists(setting,
+               has(setting.name) && setting.name == 'containerInsights' &&
+               has(setting.value) && setting.value == 'enabled'
+             )) ||
+            (has(object.ResourceDescription.Properties.settings) &&
+             object.ResourceDescription.Properties.settings.exists(setting,
+               has(setting.name) && setting.name == 'containerInsights' &&
+               has(setting.value) && setting.value == 'enabled'
+             ))
+          )
+        ) :
+        (
+          (has(object.clusterSettings) &&
+           object.clusterSettings.exists(setting,
+             has(setting.name) && setting.name == 'containerInsights' &&
+             has(setting.value) && setting.value == 'enabled'
+           )) ||
+          (has(object.settings) &&
+           object.settings.exists(setting,
+             has(setting.name) && setting.name == 'containerInsights' &&
+             has(setting.value) && setting.value == 'enabled'
+           ))
+        )
+      message: "ECS container insights must be enabled"

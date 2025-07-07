@@ -1,0 +1,40 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-ecs-containers-readonly
+  annotations:
+    policies.kyverno.io/title: Validate if ECS Containers only have read-only access to its root filesystem
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      When managing containers within AWS ECS, it's crucial to enforce security measures to prevent unauthorized modifications. 
+      One significant aspect is restricting write access to the containers' root filesystem.
+      This policy checks if ECS Containers have read-only access to its root filesystem.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-ecs-taskdefinition
+      expression: >
+        object.TypeName == 'AWS::ECS::TaskDefinition'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.containerDefinitions) &&
+          object.ResourceDescription.Properties.containerDefinitions.all(container,
+            has(container.readonlyRootFilesystem) && container.readonlyRootFilesystem == true
+          )
+        ) :
+        (
+          has(object.containerDefinitions) &&
+          object.containerDefinitions.all(container,
+            has(container.readonlyRootFilesystem) && container.readonlyRootFilesystem == true
+          )
+        )
+      message: "ECS Containers should have read-only access to its root filesystem"

@@ -1,0 +1,56 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-method-throttling-limit
+  annotations:
+    policies.kyverno.io/title: Ensure API Gateway has Throttling Limit Set in Method Settings.
+    policies.kyverno.io/category: ApiGateway Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that throttling limits, including ThrottlingBurstLimit and ThrottlingRateLimit, 
+      are properly configured in API Gateway method settings. Enforcing this practice prevents resource overuse, 
+      enhances API reliability, and ensures fair usage by controlling the request rates to backend services.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-apigateway-stage
+      expression: >
+        object.TypeName == 'AWS::ApiGateway::Stage'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.methodSettings) &&
+          object.ResourceDescription.Properties.methodSettings.all(method,
+            !has(method.throttlingBurstLimit) || method.throttlingBurstLimit <= 1500
+          )
+        ) :
+        (
+          has(object.methodSettings) &&
+          object.methodSettings.all(method,
+            !has(method.throttlingBurstLimit) || method.throttlingBurstLimit <= 1500
+          )
+        )
+      message: "Ensure ThrottlingBurstLimit is configured properly"
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.methodSettings) &&
+          object.ResourceDescription.Properties.methodSettings.all(method,
+            !has(method.throttlingRateLimit) || method.throttlingRateLimit <= 2000
+          )
+        ) :
+        (
+          has(object.methodSettings) &&
+          object.methodSettings.all(method,
+            !has(method.throttlingRateLimit) || method.throttlingRateLimit <= 2000
+          )
+        )
+      message: "Ensure ThrottlingRateLimit is configured properly"

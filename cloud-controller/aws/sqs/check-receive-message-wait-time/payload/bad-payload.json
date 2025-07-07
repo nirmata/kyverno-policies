@@ -1,0 +1,17 @@
+{
+    "TypeName": "AWS::SQS::Queue",
+    "ResourceDescription": {
+      "Identifier": "https://sqs.us-west-2.amazonaws.com/844333597536/Bad-Receive-Message_Wait_Time",
+      "Properties": {
+        "SqsManagedSseEnabled": true,
+        "ReceiveMessageWaitTimeSeconds": 0,
+        "DelaySeconds": 0,
+        "MessageRetentionPeriod": 345600,
+        "MaximumMessageSize": 262144,
+        "VisibilityTimeout": 30,
+        "Arn": "arn:aws:sqs:us-west-2:844333597536:Bad-Receive-Message_Wait_Time",
+        "QueueName": "Bad-Receive-Message_Wait_Time",
+        "QueueUrl": "https://sqs.us-west-2.amazonaws.com/844333597536/Bad-Receive-Message_Wait_Time"
+      }
+    }
+}

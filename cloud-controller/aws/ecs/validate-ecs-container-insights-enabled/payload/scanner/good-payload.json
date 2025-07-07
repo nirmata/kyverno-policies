@@ -1,0 +1,19 @@
+{
+    "TypeName": "AWS::ECS::Cluster",
+    "ResourceDescription": {
+      "Identifier": "test-cluster-insights",
+      "Properties": {
+        "ClusterSettings": [
+          {
+            "Value": "enabled",
+            "Name": "containerInsights"
+          }
+        ],
+        "DefaultCapacityProviderStrategy": [],
+        "CapacityProviders": [],
+        "ClusterName": "test-cluster-insights",
+        "Arn": "arn:aws:ecs:us-west-2:xxxx:cluster/test-cluster-insights",
+        "Tags": []
+      }
+    }
+  }

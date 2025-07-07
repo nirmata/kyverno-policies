@@ -1,0 +1,24 @@
+{
+  "_comment": "For detailed schema for payload checkout Eks CreateCluster request body at https://docs.aws.amazon.com/eks/latest/APIReference/API_CreateCluster.html#API_CreateCluster_RequestSyntax",
+  "name": "good-secrets-encryption",
+  "roleArn": "arn:aws:iam::xxxx:role/nodegroup-test",
+  "resourcesVpcConfig": {
+    "subnetIds": [
+      "subnet-1",
+      "subnet-"
+    ],
+    "endpointPublicAccess": false,
+    "endpointPrivateAccess": true
+  },
+  "encryptionConfig": [
+    {
+      "resources": [
+        "secrets"
+      ],
+      "provider": {
+        "keyArn": "arn:aws:kms:us-west-2:xxxx:key/xxxx"
+      }
+    }
+  ],
+  "clientRequestToken": "xxxx-xxxx-xxxx-xxxx"
+}

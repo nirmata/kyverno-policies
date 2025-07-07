@@ -1,0 +1,60 @@
+{
+  "TypeName": "AWS::ECS::TaskDefinition",
+  "ResourceDescription": {
+    "Identifier": "arn:aws:ecs:us-west-2:xxxx:task-definition/bad-efs-volume-test:1",
+    "Properties": {
+      "ExecutionRoleArn": "arn:aws:iam::xxxx:role/ecsTaskExecutionRole",
+      "Volumes": [
+        {
+          "EFSVolumeConfiguration": {
+            "FilesystemId": "fs-xxxx",
+            "TransitEncryption": "DISABLED",
+            "RootDirectory": "/"
+          },
+          "Name": "efs-volume"
+        }
+      ],
+      "InferenceAccelerators": [],
+      "PlacementConstraints": [],
+      "ContainerDefinitions": [
+        {
+          "ExtraHosts": [],
+          "Secrets": [],
+          "Memory": 512,
+          "VolumesFrom": [],
+          "Cpu": 256,
+          "EntryPoint": [],
+          "DnsServers": [],
+          "Image": "nginx",
+          "Essential": true,
+          "ResourceRequirements": [],
+          "EnvironmentFiles": [],
+          "Name": "nginx-container",
+          "MountPoints": [
+            {
+              "SourceVolume": "efs-volume",
+              "ContainerPath": "/mnt"
+            }
+          ],
+          "DependsOn": [],
+          "DockerLabels": {},
+          "PortMappings": [],
+          "DockerSecurityOptions": [],
+          "SystemControls": [],
+          "Command": [],
+          "DnsSearchDomains": [],
+          "Environment": [],
+          "Links": [],
+          "CredentialSpecs": [],
+          "Ulimits": []
+        }
+      ],
+      "Family": "bad-efs-volume-test",
+      "RequiresCompatibilities": [],
+      "NetworkMode": "awsvpc",
+      "Tags": [],
+      "TaskDefinitionArn": "arn:aws:ecs:us-west-2:xxxx:task-definition/bad-efs-volume-test:1",
+      "EnableFaultInjection": false
+    }
+  }
+}

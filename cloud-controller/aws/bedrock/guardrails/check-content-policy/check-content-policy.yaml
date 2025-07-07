@@ -1,0 +1,26 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-content-policy
+  labels:
+    app: kyverno
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-bedrock-guardrail
+      expression: >
+        object.TypeName == 'AWS::Bedrock::Guardrail'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.contentPolicyConfig)
+        ) :
+        (
+          has(object.contentPolicyConfig)
+        )
+      message: "Content filters should be enabled for a Guardrail"

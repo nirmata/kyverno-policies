@@ -1,0 +1,44 @@
+{
+  "TypeName": "AWS::ECS::TaskDefinition",
+  "ResourceDescription": {
+    "Identifier": "arn:aws:ecs:us-west-2:xxxx:task-definition/test-task-memory-set:3",
+    "Properties": {
+      "Volumes": [],
+      "InferenceAccelerators": [],
+      "PlacementConstraints": [],
+      "ContainerDefinitions": [
+        {
+          "ExtraHosts": [],
+          "Secrets": [],
+          "Memory": 512,
+          "VolumesFrom": [],
+          "Cpu": 128,
+          "EntryPoint": [],
+          "DnsServers": [],
+          "Image": "nginx:latest",
+          "Essential": true,
+          "ResourceRequirements": [],
+          "EnvironmentFiles": [],
+          "Name": "nginx",
+          "MountPoints": [],
+          "DependsOn": [],
+          "DockerLabels": {},
+          "PortMappings": [],
+          "DockerSecurityOptions": [],
+          "SystemControls": [],
+          "Command": [],
+          "DnsSearchDomains": [],
+          "Environment": [],
+          "Links": [],
+          "CredentialSpecs": [],
+          "Ulimits": []
+        }
+      ],
+      "Family": "test-task-memory-set",
+      "RequiresCompatibilities": [],
+      "Tags": [],
+      "TaskDefinitionArn": "arn:aws:ecs:us-west-2:xxxx:task-definition/test-task-memory-set:3",
+      "EnableFaultInjection": false
+    }
+  }
+}

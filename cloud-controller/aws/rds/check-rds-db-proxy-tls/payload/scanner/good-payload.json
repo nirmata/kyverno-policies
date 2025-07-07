@@ -1,0 +1,33 @@
+{
+    "TypeName": "AWS::RDS::DBProxy",
+    "ResourceDescription": {
+      "Identifier": "good-db-proxy-01",
+      "Properties": {
+        "RequireTLS": true,
+        "Endpoint": "good-db-proxy-01.proxy-xxxx.us-west-2.rds.amazonaws.com",
+        "VpcId": "vpc-1",
+        "DBProxyArn": "arn:aws:rds:us-west-2:xxxx:db-proxy:prx-xxxx",
+        "DBProxyName": "good-db-proxy-01",
+        "IdleClientTimeout": 1800,
+        "VpcSecurityGroupIds": [
+          "sg-1"
+        ],
+        "Auth": [
+          {
+            "SecretArn": "arn:aws:secretsmanager:ap-south-1:xxxx:secret:demo/secret/rds-peBhuC",
+            "IAMAuth": "DISABLED",
+            "ClientPasswordAuthType": "POSTGRES_SCRAM_SHA_256",
+            "AuthScheme": "SECRETS"
+          }
+        ],
+        "DebugLogging": false,
+        "VpcSubnetIds": [
+          "subnet-1",
+          "subnet-2"
+        ],
+        "EngineFamily": "POSTGRESQL",
+        "RoleArn": "arn:aws:iam::xxxx:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS"
+      }
+    }
+  }
+  

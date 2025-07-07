@@ -1,0 +1,50 @@
+# This Policy isn't tested yet due to Nodegroup not being supported yet by Cloud Controller.
+
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-nodegroup-remote-access
+  annotations:
+    policies.kyverno.io/title: Ensure AWS EKS node group does not have implicit SSH access from 0.0.0.0/0
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Restricting SSH access prevents unauthorized users from gaining direct access to the underlying nodes of the Kubernetes cluster. 
+      By limiting access to specific trusted networks or entities, organizations can reduce the 
+      risk of potential security breaches and unauthorized modifications to the cluster infrastructure. 
+      If `ec2SshKey` is specified and `sourceSecurityGroups` is not specified for the EKS Node Group, 
+      either port 3389 for Windows or port 22 for other operating systems will be opened on the worker nodes to the Internet which can lead to unauthorized access 
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-eks-nodegroup
+      expression: >
+        object.TypeName == 'AWS::EKS::Nodegroup'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.remoteAccess) &&
+          !(
+            has(object.ResourceDescription.Properties.remoteAccess.ec2SshKey) &&
+            object.ResourceDescription.Properties.remoteAccess.ec2SshKey != '' &&
+            (!has(object.ResourceDescription.Properties.remoteAccess.sourceSecurityGroups) ||
+             size(object.ResourceDescription.Properties.remoteAccess.sourceSecurityGroups) == 0)
+          )
+        ) :
+        (
+          has(object.remoteAccess) &&
+          !(
+            has(object.remoteAccess.ec2SshKey) &&
+            object.remoteAccess.ec2SshKey != '' &&
+            (!has(object.remoteAccess.sourceSecurityGroups) ||
+             size(object.remoteAccess.sourceSecurityGroups) == 0)
+          )
+        )
+      message: "AWS EKS node group should not have implicit SSH access from 0.0.0.0/0"

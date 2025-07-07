@@ -1,0 +1,36 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-eks-department-tag
+  annotations:
+    policies.kyverno.io/title: Check EKS Department Tag
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Ensuring proper tagging of EKS clusters helps with resource organization, cost allocation, and governance. 
+      The department tag allows organizations to track cluster ownership and usage across different business units. 
+      This policy ensures that all EKS clusters have the required department tag for proper resource management and accountability.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-eks-cluster
+      expression: >
+        object.TypeName == 'AWS::EKS::Cluster'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.tags) &&
+          object.ResourceDescription.Properties.tags.exists(tag, has(tag.key) && tag.key == 'department')
+        ) :
+        (
+          has(object.tags) &&
+          object.tags.exists(tag, has(tag.key) && tag.key == 'department')
+        )
+      message: "EKS cluster must have a 'department' tag."

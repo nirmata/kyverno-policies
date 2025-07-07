@@ -1,0 +1,51 @@
+{
+  "TypeName": "AWS::ECS::TaskDefinition",
+  "ResourceDescription": {
+    "Identifier": "arn:aws:ecs:us-west-2:xxxx:task-definition/test-good-task:1",
+    "Properties": {
+      "Volumes": [],
+      "InferenceAccelerators": [],
+      "PlacementConstraints": [],
+      "ContainerDefinitions": [
+        {
+          "ExtraHosts": [],
+          "Secrets": [],
+          "Memory": 128,
+          "VolumesFrom": [],
+          "Cpu": 128,
+          "EntryPoint": [],
+          "DnsServers": [],
+          "Image": "nginx:latest",
+          "Essential": true,
+          "ResourceRequirements": [],
+          "EnvironmentFiles": [],
+          "Name": "nginx",
+          "MountPoints": [],
+          "DependsOn": [],
+          "DockerLabels": {},
+          "PortMappings": [
+            {
+              "HostPort": 80,
+              "ContainerPort": 80,
+              "Protocol": "tcp"
+            }
+          ],
+          "DockerSecurityOptions": [],
+          "SystemControls": [],
+          "Command": [],
+          "DnsSearchDomains": [],
+          "Environment": [],
+          "Links": [],
+          "CredentialSpecs": [],
+          "Ulimits": []
+        }
+      ],
+      "Family": "test-good-task",
+      "RequiresCompatibilities": [],
+      "NetworkMode": "awsvpc",
+      "Tags": [],
+      "TaskDefinitionArn": "arn:aws:ecs:us-west-2:xxxx:task-definition/test-good-task:1",
+      "EnableFaultInjection": false
+    }
+  }
+}

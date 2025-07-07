@@ -1,0 +1,38 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-rds-instance-copy-tags-to-snapshots-enabled
+  annotations:
+    policies.kyverno.io/title: Check RDS Instance Copy Tags To Snapshots Enabled
+    policies.kyverno.io/category: AWS RDS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks whether RDS DB instances are configured to copy all tags to snapshots when the snapshots are created.
+      Identification and inventory of your IT assets is a crucial aspect of governance and security. 
+      You need to have visibility of all your RDS DB instances so that you can assess their security posture and take action on 
+      potential areas of weakness. Snapshots should be tagged in the same way as their parent RDS database instances. 
+      Enabling this setting ensures that snapshots inherit the tags of their parent database instances.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-rds-dbinstance
+      expression: >
+        object.TypeName == 'AWS::RDS::DBInstance'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.copyTagsToSnapshot) &&
+          object.ResourceDescription.Properties.copyTagsToSnapshot == true
+        ) :
+        (
+          has(object.copyTagsToSnapshot) &&
+          object.copyTagsToSnapshot == true
+        )
+      message: "RDS DB instances should be configured to copy tags to snapshots"

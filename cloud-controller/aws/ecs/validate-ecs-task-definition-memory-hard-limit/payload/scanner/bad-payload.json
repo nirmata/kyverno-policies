@@ -1,0 +1,44 @@
+{
+  "TypeName": "AWS::ECS::TaskDefinition",
+  "ResourceDescription": {
+    "Identifier": "arn:aws:ecs:us-west-2:xxxx:task-definition/test-task-memory-missing:1",
+    "Properties": {
+      "Volumes": [],
+      "InferenceAccelerators": [],
+      "PlacementConstraints": [],
+      "ContainerDefinitions": [
+        {
+          "MemoryReservation": 1,
+          "ExtraHosts": [],
+          "Secrets": [],
+          "VolumesFrom": [],
+          "Cpu": 128,
+          "EntryPoint": [],
+          "DnsServers": [],
+          "Image": "nginx:latest",
+          "Essential": true,
+          "ResourceRequirements": [],
+          "EnvironmentFiles": [],
+          "Name": "nginx",
+          "MountPoints": [],
+          "DependsOn": [],
+          "DockerLabels": {},
+          "PortMappings": [],
+          "DockerSecurityOptions": [],
+          "SystemControls": [],
+          "Command": [],
+          "DnsSearchDomains": [],
+          "Environment": [],
+          "Links": [],
+          "CredentialSpecs": [],
+          "Ulimits": []
+        }
+      ],
+      "Family": "test-task-memory-missing",
+      "RequiresCompatibilities": [],
+      "Tags": [],
+      "TaskDefinitionArn": "arn:aws:ecs:us-west-2:xxxx:task-definition/test-task-memory-missing:1",
+      "EnableFaultInjection": false
+    }
+  }
+}

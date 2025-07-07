@@ -1,0 +1,43 @@
+{
+    "TypeName": "AWS::IAM::User",
+    "ResourceDescription": {
+      "Identifier": "dolis",
+      "Properties": {
+        "Path": "/",
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/IAMFullAccess",
+          "arn:aws:iam::aws:policy/AWSSupportAccess",
+          "arn:aws:iam::aws:policy/IAMUserChangePassword",
+          "arn:aws:iam::aws:policy/AWSOrganizationsFullAccess",
+          "arn:aws:iam::aws:policy/AmazonOpenSearchServiceFullAccess",
+          "arn:aws:iam::xxxx:policy/EKSListClustersAccess",
+          "arn:aws:iam::aws:policy/AdministratorAccess",
+          "arn:aws:iam::xxxx:policy/assume-policy"
+        ],
+        "Policies": [
+          {
+            "PolicyName": "iam_full_access",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": [
+                    "iam:*",
+                    "organizations:*"
+                  ],
+                  "Resource": "*",
+                  "Effect": "Allow"
+                }
+              ]
+            }
+          }
+        ],
+        "UserName": "dolis",
+        "Arn": "arn:aws:iam::xxxx:user/dolis",
+        "LoginProfile": {
+          "PasswordResetRequired": false
+        }
+      }
+    }
+  }
+  

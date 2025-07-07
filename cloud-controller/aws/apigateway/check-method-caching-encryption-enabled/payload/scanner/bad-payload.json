@@ -1,0 +1,27 @@
+{
+    "TypeName": "AWS::ApiGateway::Stage",
+    "ResourceDescription": {
+      "Identifier": "9kqw3l2t74|method-cacheEncryption-disabled",
+      "Properties": {
+        "DeploymentId": "jt027r",
+        "StageName": "method-cacheEncryption-disabled",
+        "TracingEnabled": false,
+        "RestApiId": "9kqw3l2t74",
+        "MethodSettings": [
+          {
+            "CacheTtlInSeconds": 300,
+            "ResourcePath": "/*",
+            "CacheDataEncrypted": false,
+            "DataTraceEnabled": false,
+            "ThrottlingBurstLimit": 5000,
+            "CachingEnabled": true,
+            "MetricsEnabled": false,
+            "HttpMethod": "*",
+            "ThrottlingRateLimit": 10000
+          }
+        ],
+        "CacheClusterSize": "0.5",
+        "CacheClusterEnabled": true
+      }
+    }
+  }

@@ -1,0 +1,7 @@
+{
+    "FunctionArn": "arn:aws:lambda:us-west-2:xxxx:function:test",
+    "FunctionUrl": "https://xxxx.lambda-url.us-west-2.on.aws/",
+    "InvokeMode": "BUFFERED",
+    "AuthType": "AWS_IAM"
+  }
+  

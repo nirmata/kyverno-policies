@@ -1,0 +1,34 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-deprecated-runtime
+  annotations:
+    policies.kyverno.io/title: check-deprecated-runtime
+    policies.kyverno.io/category: AWS Lambda Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that Lambda runtime is not deprecated
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-lambda-function
+      expression: >
+        object.TypeName == 'AWS::Lambda::Function'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.runtime) &&
+          !(object.ResourceDescription.Properties.runtime in ['python3.8', 'nodejs16.x', 'dotnet7'])
+        ) :
+        (
+          has(object.runtime) &&
+          !(object.runtime in ['python3.8', 'nodejs16.x', 'dotnet7'])
+        )
+      message: "The runtime is deprecated for AWS lambda function, use another version."

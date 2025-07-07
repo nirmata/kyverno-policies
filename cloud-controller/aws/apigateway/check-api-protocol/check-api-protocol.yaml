@@ -1,0 +1,37 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-api-protocol
+  annotations:
+    policies.kyverno.io/title: Ensure API has Correct ProtocolType
+    policies.kyverno.io/category: ApiGateway Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      APIs can use either the HTTP or WebSocket protocol. HTTP is generally more cost-effective as 
+      it is stateless and suitable for typical client-server interactions. WebSocket, while ideal for real-time, 
+      low-latency communication, requires persistent connections, which can increase costs. For cost-effectiveness, 
+      choose HTTP unless real-time communication is critical to your application.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-apigatewayv2-api
+      expression: >
+        object.TypeName == 'AWS::ApiGatewayV2::Api'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.protocolType) &&
+          object.ResourceDescription.Properties.protocolType == 'HTTP'
+        ) :
+        (
+          has(object.protocolType) &&
+          object.protocolType == 'HTTP'
+        )
+      message: "Ensure API has Correct ProtocolType."

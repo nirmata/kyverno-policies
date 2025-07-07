@@ -1,0 +1,54 @@
+{
+    "TypeName": "AWS::RDS::DBCluster",
+    "ResourceDescription": {
+      "Identifier": "encrypted-storage-cluster",
+      "Properties": {
+        "DatabaseInsightsMode": "standard",
+        "StorageEncrypted": true,
+        "AssociatedRoles": [],
+        "EnableHttpEndpoint": false,
+        "EngineMode": "provisioned",
+        "Port": 3306,
+        "DBClusterIdentifier": "encrypted-storage-cluster",
+        "PreferredBackupWindow": "12:09-12:39",
+        "Endpoint": {
+          "Address": "encrypted-storage-cluster.cluster-xxxx.us-west-2.rds.amazonaws.com",
+          "Port": "3306"
+        },
+        "NetworkType": "IPV4",
+        "VpcSecurityGroupIds": [
+          "sg-1"
+        ],
+        "CopyTagsToSnapshot": false,
+        "Engine": "aurora-mysql",
+        "Tags": [],
+        "EngineLifecycleSupport": "open-source-rds-extended-support",
+        "EngineVersion": "8.0.mysql_aurora.3.05.2",
+        "StorageType": "aurora",
+        "KmsKeyId": "arn:aws:kms:us-west-2:xxxx:key/22d530b2-d837",
+        "AvailabilityZones": [
+          "us-west-2c",
+          "us-west-2a",
+          "us-west-2b"
+        ],
+        "DBClusterArn": "arn:aws:rds:us-west-2:xxxx:cluster:encrypted-storage-cluster",
+        "EnableLocalWriteForwarding": false,
+        "PreferredMaintenanceWindow": "tue:06:31-tue:07:01",
+        "DBClusterResourceId": "cluster-I6SEPJDXUGWYEQ6NEB24XSJS6Q",
+        "AutoMinorVersionUpgrade": true,
+        "DBSubnetGroupName": "default",
+        "DeletionProtection": false,
+        "AllocatedStorage": 1,
+        "ManageMasterUserPassword": false,
+        "MasterUserSecret": {},
+        "MasterUsername": "admin",
+        "ReadEndpoint": {
+          "Address": "encrypted-storage-cluster.cluster-ro-cwrctbeivthx.us-west-2.rds.amazonaws.com"
+        },
+        "EnableIAMDatabaseAuthentication": false,
+        "DBClusterParameterGroupName": "default.aurora-mysql8.0",
+        "BackupRetentionPeriod": 1,
+        "EnableCloudwatchLogsExports": []
+      }
+    }
+  }

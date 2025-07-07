@@ -1,0 +1,34 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-adminaccess-policy-on-iam-resources
+  annotations:
+    policies.kyverno.io/title: Disallow Admin Access Policy on IAM Resources
+    policies.kyverno.io/category: AWS IAM Best Practices
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Disallow Admin Access Policy on IAM Resources.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-iam-role
+      expression: >
+        object.TypeName == 'AWS::IAM::Role'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          (!has(object.ResourceDescription.Properties.managedPolicyArns) ||
+           !object.ResourceDescription.Properties.managedPolicyArns.exists(arn, arn == 'arn:aws:iam::aws:policy/AdministratorAccess'))
+        ) :
+        (
+          !has(object.managedPolicyArns) ||
+          !object.managedPolicyArns.exists(arn, arn == 'arn:aws:iam::aws:policy/AdministratorAccess')
+        )
+      message: 'IAM role should not have AdministratorAccess policy attached'

@@ -1,0 +1,21 @@
+{
+    "TypeName": "AWS::IAM::User",
+    "ResourceDescription": {
+      "Identifier": "anusha-test",
+      "Properties": {
+        "Path": "/",
+        "ManagedPolicyArns": [
+          "arn:aws:iam::xxxx:policy/guardrail-test",
+          "arn:aws:iam::xxxx:policy/EKSListClustersAccess"
+        ],
+        "UserName": "anusha-test",
+        "Arn": "arn:aws:iam::xxxx:user/anusha-test",
+        "Tags": [
+          {
+            "Value": "anusha-test-cli",
+            "Key": "AKIA4JFRUINQETXCZQMG"
+          }
+        ]
+      }
+    }
+  }

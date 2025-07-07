@@ -1,0 +1,56 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-control-plane-logging
+  annotations:
+    policies.kyverno.io/title: Check Control Plane Logging
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Enabling Amazon EKS control plane logging for all log types is a best practice 
+      for enhancing the security, monitoring, troubleshooting, performance optimization, and operational management of your Kubernetes clusters. 
+      By capturing comprehensive logs of control plane activities, you can effectively manage and secure your 
+      EKS infrastructure while ensuring compliance with regulatory requirements and industry standards.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-eks-cluster
+      expression: >
+        object.TypeName == 'AWS::EKS::Cluster'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.logging) &&
+          has(object.ResourceDescription.Properties.logging.clusterLogging) &&
+          object.ResourceDescription.Properties.logging.clusterLogging.exists(logging,
+            has(logging.enabled) && logging.enabled == true &&
+            has(logging.types) && 
+            logging.types.exists(type, type == 'api') &&
+            logging.types.exists(type, type == 'audit') &&
+            logging.types.exists(type, type == 'authenticator') &&
+            logging.types.exists(type, type == 'controllerManager') &&
+            logging.types.exists(type, type == 'scheduler')
+          )
+        ) :
+        (
+          has(object.logging) &&
+          has(object.logging.clusterLogging) &&
+          object.logging.clusterLogging.exists(logging,
+            has(logging.enabled) && logging.enabled == true &&
+            has(logging.types) && 
+            logging.types.exists(type, type == 'api') &&
+            logging.types.exists(type, type == 'audit') &&
+            logging.types.exists(type, type == 'authenticator') &&
+            logging.types.exists(type, type == 'controllerManager') &&
+            logging.types.exists(type, type == 'scheduler')
+          )
+        )
+      message: "EKS control plane logging must be enabled for all log types"
+                    

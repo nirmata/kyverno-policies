@@ -1,0 +1,35 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-function-concurrency
+  annotations:
+    policies.kyverno.io/title: check-function-concurrency
+    policies.kyverno.io/category: AWS Lambda Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks whether concurrency level config is set for the Lambda function.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-lambda-function
+      expression: >
+        object.TypeName == 'AWS::Lambda::Function'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.reservedConcurrentExecutions) &&
+          object.ResourceDescription.Properties.reservedConcurrentExecutions > 0
+        ) :
+        (
+          has(object.reservedConcurrentExecutions) &&
+          object.reservedConcurrentExecutions > 0
+        )
+      message: "Configure the AWS Lambda function for function-level concurrent execution limit using reserved_concurrent_execution attribute."
+

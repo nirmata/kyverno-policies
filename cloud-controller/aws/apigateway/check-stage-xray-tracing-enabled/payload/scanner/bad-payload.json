@@ -1,0 +1,28 @@
+{
+    "TypeName": "AWS::ApiGateway::Stage",
+    "ResourceDescription": {
+      "Identifier": "mqii623s87|xray-tracing-disabled",
+      "Properties": {
+        "DeploymentId": "lfe8tg",
+        "StageName": "xray-tracing-disabled",
+        "TracingEnabled": false,
+        "RestApiId": "mqii623s87",
+        "MethodSettings": [
+          {
+            "CacheTtlInSeconds": 300,
+            "LoggingLevel": "OFF",
+            "ResourcePath": "/*",
+            "CacheDataEncrypted": false,
+            "DataTraceEnabled": false,
+            "ThrottlingBurstLimit": 5000,
+            "CachingEnabled": false,
+            "MetricsEnabled": false,
+            "HttpMethod": "*",
+            "ThrottlingRateLimit": 10000
+          }
+        ],
+        "CacheClusterEnabled": false
+      }
+    }
+  }
+  

@@ -1,0 +1,27 @@
+{
+    "TypeName": "AWS::ApiGateway::Stage",
+    "ResourceDescription": {
+      "Identifier": "9kqw3l2t74|method-data-tracing-enabled",
+      "Properties": {
+        "DeploymentId": "jt027r",
+        "StageName": "method-data-tracing-enabled",
+        "TracingEnabled": false,
+        "RestApiId": "9kqw3l2t74",
+        "MethodSettings": [
+          {
+            "CacheTtlInSeconds": 300,
+            "LoggingLevel": "ERROR",
+            "ResourcePath": "/*",
+            "CacheDataEncrypted": false,
+            "DataTraceEnabled": true,
+            "ThrottlingBurstLimit": 5000,
+            "CachingEnabled": false,
+            "MetricsEnabled": false,
+            "HttpMethod": "*",
+            "ThrottlingRateLimit": 10000
+          }
+        ],
+        "CacheClusterEnabled": false
+      }
+    }
+  }
