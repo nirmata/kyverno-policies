@@ -1,0 +1,46 @@
+{
+    "TypeName": "AWS::IAM::Role",
+    "ResourceDescription": {
+      "Identifier": "aa-technologia",
+      "Properties": {
+        "Path": "/",
+        "ManagedPolicyArns": [
+          "arn:aws:iam::xxxx:policy/technologia"
+        ],
+        "MaxSessionDuration": 3600,
+        "RoleName": "aa-technologia",
+        "Description": "Allows Lambda functions to call AWS services on your behalf.",
+        "Policies": [
+          {
+            "PolicyName": "technologia-1",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": "*",
+                  "Resource": "*",
+                  "Effect": "Allow",
+                  "Sid": "Statement1"
+                }
+              ]
+            }
+          }
+        ],
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "Arn": "arn:aws:iam::xxxx:role/aa-technologia",
+        "RoleId": "AROA4JFRUINQLY5QMTJDQ"
+      }
+    }
+  }
+  

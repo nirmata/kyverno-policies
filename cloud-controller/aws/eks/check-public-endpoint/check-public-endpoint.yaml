@@ -1,0 +1,38 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-public-endpoint
+  annotations:
+    policies.kyverno.io/title: Check Public Endpoint
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Disabling the public endpoint minimizes the risk of unauthorized access and potential security breaches by reducing the attack surface of the EKS control plane. 
+      It protects against external threats and enforces network segmentation, restricting access to only trusted entities within the network environment. 
+      This measure helps organizations meet compliance requirements, maintains operational security, and safeguards the reliability and performance of Kubernetes clusters.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-eks-cluster
+      expression: >
+        object.TypeName == 'AWS::EKS::Cluster'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.resourcesVpcConfig) &&
+          has(object.ResourceDescription.Properties.resourcesVpcConfig.endpointPublicAccess) &&
+          object.ResourceDescription.Properties.resourcesVpcConfig.endpointPublicAccess == false
+        ) :
+        (
+          has(object.resourcesVpcConfig) &&
+          has(object.resourcesVpcConfig.endpointPublicAccess) &&
+          object.resourcesVpcConfig.endpointPublicAccess == false
+        )
+      message: "Public access to EKS cluster endpoint must be explicitly set to false"

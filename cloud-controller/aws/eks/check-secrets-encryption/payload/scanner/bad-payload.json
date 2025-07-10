@@ -1,0 +1,58 @@
+{
+    "TypeName": "AWS::EKS::Cluster",
+    "ResourceDescription": {
+      "Identifier": "bad-cluster",
+      "Properties": {
+        "Logging": {
+          "ClusterLogging": {
+            "EnabledTypes": []
+          }
+        },
+        "ComputeConfig": {
+          "NodePools": [
+            "general-purpose",
+            "system"
+          ],
+          "NodeRoleArn": "arn:aws:iam::account_number:role/AmazonEKSAutoNodeRole",
+          "Enabled": true
+        },
+        "StorageConfig": {
+          "BlockStorage": {
+            "Enabled": true
+          }
+        },
+        "EncryptionConfigKeyArn": "arn:aws:kms:us-west-2:account_number:key/xxxx",
+        "ZonalShiftConfig": {
+          "Enabled": false
+        },
+        "AccessConfig": {
+          "AuthenticationMode": "API"
+        },
+        "EncryptionConfig": [],
+        "KubernetesNetworkConfig": {
+          "ServiceIpv4Cidr": "172.20.0.0/16",
+          "IpFamily": "ipv4",
+          "ElasticLoadBalancing": {
+            "Enabled": true
+          }
+        },
+        "RoleArn": "arn:aws:iam::account_number:role/AmazonEKSAutoClusterRole",
+        "Name": "bad-cluster",
+        "UpgradePolicy": {
+          "SupportType": "STANDARD"
+        },
+        "Version": "1.31",
+        "Arn": "arn:aws:eks:us-west-2:account_number:cluster/bad-cluster",
+        "ResourcesVpcConfig": {
+          "EndpointPublicAccess": false,
+          "PublicAccessCidrs": [],
+          "EndpointPrivateAccess": true,
+          "SecurityGroupIds": [],
+          "SubnetIds": [
+            "subnet-id1",
+            "subnet-id2"
+          ]
+        }
+      }
+    }
+  }

@@ -1,0 +1,138 @@
+{
+    "metadata": {
+      "identifier": "arn:aws:bedrock:us-west-2:844333597536:guardrail/i2k525ig55xy",
+      "provider": "AWS",
+      "region": "us-west-2",
+      "resource": "Guardrail",
+      "service": "Bedrock"
+    },
+    "payload": {
+      "blockedInputMessaging": "Sorry, the model cannot answer this question.",
+      "blockedOutputsMessaging": "Sorry, the model cannot answer this question.",
+      "contentPolicyConfig": {
+        "contentFiltersTierConfig": {
+          "tierName": "CLASSIC"
+        },
+        "filtersConfig": [
+          {
+            "inputAction": "BLOCK",
+            "inputModalities": ["TEXT"],
+            "inputStrength": "HIGH",
+            "outputAction": "BLOCK",
+            "outputModalities": ["TEXT"],
+            "outputStrength": "HIGH",
+            "type": "VIOLENCE"
+          },
+          {
+            "inputAction": "BLOCK",
+            "inputStrength": "NONE",
+            "outputStrength": "NONE",
+            "type": "PROMPT_ATTACK"
+          },
+          {
+            "inputAction": "BLOCK",
+            "inputModalities": ["TEXT"],
+            "inputStrength": "HIGH",
+            "outputAction": "BLOCK",
+            "outputModalities": ["TEXT"],
+            "outputStrength": "HIGH",
+            "type": "MISCONDUCT"
+          },
+          {
+            "inputAction": "BLOCK",
+            "inputModalities": ["TEXT"],
+            "inputStrength": "HIGH",
+            "outputAction": "BLOCK",
+            "outputModalities": ["TEXT"],
+            "outputStrength": "HIGH",
+            "type": "HATE"
+          },
+          {
+            "inputAction": "BLOCK",
+            "inputModalities": ["TEXT"],
+            "inputStrength": "HIGH",
+            "outputAction": "BLOCK",
+            "outputModalities": ["TEXT"],
+            "outputStrength": "HIGH",
+            "type": "SEXUAL"
+          },
+          {
+            "inputAction": "BLOCK",
+            "inputModalities": ["TEXT"],
+            "inputStrength": "HIGH",
+            "outputAction": "BLOCK",
+            "outputModalities": ["TEXT"],
+            "outputStrength": "HIGH",
+            "type": "INSULTS"
+          }
+        ]
+      },
+      "contextualGroundingPolicyConfig": {
+        "filtersConfig": [
+          {
+            "action": "BLOCK",
+            "enabled": true,
+            "threshold": 0.7,
+            "type": "GROUNDING"
+          },
+          {
+            "action": "BLOCK",
+            "enabled": true,
+            "threshold": 0.7,
+            "type": "RELEVANCE"
+          }
+        ]
+      },
+      "createdAt": "2025-07-04T20:51:29.431222505Z",
+      "failureRecommendations": [],
+      "guardrailArn": "arn:aws:bedrock:us-west-2:844333597536:guardrail/i2k525ig55xy",
+      "guardrailId": "i2k525ig55xy",
+      "name": "Good-content-policy",
+      "sensitiveInformationPolicyConfig": {
+        "piiEntitiesConfig": [
+          {
+            "action": "BLOCK",
+            "inputAction": "BLOCK",
+            "inputEnabled": true,
+            "outputAction": "BLOCK",
+            "outputEnabled": true,
+            "type": "NAME"
+          }
+        ],
+        "regexesConfig": [
+          {
+            "action": "BLOCK",
+            "inputAction": "BLOCK",
+            "inputEnabled": true,
+            "name": "regex1",
+            "outputAction": "BLOCK",
+            "outputEnabled": true,
+            "pattern": "abcd"
+          }
+        ]
+      },
+      "status": "READY",
+      "statusReasons": [],
+      "tags": [],
+      "topicPolicyConfig": {
+        "topicsConfig": [
+          {
+            "definition": "adsfasd",
+            "examples": [],
+            "inputAction": "BLOCK",
+            "inputEnabled": true,
+            "name": "topic policy",
+            "outputAction": "BLOCK",
+            "outputEnabled": true,
+            "type": "DENY"
+          }
+        ],
+        "topicsTierConfig": {
+          "tierName": "CLASSIC"
+        }
+      },
+      "updatedAt": "2025-07-04T20:51:29.523492655Z",
+      "version": "DRAFT"
+    }
+  }
+  

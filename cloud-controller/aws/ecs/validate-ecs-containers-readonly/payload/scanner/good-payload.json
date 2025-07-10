@@ -1,0 +1,45 @@
+{
+  "TypeName": "AWS::ECS::TaskDefinition",
+  "ResourceDescription": {
+    "Identifier": "arn:aws:ecs:us-west-2:xxxx:task-definition/test-task-readonly-enabled:2",
+    "Properties": {
+      "Volumes": [],
+      "InferenceAccelerators": [],
+      "PlacementConstraints": [],
+      "ContainerDefinitions": [
+        {
+          "Secrets": [],
+          "Memory": 128,
+          "VolumesFrom": [],
+          "Cpu": 128,
+          "EntryPoint": [],
+          "DnsServers": [],
+          "ReadonlyRootFilesystem": true,
+          "Image": "nginx:latest",
+          "Essential": true,
+          "ResourceRequirements": [],
+          "EnvironmentFiles": [],
+          "Name": "nginx",
+          "DockerSecurityOptions": [],
+          "SystemControls": [],
+          "DnsSearchDomains": [],
+          "CredentialSpecs": [],
+          "Ulimits": [],
+          "ExtraHosts": [],
+          "MountPoints": [],
+          "DependsOn": [],
+          "DockerLabels": {},
+          "PortMappings": [],
+          "Command": [],
+          "Environment": [],
+          "Links": []
+        }
+      ],
+      "Family": "test-task-readonly-enabled",
+      "RequiresCompatibilities": [],
+      "Tags": [],
+      "TaskDefinitionArn": "arn:aws:ecs:us-west-2:xxxx:task-definition/test-task-readonly-enabled:2",
+      "EnableFaultInjection": false
+    }
+  }
+}

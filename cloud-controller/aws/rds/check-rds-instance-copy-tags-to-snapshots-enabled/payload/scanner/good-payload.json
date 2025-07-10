@@ -1,0 +1,54 @@
+{
+    "TypeName": "AWS::RDS::DBInstance",
+    "ResourceDescription": {
+      "Identifier": "copy-tags-to-snapshot-enabled",
+      "Properties": {
+        "StorageEncrypted": false,
+        "AssociatedRoles": [],
+        "CertificateDetails": {
+          "ValidTill": "2026-01-13T11:01:33Z",
+          "CAIdentifier": "rds-ca-1"
+        },
+        "Port": "0",
+        "ProcessorFeatures": [],
+        "StorageThroughput": 0,
+        "DbiResourceId": "db-D27LNU6KVNRAVHFUH5CYEFC4XU",
+        "PreferredBackupWindow": "13:20-13:50",
+        "MonitoringInterval": 0,
+        "DBParameterGroupName": "default.mysql8.0",
+        "DBInstanceArn": "arn:aws:rds:us-west-2:xxxx:db:copy-tags-to-snapshot-enabled",
+        "NetworkType": "IPV4",
+        "DedicatedLogVolume": false,
+        "CopyTagsToSnapshot": true,
+        "MultiAZ": false,
+        "Engine": "mysql",
+        "Tags": [],
+        "EngineLifecycleSupport": "open-source-rds-extended-support",
+        "LicenseModel": "general-public-license",
+        "EngineVersion": "8.0.39",
+        "StorageType": "gp2",
+        "DBInstanceClass": "db.t3.micro",
+        "AvailabilityZone": "us-west-2d",
+        "OptionGroupName": "default:mysql-8-0",
+        "PreferredMaintenanceWindow": "sun:11:14-sun:11:44",
+        "EnablePerformanceInsights": false,
+        "AutoMinorVersionUpgrade": true,
+        "DBSubnetGroupName": "default",
+        "DeletionProtection": false,
+        "DBInstanceIdentifier": "copy-tags-to-snapshot-enabled",
+        "AllocatedStorage": "5",
+        "CACertificateIdentifier": "rds-ca-1",
+        "ManageMasterUserPassword": false,
+        "MasterUserSecret": {},
+        "VPCSecurityGroups": [
+          "sg-1"
+        ],
+        "DBSecurityGroups": [],
+        "MasterUsername": "admin",
+        "EnableIAMDatabaseAuthentication": false,
+        "BackupRetentionPeriod": 1,
+        "PubliclyAccessible": true,
+        "EnableCloudwatchLogsExports": []
+      }
+    }
+  }

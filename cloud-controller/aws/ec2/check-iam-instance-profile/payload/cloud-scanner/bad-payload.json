@@ -1,0 +1,103 @@
+{
+    "TypeName": "AWS::EC2::Instance",
+    "ResourceDescription": {
+      "Identifier": "i-xxxx",
+      "Properties": {
+        "Tenancy": "default",
+        "SecurityGroups": [
+          "launch-wizard-8"
+        ],
+        "PrivateDnsName": "ip-172-31-xx-xx.us-west-2.compute.internal",
+        "PrivateIpAddress": "172.31.xx.xx",
+        "BlockDeviceMappings": [
+          {
+            "Ebs": {
+              "SnapshotId": "snap-089f27beb5565a3c2",
+              "VolumeType": "gp3",
+              "KmsKeyId": "arn:aws:kms:us-west-2:844333597536:key/5ac8483a-d1a9-4fb0-9310-6150a0e836af",
+              "Encrypted": true,
+              "Iops": 3000,
+              "VolumeSize": 8,
+              "DeleteOnTermination": true
+            },
+            "DeviceName": "/dev/xvda"
+          }
+        ],
+        "SubnetId": "subnet-38534e41",
+        "EbsOptimized": false,
+        "Volumes": [
+          {
+            "VolumeId": "vol-0ba07fdae7a022ba4",
+            "Device": "/dev/xvda"
+          }
+        ],
+        "PrivateIp": "172.31.xx.xx",
+        "EnclaveOptions": {
+          "Enabled": false
+        },
+        "NetworkInterfaces": [
+          {
+            "AssociateCarrierIpAddress": false,
+            "PrivateIpAddress": "172.31.xx.xx",
+            "PrivateIpAddresses": [
+              {
+                "PrivateIpAddress": "172.31.xx.xx",
+                "Primary": true
+              }
+            ],
+            "SecondaryPrivateIpAddressCount": 0,
+            "DeviceIndex": "0",
+            "Ipv6AddressCount": 0,
+            "GroupSet": [
+              "sg-0b9f139f0ce8d4ef2"
+            ],
+            "Ipv6Addresses": [],
+            "SubnetId": "subnet-38534e41",
+            "AssociatePublicIpAddress": true,
+            "NetworkInterfaceId": "eni-01cbe5dbdeb2befca",
+            "DeleteOnTermination": true
+          }
+        ],
+        "ImageId": "ami-04999cd8f2624f834",
+        "InstanceType": "t2.micro",
+        "Monitoring": false,
+        "Tags": [
+          {
+            "Value": "IAM-fail-pol",
+            "Key": "Name"
+          }
+        ],
+        "HibernationOptions": {
+          "Configured": false
+        },
+        "InstanceId": "i-xxxx",
+        "PublicIp": "xx.xx.xx.xx",
+        "InstanceInitiatedShutdownBehavior": "stop",
+        "CpuOptions": {
+          "ThreadsPerCore": 1,
+          "CoreCount": 1
+        },
+        "AvailabilityZone": "us-west-2b",
+        "PrivateDnsNameOptions": {
+          "EnableResourceNameDnsARecord": false,
+          "HostnameType": "ip-name",
+          "EnableResourceNameDnsAAAARecord": false
+        },
+        "PublicDnsName": "ec2-xx.xx.xx.xx.us-west-2.compute.amazonaws.com",
+        "SecurityGroupIds": [
+          "sg-xxxx"
+        ],
+        "DisableApiTermination": false,
+        "SourceDestCheck": true,
+        "PlacementGroupName": "",
+        "VpcId": "vpc-xxxx",
+        "State": {
+          "Code": "16",
+          "Name": "running"
+        },
+        "CreditSpecification": {
+          "CPUCredits": "standard"
+        }
+      }
+    }
+  }

@@ -1,0 +1,39 @@
+{
+    "TypeName": "AWS::Lambda::Function",
+    "ResourceDescription": {
+      "Identifier": "GoodLambdaFunctionXray",
+      "Properties": {
+        "MemorySize": 128,
+        "Description": "",
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Timeout": 3,
+        "RuntimeManagementConfig": {
+          "UpdateRuntimeOn": "Auto"
+        },
+        "Handler": "index.lambda_handler",
+        "SnapStartResponse": {
+          "OptimizationStatus": "Off",
+          "ApplyOn": "None"
+        },
+        "Role": "arn:aws:iam::844333597536:role/Spacelift_Test_Lambda_Function_Roless",
+        "FileSystemConfigs": [],
+        "FunctionName": "GoodLambdaFunctionXray",
+        "Runtime": "python3.8",
+        "PackageType": "Zip",
+        "LoggingConfig": {
+          "LogFormat": "Text",
+          "LogGroup": "/aws/lambda/GoodLambdaFunctionXray"
+        },
+        "RecursiveLoop": "Terminate",
+        "Arn": "arn:aws:lambda:us-west-2:844333597536:function:GoodLambdaFunctionXray",
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "Architectures": [
+          "x86_64"
+        ]
+      }
+    }
+  }

@@ -1,0 +1,26 @@
+{
+    "TypeName": "AWS::ApiGateway::Stage",
+    "ResourceDescription": {
+      "Identifier": "mqii623s87|throttle-limit-not-set",
+      "Properties": {
+        "DeploymentId": "lfe8tg",
+        "StageName": "throttle-limit-not-set",
+        "TracingEnabled": false,
+        "RestApiId": "mqii623s87",
+        "MethodSettings": [
+          {
+            "CacheTtlInSeconds": 300,
+            "ResourcePath": "/*",
+            "CacheDataEncrypted": false,
+            "DataTraceEnabled": false,
+            "ThrottlingBurstLimit": 5000,
+            "CachingEnabled": false,
+            "MetricsEnabled": false,
+            "HttpMethod": "*",
+            "ThrottlingRateLimit": 10000
+          }
+        ],
+        "CacheClusterEnabled": false
+      }
+    }
+  }

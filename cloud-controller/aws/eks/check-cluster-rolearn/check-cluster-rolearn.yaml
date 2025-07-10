@@ -1,0 +1,37 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-cluster-rolearn
+  annotations:
+    policies.kyverno.io/title: Check Cluster Role ARN
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Ensuring proper IAM role configuration for EKS clusters is critical for security and access control.
+      The cluster role ARN defines the permissions that the EKS control plane has within your AWS account.
+      This policy ensures that all EKS clusters have a valid IAM role ARN configured to maintain proper
+      security controls and prevent unauthorized access.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-eks-cluster
+      expression: >
+        object.TypeName == 'AWS::EKS::Cluster'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.roleArn) &&
+          object.ResourceDescription.Properties.roleArn == 'arn:aws:iam::844333597536:role/standard-eks-role'
+        ) :
+        (
+          has(object.roleArn) &&
+          object.roleArn == 'arn:aws:iam::844333597536:role/standard-eks-role'
+        )
+      message: "EKS cluster must have a valid IAM role ARN configured"

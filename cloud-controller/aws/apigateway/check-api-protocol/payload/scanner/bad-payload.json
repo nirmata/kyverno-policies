@@ -1,0 +1,16 @@
+{
+    "TypeName": "AWS::ApiGatewayV2::Api",
+    "ResourceDescription": {
+      "Identifier": "7viyys686k",
+      "Properties": {
+        "RouteSelectionExpression": "$request.body.action",
+        "ProtocolType": "WEBSOCKET",
+        "ApiEndpoint": "xxxx-api.us-west-2.amazonaws.com",
+        "DisableExecuteApiEndpoint": false,
+        "ApiId": "7viyys686k",
+        "Tags": {},
+        "Name": "WebSocket-Api",
+        "ApiKeySelectionExpression": "$request.header.x-api-key"
+      }
+    }
+  }

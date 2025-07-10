@@ -1,0 +1,45 @@
+{
+  "TypeName": "AWS::ECS::TaskDefinition",
+  "ResourceDescription": {
+    "Identifier": "arn:aws:ecs:us-west-2:844333597536:task-definition/test-task-user-nonroot:4",
+    "Properties": {
+      "Volumes": [],
+      "InferenceAccelerators": [],
+      "PlacementConstraints": [],
+      "ContainerDefinitions": [
+        {
+          "User": "1000:1000",
+          "Secrets": [],
+          "Memory": 512,
+          "VolumesFrom": [],
+          "Cpu": 128,
+          "EntryPoint": [],
+          "DnsServers": [],
+          "Image": "nginx:latest",
+          "Essential": true,
+          "ResourceRequirements": [],
+          "EnvironmentFiles": [],
+          "Name": "nginx",
+          "DockerSecurityOptions": [],
+          "SystemControls": [],
+          "DnsSearchDomains": [],
+          "CredentialSpecs": [],
+          "Ulimits": [],
+          "ExtraHosts": [],
+          "MountPoints": [],
+          "DependsOn": [],
+          "DockerLabels": {},
+          "PortMappings": [],
+          "Command": [],
+          "Environment": [],
+          "Links": []
+        }
+      ],
+      "Family": "test-task-user-nonroot",
+      "RequiresCompatibilities": [],
+      "Tags": [],
+      "TaskDefinitionArn": "arn:aws:ecs:us-west-2:844333597536:task-definition/test-task-user-nonroot:4",
+      "EnableFaultInjection": false
+    }
+  }
+}

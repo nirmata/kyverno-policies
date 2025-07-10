@@ -1,0 +1,53 @@
+{
+    "TypeName": "AWS::RDS::DBInstance",
+    "ResourceDescription": {
+      "Identifier": "storage-not-encrypted",
+      "Properties": {
+        "StorageEncrypted": false,
+        "AssociatedRoles": [],
+        "CertificateDetails": {
+          "CAIdentifier": "rds-ca-rsa2048-g1"
+        },
+        "Port": "0",
+        "ProcessorFeatures": [],
+        "StorageThroughput": 0,
+        "DbiResourceId": "db-ZRYGUZS3VPHIQPPHDQZLXFOIG4",
+        "PreferredBackupWindow": "08:34-09:04",
+        "MonitoringInterval": 0,
+        "DBParameterGroupName": "default.mysql8.0",
+        "DBInstanceArn": "arn:aws:rds:us-west-2:xxxx:db:storage-not-encrypted",
+        "NetworkType": "IPV4",
+        "DedicatedLogVolume": false,
+        "CopyTagsToSnapshot": false,
+        "MultiAZ": false,
+        "Engine": "mysql",
+        "Tags": [],
+        "EngineLifecycleSupport": "open-source-rds-extended-support",
+        "LicenseModel": "general-public-license",
+        "EngineVersion": "8.0.39",
+        "StorageType": "gp2",
+        "DBInstanceClass": "db.t3.micro",
+        "AvailabilityZone": "us-west-2c",
+        "OptionGroupName": "default:mysql-8-0",
+        "PreferredMaintenanceWindow": "thu:07:52-thu:08:22",
+        "EnablePerformanceInsights": false,
+        "AutoMinorVersionUpgrade": true,
+        "DBSubnetGroupName": "default",
+        "DeletionProtection": false,
+        "DBInstanceIdentifier": "storage-not-encrypted",
+        "AllocatedStorage": "5",
+        "CACertificateIdentifier": "rds-ca-rsa2048-g1",
+        "ManageMasterUserPassword": false,
+        "MasterUserSecret": {},
+        "VPCSecurityGroups": [
+          "sg-1"
+        ],
+        "DBSecurityGroups": [],
+        "MasterUsername": "admin",
+        "EnableIAMDatabaseAuthentication": false,
+        "BackupRetentionPeriod": 1,
+        "PubliclyAccessible": true,
+        "EnableCloudwatchLogsExports": []
+      }
+    }
+  }

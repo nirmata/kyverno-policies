@@ -1,0 +1,53 @@
+{
+  "TypeName": "AWS::ECS::TaskDefinition",
+  "ResourceDescription": {
+    "Identifier": "arn:aws:ecs:us-west-2:844333597536:task-definition/test-task-log-configured:3",
+    "Properties": {
+      "Volumes": [],
+      "InferenceAccelerators": [],
+      "PlacementConstraints": [],
+      "ContainerDefinitions": [
+        {
+          "Secrets": [],
+          "Memory": 512,
+          "VolumesFrom": [],
+          "Cpu": 128,
+          "EntryPoint": [],
+          "DnsServers": [],
+          "Image": "nginx:latest",
+          "Essential": true,
+          "LogConfiguration": {
+            "SecretOptions": [],
+            "Options": {
+              "awslogs-group": "/ecs/test-task",
+              "awslogs-region": "us-west-2",
+              "awslogs-stream-prefix": "nginx"
+            },
+            "LogDriver": "awslogs"
+          },
+          "ResourceRequirements": [],
+          "EnvironmentFiles": [],
+          "Name": "nginx",
+          "DockerSecurityOptions": [],
+          "SystemControls": [],
+          "DnsSearchDomains": [],
+          "CredentialSpecs": [],
+          "Ulimits": [],
+          "ExtraHosts": [],
+          "MountPoints": [],
+          "DependsOn": [],
+          "DockerLabels": {},
+          "PortMappings": [],
+          "Command": [],
+          "Environment": [],
+          "Links": []
+        }
+      ],
+      "Family": "test-task-log-configured",
+      "RequiresCompatibilities": [],
+      "Tags": [],
+      "TaskDefinitionArn": "arn:aws:ecs:us-west-2:844333597536:task-definition/test-task-log-configured:3",
+      "EnableFaultInjection": false
+    }
+  }
+}

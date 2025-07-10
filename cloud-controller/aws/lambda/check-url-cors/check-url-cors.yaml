@@ -1,0 +1,50 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-lambda-url-cors
+  annotations:
+    policies.kyverno.io/title: Ensure Lambda Function URL CORS is Not Overly Permissive
+    policies.kyverno.io/category: AWS Networking Best Practices
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Ensures that AWS Lambda Function URLs (Aws::Lambda::Url) do not have CORS settings that allow all origins or all methods ("*").
+      This prevents overly permissive CORS configurations that could expose the function to cross-origin attacks.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    # - name: match-create-update
+    #   expression: >
+    #     request.operation in ['CREATE', 'UPDATE']
+    - name: aws-lambda-url
+      expression: >
+        object.TypeName == 'AWS::Lambda::Url'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          !has(object.ResourceDescription.Properties.cors) ||
+          !has(object.ResourceDescription.Properties.cors.allowOrigins) ||
+          !object.ResourceDescription.Properties.cors.allowOrigins.exists(origin, origin == '*')
+        ) :
+        (
+          !has(object.cors) ||
+          !has(object.cors.allowOrigins) ||
+          !object.cors.allowOrigins.exists(origin, origin == '*')
+        )
+      message: 'Lambda Function URL CORS configuration should not allow all origins ("*").'
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          !has(object.ResourceDescription.Properties.cors) ||
+          !has(object.ResourceDescription.Properties.cors.allowMethods) ||
+          !object.ResourceDescription.Properties.cors.allowMethods.exists(method, method == '*')
+        ) :
+        (
+          !has(object.cors) ||
+          !has(object.cors.allowMethods) ||
+          !object.cors.allowMethods.exists(method, method == '*')
+        )
+      message: 'Lambda Function URL CORS configuration should not allow all methods ("*").'
+

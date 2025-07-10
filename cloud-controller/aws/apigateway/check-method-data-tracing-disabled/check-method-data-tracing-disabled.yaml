@@ -1,0 +1,39 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-method-data-tracing-disabled
+  annotations:
+    policies.kyverno.io/title: Ensure API Gateway has Data Tracing Disabled in Method Settings.
+    policies.kyverno.io/category: ApiGateway Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that data tracing is disabled in API Gateway method settings to prevent sensitive data from being logged. 
+      Enforcing this practice helps enhance security, protect user privacy, and reduce the risk of exposing sensitive information in logs.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-apigateway-stage
+      expression: >
+        object.TypeName == 'AWS::ApiGateway::Stage'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.methodSettings) &&
+          object.ResourceDescription.Properties.methodSettings.all(method,
+            !has(method.dataTraceEnabled) || method.dataTraceEnabled == false
+          )
+        ) :
+        (
+          has(object.methodSettings) &&
+          object.methodSettings.all(method,
+            !has(method.dataTraceEnabled) || method.dataTraceEnabled == false
+          )
+        )
+      message: "Ensure API Gateway has Data Tracing Disabled in Method Settings."

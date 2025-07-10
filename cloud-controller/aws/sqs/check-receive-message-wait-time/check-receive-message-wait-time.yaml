@@ -1,0 +1,34 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-receive-message-wait-time
+  annotations:
+    policies.kyverno.io/title: check-receive-message-wait-time
+    policies.kyverno.io/category: AWS SQS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks whether Receive Message Wait Time is less than 5 sec.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-sqs-queue
+      expression: >
+        object.TypeName == 'AWS::SQS::Queue'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.receiveMessageWaitTimeSeconds) &&
+          object.ResourceDescription.Properties.receiveMessageWaitTimeSeconds >= 5
+        ) :
+        (
+          has(object.receiveMessageWaitTimeSeconds) &&
+          object.receiveMessageWaitTimeSeconds >= 5
+        )
+      message: "The Receive Message Wait Time is less than 5 sec."

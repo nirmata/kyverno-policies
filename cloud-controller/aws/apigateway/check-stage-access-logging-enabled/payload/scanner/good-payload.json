@@ -1,0 +1,31 @@
+{
+  "TypeName": "AWS::ApiGateway::Stage",
+  "ResourceDescription": {
+    "Identifier": "mqii623s87|logging-enabled",
+    "Properties": {
+      "DeploymentId": "lfe8tg",
+      "StageName": "logging-enabled",
+      "TracingEnabled": false,
+      "RestApiId": "mqii623s87",
+      "MethodSettings": [
+        {
+          "CacheTtlInSeconds": 300,
+          "LoggingLevel": "INFO",
+          "ResourcePath": "/*",
+          "CacheDataEncrypted": false,
+          "DataTraceEnabled": false,
+          "ThrottlingBurstLimit": 5000,
+          "CachingEnabled": false,
+          "MetricsEnabled": false,
+          "HttpMethod": "*",
+          "ThrottlingRateLimit": 10000
+        }
+      ],
+      "AccessLogSetting": {
+        "Format": "{ \"requestId\":\"$context.requestId\", \"extendedRequestId\":\"$context.extendedRequestId\",\"ip\": \"$context.identity.sourceIp\", \"caller\":\"$context.identity.caller\", \"user\":\"$context.identity.user\", \"requestTime\":\"$context.requestTime\", \"httpMethod\":\"$context.httpMethod\", \"resourcePath\":\"$context.resourcePath\", \"status\":\"$context.status\", \"protocol\":\"$context.protocol\", \"responseLength\":\"$context.responseLength\" }",
+        "DestinationArn": "arn:aws:logs:us-west-2:xxxx:log-group:/aws/eks/superbad-cluster/cluster"
+      },
+      "CacheClusterEnabled": false
+    }
+  }
+}

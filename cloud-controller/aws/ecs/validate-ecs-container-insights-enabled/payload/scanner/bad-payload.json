@@ -1,0 +1,19 @@
+{
+  "TypeName": "AWS::ECS::Cluster",
+  "ResourceDescription": {
+    "Identifier": "test-cluster-no-insights",
+    "Properties": {
+      "ClusterSettings": [
+        {
+          "Value": "disabled",
+          "Name": "containerInsights"
+        }
+      ],
+      "DefaultCapacityProviderStrategy": [],
+      "CapacityProviders": [],
+      "ClusterName": "test-cluster-no-insights",
+      "Arn": "arn:aws:ecs:us-west-2:xxxx:cluster/test-cluster-no-insights",
+      "Tags": []
+    }
+  }
+}

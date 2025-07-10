@@ -1,0 +1,104 @@
+{
+    "TypeName": "AWS::EC2::Instance",
+    "ResourceDescription": {
+      "Identifier": "i-xxxx",
+      "Properties": {
+        "Tenancy": "default",
+        "SecurityGroups": [
+          "eks-cluster-sg-xxxx"
+        ],
+        "PrivateDnsName": "ip-xx.xx.xx.xx.us-west-2.compute.internal",
+        "PrivateIpAddress": "xx.xx.xx.xx",
+        "BlockDeviceMappings": [
+          {
+            "Ebs": {
+              "SnapshotId": "snap-xxxx",
+              "VolumeType": "gp3",
+              "KmsKeyId": "arn:aws:kms:us-west-2:xxxx:key/xxxx",
+              "Encrypted": true,
+              "Iops": 3000,
+              "VolumeSize": 60,
+              "DeleteOnTermination": true
+            },
+            "DeviceName": "/dev/sda1"
+          }
+        ],
+        "IamInstanceProfile": "AmazonSSMRoleForInstancesQuickSetup",
+        "SubnetId": "subnet-xxxx",
+        "EbsOptimized": true,
+        "Volumes": [
+          {
+            "VolumeId": "vol-xxxx",
+            "Device": "/dev/sda1"
+          }
+        ],
+        "PrivateIp": "xx.xx.xx.xx",
+        "EnclaveOptions": {
+          "Enabled": false
+        },
+        "NetworkInterfaces": [
+          {
+            "AssociateCarrierIpAddress": false,
+            "PrivateIpAddress": "xx.xx.xx.xx",
+            "PrivateIpAddresses": [
+              {
+                "PrivateIpAddress": "xx.xx.xx.xx",
+                "Primary": true
+              }
+            ],
+            "SecondaryPrivateIpAddressCount": 0,
+            "DeviceIndex": "0",
+            "Ipv6AddressCount": 0,
+            "GroupSet": [
+              "sg-xxxx"
+            ],
+            "Ipv6Addresses": [],
+            "SubnetId": "subnet-xxxx",
+            "AssociatePublicIpAddress": false,
+            "NetworkInterfaceId": "eni-xxxx",
+            "DeleteOnTermination": true
+          }
+        ],
+        "ImageId": "ami-xxxx",
+        "InstanceType": "t3.2xlarge",
+        "Monitoring": false,
+        "Tags": [
+          {
+            "Value": "ds-test-3",
+            "Key": "Name"
+          }
+        ],
+        "HibernationOptions": {
+          "Configured": false
+        },
+        "InstanceId": "i-xxxx",
+        "InstanceInitiatedShutdownBehavior": "stop",
+        "CpuOptions": {
+          "ThreadsPerCore": 2,
+          "CoreCount": 4
+        },
+        "AvailabilityZone": "us-west-2a",
+        "PrivateDnsNameOptions": {
+          "EnableResourceNameDnsARecord": false,
+          "HostnameType": "ip-name",
+          "EnableResourceNameDnsAAAARecord": false
+        },
+        "PublicDnsName": "",
+        "SecurityGroupIds": [
+          "sg-xxxx"
+        ],
+        "DisableApiTermination": false,
+        "SourceDestCheck": true,
+        "PlacementGroupName": "",
+        "VpcId": "vpc-xxxx",
+        "State": {
+          "Code": "80",
+          "Name": "stopped"
+        },
+        "CreditSpecification": {
+          "CPUCredits": "unlimited"
+        }
+      }
+    }
+  }
+  

@@ -1,0 +1,38 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-rds-instance-public-access
+  annotations:
+    policies.kyverno.io/title: Check RDS Instance Public Access
+    policies.kyverno.io/category: AWS RDS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      The `PubliclyAccessible` value in the RDS instance configuration indicates whether the DB instance is publicly accessible. 
+      When the DB instance is configured with `PubliclyAccessible`, it is an Internet-facing instance with a publicly resolvable DNS name, 
+      which resolves to a public IP address. When the DB instance isn't publicly accessible, it is an internal instance with a DNS name 
+      that resolves to a private IP address. Unless you intend for your RDS instance to be publicly accessible, the RDS instance 
+      should not be configured with `PubliclyAccessible` value. Doing so might allow unnecessary traffic to your database instance.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-rds-dbinstance
+      expression: >
+        object.TypeName == 'AWS::RDS::DBInstance'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.publiclyAccessible) &&
+          object.ResourceDescription.Properties.publiclyAccessible == false
+        ) :
+        (
+          has(object.publiclyAccessible) &&
+          object.publiclyAccessible == false
+        )
+      message: "RDS Database Instance should not be publicly accessible"
