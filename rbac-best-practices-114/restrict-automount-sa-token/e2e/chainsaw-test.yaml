@@ -1,0 +1,28 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: restrict-automount-sa-token-policy
+spec:
+  steps:
+  - name: test-restrict-automount-sa-token
+    try:
+    - apply:
+        file: ../restrict-automount-sa-token.yaml
+    - assert:
+        file: policy-assert.yaml
+    - apply:
+        file: serviceaccount.yaml
+    - apply:
+        file: good-resource.yaml
+    - apply:
+        expect:
+        - check:
+            ($error != null): true
+        file: bad-resource.yaml
+    # After creating the remediate policy, we can create the bad resources as they will be mutated to become compliant
+    - apply:
+        file: ../remediate-restrict-automount-sa-token.yaml
+    - assert:
+        file: remediation-policy-assert.yaml
+    - apply:
+        file: bad-resource.yaml

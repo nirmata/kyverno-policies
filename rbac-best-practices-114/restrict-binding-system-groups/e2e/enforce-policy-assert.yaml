@@ -1,7 +1,7 @@
 apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
-  name: disallow-default-namespace
+  name: restrict-binding-system-groups
 spec:
   validationActions:
     - Deny
