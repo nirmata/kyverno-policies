@@ -1,0 +1,154 @@
+# Check Function Concurrency
+
+Concurrency level configuration for an AWS Lambda function refers to the setting that determines how many concurrent executions of the Lambda function are allowed to run simultaneously. In simpler terms, it controls how many instances of your Lambda function can run concurrently in response to incoming events or triggers.
+
+In Terraform, you can configure the concurrency level using the `reserved_concurrent_executions` argument within the aws_lambda_function resource block. This argument accepts a non-negative integer value, including zero, where:
+
+- Setting `reserved_concurrent_executions` to 0 means that no concurrency is reserved for this Lambda function. It allows the Lambda function to scale freely based on demand, subject to account-level concurrency limits.
+
+- Setting `reserved_concurrent_executions` to a positive integer (e.g., 10) reserves a specific concurrency level for the Lambda function. This limits the number of concurrent executions of the function, ensuring that it does not exceed the specified concurrency level, even if there is a sudden spike in incoming events or triggers.
+
+This policy ensures that the concurrency level configuration is set to AWS Lambda function.
+
+NOTE - Currently, AWS CLI does not support specifying the function concurrency configuration during the create-function command. Only Scanner will work for this.
+
+## Policy Details:
+
+-   **Policy Name:** Check Function Concurrency
+-   **Check Description:** This policy checks whether concurrency level config is set for the Lambda function.
+-   **Policy Category:** AWS Lambda Best Practices
+
+## Policy Validation Testing Instructions:
+
+For testing this policy you will need to:
+
+-   Make sure you have `cloud-scanner` installed on the machine
+-   Properly authenticate with AWS
+
+1. **Set up for the Lambda Function:**
+
+    a. Create a `lambda_function.py` file with the following code:
+
+    ```python
+    def lambda_handler(event, context):
+        return {
+            'statusCode': 200,
+            'body': 'Hello, world!'
+        }
+    ```
+
+    b. Store the above python file in a zip file `lambda-code.zip`
+2. **Create an IAM Role for Lambda:**
+    ```bash
+    aws iam create-role \
+    --role-name <RoleName> \
+    --assume-role-policy-document '{
+        "Version": "2012-10-17",
+        "Statement": [
+        {
+            "Action": "sts:AssumeRole",
+            "Principal": {
+            "Service": "lambda.amazonaws.com"
+            },
+            "Effect": "Allow",
+            "Sid": ""
+        }
+        ]
+    }'
+    ```
+3. **Create an IAM Policy for Lambda:**
+    ```bash
+    aws iam create-policy \
+    --policy-name aws_iam_policy_for_terraform_aws_lambda_role \
+    --policy-document '{
+        "Version": "2012-10-17",
+        "Statement": [
+        {
+            "Action": [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:*:*:*",
+            "Effect": "Allow"
+        }
+        ]
+    }'
+    ```
+4. **Attach the Policy to the IAM Role:**
+
+    a. Retrieve the ARN of the created policy:
+    ```bash
+    aws iam list-policies --query "Policies[?PolicyName=='aws_iam_policy_for_terraform_aws_lambda_role'].Arn" --output text
+    ```
+    b. Use the ARN to attach the policy to the IAM role:
+    ```bash
+    aws iam attach-role-policy \
+    --role-name Spacelift_Test_Lambda_Function_Role \
+    --policy-arn <POLICY_ARN>
+    ```
+5. **Create Lambda Functions:**
+
+    Good Lambda Function
+    ```bash
+    aws lambda create-function \
+    --function-name GoodLambdaFunction \
+    --runtime python3.8 \
+    --role arn:aws:iam::<ACCOUNT_ID>:role/<RoleName>> \
+    --handler index.lambda_handler \
+    --zip-file fileb://lambda_function.zip \
+    ```
+
+    Bad Lambda Function
+    ```bash
+     aws lambda create-function \
+     --function-name BadLambdaFunction \
+     --runtime python3.8 \
+     --role arn:aws:iam::<ACCOUNT_ID>:role/<RoleName>> \
+     --handler index.lambda_handler \
+     --zip-file fileb://lambda_function.zip
+    ```
+
+6. **Set Reserved Concurrent Executions:**
+    ```bash
+    aws lambda put-function-concurrency \
+        --function-name GoodLambdaFunction \
+        --reserved-concurrent-executions 1
+    ```
+
+7. **Get the Payloads:**
+
+    Good Payload
+    ```bash
+    aws cloudcontrol get-resource  --type-name AWS::Lambda::Function --profile devtest-sso --identifier GoodLambdaFunction | jq '.ResourceDescription.Properties |= fromjson'
+    ```
+    Bad Payload
+    ```bash
+    aws cloudcontrol get-resource  --type-name AWS::Lambda::Function --profile devtest-sso --identifier BadLambdaFunction | jq '.ResourceDescription.Properties |= fromjson'
+    ```
+
+
+## Test the Policy with Cloud Scanner:
+
+a. **Apply the Policy after making the appropriate AWS resources:**
+
+```
+kubectl apply -f ./check-function-concurrency.yaml
+```
+
+
+b. **Check the Report Generated by Cloud Scanner:**
+
+```
+kubectl get clusterpolicyreport
+```
+
+
+```
+NAME                                                              KIND             NAME                             PASS   FAIL   WARN   ERROR   SKIP      AGE
+65dce8b586794a7ec90e54d03f32a339e1a7cfbfffa115f732d8a78382c3f5f   LambdaFunction   GoodLambdaFunction                 1      0      0      0       0      7m54s
+65dce8b586794a7ec90e54d03f32a339e1a7cfbfffa115f732d8a78382c3asd   LambdaFunction   BadLambdaFunction                  0      1      0      0       0      7m54s
+
+```
+
+---

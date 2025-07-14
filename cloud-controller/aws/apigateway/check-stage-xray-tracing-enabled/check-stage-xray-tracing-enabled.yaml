@@ -1,0 +1,37 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-stage-xray-tracing-enabled
+  annotations:
+    policies.kyverno.io/title: Check Stage Xray Tracing Enabled
+    policies.kyverno.io/category: ApiGateway Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that X-Ray tracing is enabled for API Gateway stages, 
+      allowing you to trace and analyze request paths through your applications. 
+      Enforcing this practice improves observability, helps identify bottlenecks, 
+      and enhances debugging capabilities, ensuring better performance and reliability of your APIs.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-apigateway-stage
+      expression: >
+        object.TypeName == 'AWS::ApiGateway::Stage'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.tracingEnabled) &&
+          object.ResourceDescription.Properties.tracingEnabled == true
+        ) :
+        (
+          has(object.tracingEnabled) &&
+          object.tracingEnabled == true
+        )
+      message: "Ensure API Gateway has X-Ray Tracing enabled"

@@ -1,0 +1,80 @@
+{
+    "metadata": {
+      "identifier": "arn:aws:bedrock:us-west-2:844333597536:guardrail/fpsowqqiuutv",
+      "provider": "AWS",
+      "region": "us-west-2",
+      "resource": "Guardrail",
+      "service": "Bedrock"
+    },
+    "payload": {
+      "blockedInputMessaging": "Sorry, the model cannot answer this question.",
+      "blockedOutputsMessaging": "Sorry, the model cannot answer this question.",
+      "contentPolicyConfig": {
+        "contentFiltersTierConfig": {
+          "tierName": "CLASSIC"
+        },
+        "filtersConfig": [
+          {
+            "inputStrength": "HIGH",
+            "outputStrength": "HIGH",
+            "type": "VIOLENCE"
+          },
+          {
+            "inputStrength": "HIGH",
+            "outputStrength": "NONE",
+            "type": "PROMPT_ATTACK"
+          },
+          {
+            "inputStrength": "HIGH",
+            "outputStrength": "HIGH",
+            "type": "MISCONDUCT"
+          },
+          {
+            "inputStrength": "HIGH",
+            "outputStrength": "HIGH",
+            "type": "HATE"
+          },
+          {
+            "inputStrength": "HIGH",
+            "outputStrength": "HIGH",
+            "type": "SEXUAL"
+          },
+          {
+            "inputStrength": "HIGH",
+            "outputStrength": "HIGH",
+            "type": "INSULTS"
+          }
+        ]
+      },
+      "contextualGroundingPolicyConfig": {
+        "filtersConfig": [
+          {
+            "threshold": 0.7,
+            "type": "GROUNDING"
+          },
+          {
+            "threshold": 0.7,
+            "type": "RELEVANCE"
+          }
+        ]
+      },
+      "createdAt": "2024-08-06T14:36:02Z",
+      "failureRecommendations": [],
+      "guardrailArn": "arn:aws:bedrock:us-west-2:844333597536:guardrail/fpsowqqiuutv",
+      "guardrailId": "fpsowqqiuutv",
+      "name": "Kyverno",
+      "status": "READY",
+      "statusReasons": [],
+      "tags": [],
+      "updatedAt": "2024-08-06T14:36:38.359774217Z",
+      "version": "DRAFT",
+      "wordPolicyConfig": {
+        "managedWordListsConfig": [
+          {
+            "type": "PROFANITY"
+          }
+        ],
+        "wordsConfig": []
+      }
+    }
+  }

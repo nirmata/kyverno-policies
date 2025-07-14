@@ -1,0 +1,42 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-ecs-task-definition-memory-hard-limit
+  annotations:
+    policies.kyverno.io/title: Validate ECS Task Definition Memory Hard Limit
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks if Amazon Elastic Container Service
+      (ECS) task definitions and tasks have a set memory limit for its container definitions. 
+      If a memory limit is not set for a container, it can consume excessive memory, potentially starving other containers running on the same host. 
+      Therefore, it is crucial to enforce a hard memory limit on each container to prevent resource contention. 
+      If a container exceeds its memory limit, it will be terminated by ECS.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-ecs-taskdefinition
+      expression: >
+        object.TypeName == 'AWS::ECS::TaskDefinition'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.containerDefinitions) &&
+          object.ResourceDescription.Properties.containerDefinitions.all(container,
+            has(container.memory)
+          )
+        ) :
+        (
+          has(object.containerDefinitions) &&
+          object.containerDefinitions.all(container,
+            has(container.memory)
+          )
+        )
+      message: "Memory limit for container definitions should be set in the task definition"

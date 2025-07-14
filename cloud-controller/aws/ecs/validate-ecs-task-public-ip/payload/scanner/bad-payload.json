@@ -1,0 +1,54 @@
+{
+    "TypeName": "AWS::ECS::Service",
+    "ResourceDescription": {
+      "Identifier": "arn:aws:ecs:us-west-2:xxxx:service/good-cluster/bad-service|good-cluster",
+      "Properties": {
+        "PlatformVersion": "LATEST",
+        "HealthCheckGracePeriodSeconds": 0,
+        "EnableECSManagedTags": true,
+        "EnableExecuteCommand": false,
+        "PlacementConstraints": [],
+        "Cluster": "good-cluster",
+        "ServiceArn": "arn:aws:ecs:us-west-2:xxxx:service/good-cluster/bad-service",
+        "DesiredCount": 1,
+        "DeploymentController": {
+          "Type": "ECS"
+        },
+        "LaunchType": "FARGATE",
+        "Name": "bad-service",
+        "AvailabilityZoneRebalancing": "ENABLED",
+        "Role": "arn:aws:iam::xxxx:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
+        "SchedulingStrategy": "REPLICA",
+        "TaskDefinition": "arn:aws:ecs:us-west-2:xxxx:task-definition/bad-task:1",
+        "ServiceName": "bad-service",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "SecurityGroups": [
+              "sg-dd0d3f9d"
+            ],
+            "Subnets": [
+              "subnet-1",
+              "subnet-2",
+              "subnet-3",
+              "subnet-4"
+            ],
+            "AssignPublicIp": "ENABLED"
+          }
+        },
+        "DeploymentConfiguration": {
+          "Alarms": {
+            "AlarmNames": [],
+            "Enable": false,
+            "Rollback": false
+          },
+          "DeploymentCircuitBreaker": {
+            "Enable": true,
+            "Rollback": true
+          },
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 100
+        }
+      }
+    }
+  }
+  

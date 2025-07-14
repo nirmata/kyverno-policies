@@ -1,0 +1,41 @@
+{
+    "TypeName": "AWS::Lambda::Function",
+    "ResourceDescription": {
+      "Identifier": "GoodLambdaFunctionConcurrent",
+      "Properties": {
+        "MemorySize": 128,
+        "Description": "",
+        "TracingConfig": {
+          "Mode": "PassThrough"
+        },
+        "Timeout": 3,
+        "RuntimeManagementConfig": {
+          "UpdateRuntimeOn": "Auto"
+        },
+        "Handler": "index.lambda_handler",
+        "ReservedConcurrentExecutions": 0,
+        "SnapStartResponse": {
+          "OptimizationStatus": "Off",
+          "ApplyOn": "None"
+        },
+        "Role": "arn:aws:iam::844333597536:role/Spacelift_Test_Lambda_Function_Roless",
+        "FileSystemConfigs": [],
+        "FunctionName": "GoodLambdaFunctionConcurrent",
+        "Runtime": "python3.8",
+        "PackageType": "Zip",
+        "LoggingConfig": {
+          "LogFormat": "Text",
+          "LogGroup": "/aws/lambda/GoodLambdaFunctionConcurrent"
+        },
+        "RecursiveLoop": "Terminate",
+        "Arn": "arn:aws:lambda:us-west-2:844333597536:function:GoodLambdaFunctionConcurrent",
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "Architectures": [
+          "x86_64"
+        ]
+      }
+    }
+  }
+  

@@ -1,0 +1,34 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-supported-k8s-version
+  annotations:
+    policies.kyverno.io/title: Check Supported K8s Version
+    policies.kyverno.io/category: EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy checks that EKS clusters are on a standard supported Kubernetes version
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-eks-cluster
+      expression: >
+        object.TypeName == 'AWS::EKS::Cluster'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.version) &&
+          object.ResourceDescription.Properties.version in ['1.29', '1.30', '1.31']
+        ) :
+        (
+          has(object.version) &&
+          object.version in ['1.29', '1.30', '1.31']
+        )
+      message: "Version specified must be one of these supported versions ['1.29', '1.30', '1.31']" 

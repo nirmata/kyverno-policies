@@ -1,9 +1,9 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: disable-s3-access-control-list
   annotations:
-    policies.kyverno.io/title: Disable S3 Access Control List 
+    policies.kyverno.io/title: Disable S3 Access Control List
     policies.kyverno.io/category: AWS S3 Security Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
@@ -14,15 +14,31 @@ metadata:
       When ACLs are disabled, the bucket owner owns all the objects in the bucket
       and manages access to data exclusively using access management policies.
 spec:
-  rules:
-    - name: disable-s3-access-control-list
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_s3_bucket_ownership_controls' || type=='aws_s3_bucket'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Access Control List(ACL) should be disabled for an S3 Bucket
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_ownership_controls'].values.rule[]):
-                  object_ownership: BucketOwnerEnforced 
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-s3-bucket-ownership-controls
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket_ownership_controls' || r.type == 'aws_s3_bucket')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_s3_bucket_ownership_controls').all(controls,
+          has(controls.values.rule) && 
+          controls.values.rule != null &&
+          controls.values.rule.exists(rule,
+            has(rule.object_ownership) && 
+            rule.object_ownership == 'BucketOwnerEnforced'
+          )
+        )
+      message: "Access Control List(ACL) should be disabled for an S3 Bucket" 

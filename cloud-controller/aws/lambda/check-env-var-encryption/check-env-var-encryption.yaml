@@ -1,0 +1,55 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-env-var-encryption
+  annotations:
+    policies.kyverno.io/title: check-env-var-encryption
+    policies.kyverno.io/category: AWS Lambda Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that if environment variables are used in a Lambda function, they should be encrypted.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-lambda-function
+      expression: >
+        object.TypeName == 'AWS::Lambda::Function'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          (
+            !has(object.ResourceDescription.Properties.environment) ||
+            !has(object.ResourceDescription.Properties.environment.variables) ||
+            object.ResourceDescription.Properties.environment.variables == null
+          ) ||
+          (
+            has(object.ResourceDescription.Properties.environment.variables) &&
+            object.ResourceDescription.Properties.environment.variables != null &&
+            (
+              has(object.ResourceDescription.Properties.kmsKeyArn) ||
+              has(object.ResourceDescription.Properties.kmsKeyArn)
+            )
+          )
+        ) :
+        (
+          (
+            !has(object.environment) ||
+            !has(object.environment.variables) ||
+            object.environment.variables == null
+          ) ||
+          (
+            has(object.environment.variables) &&
+            object.environment.variables != null &&
+            (
+              has(object.kmsKeyArn) ||
+              has(object.kMSKeyArn)
+            )
+          )
+        )
+      message: "Enable the encryption of environment variable for the AWS Lambda function by specifying correct value to \"kms_key_arn\" attribute."

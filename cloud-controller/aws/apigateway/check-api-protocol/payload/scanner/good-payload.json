@@ -1,0 +1,16 @@
+{
+    "TypeName": "AWS::ApiGatewayV2::Api",
+    "ResourceDescription": {
+      "Identifier": "m169dpj2h7",
+      "Properties": {
+        "RouteSelectionExpression": "$request.method $request.path",
+        "ProtocolType": "HTTP",
+        "ApiEndpoint": "xxxx-api.us-west-2.amazonaws.com",
+        "DisableExecuteApiEndpoint": false,
+        "ApiId": "m169dpj2h7",
+        "Tags": {},
+        "Name": "test-api"
+      }
+    }
+  }
+  

@@ -1,0 +1,47 @@
+{
+  "TypeName": "AWS::ECS::TaskDefinition",
+  "ResourceDescription": {
+    "Identifier": "arn:aws:ecs:us-west-2:xxxx:task-definition/test-task-user-root-host:2",
+    "Properties": {
+      "Volumes": [],
+      "InferenceAccelerators": [],
+      "PlacementConstraints": [],
+      "ContainerDefinitions": [
+        {
+          "User": "root",
+          "Secrets": [],
+          "Memory": 512,
+          "Privileged": false,
+          "VolumesFrom": [],
+          "Cpu": 128,
+          "EntryPoint": [],
+          "DnsServers": [],
+          "Image": "nginx:latest",
+          "Essential": true,
+          "ResourceRequirements": [],
+          "EnvironmentFiles": [],
+          "Name": "nginx",
+          "DockerSecurityOptions": [],
+          "SystemControls": [],
+          "DnsSearchDomains": [],
+          "CredentialSpecs": [],
+          "Ulimits": [],
+          "ExtraHosts": [],
+          "MountPoints": [],
+          "DependsOn": [],
+          "DockerLabels": {},
+          "PortMappings": [],
+          "Command": [],
+          "Environment": [],
+          "Links": []
+        }
+      ],
+      "Family": "test-task-user-root-host",
+      "RequiresCompatibilities": [],
+      "NetworkMode": "host",
+      "Tags": [],
+      "TaskDefinitionArn": "arn:aws:ecs:us-west-2:xxxx:task-definition/test-task-user-root-host:2",
+      "EnableFaultInjection": false
+    }
+  }
+}

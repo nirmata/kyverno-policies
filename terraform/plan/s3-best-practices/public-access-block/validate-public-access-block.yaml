@@ -1,9 +1,9 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: block-s3-public-access-setting
   annotations:
-    policies.kyverno.io/title: block-s3-public-access-setting 
+    policies.kyverno.io/title: Block S3 Public Access Setting
     policies.kyverno.io/category: AWS S3 Security Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
@@ -14,27 +14,45 @@ metadata:
       permissions to allow public access. S3 Block Public Access settings override 
       these policies and permissions so that you can limit public access to these resources.
 spec:
-  rules:
-    - name: validate-block-s3-public-access-setting
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_s3_bucket_public_access_block' || type=='aws_s3_bucket'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Block Public ACLs should be set to true
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_public_access_block'].values):
-                block_public_acls: true
-        - message: Block Public Policy should be set to true
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_public_access_block'].values):
-                block_public_policy: true  
-        - message: Ignore Public ACLs should be set to true
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_public_access_block'].values):
-                ignore_public_acls: true
-        - message: Restrict Public Buckets should be set to true
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_s3_bucket_public_access_block'].values):
-                restrict_public_buckets: true                   
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-s3-bucket-public-access-block
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket_public_access_block' || r.type == 'aws_s3_bucket')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_s3_bucket_public_access_block').all(block,
+          has(block.values.block_public_acls) && 
+          block.values.block_public_acls == true
+        )
+      message: "Block Public ACLs should be set to true"
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_s3_bucket_public_access_block').all(block,
+          has(block.values.block_public_policy) && 
+          block.values.block_public_policy == true
+        )
+      message: "Block Public Policy should be set to true"
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_s3_bucket_public_access_block').all(block,
+          has(block.values.ignore_public_acls) && 
+          block.values.ignore_public_acls == true
+        )
+      message: "Ignore Public ACLs should be set to true"
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_s3_bucket_public_access_block').all(block,
+          has(block.values.restrict_public_buckets) && 
+          block.values.restrict_public_buckets == true
+        )
+      message: "Restrict Public Buckets should be set to true"

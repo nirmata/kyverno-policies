@@ -1,0 +1,48 @@
+{
+    "TypeName": "AWS::Lambda::Function",
+    "ResourceDescription": {
+      "Identifier": "GoodLambdaFunctionVPC",
+      "Properties": {
+        "MemorySize": 128,
+        "Description": "",
+        "TracingConfig": {
+          "Mode": "PassThrough"
+        },
+        "VpcConfig": {
+          "Ipv6AllowedForDualStack": false,
+          "SecurityGroupIds": [
+            "sg-0710729e454637c7a"
+          ],
+          "SubnetIds": [
+            "subnet-05a0d1f5751c78690"
+          ]
+        },
+        "Timeout": 3,
+        "RuntimeManagementConfig": {
+          "UpdateRuntimeOn": "Auto"
+        },
+        "Handler": "index.lambda_handler",
+        "SnapStartResponse": {
+          "OptimizationStatus": "Off",
+          "ApplyOn": "None"
+        },
+        "Role": "arn:aws:iam::844333597536:role/Spacelift_Test_Lambda_Function_Roless",
+        "FileSystemConfigs": [],
+        "FunctionName": "GoodLambdaFunctionVPC",
+        "Runtime": "python3.8",
+        "PackageType": "Zip",
+        "LoggingConfig": {
+          "LogFormat": "Text",
+          "LogGroup": "/aws/lambda/GoodLambdaFunctionVPC"
+        },
+        "RecursiveLoop": "Terminate",
+        "Arn": "arn:aws:lambda:us-west-2:844333597536:function:GoodLambdaFunctionVPC",
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "Architectures": [
+          "x86_64"
+        ]
+      }
+    }
+  }

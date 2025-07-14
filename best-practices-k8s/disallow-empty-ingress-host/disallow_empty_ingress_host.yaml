@@ -1,0 +1,24 @@
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+    name: disallow-empty-ingress-host
+    annotations:
+        policies.kyverno.io/title: Disallow empty Ingress host
+        policies.kyverno.io/category: Best Practices
+        policies.kyverno.io/severity: medium
+        kyverno.io/kyverno-version: 1.14.1
+        policies.kyverno.io/subject: Ingress
+        policies.kyverno.io/description: >-
+            An ingress resource needs to define an actual host name in order to be valid. This policy ensures that there is a hostname for each rule defined.
+spec:
+    validationActions:
+        - Audit
+    matchConstraints:
+        resourceRules:
+            - apiGroups: ["networking.k8s.io", "extensions"]
+              apiVersions: ["*"]
+              resources: ["ingresses"]
+              operations: ["CREATE", "UPDATE"]
+    validations:
+        - expression: "!has(object.spec.rules) || \nobject.spec.rules.all(rule, has(rule.host) && rule.host != \"\")\n"
+          message: "The Ingress host name must be defined, not empty."

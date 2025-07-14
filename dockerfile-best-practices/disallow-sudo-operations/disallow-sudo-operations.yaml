@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: disallow-sudo-operations
@@ -10,15 +10,30 @@ metadata:
     policies.kyverno.io/description: >-
       Using sudo within a Dockerfile is not recommended to avoid privilege escalation.
 spec:
-  rules:
-    - name: detect-sudo-operations
-      match:
-        all:
-        - ($analyzer.resource.type): dockerfile
-        - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
-      assert:
-        any:
-        - message: Dockerfile contains the 'sudo' operation which is not preferred
-          check:
-            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
-               (starts_with(@, 'sudo ') || contains(@, ' sudo ')): false
+  validationActions:
+    - Audit
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: has-dockerfile-structure
+      expression: "has(object.Stages)"
+    - name: has-run-commands
+      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.Commands) && stage.Commands.exists(cmd, cmd.Name == 'RUN' && has(cmd.CmdLine) && size(cmd.CmdLine) > 0))"
+  validations:
+    - expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'RUN' && has(cmd.CmdLine) && cmd.CmdLine.exists(cmdLine,
+              cmdLine.startsWith('sudo ') || cmdLine.contains(' sudo ')
+            )
+          )
+        )
+      message: "Dockerfile contains the 'sudo' operation which is not preferred"

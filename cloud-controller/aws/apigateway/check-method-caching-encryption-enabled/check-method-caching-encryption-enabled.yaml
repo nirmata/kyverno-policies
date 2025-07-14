@@ -1,0 +1,42 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-method-caching-encryption-enabled
+  annotations:
+    policies.kyverno.io/title: Ensure API Gateway has Caching Encryption Enabled in Method Settings.
+    policies.kyverno.io/category: ApiGateway Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      This policy ensures that caching encryption is enabled in API Gateway method settings, 
+      safeguarding sensitive data stored in the cache. Enforcing this practice enhances the security 
+      and compliance of your API by preventing unauthorized access to cached data.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-apigateway-stage
+      expression: >
+        object.TypeName == 'AWS::ApiGateway::Stage'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.methodSettings) &&
+          object.ResourceDescription.Properties.methodSettings.all(method,
+            !has(method.cachingEnabled) || method.cachingEnabled == false ||
+            (method.cachingEnabled == true && has(method.cacheDataEncrypted) && method.cacheDataEncrypted == true)
+          )
+        ) :
+        (
+          has(object.methodSettings) &&
+          object.methodSettings.all(method,
+            !has(method.cachingEnabled) || method.cachingEnabled == false ||
+            (method.cachingEnabled == true && has(method.cacheDataEncrypted) && method.cacheDataEncrypted == true)
+          )
+        )
+      message: "Ensure API Gateway has Caching Encryption Enabled in Method Settings."

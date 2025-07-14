@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-missing-signature-options
@@ -9,30 +9,60 @@ metadata:
     policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/dockerfile_best_practices/check-missing-signature-options/"
     policies.kyverno.io/description: >-
         This policy ensures that packages with untrusted or missing signatures
-        are not used by rpm via the ‘–nodigest’, ‘–nosignature’, ‘–noverify’, or
-        ‘–nofiledigest’ options
+        are not used by rpm via the '–nodigest', '–nosignature', '–noverify', or
+        '–nofiledigest' options
 spec:
-  rules:
-    - name: check-missing-signature-options
-      match:
-        all:
-        - ($analyzer.resource.type): dockerfile
-        - (Stages[].Commands[?Name=='RUN'].CmdLine[][] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Ensure that packages with untrusted or missing signatures are not used by rpm via `--nofiledigest` flag
-          check:
-            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
-               ((starts_with(@, 'rpm ') || contains(@, ' rpm '))  && contains(@, ' --nofiledigest')): false
-        - message: Ensure that packages with untrusted or missing signatures are not used by rpm via `--noverify` flag
-          check: 
-            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
-               ((starts_with(@, 'rpm ') || contains(@, ' rpm '))  && contains(@, ' --noverify')): false
-        - message: Ensure that packages with untrusted or missing signatures are not used by rpm via `--nosignature` flag
-          check: 
-            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
-               ((starts_with(@, 'rpm ') || contains(@, ' rpm '))  && contains(@, ' --nosignature')): false
-        - message: Ensure that packages with untrusted or missing signatures are not used by rpm via `--nodigest` flag
-          check: 
-            ~.(Stages[].Commands[?Name=='RUN'].CmdLine[][]):
-               ((starts_with(@, 'rpm ') || contains(@, ' rpm '))  && contains(@, ' --nodigest')): false
+  validationActions:
+    - Audit
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: has-dockerfile-structure
+      expression: "has(object.Stages)"
+    - name: has-run-commands
+      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.Commands) && stage.Commands.exists(cmd, cmd.Name == 'RUN' && has(cmd.CmdLine) && size(cmd.CmdLine) > 0))"
+  validations:
+    - expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'RUN' && has(cmd.CmdLine) && cmd.CmdLine.exists(cmdLine,
+              (cmdLine.startsWith('rpm ') || cmdLine.contains(' rpm ')) && cmdLine.contains(' --nofiledigest')
+            )
+          )
+        )
+      message: "Ensure that packages with untrusted or missing signatures are not used by rpm via `--nofiledigest` flag"
+    - expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'RUN' && has(cmd.CmdLine) && cmd.CmdLine.exists(cmdLine,
+              (cmdLine.startsWith('rpm ') || cmdLine.contains(' rpm ')) && cmdLine.contains(' --noverify')
+            )
+          )
+        )
+      message: "Ensure that packages with untrusted or missing signatures are not used by rpm via `--noverify` flag"
+    - expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'RUN' && has(cmd.CmdLine) && cmd.CmdLine.exists(cmdLine,
+              (cmdLine.startsWith('rpm ') || cmdLine.contains(' rpm ')) && cmdLine.contains(' --nosignature')
+            )
+          )
+        )
+      message: "Ensure that packages with untrusted or missing signatures are not used by rpm via `--nosignature` flag"
+    - expression: |
+        !object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'RUN' && has(cmd.CmdLine) && cmd.CmdLine.exists(cmdLine,
+              (cmdLine.startsWith('rpm ') || cmdLine.contains(' rpm ')) && cmdLine.contains(' --nodigest')
+            )
+          )
+        )
+      message: "Ensure that packages with untrusted or missing signatures are not used by rpm via `--nodigest` flag"

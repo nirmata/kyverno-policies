@@ -1,0 +1,41 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-ecs-task-definition-log-configuration
+  annotations:
+    policies.kyverno.io/title: Validate ECS Task Definition Log Configuration
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      The LogConfiguration property specifies log configuration options to send to a custom log driver for the container. 
+      Having all logs at a central place simplifies troubleshooting and debugging since you don't have to log into individual instances
+      to access container logs. It also allows integration with monitoring tools to set up metrics and alerts based on log data. 
+      This policy checks if ECS TaskDefinitions and Services have logConfiguration defined. 
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-ecs-taskdefinition
+      expression: >
+        object.TypeName == 'AWS::ECS::TaskDefinition'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.containerDefinitions) &&
+          object.ResourceDescription.Properties.containerDefinitions.all(container,
+            has(container.logConfiguration)
+          )
+        ) :
+        (
+          has(object.containerDefinitions) &&
+          object.containerDefinitions.all(container,
+            has(container.logConfiguration)
+          )
+        )
+      message: "logConfiguration must be set for ECS Task Definition"

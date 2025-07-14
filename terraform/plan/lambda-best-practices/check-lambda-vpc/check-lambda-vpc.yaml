@@ -1,26 +1,38 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-lambda-vpc
   annotations:
-    policies.kyverno.io/title: check-lambda-vpc 
+    policies.kyverno.io/title: Check Lambda VPC Configuration
     policies.kyverno.io/category: AWS Lambda Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       VPC provides isolation and enhanced security to Lambda functions. 
       This policy validates whether vpc_config is specified for the Lambda function.
 spec:
-  rules:
-    - name: check-lambda-vpc
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_lambda_function'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: "'vpc_config' must be present for the Lambda function"
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_lambda_function']):
-                values:
-                  (vpc_config != `[]`): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-lambda-function
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_lambda_function')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_lambda_function').all(func,
+          has(func.values.vpc_config) && 
+          func.values.vpc_config != null && 
+          func.values.vpc_config.size() > 0
+        )
+      message: "'vpc_config' must be present for the Lambda function"
 

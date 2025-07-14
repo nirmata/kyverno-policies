@@ -1,0 +1,18 @@
+{
+  "_comment": "For detailed schema for payload checkout Eks CreateCluster request body at https://docs.aws.amazon.com/eks/latest/APIReference/API_CreateCluster.html#API_CreateCluster_RequestSyntax",
+  "name": "good-public-access-cidr",
+  "roleArn": "arn:aws:iam::xxxx:role/nodegroup-test",
+  "resourcesVpcConfig": {
+    "_comment": "This section defines VPC configuration including subnets and access settings.",
+    "subnetIds": [
+      "subnet-1",
+      "subnet-2"
+    ],
+    "endpointPublicAccess": true,
+    "endpointPrivateAccess": true,
+    "publicAccessCidrs": [
+      "192.168.0.0/16"
+    ]
+  },
+  "clientRequestToken": "xxxx-xxxx-xxxx-xxxx"
+}

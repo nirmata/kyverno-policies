@@ -1,0 +1,53 @@
+{
+    "TypeName": "AWS::RDS::DBInstance",
+    "ResourceDescription": {
+      "Identifier": "public-access",
+      "Properties": {
+        "StorageEncrypted": false,
+        "AssociatedRoles": [],
+        "CertificateDetails": {
+          "CAIdentifier": "rds-ca-1"
+        },
+        "Port": "0",
+        "ProcessorFeatures": [],
+        "StorageThroughput": 0,
+        "DbiResourceId": "db-UYN7PZUJSNAV3QGJT5NKMGQYOU",
+        "PreferredBackupWindow": "09:06-09:36",
+        "MonitoringInterval": 0,
+        "DBParameterGroupName": "default.mysql8.0",
+        "DBInstanceArn": "arn:aws:rds:us-west-2:xxxx:db:public-access",
+        "NetworkType": "IPV4",
+        "DedicatedLogVolume": false,
+        "CopyTagsToSnapshot": false,
+        "MultiAZ": false,
+        "Engine": "mysql",
+        "Tags": [],
+        "EngineLifecycleSupport": "open-source-rds-extended-support",
+        "LicenseModel": "general-public-license",
+        "EngineVersion": "8.0.39",
+        "StorageType": "gp2",
+        "DBInstanceClass": "db.t3.micro",
+        "AvailabilityZone": "us-west-2a",
+        "OptionGroupName": "default:mysql-8-0",
+        "PreferredMaintenanceWindow": "tue:09:42-tue:10:12",
+        "EnablePerformanceInsights": false,
+        "AutoMinorVersionUpgrade": true,
+        "DBSubnetGroupName": "default",
+        "DeletionProtection": false,
+        "DBInstanceIdentifier": "public-access",
+        "AllocatedStorage": "5",
+        "CACertificateIdentifier": "rds-ca-1",
+        "ManageMasterUserPassword": false,
+        "MasterUserSecret": {},
+        "VPCSecurityGroups": [
+          "sg-1"
+        ],
+        "DBSecurityGroups": [],
+        "MasterUsername": "admin",
+        "EnableIAMDatabaseAuthentication": false,
+        "BackupRetentionPeriod": 1,
+        "PubliclyAccessible": true,
+        "EnableCloudwatchLogsExports": []
+      }
+    }
+  }

@@ -1,0 +1,26 @@
+apiVersion: policies.kyverno.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+    name: require-rolling-update-strategy
+    annotations:
+        policies.kyverno.io/title: Require Rolling Update Strategy
+        policies.kyverno.io/category: Best Practices
+        policies.kyverno.io/severity: medium
+        policies.kyverno.io/subject: Deployment
+        policies.kyverno.io/description: >-
+            Rolling updates allow Deployments to update with zero downtime by incrementally updating Pods instances with new ones. This policy validates that Deployments specify a rollout strategy of type 'RollingUpdate' and defines appropriate maxSurge and maxUnavailable values to ensure controlled application updates.
+spec:
+    validationActions:
+        - Audit
+    evaluation:
+        background:
+            enabled: true
+    matchConstraints:
+        resourceRules:
+            - apiGroups: ["apps"]
+              apiVersions: ["v1"]
+              resources: ["deployments"]
+              operations: ["CREATE", "UPDATE"]
+    validations:
+        - expression: "has(object.spec) && has(object.spec.strategy) && \nobject.spec.strategy.type == \"RollingUpdate\" && \nhas(object.spec.strategy.rollingUpdate) && \nhas(object.spec.strategy.rollingUpdate.maxSurge) && \nhas(object.spec.strategy.rollingUpdate.maxUnavailable)\n"
+          message: "Deployments must specify a rolling update strategy with appropriate maxSurge and maxUnavailable values."

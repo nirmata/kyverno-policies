@@ -1,0 +1,26 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-deny-topics
+  labels:
+    app: kyverno
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-bedrock-guardrail
+      expression: >
+        object.TypeName == 'AWS::Bedrock::Guardrail'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.topicPolicyConfig)
+        ) :
+        (
+          has(object.topicPolicyConfig)
+        )
+      message: "Topic policy should be enabled for a Guardrail to deny specific topics"

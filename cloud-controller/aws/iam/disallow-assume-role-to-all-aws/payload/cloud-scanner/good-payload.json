@@ -1,0 +1,51 @@
+{
+    "TypeName": "AWS::IAM::Role",
+    "ResourceDescription": {
+      "Identifier": "anubhav",
+      "Properties": {
+        "Path": "/",
+        "ManagedPolicyArns": [
+          "arn:aws:iam::xxxx:policy/EKSListClustersAccess"
+        ],
+        "MaxSessionDuration": 3600,
+        "RoleName": "anubhav",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Condition": {
+                "StringEquals": {
+                  "oidc.eks.us-west-1.amazonaws.com/id/xxxx:sub": "system:serviceaccount:kube-system:aws-node"
+                }
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "arn:aws:iam::xxxx:oidc-provider/oidc.eks.us-west-1.amazonaws.com/id/D17E8CA3CDE999AFD8C3B50929D8F7C0"
+              }
+            }
+          ]
+        },
+        "Arn": "arn:aws:iam::xxxx:role/anubhav",
+        "RoleId": "AROA4JFRUINQO4NZROTAB",
+        "Tags": [
+          {
+            "Value": "nirmata",
+            "Key": "io.nirmata.createdBy"
+          },
+          {
+            "Value": "karpenter-demo",
+            "Key": "io.nirmata.cluster"
+          },
+          {
+            "Value": "kube-system",
+            "Key": "io.nirmata.namespace"
+          },
+          {
+            "Value": "aws-node",
+            "Key": "io.nirmata.serviceAccount"
+          }
+        ]
+      }
+    }
+  }

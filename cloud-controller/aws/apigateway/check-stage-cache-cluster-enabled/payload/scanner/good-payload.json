@@ -1,0 +1,27 @@
+{
+  "TypeName": "AWS::ApiGateway::Stage",
+  "ResourceDescription": {
+    "Identifier": "mqii623s87|caching-enabled",
+    "Properties": {
+      "DeploymentId": "lfe8tg",
+      "StageName": "caching-enabled",
+      "TracingEnabled": false,
+      "RestApiId": "mqii623s87",
+      "MethodSettings": [
+        {
+          "CacheTtlInSeconds": 300,
+          "ResourcePath": "/*",
+          "CacheDataEncrypted": false,
+          "DataTraceEnabled": false,
+          "ThrottlingBurstLimit": 5000,
+          "CachingEnabled": true,
+          "MetricsEnabled": false,
+          "HttpMethod": "*",
+          "ThrottlingRateLimit": 10000
+        }
+      ],
+      "CacheClusterSize": "0.5",
+      "CacheClusterEnabled": true
+    }
+  }
+}

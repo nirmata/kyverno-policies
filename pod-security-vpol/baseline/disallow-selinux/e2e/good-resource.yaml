@@ -1,0 +1,1439 @@
+########################
+## Rule: selinux-type ##
+########################
+###### Pods - Good
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod01
+spec:
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod02
+spec:
+  containers:
+  - name: container01
+    image: nginx
+  securityContext:
+    seLinuxOptions:
+      type: container_t
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod03
+spec:
+  containers:
+  - name: container01
+    image: nginx
+  securityContext:
+    seLinuxOptions:
+      type: container_init_t
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod04
+spec:
+  containers:
+  - name: container01
+    image: nginx
+  securityContext:
+    seLinuxOptions:
+      type: container_kvm_t
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod05
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        type: container_t
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod06
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        type: container_init_t
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod07
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        type: container_kvm_t
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod08
+spec:
+  containers:
+  - name: container01
+    image: nginx
+  - name: container02
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        type: container_kvm_t
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod09
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        type: container_t
+  - name: container02
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        type: container_kvm_t
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod10
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        type: container_t
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod11
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        type: container_init_t
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod12
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        type: container_kvm_t
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod13
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+  - name: initcontainer02
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        type: container_t
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goodpod14
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        type: container_init_t
+  - name: initcontainer02
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        type: container_t
+  containers:
+  - name: container01
+    image: nginx
+---
+###### Deployments - Good
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment01
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment02
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+      securityContext:
+        seLinuxOptions:
+          type: container_t
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment03
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+      securityContext:
+        seLinuxOptions:
+          type: container_init_t
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment04
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+      securityContext:
+        seLinuxOptions:
+          type: container_kvm_t
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment05
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            type: container_t
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment06
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            type: container_init_t
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment07
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            type: container_kvm_t
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment08
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+      - name: container02
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            type: container_kvm_t
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment09
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            type: container_t
+      - name: container02
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            type: container_kvm_t
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment10
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            type: container_t
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment11
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            type: container_init_t
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment12
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            type: container_kvm_t
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment13
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+      - name: initcontainer02
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            type: container_t
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gooddeployment14
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            type: container_init_t
+      - name: initcontainer02
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            type: container_t
+      containers:
+      - name: container01
+        image: nginx
+---
+###### CronJobs - Good
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob01
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob02
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+          securityContext:
+            seLinuxOptions:
+              type: container_t
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob03
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+          securityContext:
+            seLinuxOptions:
+              type: container_init_t
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob04
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+          securityContext:
+            seLinuxOptions:
+              type: container_kvm_t
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob05
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                type: container_t
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob06
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                type: container_init_t
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob07
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                type: container_kvm_t
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob08
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+          - name: container02
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                type: container_kvm_t
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob09
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                type: container_t
+          - name: container02
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                type: container_kvm_t
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob10
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                type: container_t
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob11
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                type: container_init_t
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob12
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                type: container_kvm_t
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob13
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+          - name: initcontainer02
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                type: container_t
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goodcronjob14
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                type: container_init_t
+          - name: initcontainer02
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                type: container_t
+          containers:
+          - name: container01
+            image: nginx
+---
+#############################
+## Rule: selinux-user-role ##
+#############################
+###### Pods - Good
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selur-goodpod01
+spec:
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selur-goodpod02
+spec:
+  containers:
+  - name: container01
+    image: nginx
+  securityContext:
+    seLinuxOptions:
+      level: "s0:c123,c456"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selur-goodpod03
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        level: "s0:c123,c456"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selur-goodpod04
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        type: container_t
+        level: "s0:c123,c456"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selur-goodpod05
+spec:
+  containers:
+  - name: container01
+    image: nginx
+  - name: container02
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        level: "s0:c123,c456"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selur-goodpod06
+spec:
+  containers:
+  - name: container01
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        type: container_t
+  - name: container02
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        level: "s0:c123,c456"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selur-goodpod07
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selur-goodpod08
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        level: "s0:c123,c456"
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selur-goodpod09
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        level: "s0:c123,c456"
+        type: container_t
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selur-goodpod10
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+  - name: initcontainer02
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        level: "s0:c123,c456"
+  containers:
+  - name: container01
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selur-goodpod11
+spec:
+  initContainers:
+  - name: initcontainer01
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        type: container_t
+  - name: initcontainer02
+    image: nginx
+    securityContext:
+      seLinuxOptions:
+        level: "s0:c123,c456"
+  containers:
+  - name: container01
+    image: nginx
+---
+###### Deployments - Good
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selur-gooddeployment01
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selur-gooddeployment02
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+      securityContext:
+        seLinuxOptions:
+          level: "s0:c123,c456"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selur-gooddeployment03
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            level: "s0:c123,c456"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selur-gooddeployment04
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            type: container_t
+            level: "s0:c123,c456"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selur-gooddeployment05
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+      - name: container02
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            level: "s0:c123,c456"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selur-gooddeployment06
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: container01
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            type: container_t
+      - name: container02
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            level: "s0:c123,c456"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selur-gooddeployment07
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selur-gooddeployment08
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            level: "s0:c123,c456"
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selur-gooddeployment09
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            level: "s0:c123,c456"
+            type: container_t
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selur-gooddeployment10
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+      - name: initcontainer02
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            level: "s0:c123,c456"
+      containers:
+      - name: container01
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: selur-gooddeployment11
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+      - name: initcontainer01
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            type: container_t
+      - name: initcontainer02
+        image: nginx
+        securityContext:
+          seLinuxOptions:
+            level: "s0:c123,c456"
+      containers:
+      - name: container01
+        image: nginx
+---
+###### CronJobs - Good
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: selur-goodcronjob01
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: selur-goodcronjob02
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+          securityContext:
+            seLinuxOptions:
+              level: "s0:c123,c456"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: selur-goodcronjob03
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                level: "s0:c123,c456"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: selur-goodcronjob04
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                type: container_t
+                level: "s0:c123,c456"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: selur-goodcronjob05
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+          - name: container02
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                level: "s0:c123,c456"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: selur-goodcronjob06
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: container01
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                type: container_t
+          - name: container02
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                level: "s0:c123,c456"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: selur-goodcronjob07
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: selur-goodcronjob08
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                level: "s0:c123,c456"
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: selur-goodcronjob09
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                level: "s0:c123,c456"
+                type: container_t
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: selur-goodcronjob10
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+          - name: initcontainer02
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                level: "s0:c123,c456"
+          containers:
+          - name: container01
+            image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: selur-goodcronjob11
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+          - name: initcontainer01
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                type: container_t
+          - name: initcontainer02
+            image: nginx
+            securityContext:
+              seLinuxOptions:
+                level: "s0:c123,c456"
+          containers:
+          - name: container01
+            image: nginx

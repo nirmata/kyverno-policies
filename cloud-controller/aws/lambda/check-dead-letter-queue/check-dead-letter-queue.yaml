@@ -1,0 +1,36 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-dead-letter-queue-config
+  annotations:
+    policies.kyverno.io/title: check-dead-letter-queue-config
+    policies.kyverno.io/category: AWS Lambda Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Ensure that AWS Lambda function is configured for a Dead Letter Queue (DLQ).
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-lambda-function
+      expression: >
+        object.TypeName == 'AWS::Lambda::Function'
+  validations:
+    - expression: >
+        (
+          has(object.ResourceDescription) &&
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.deadLetterConfig) &&
+          has(object.ResourceDescription.Properties.deadLetterConfig.targetArn) &&
+          object.ResourceDescription.Properties.deadLetterConfig.targetArn != null
+        ) ||
+        (
+          has(object.deadLetterConfig) &&
+          has(object.deadLetterConfig.targetArn) &&
+          object.deadLetterConfig.targetArn != null
+        )
+      message: "AWS Lambda function should be configured for a Dead Letter Queue."

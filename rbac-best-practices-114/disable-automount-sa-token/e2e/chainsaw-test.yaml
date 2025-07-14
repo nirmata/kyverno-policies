@@ -1,0 +1,21 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  creationTimestamp: null
+  name: disable-automount-sa-token-policy
+spec:
+  steps:
+  - name: step-01
+    try:
+    - apply:
+        file: ../disable-automount-sa-token.yaml
+    - assert:
+        file: policy-assert.yaml
+    - apply:
+        file: ns.yaml
+    - apply:
+        file: sa.yaml
+    - assert:
+        file: sa-patched.yaml
+    - error:
+        file: sa-not-patched.yaml

@@ -1,24 +1,36 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-env-var-encryption
   annotations:
-    policies.kyverno.io/title: check-env-var-encryption 
+    policies.kyverno.io/title: Check Environment Variable Encryption
     policies.kyverno.io/category: AWS Lambda Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       This policy ensures that if environment variables are used in a Lambda function, they should be encrypted.
 spec:
-  rules:
-    - name: check-env-var-encryption
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_lambda_function'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: Enable the encryption of environment variable for the AWS Lambda function by specifying correct value to 'kms_key_arn' attribute in 'aws_lambda_function' resource block
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_lambda_function']):
-              values:
-                ((kms_key_arn || '') != ''): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-lambda-function
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_lambda_function')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_lambda_function').all(func,
+          !has(func.values.environment) ||
+          func.values.environment.size() == 0 ||
+          (has(func.values.kms_key_arn) && func.values.kms_key_arn != null && func.values.kms_key_arn != '')
+        )
+      message: "Enable the encryption of environment variable for the AWS Lambda function by specifying correct value to 'kms_key_arn' attribute in 'aws_lambda_function' resource block"

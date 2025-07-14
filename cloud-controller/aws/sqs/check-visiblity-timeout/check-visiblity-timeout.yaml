@@ -1,0 +1,34 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-visiblity-timeout
+  annotations:
+    policies.kyverno.io/title: check-visiblity-timeout
+    policies.kyverno.io/category: AWS SQS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Check if the VisiblityTimemout is greater than 30 sec or not
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-sqs-queue
+      expression: >
+        object.TypeName == 'AWS::SQS::Queue'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.visibilityTimeout) &&
+          object.ResourceDescription.Properties.visibilityTimeout <= 30
+        ) :
+        (
+          has(object.visibilityTimeout) &&
+          object.visibilityTimeout <= 30
+        )
+      message: "The Visiblity Timemout is more than 30 sec."

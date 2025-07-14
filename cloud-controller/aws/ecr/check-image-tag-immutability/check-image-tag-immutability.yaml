@@ -1,0 +1,37 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: check-image-tag-immutability
+  annotations:
+    policies.kyverno.io/title: Ensure ECR Repository has Image Tag Immutability Enabled
+    policies.kyverno.io/category: ECR Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Enabling image tag immutability in Amazon ECR repositories prevents image tags from being overwritten, 
+      ensuring consistency and traceability in your container image deployments. This security measure helps 
+      maintain the integrity of your container images and prevents accidental or malicious overwrites of 
+      existing image tags.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-ecr-repository
+      expression: >
+        object.TypeName == 'AWS::ECR::Repository'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.imageTagMutability) &&
+          object.ResourceDescription.Properties.imageTagMutability == 'IMMUTABLE'
+        ) :
+        (
+          has(object.imageTagMutability) &&
+          object.imageTagMutability == 'IMMUTABLE'
+        )
+      message: "ECR repository must have image tag immutability enabled"

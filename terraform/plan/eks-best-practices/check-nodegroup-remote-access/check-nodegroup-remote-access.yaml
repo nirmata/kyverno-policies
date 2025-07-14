@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-nodegroup-remote-access
@@ -13,20 +13,39 @@ metadata:
       If `ec2_ssh_key` is specified and `source_security_group_ids` is not specified for the EKS Node Group, 
       either port 3389 for Windows or port 22 for other operating systems will be opened on the worker nodes to the Internet which can lead to unauthorized access 
 spec:
-  rules:
-    - name: check-nodegroup-remote-access
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_eks_node_group'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: >-
-            AWS EKS node group should not have implicit SSH access from 0.0.0.0/0
-            If `ec2_ssh_key` is specified and `source_security_group_ids` is not specified for the EKS Node Group, 
-            either port 3389 for Windows or port 22 for other operating systems will be opened on the worker nodes to the Internet which can lead to unauthorized access
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_eks_node_group']):
-                ~.(values.remote_access || `[]`):
-                    ((!ec2_ssh_key == `false`) && (!source_security_group_ids == `true`)): false
-                  
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-eks-node-group
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_eks_node_group')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_eks_node_group').all(nodegroup,
+          !has(nodegroup.values.remote_access) ||
+          nodegroup.values.remote_access == null ||
+          size(nodegroup.values.remote_access) == 0 ||
+          nodegroup.values.remote_access.all(remote_config,
+            !has(remote_config.ec2_ssh_key) ||
+            remote_config.ec2_ssh_key == null ||
+            remote_config.ec2_ssh_key == '' ||
+            (has(remote_config.source_security_group_ids) && 
+             remote_config.source_security_group_ids != null && 
+             size(remote_config.source_security_group_ids) > 0)
+          )
+        )
+      message: >-
+        AWS EKS node group should not have implicit SSH access from 0.0.0.0/0.
+        If `ec2_ssh_key` is specified and `source_security_group_ids` is not specified for the EKS Node Group, 
+        either port 3389 for Windows or port 22 for other operating systems will be opened on the worker nodes to the Internet which can lead to unauthorized access

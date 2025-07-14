@@ -1,0 +1,29 @@
+{
+    "TypeName": "AWS::IAM::Role",
+    "ResourceDescription": {
+      "Identifier": "aUnsafeAllowAllRole",
+      "Properties": {
+        "Path": "/",
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AdministratorAccess"
+        ],
+        "MaxSessionDuration": 3600,
+        "RoleName": "aUnsafeAllowAllRole",
+        "Description": "",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "*"
+              }
+            }
+          ]
+        },
+        "Arn": "arn:aws:iam::xxxx:role/aUnsafeAllowAllRole",
+        "RoleId": "AROA4JFRUINQKPTAGYJWG"
+      }
+    }
+  }

@@ -1,0 +1,39 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ValidatingPolicy
+metadata:
+  name: validate-ecs-containers-nonprivileged
+  annotations:
+    policies.kyverno.io/title: Validate ECS Containers Are Set to Non-Privileged
+    policies.kyverno.io/category: ECS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      When privileged is set to true, the container is given elevated permissions on the host container instance (similar to the root user). 
+      This policy checks that the privileged parameter in the container definition is set to false.
+  labels:
+    app: cloud-control-point
+spec:
+  failureAction: Audit
+  matchConditions:
+    - name: match-create-update
+      expression: >
+        request.operation in ['CREATE', 'UPDATE']
+    - name: aws-ecs-taskdefinition
+      expression: >
+        object.TypeName == 'AWS::ECS::TaskDefinition'
+  validations:
+    - expression: >
+        has(object.ResourceDescription) ?
+        (
+          has(object.ResourceDescription.Properties) &&
+          has(object.ResourceDescription.Properties.containerDefinitions) &&
+          object.ResourceDescription.Properties.containerDefinitions.all(container,
+            !has(container.privileged) || container.privileged == false
+          )
+        ) :
+        (
+          has(object.containerDefinitions) &&
+          object.containerDefinitions.all(container,
+            !has(container.privileged) || container.privileged == false
+          )
+        )
+      message: "The `privileged` field, if present, should be set to `false`"

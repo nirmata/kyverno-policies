@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-transit-gateways-vpc-request
@@ -11,17 +11,28 @@ metadata:
       comply with governance requirements, prevent resource exhaustion, ensure visibility and accountability, 
       avoid misconfigurations, and adhere to best practices for network security.
 spec:
-  rules:
-    - name: check-transit-gateways-vpc-request
-      match:
-        all:
-        - ($analyzer.resource.type): terraform-plan
-        - (planned_values.root_module.resources[?type=='aws_ec2_transit_gateway'] | length(@) > `0`): true
-      assert:
-        all:
-        - message: "'auto_accept_shared_attachments' should either be omitted or set to 'disable'"
-          check:
-            ~.(planned_values.root_module.resources[?type=='aws_ec2_transit_gateway']):
-                values:
-                  (auto_accept_shared_attachments != 'enable'): true
+  validationActions:
+    - Deny
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: is-terraform-plan
+      expression: "has(object.planned_values) && has(object.terraform_version)"
+    - name: has-transit-gateway
+      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_ec2_transit_gateway')"
+  validations:
+    - expression: |
+        object.planned_values.root_module.resources.filter(r, r.type == 'aws_ec2_transit_gateway').all(tgw,
+          !has(tgw.values.auto_accept_shared_attachments) ||
+          tgw.values.auto_accept_shared_attachments != 'enable'
+        )
+      message: "'auto_accept_shared_attachments' should either be omitted or set to 'disable'"
 

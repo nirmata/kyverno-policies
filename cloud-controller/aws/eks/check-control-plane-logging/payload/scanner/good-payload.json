@@ -1,0 +1,85 @@
+{
+    "TypeName": "AWS::EKS::Cluster",
+    "ResourceDescription": {
+      "Identifier": "good-cluster",
+      "Properties": {
+        "Logging": {
+          "ClusterLogging": {
+            "EnabledTypes": [
+              {
+                "Type": "api"
+              },
+              {
+                "Type": "audit"
+              },
+              {
+                "Type": "authenticator"
+              },
+              {
+                "Type": "controllerManager"
+              },
+              {
+                "Type": "scheduler"
+              }
+            ]
+          }
+        },
+        "ComputeConfig": {
+          "NodePools": [
+            "general-purpose",
+            "system"
+          ],
+          "NodeRoleArn": "arn:aws:iam::account_number:role/AmazonEKSAutoNodeRole",
+          "Enabled": true
+        },
+        "StorageConfig": {
+          "BlockStorage": {
+            "Enabled": true
+          }
+        },
+        "EncryptionConfigKeyArn": "arn:aws:kms:us-west-2:account_number:key/xxxx",
+        "ZonalShiftConfig": {
+          "Enabled": false
+        },
+        "AccessConfig": {
+          "AuthenticationMode": "API"
+        },
+        "EncryptionConfig": [
+          {
+            "Resources": [
+              "secrets"
+            ],
+            "Provider": {
+              "KeyArn": "arn:aws:kms:us-west-2:account_number:key/xxxx"
+            }
+          }
+        ],
+        "KubernetesNetworkConfig": {
+          "ServiceIpv4Cidr": "172.20.0.0/16",
+          "IpFamily": "ipv4",
+          "ElasticLoadBalancing": {
+            "Enabled": true
+          }
+        },
+        "RoleArn": "arn:aws:iam::account_number:role/AmazonEKSAutoClusterRole",
+        "Name": "good-cluster",
+        "UpgradePolicy": {
+          "SupportType": "STANDARD"
+        },
+        "Version": "1.31",
+        "Arn": "arn:aws:eks:us-west-2:account_number:cluster/good-cluster",
+        "ResourcesVpcConfig": {
+          "EndpointPublicAccess": true,
+          "PublicAccessCidrs": [
+            "0.0.0.0/0"
+          ],
+          "EndpointPrivateAccess": false,
+          "SecurityGroupIds": [],
+          "SubnetIds": [
+            "subnet-id1",
+            "subnet-id2"
+          ]
+        }
+      }
+    }
+  }

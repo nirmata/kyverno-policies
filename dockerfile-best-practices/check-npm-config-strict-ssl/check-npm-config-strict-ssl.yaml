@@ -1,4 +1,4 @@
-apiVersion: json.kyverno.io/v1alpha1
+apiVersion: policies.kyverno.io/v1alpha1
 kind: ValidatingPolicy
 metadata:
   name: check-npm-config-strict-ssl
@@ -13,14 +13,30 @@ metadata:
       validation isn't disabled for npm via the 'NPM_CONFIG_STRICT_SSL' environmnet
       variable.
 spec:
-  rules:
-    - name: check-npm-config-strict-ssl
-      match:
-        all:
-        - ($analyzer.resource.type): dockerfile
-        - (Stages[].Commands[?Name=='ENV'] | length(@) > `0`): true
-      assert:
-        any:
-        - message: Ensure certificate validation is enabled by setting `NODE_TLS_REJECT_UNAUTHORIZED` env with value set to `true`
-          check:
-            (Stages[].Commands[].Env[?Key=='NPM_CONFIG_STRICT_SSL' && Value=='true'][] | length(@) > `0`): true
+  validationActions:
+    - Audit
+  evaluation:
+    mode: JSON
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+        operations: ["CREATE", "UPDATE"]
+  matchConditions:
+    - name: has-dockerfile-structure
+      expression: "has(object.Stages)"
+    - name: has-env-commands
+      expression: "has(object.Stages) && object.Stages.exists(stage, has(stage.Commands) && stage.Commands.exists(cmd, cmd.Name == 'ENV'))"
+  validations:
+    - expression: |
+        object.Stages.exists(stage,
+          has(stage.Commands) && stage.Commands.exists(cmd,
+            cmd.Name == 'ENV' && has(cmd.Env) && cmd.Env.exists(env,
+              env.Key == 'NPM_CONFIG_STRICT_SSL' && env.Value == 'true'
+            )
+          )
+        )
+      message: "Ensure certificate validation is enabled by setting `NPM_CONFIG_STRICT_SSL` env with value set to `true`"
