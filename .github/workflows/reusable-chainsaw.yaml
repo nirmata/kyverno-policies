@@ -15,6 +15,12 @@ on:
       kyverno_policies_branch:
         required: true
         type: string
+        default: e2e-reusable-workflow
+      chainsaw_target:
+        description: 'Make target for chainsaw tests (e.g., test-chainsaw-exclude-cel, test-chainsaw-core-policies)'
+        required: false
+        type: string
+        default: 'test-chainsaw-exclude-cel'
 
 jobs:
   run-e2etest:
@@ -65,5 +71,5 @@ jobs:
       - name: Test Kyverno policies with Chainsaw
         run: |
           set -e
-          make test-chainsaw-exclude-cel
+          make ${{ inputs.chainsaw_target }}
         working-directory: kyverno-policies
