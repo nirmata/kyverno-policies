@@ -41,15 +41,17 @@ jobs:
 
       - name: Prepare environment
         run: |
-          cd kyverno-policies
           K8S_VERSION=${{ inputs.k8s_version }} make kind-create-cluster
+        working-directory: kyverno-policies
 
       - name: Install kyverno
         run: |
           N4K_VERSION=${{ inputs.n4k_chart_version }} make kind-deploy-kyverno
+        working-directory: kyverno-policies
 
       - name: Check Kyverno status
         run: make wait-for-kyverno
+        working-directory: kyverno-policies
 
       - name: Install chainsaw
         uses: kyverno/action-install-chainsaw@v0.2.7
@@ -61,3 +63,4 @@ jobs:
         run: |
           set -e
           make test-chainsaw-exclude-cel
+        working-directory: kyverno-policies
