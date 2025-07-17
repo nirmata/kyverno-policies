@@ -41,6 +41,7 @@ jobs:
 
       - name: Prepare environment
         run: |
+          cd kyverno-policies
           K8S_VERSION=${{ inputs.k8s_version }} make kind-create-cluster
 
       - name: Install kyverno
@@ -59,5 +60,4 @@ jobs:
       - name: Test Kyverno policies with Chainsaw
         run: |
           set -e
-          cd kyverno-policies
           make test-chainsaw-exclude-cel
