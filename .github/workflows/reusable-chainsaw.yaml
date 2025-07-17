@@ -13,7 +13,7 @@ on:
         required: true
         type: string
       kyverno_policies_branch:
-        required: true
+        required: false
         type: string
         default: e2e-reusable-workflow
       chainsaw_target:
