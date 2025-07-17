@@ -17,7 +17,7 @@ jobs:
         n4k-chart-version: [3.4.0-rc1]
         kyverno_policies_branch: [main]
 
-    uses: ./.github/workflows/reusable-chainsaw.yml
+    uses: ./.github/workflows/reusable-chainsaw.yaml
     with:
       k8s_version: ${{ matrix.k8s-version }}
       n4k_chart_version: ${{ matrix.n4k-chart-version }} 
