@@ -1,0 +1,63 @@
+name: Reusable Chainsaw E2E Test
+
+on:
+  workflow_call:
+    inputs:
+      k8s_version:
+        required: true
+        type: string
+      n4k_chart_version:
+        required: true
+        type: string
+      kyverno_policies_branch:
+        required: true
+        type: string
+
+jobs:
+  run-e2etest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone Kyverno Policies Repository
+        uses: actions/checkout@v4
+        with:
+          repository: nirmata/kyverno-policies
+          ref: ${{ inputs.kyverno_policies_branch }}
+          path: kyverno-policies
+          fetch-depth: 1
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Install Kyverno CLI
+        uses: kyverno/action-install-cli@v0.2.0
+        with:
+          release: v1.14.2
+
+      - name: Check Kyverno CLI install
+        run: kyverno version
+
+      - name: Prepare environment
+        run: |
+          K8S_VERSION=${{ inputs.k8s_version }} make kind-create-cluster
+
+      - name: Install kyverno
+        run: |
+          N4K_VERSION=${{ inputs.n4k_chart_version }} make kind-deploy-kyverno
+
+      - name: Check Kyverno status
+        run: make wait-for-kyverno
+
+      - name: Install chainsaw
+        uses: kyverno/action-install-chainsaw@v0.2.7
+
+      - name: Verify Chainsaw Installation
+        run: chainsaw version
+
+      - name: Test Kyverno policies with Chainsaw
+        run: |
+          set -e
+          cd kyverno-policies
+          make test-chainsaw-exclude-cel
