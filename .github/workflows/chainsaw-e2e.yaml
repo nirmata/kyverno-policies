@@ -9,45 +9,16 @@ on:
       - main
 
 jobs:
-  run-e2etest-1:
-    runs-on: ubuntu-latest
-    
+  chainsaw-e2e:
     strategy:
-      fail-fast: false    
+      fail-fast: false
       matrix:
         k8s-version: [v1.33.1]
-        n4k-chart-version: [3.4.0-rc1]    # nirmata kyverno chart version for 1.14.n4k
+        n4k-chart-version: [3.4.0-rc1]
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Install Kyverno CLI
-        uses: kyverno/action-install-cli@v0.2.0
-        with:
-          release: v1.14.2
-
-      - name: Check Kyverno CLI install
-        run: kyverno version
-
-      - name: Prepare environment
-        run: |
-          K8S_VERSION=${{ matrix.k8s-version }} make kind-create-cluster
-
-      - name: Install kyverno
-        run: |
-          N4K_VERSION=${{ matrix.n4k-chart-version }} make kind-deploy-kyverno
-
-      - name: Check Kyverno status
-        run: make wait-for-kyverno
-
-      - name: Install chainsaw
-        uses: kyverno/action-install-chainsaw@7ad918efe13995d01bafa59aef8203a5246f5d04 # v0.2.7
-
-      - name: Verify Chainsaw Installation
-        run: chainsaw version
-
-      - name: Test with Chainsaw
-        run: make test-chainsaw-exclude-cel
-
+    uses: ./.github/workflows/reusable-chainsaw.yaml
+    with:
+      k8s_version: ${{ matrix.k8s-version }}
+      n4k_chart_version: ${{ matrix.n4k-chart-version }}
+      chainsaw_target: test-chainsaw-exclude-cel
 
