@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         k8s-version: [v1.33.1]
-        n4k-chart-version: [3.4.0-rc1]
+        n4k-chart-version: [3.5.2, 3.4.9]
 
     uses: ./.github/workflows/reusable-chainsaw.yaml
     with:
