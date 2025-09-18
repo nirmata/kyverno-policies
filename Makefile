@@ -45,7 +45,7 @@ test-chainsaw-exclude-cel:
 .PHONY: test-chainsaw-core-policies
 test-chainsaw-core-policies:
 	@echo Running chainsaw tests on core policy folders... >&2
-	@chainsaw test --config .chainsaw-config.yaml best-practices-k8s rbac-best-practices-114 pod-security-vpol pod-security rbac-best-practices
+	@chainsaw test --config .chainsaw-config.yaml best-practices-k8s rbac-best-practices-vpol pod-security-vpol pod-security rbac-best-practices
 
 ## Create kind cluster
 .PHONY: kind-create-cluster

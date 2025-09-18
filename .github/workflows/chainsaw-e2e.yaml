@@ -21,4 +21,4 @@ jobs:
       k8s_version: ${{ matrix.k8s-version }}
       n4k_chart_version: ${{ matrix.n4k-chart-version }}
       chainsaw_target: test-chainsaw-exclude-cel
-
+      kyverno_policies_branch: ${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
