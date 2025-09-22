@@ -27,42 +27,48 @@ Exposing port 22 in a Dockerfile can pose security risks by potentially allowing
 To evaluate and test the policy ensuring Dockerfile compliance:
 
 For testing this policy, follow these steps:
-- Ensure you have `kyverno-json` installed on your machine.
-- Ensure you have [nctl `v3.4.0`](https://downloads.nirmata.io/nctl/downloads/) or a higher version installed.
+- Ensure you have `kyverno` installed on your machine.
+- Ensure you have [nctl `v4.3.0`](https://downloads.nirmata.io/nctl/downloads/) or a higher version installed.
 
 1. **Extract JSON equivalent of the Dockerfile:**
     ```bash
-    nctl scan dockerfile -r test/good-test/Dockerfile --show-json > payload.json
+    nctl transform -r test/bad-test/Dockerfile -o test/bad-test/bad-payload.json
     ```
 
 2. **Test the Policy with Kyverno:**
     ```bash
-    kyverno-json scan --payload payload.json --policy validate-expose-port-22.yaml
+    kyverno apply validate-expose-port-22.yaml --json test/bad-test/bad-payload.json
     ```
     
     a. **Test Policy Against Valid Payload:**
     ```bash
-    kyverno-json scan --policy validate-expose-port-22.yaml --payload test/good-test/good-payload.json
+    kyverno apply validate-expose-port-22.yaml --json test/good-test/good-payload.json
     ```
 
     This produces the output:
     ```
-    
+    mastersans@mastersans validate-expose-port-22 % kyverno apply validate-expose-port-22.yaml --json test/good-test/good-payload.json
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+
+    pass: 1, fail: 0, warn: 0, error: 0, skip: 0
     ```
 
-    b. **Test Against Invalid Payload:**
+    b. **Test Policy Against Invalid Payload:**
     ```bash
-    kyverno-json scan --policy validate-expose-port-22.yaml --payload test/bad-test/bad-payload.json
+    kyverno apply validate-expose-port-22.yaml --json test/bad-test/bad-payload.json
     ```
 
     This produces the output:
     ```
-    Loading policies ...
-    Loading payload ...
-    Pre processing ...
-    Running ( evaluating 1 resource against 1 policy ) ...
-    - validate-expose-port-22 / validate-expose-port-22 /  FAILED: Exposing port 22 in Dockerfile: any[0].check.(Stages[].ExposedPorts | contains("22/tcp")): Invalid value: false: Expected value: true
-    Done
+    mastersans@mastersans validate-expose-port-22 % kyverno apply validate-expose-port-22.yaml --json test/bad-test/bad-payload.json
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+    policy validate-expose-port-22 -> resource JSON payload failed:
+    1 -  Port 22 should not be exposed
+
+
+    pass: 0, fail: 1, warn: 0, error: 0, skip: 0
     ```
 
 ---

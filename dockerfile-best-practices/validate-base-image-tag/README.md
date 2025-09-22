@@ -28,42 +28,43 @@ Follow these steps:
 
 1. **Extract JSON equivalent of the Dockerfile:**
     ```bash
-    nctl scan dockerfile -r test/good-test/Dockerfile --show-json | jq > payload.json
+    nctl transform -r test/bad-test/Dockerfile -o test/bad-test/bad-payload.json
     ```
 
 2. **Test the Policy with Kyverno:**
     ```bash
-    kyverno-json scan --payload payload.json --policy validate-base-image-tag.yaml
+    kyverno apply validate-base-image-tag.yaml --json test/bad-test/bad-payload.json
     ```
     
     a. **Test Policy Against Valid Payload:**
     ```bash
-    kyverno-json scan --policy validate-base-image-tag.yaml --payload test/good-test/good-payload.json
+    kyverno apply validate-base-image-tag.yaml --json test/good-test/good-payload.json
     ```
 
     This produces the output:
     ```
-    Loading policies ...
-    Loading payload ...
-    Pre processing ...
-    Running ( evaluating 1 resource against 1 policy ) ...
-    - validate-base-image-tag / validate-base-image-tag /  PASSED
-    Done
+    mastersans@mastersans validate-base-image-tag % kyverno apply validate-base-image-tag.yaml --json test/good-test/good-payload.json
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+
+    pass: 1, fail: 0, warn: 0, error: 0, skip: 0
     ```
 
-    b. **Test Against Invalid Payload:**
+    b. **Test Policy Against Invalid Payload:**
     ```bash
-    kyverno-json scan --policy validate-base-image-tag.yaml --payload test/bad-test/bad-payload.json
+    kyverno apply validate-base-image-tag.yaml --json test/bad-test/bad-payload.json
     ```
 
     This produces the output:
     ```
-    Loading policies ...
-    Loading payload ...
-    Pre processing ...
-    Running ( evaluating 1 resource against 1 policy ) ...
-    - validate-base-image-tag / validate-base-image-tag /  FAILED: Base Image is missing version tags/digests: any[0].check.~.(Stages[].From.Image)[0].(contains(@, ':')): Invalid value: false: Expected value: true
-    Done
+    mastersans@mastersans validate-base-image-tag % kyverno apply validate-base-image-tag.yaml --json test/bad-test/bad-payload.json
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+    policy validate-base-image-tag -> resource JSON payload failed:
+    1 -  Base Image is missing version tags/digests
+
+
+    pass: 0, fail: 1, warn: 0, error: 0, skip: 0
     ```
 
 ---
