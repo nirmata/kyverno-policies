@@ -14,47 +14,48 @@ If you're using either of the above flags with the *rpm* command, the policy wil
 
 **In order to test this policy, use the following commands:**
 
-- Make sure you have `kyverno-json` installed on the machine
-- Make sure you have [nctl `v3.4.0`](https://downloads.nirmata.io/nctl/downloads/) or above.
+- Make sure you have `kyverno` installed on the machine
+- Make sure you have [nctl `v4.3.0`](https://downloads.nirmata.io/nctl/downloads/) or above.
 
 
 1. **Extract JSON equivalent of the dockerfile:**
     ```bash
-    nctl scan dockerfile -r test/good-test/Dockerfile --show-json > payload.json
+    nctl transform -r test/bad-test/Dockerfile -o test/bad-test/bad-payload.json
     ```
 
 2. **Test the Policy with Kyverno:**
     ```bash
-    kyverno-json scan --payload payload.json --policy check-missing-signature-options.yaml
+    kyverno apply check-missing-signature-options.yaml --json test/bad-test/bad-payload.json
     ```
     a. **Test Policy Against Valid Payload:**
     ```bash
-    kyverno-json scan --policy dockerfile/check-nogpgcheck/check-missing-signature-options.yaml --payload dockerfile/check-missing-signature-options/test/good-test/good-payload.json 
+    kyverno apply check-missing-signature-options.yaml --json test/good-test/good-payload.json
     ```
 
     This produces the output:
 
     ```
-    Loading policies ...
-    Loading payload ...
-    Pre processing ...
-    Running ( evaluating 1 resource against 1 policy ) ...
-   - check-missing-signature-options / check-missing-signature-options /  PASSED
-    Done
+    mastersans@mastersans check-missing-signature-options % kyverno apply check-missing-signature-options.yaml --json test/good-test/good-payload.json
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+
+    pass: 1, fail: 0, warn: 0, error: 0, skip: 0 
     ```
 
     b. **Test Policy Against Invalid Payload:**
     ```bash
-    kyverno-json scan --policy dockerfile/check-nogpgcheck/check-nogpgcheck.yaml --payload dockerfile/check-nogpgcheck/test/bad-test/01-digest/bad-payload.json 
+    kyverno apply check-missing-signature-options.yaml --json test/bad-test/01-digest/bad-payload.json
     ```
 
     This produces the output:
     ```
-    Loading policies ...
-    Loading payload ...
-    Pre processing ...
-    Running ( evaluating 1 resource against 1 policy ) ...
-   - check-missing-signature-options / check-missing-signature-options /  FAILED: Ensure that packages with untrusted or missing signatures are not used by rpm via `--nodigest` flag: all[3].check.~.(Stages[].Commands[?Name=='RUN'].CmdLine[][])[1].((starts_with(@, 'rpm ') || contains(@, ' rpm '))  && contains(@, ' --nodigest')): Invalid value: true: Expected value: false
-    Done
+    mastersans@mastersans check-missing-signature-options % kyverno apply check-missing-signature-options.yaml --json test/bad-test/01-digest/bad-payload.json 
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+    policy check-missing-signature-options -> resource JSON payload failed:
+    1 -  Ensure that packages with untrusted or missing signatures are not used by rpm via `--nodigest` flag
+
+
+    pass: 0, fail: 1, warn: 0, error: 0, skip: 0 
     ```
     

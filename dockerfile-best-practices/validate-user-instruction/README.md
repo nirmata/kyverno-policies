@@ -28,42 +28,43 @@ Follow these steps:
 
 1. **Extract JSON equivalent of the Dockerfile:**
     ```bash
-    nctl scan dockerfile -r test/good-test/Dockerfile --show-json > payload.json
+    nctl transform -r test/bad-test/Dockerfile -o test/bad-test/bad-payload.json
     ```
 
 2. **Test the Policy with Kyverno:**
     ```bash
-    kyverno-json scan --payload payload.json --policy validate-user-instruction.yaml
+    kyverno apply validate-user-instruction.yaml --json test/bad-test/bad-payload.json
     ```
     
     a. **Test Policy Against Valid Payload:**
     ```bash
-    kyverno-json scan --policy validate-user-instruction.yaml --payload test/good-test/good-payload.json
+    kyverno apply validate-user-instruction.yaml --json test/good-test/good-payload.json
     ```
 
     This produces the output:
     ```
-    Loading policies ...
-    Loading payload ...
-    Pre processing ...
-    Running ( evaluating 1 resource against 1 policy ) ...
-    - validate-user-instruction / validate-user-instruction /  PASSED
-    Done
+    mastersans@mastersans validate-user-instruction % kyverno apply validate-user-instruction.yaml --json test/good-test/good-payload.json
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+
+    pass: 1, fail: 0, warn: 0, error: 0, skip: 0
     ```
 
-    b. **Test Against Invalid Payload:**
+    b. **Test Policy Against Invalid Payload:**
     ```bash
-    kyverno-json scan --policy validate-user-instruction.yaml --payload test/bad-test/bad-payload.json
+    kyverno apply validate-user-instruction.yaml --json test/bad-test/bad-payload.json
     ```
 
     This produces the output:
     ```
-    Loading policies ...
-    Loading payload ...
-    Pre processing ...
-    Running ( evaluating 1 resource against 1 policy ) ...
-    - validate-user-instruction / validate-user-instruction /  FAILED: USER instruction is not present in the Dockerfile: any[0].check.(Stages[].Commands[?Name=='USER'][] | length(@) > `0`): Invalid value: false: Expected value: true
-    Done
+    mastersans@mastersans validate-user-instruction % kyverno apply validate-user-instruction.yaml --json test/bad-test/bad-payload.json
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+    policy validate-user-instruction -> resource JSON payload failed:
+    1 -  USER instruction is not present in the Dockerfile
+
+
+    pass: 0, fail: 1, warn: 0, error: 0, skip: 0
     ```
 
 ---
