@@ -27,48 +27,49 @@ This policy ensures that container images are built using commands that result i
 To evaluate and test the policy ensuring dockerfile meets poliy requirements:
 
 For testing this policy you will need to:
-- Make sure you have `kyverno-json` installed on the machine
-- Make sure you have [nctl `v3.4.0`](https://downloads.nirmata.io/nctl/downloads/) or above.
+- Make sure you have `kyverno` installed on the machine
+- Make sure you have [nctl `v4.3.0`](https://downloads.nirmata.io/nctl/downloads/) or above.
 
 
 1. **Extract JSON equivalent of the dockerfile:**
     ```bash
-    nctl scan dockerfile -r test/good-test/Dockerfile --show-json > payload.json
+    nctl transform -r test/bad-test/Dockerfile -o test/bad-test/bad-payload.json
     ```
 
 2. **Test the Policy with Kyverno:**
     ```bash
-    kyverno-json scan --payload payload.json --policy prefer-copy-over-add.yaml
+    kyverno apply prefer-copy-over-add.yaml --json test/bad-test/bad-payload.json
     ```
     
     a. **Test Policy Against Valid Payload:**
     ```bash
-    kyverno-json scan --policy prefer-copy-over-add.yaml --payload test/good-test/good-payload.json
+    kyverno apply prefer-copy-over-add.yaml --json test/good-test/good-payload.json
     ```
 
     This produces the output:
     ```
-    Loading policies ...
-    Loading payload ...
-    Pre processing ...
-    Running ( evaluating 1 resource against 1 policy ) ...
-    - prefer-copy-over-add / prefer-copy-over-add /  PASSED
-    Done
+    mastersans@mastersans prefer-copy-over-add % kyverno apply prefer-copy-over-add.yaml --json test/good-test/good-payload.json
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+
+    pass: 1, fail: 0, warn: 0, error: 0, skip: 0
     ```
 
-    b. **Test Against Invalid Payload:**
+    b. **Test Policy Against Invalid Payload:**
     ```bash
-    kyverno-json scan --policy prefer-copy-over-add.yaml --payload test/bad-test/bad-payload.json
+    kyverno apply prefer-copy-over-add.yaml --json test/bad-test/bad-payload.json
     ```
 
     This produces the output:
     ```
-    Loading policies ...
-    Loading payload ...
-    Pre processing ...
-    Running ( evaluating 1 resource against 1 policy ) ...
-    - prefer-copy-over-add / prefer-copy-over-add /  FAILED: Avoid the use of ADD instructions in Dockerfiles: any[0].check.(Stages[].Commands[?Name=='ADD'].Link[] | length(@) > `0`): Invalid value: true: Expected value: false
-    Done
+    mastersans@mastersans prefer-copy-over-add % kyverno apply prefer-copy-over-add.yaml --json test/bad-test/bad-payload.json
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+    policy prefer-copy-over-add -> resource JSON payload failed:
+    1 -  Avoid the use of ADD instructions in Dockerfiles
+
+
+    pass: 0, fail: 1, warn: 0, error: 0, skip: 0 
     ```
 
 ---

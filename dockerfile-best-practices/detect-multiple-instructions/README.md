@@ -30,48 +30,49 @@ This policy is implemented to ensure that container images are built with minima
 To evaluate and test the policy ensuring dockerfile meets poliy requirements:
 
 For testing this policy you will need to:
-- Make sure you have `kyverno-json` installed on the machine
-- Make sure you have [nctl `v3.4.0`](https://downloads.nirmata.io/nctl/downloads/) or above.
+- Make sure you have `kyverno` installed on the machine
+- Make sure you have [nctl `v4.3.0`](https://downloads.nirmata.io/nctl/downloads/) or above.
 
 
 1. **Extract JSON equivalent of the dockerfile:**
     ```bash
-    nctl scan dockerfile -r test/good-test/Dockerfile --show-json > payload.json
+    nctl transform -r test/bad-test/Dockerfile -o test/bad-test/bad-payload.json
     ```
 
 2. **Test the Policy with Kyverno:**
     ```bash
-    kyverno-json scan --payload payload.json --policy detect-multiple-instructions.yaml
+    kyverno apply detect-multiple-instructions.yaml --json test/bad-test/bad-payload.json
     ```
     
     a. **Test Policy Against Valid Payload:**
     ```bash
-    kyverno-json scan --policy detect-multiple-instructions.yaml --payload test/good-test/good-payload.json
+    kyverno apply detect-multiple-instructions.yaml --json test/good-test/good-payload.json
     ```
 
     This produces the output:
     ```
-    Loading policies ...
-    Loading payload ...
-    Pre processing ...
-    Running ( evaluating 1 resource against 1 policy ) ...
-    - detect-multiple-instructions / detect-multiple-instructions /  PASSED
-    Done
+    mastersansp@mastersans detect-multiple-instructions % kyverno apply detect-multiple-instructions.yaml --json test/good-test/good-payload.json
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+
+    pass: 1, fail: 0, warn: 0, error: 0, skip: 0 
     ```
 
-    b. **Test Against Invalid Payload:**
+    b. **Test Policy Against Invalid Payload:**
     ```bash
-    kyverno-json scan --policy detect-multiple-instructions.yaml --payload test/bad-test/bad-payload.json
+    kyverno apply detect-multiple-instructions.yaml --json test/bad-test/bad-payload.json
     ```
 
     This produces the output:
     ```
-    Loading policies ...
-    Loading payload ...
-    Pre processing ...
-    Running ( evaluating 1 resource against 1 policy ) ...
-    - detect-multiple-instructions / detect-multiple-instructions /  FAILED: Found multiple instructions in a single line: any[0].check.~.(Stages[].Commands[].CmdLine[0].contains(@, ' && '))[0]: Invalid value: true: Expected value: false
-    Done
+    mastersans@mastersans detect-multiple-instructions % kyverno apply detect-multiple-instructions.yaml --json test/bad-test/bad-payload.json
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+    policy detect-multiple-instructions -> resource JSON payload failed:
+    1 -  Found multiple instructions in a single line
+
+
+    pass: 0, fail: 1, warn: 0, error: 0, skip: 0 
     ```
 
 ---

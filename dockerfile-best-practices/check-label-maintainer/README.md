@@ -18,10 +18,52 @@ Using LABEL for the maintainer information also makes it consistent with other m
 
 This policy checks if the LABEL instruction has been used followed up by maintainer/author/owner. If you've not used the LABEL instruction, this policy will give you failing checks.
 
-**In order to test this Policy, you can use the following commands:**
+**In order to test this policy, use the following commands:**
 
- Run the `kyverno-json scan` command for the `good-payload.json` file that is present in the `test/good-test` directory.
-   ```
-   kyverno-json scan --payload test/good-test/good-payload.json --policy check-label-maintainer.yaml
-   ```
-   Since the Dockerfile contain the LABEL instruction followed by MAINTAINER, it'll give you passing checks. In order to test this policy for failing scenario, run the same command for `bad-payload.json` present in `test/bad-test` directory.
+- Make sure you have `kyverno` installed on the machine
+- Make sure you have [nctl `v4.3.0`](https://downloads.nirmata.io/nctl/downloads/) or above.
+
+
+1. **Extract JSON equivalent of the dockerfile:**
+    ```bash
+    nctl transform -r test/bad-test-01/Dockerfile -o test/bad-test-01/bad-payload-01.json
+    ```
+
+2. **Test the Policy with Kyverno:**
+    ```bash
+    kyverno apply check-label-maintainer.yaml --json test/bad-test-01/bad-payload-01.json
+    ```
+    a. **Test Policy Against Valid Payload:**
+    ```bash
+    kyverno apply check-label-maintainer.yaml --json test/bad-test-01/bad-payload-01.json
+    ```
+
+    This produces the output:
+
+    ```
+    mastersans@mastersans check-label-maintainer % kyverno apply check-label-maintainer.yaml --json test/bad-test-01/bad-payload-01.json
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+    policy check-label-maintainer -> resource JSON payload failed:
+    1 -  MAINTAINER instruction is deprecated, use LABELS instruction to mention maintainer name
+
+
+    pass: 0, fail: 1, warn: 0, error: 0, skip: 0 
+    ```
+
+    b. **Test Policy Against Invalid Payload:**
+    ```bash
+    kyverno apply check-label-maintainer.yaml --json test/bad-test-02/bad-payload-02.json
+    ```
+
+    This produces the output:
+    ```
+    mastersans@mastersans check-label-maintainer % kyverno apply check-label-maintainer.yaml --json test/bad-test-02/bad-payload-02.json
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+    policy check-label-maintainer -> resource JSON payload failed:
+    1 -  Use the LABELS instruction to set the MAINTAINER name
+
+
+    pass: 0, fail: 1, warn: 0, error: 0, skip: 0 
+    ```

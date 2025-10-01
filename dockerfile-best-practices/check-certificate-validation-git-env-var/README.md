@@ -27,48 +27,50 @@ This policy checks whether you're using the `GIT_SSL_NO_VERIFY` env variable in 
 
 **In order to test this policy, use the following commands:**
 
-- Make sure you have `kyverno-json` installed on the machine
-- Make sure you have [nctl `v3.4.0`](https://downloads.nirmata.io/nctl/downloads/) or above.
+- Make sure you have `kyverno` installed on the machine
+- Make sure you have [nctl `v4.3.0`](https://downloads.nirmata.io/nctl/downloads/) or above.
 
 
 1. **Extract JSON equivalent of the dockerfile:**
     ```bash
-    nctl scan dockerfile -r test/good-test/Dockerfile --show-json > payload.json
+    nctl transform -r test/bad-test-01/Dockerfile -o test/bad-test-01/bad-payload-01.json
     ```
 
 2. **Test the Policy with Kyverno:**
     ```bash
-    kyverno-json scan --payload payload.json --policy check-certificate-validation-git-env-var.yaml
+    kyverno apply check-certificate-validation-git-env-var.yaml --json test/bad-test-01/bad-payload-01.json
     ```
-    a. **Test Policy Against Valid Payload:**
+
+    a. **Test Policy Against Invalid Payload (bad-test-01):**
     ```bash
-    kyverno-json scan --policy check-certificate-validation-git-env-var.yaml --payload test/good-test/good-payload.json
-    ```
-
-    This produces the output:
-
-    ```
-    Loading policies ...
-    Loading payload ...
-    Pre processing ...
-    Running ( evaluating 1 resource against 1 policy ) ...
-    - check-certificate-validation-git-env-var / check-certificate-validation-git-env-var /  PASSED
-    Done
-    ```
-
-    b. **Test Policy Against Invalid Payload:**
-    ```bash
-    kyverno-json scan --policy check-certificate-validation-git-env-var.yaml --payload test/bad-test/bad-payload.json
+    kyverno apply check-certificate-validation-git-env-var.yaml --json test/bad-test-01/bad-payload-01.json
     ```
 
     This produces the output:
     ```
-    Loading policies ...
-    Loading payload ...
-    Pre processing ...
-    Running ( evaluating 1 resource against 1 policy ) ...
-    - check-certificate-validation-git-env-var / check-certificate-validation-git-env-var /  FAILED
-    -> Ensure certificate validation is enabled by using `GIT_SSL_NO_VERIFY` env with value set to '0' or 'false'
-    -> any[0].check.(Stages[].Commands[].Env[?Key=='GIT_SSL_NO_VERIFY' && (Value=='0' || Value=='false')][] | length(@) > `0`): Invalid value: false: Expected value: true
-    Done
+    mastersans@mastersans check-certificate-validation-git-env-var % kyverno apply check-certificate-validation-git-env-var.yaml --json test/bad-test-01/bad-payload-01.json
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+    policy check-certificate-validation-git-env-var -> resource JSON payload failed:
+    1 -  Ensure certificate validation is enabled by using `GIT_SSL_NO_VERIFY` env with value set to '0' or 'false'
+
+
+    pass: 0, fail: 1, warn: 0, error: 0, skip: 0 
+    ```
+
+    b. **Test Policy Against Invalid Payload (bad-test-02):**
+    ```bash
+    kyverno apply check-certificate-validation-git-env-var.yaml --json test/bad-test-02/bad-payload-02.json
+    ```
+
+    This produces the output:
+    ```
+    mastersans@mastersans check-certificate-validation-git-env-var % kyverno apply check-certificate-validation-git-env-var.yaml --json test/bad-test-02/bad-payload-02.json
+
+    Applying 1 policy rule(s) to 1 resource(s)...
+    policy check-certificate-validation-git-env-var -> resource JSON payload failed:
+    1 -  Ensure certificate validation is enabled by using `GIT_SSL_NO_VERIFY` env with value set to '0' or 'false'
+
+
+    pass: 0, fail: 1, warn: 0, error: 0, skip: 0 
     ```
