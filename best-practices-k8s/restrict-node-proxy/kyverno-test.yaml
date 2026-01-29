@@ -1,0 +1,69 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: test-restrict-nodes-proxy
+policies:
+- restrict-nodes-proxy.yaml
+resources:
+- resources.yaml
+results:
+- kind: ClusterRole
+  policy: restrict-nodes-proxy
+  resources:
+  - system:bootstrap-signer
+  result: pass
+  rule: block-nodes-proxy-get-permissions
+- kind: ClusterRole
+  policy: restrict-nodes-proxy
+  resources:
+  - system:node-bootstrapper  
+  result: pass
+  rule: block-nodes-proxy-get-permissions
+- kind: ClusterRole
+  policy: restrict-nodes-proxy
+  resources:
+  - system:kubelet-bootstrap
+  result: pass
+  rule: block-nodes-proxy-get-permissions
+- kind: ClusterRole
+  policy: restrict-nodes-proxy
+  resources:
+  - custom-dangerous-nodes-proxy-get
+  result: fail
+  rule: block-nodes-proxy-get-permissions
+- kind: ClusterRole
+  policy: restrict-nodes-proxy
+  resources:
+  - custom-dangerous-nodes-wildcard-get
+  result: fail
+  rule: block-nodes-proxy-get-permissions
+- kind: ClusterRole
+  policy: restrict-nodes-proxy
+  resources:
+  - custom-dangerous-all-resources-get
+  result: fail
+  rule: block-nodes-proxy-get-permissions
+- kind: ClusterRole
+  policy: restrict-nodes-proxy
+  resources:
+  - custom-safe-nodes-metrics
+  result: pass
+  rule: block-nodes-proxy-get-permissions
+- kind: ClusterRole
+  policy: restrict-nodes-proxy
+  resources:
+  - custom-safe-pods-only
+  result: pass
+  rule: block-nodes-proxy-get-permissions
+- kind: Role
+  policy: restrict-nodes-proxy
+  resources:
+  - default/custom-dangerous-role-nodes-proxy
+  result: fail
+  rule: block-nodes-proxy-get-permissions
+- kind: Role
+  policy: restrict-nodes-proxy
+  resources:
+  - default/custom-safe-role-configmaps
+  result: pass
+  rule: block-nodes-proxy-get-permissions
