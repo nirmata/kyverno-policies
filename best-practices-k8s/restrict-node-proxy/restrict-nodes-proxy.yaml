@@ -1,0 +1,74 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-nodes-proxy
+  annotations:
+    policies.kyverno.io/title: "Block Dangerous nodes/proxy GET Permissions"
+    policies.kyverno.io/category: "Security"
+    policies.kyverno.io/severity: "high"
+    policies.kyverno.io/subject: "ClusterRole, Role"
+    policies.kyverno.io/description: >-
+      Blocks ClusterRoles and Roles from having nodes/proxy GET permissions which can be exploited 
+      for remote code execution in any Pod. Use fine-grained alternatives like nodes/metrics or nodes/stats.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: block-nodes-proxy-get-permissions
+      match:
+        any:
+          - resources:
+              kinds:
+                - ClusterRole
+                - Role
+      exclude:
+        any:
+          # Exclude system roles that legitimately need this access
+          - resources:
+              kinds:
+                - ClusterRole
+                - Role
+              names:
+                - "system:*"
+          - resources:
+              kinds:
+                - ClusterRole
+                - Role
+              selector:
+                matchLabels:
+                  "app.kubernetes.io/managed-by": "kube-apiserver"
+          - resources:
+              kinds:
+                - ClusterRole  
+                - Role
+              selector:
+                matchLabels:
+                  "kubernetes.io/bootstrapping": "rbac-defaults"
+      validate:
+        message: >-
+          ClusterRole/Role "{{ request.object.metadata.name }}" contains dangerous permissions: 
+          Either nodes/proxy with GET verb, wildcard resources (*) with GET verb, or nodes/* with GET verb.
+          This can lead to remote code execution in any Pod. Use fine-grained alternatives like 
+          nodes/metrics, nodes/stats, or specific monitoring endpoints.
+        deny:
+          conditions:
+            any:
+              # Check if any rule has dangerous combination
+              - key: "{{ request.object.rules[?contains(resources || `[]`, 'nodes/proxy') && contains(verbs || `[]`, 'get')] }}"
+                operator: NotEquals
+                value: []
+              - key: "{{ request.object.rules[?contains(resources || `[]`, 'nodes/proxy') && contains(verbs || `[]`, '*')] }}"
+                operator: NotEquals
+                value: []
+              - key: "{{ request.object.rules[?contains(resources || `[]`, 'nodes/*') && contains(verbs || `[]`, 'get')] }}"
+                operator: NotEquals
+                value: []
+              - key: "{{ request.object.rules[?contains(resources || `[]`, 'nodes/*') && contains(verbs || `[]`, '*')] }}"
+                operator: NotEquals
+                value: []
+              - key: "{{ request.object.rules[?contains(resources || `[]`, '*') && contains(verbs || `[]`, 'get')] }}"
+                operator: NotEquals
+                value: []
+              - key: "{{ request.object.rules[?contains(resources || `[]`, '*') && contains(verbs || `[]`, '*')] }}"
+                operator: NotEquals
+                value: []
