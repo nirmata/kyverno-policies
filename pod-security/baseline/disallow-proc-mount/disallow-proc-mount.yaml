@@ -9,6 +9,9 @@ metadata:
     policies.kyverno.io/subject: Pod
     kyverno.io/kubernetes-version: "1.22-1.23"
     policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/podsecurity/baseline/disallow-proc-mount/"
+    policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,nsa-cisa,nist-800-53"
+    policies.nirmata.io/nsa-cisa-control: "Sec.1.4"
+    policies.nirmata.io/nist-800-53-control: "CM-7"
     policies.kyverno.io/description: >-
       The default /proc masks are set up to reduce attack surface and should be required. This policy
       ensures nothing but the default procMount can be specified for the fields fields

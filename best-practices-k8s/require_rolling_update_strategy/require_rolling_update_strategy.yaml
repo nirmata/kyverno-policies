@@ -7,6 +7,8 @@ metadata:
         policies.kyverno.io/category: Best Practices
         policies.kyverno.io/severity: medium
         policies.kyverno.io/subject: Deployment
+        policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,nsa-cisa,nist-800-53"
+        policies.nirmata.io/nist-800-53-control: "SI-2"
         policies.kyverno.io/description: >-
             Rolling updates allow Deployments to update with zero downtime by incrementally updating Pods instances with new ones. This policy validates that Deployments specify a rollout strategy of type 'RollingUpdate' and defines appropriate maxSurge and maxUnavailable values to ensure controlled application updates.
 spec:

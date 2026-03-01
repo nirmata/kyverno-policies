@@ -10,6 +10,10 @@ metadata:
     policies.kyverno.io/minversion: "1.6.0"
     kyverno.io/kubernetes-version: "1.22+"
     policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/cis-eks/restrict-cluster-admin-binding/"
+    policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,soc2,iso27001,nsa-cisa,nist-800-53"
+    policies.nirmata.io/nsa-cisa-control: "Sec.3.1"
+    policies.nirmata.io/nist-800-53-control: "AC-2,AC-6"
+    policies.nirmata.io/cis-eks-control: "4.1.1"
     policies.kyverno.io/description: >-
       CIS EKS Benchmark 4.1.1: The cluster-admin role grants unrestricted access to
       every resource in the cluster and all namespaces. Service accounts should not be

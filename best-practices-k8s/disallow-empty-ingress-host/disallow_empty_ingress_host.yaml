@@ -8,6 +8,9 @@ metadata:
         policies.kyverno.io/severity: medium
         kyverno.io/kyverno-version: 1.14.1
         policies.kyverno.io/subject: Ingress
+        policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,nsa-cisa,nist-800-53"
+        policies.nirmata.io/nsa-cisa-control: "Sec.2.2"
+        policies.nirmata.io/nist-800-53-control: "SC-7"
         policies.kyverno.io/description: >-
             An ingress resource needs to define an actual host name in order to be valid. This policy ensures that there is a hostname for each rule defined.
 spec:

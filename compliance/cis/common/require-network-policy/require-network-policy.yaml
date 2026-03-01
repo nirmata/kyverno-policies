@@ -10,6 +10,10 @@ metadata:
     policies.kyverno.io/minversion: "1.7.0"
     kyverno.io/kubernetes-version: "1.22+"
     policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/cis-eks/require-network-policy/"
+    policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,soc2,nsa-cisa,nist-800-53"
+    policies.nirmata.io/nsa-cisa-control: "Sec.2.1"
+    policies.nirmata.io/nist-800-53-control: "SC-7"
+    policies.nirmata.io/cis-eks-control: "4.3.1"
     policies.kyverno.io/description: >-
       CIS EKS Benchmark 4.3.1: Configuring Kubernetes network policies ensures that
       pod-to-pod communication is restricted and follows the principle of least privilege.

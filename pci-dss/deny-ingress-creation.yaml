@@ -8,6 +8,8 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/category: PCI DSS Compliance
     policies.kyverno.io/subject: Ingress
+    policies.kyverno.io/standards: "pci-dss"
+    policies.nirmata.io/pci-dss-control: "1.3"
     policies.kyverno.io/description: >-
       Ingress provides routing rules to manage access to the services within a Kubernetes cluster. 
       This policy blocks the creation of Kubernetes ingress resources.

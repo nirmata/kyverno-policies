@@ -10,6 +10,10 @@ metadata:
     policies.kyverno.io/minversion: "1.6.0"
     kyverno.io/kubernetes-version: "1.22+"
     policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/cis-eks/restrict-pod-creation-access/"
+    policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,nsa-cisa,nist-800-53"
+    policies.nirmata.io/nsa-cisa-control: "Sec.3.1"
+    policies.nirmata.io/nist-800-53-control: "AC-3,AC-6"
+    policies.nirmata.io/cis-eks-control: "4.1.4"
     policies.kyverno.io/description: >-
       CIS EKS Benchmark 4.1.4: The ability to create pods in a cluster may allow for
       privilege escalation since pods can be configured to mount service account tokens,

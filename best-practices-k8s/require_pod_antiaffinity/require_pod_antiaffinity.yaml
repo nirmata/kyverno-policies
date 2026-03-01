@@ -8,6 +8,7 @@ metadata:
         policies.kyverno.io/category: Best Practices
         policies.kyverno.io/severity: medium
         policies.kyverno.io/subject: Pod
+        policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,nsa-cisa,nist-800-53"
         policies.kyverno.io/description: >-
             Pod anti-affinity ensures that Pods are not scheduled on the same node or topology as other matching Pods, enhancing fault tolerance and availability. This policy validates that Pods define either a required or preferred anti-affinity rule using  `requiredDuringSchedulingIgnoredDuringExecution` or  `preferredDuringSchedulingIgnoredDuringExecution` with a valid topologyKey.
 spec:

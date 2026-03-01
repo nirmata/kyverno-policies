@@ -15,6 +15,10 @@ metadata:
       requirements. Configure spec.tls with a valid secretName to enable
       TLS termination at the Ingress layer.
     policies.kyverno.io/minversion: "1.10.0"
+    policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,pci-dss,nsa-cisa,nist-800-53"
+    policies.nirmata.io/nsa-cisa-control: "Sec.2.2"
+    policies.nirmata.io/nist-800-53-control: "SC-8,AC-17"
+    policies.nirmata.io/cis-eks-control: "5.4.5"
 spec:
   validationFailureAction: Audit
   background: true

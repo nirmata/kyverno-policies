@@ -9,6 +9,9 @@ metadata:
     policies.kyverno.io/subject: Pod
     kyverno.io/kubernetes-version: "1.22-1.23"
     policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/podsecurity/baseline/disallow-host-ports/"
+    policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,nsa-cisa,nist-800-53"
+    policies.nirmata.io/nsa-cisa-control: "Sec.2.1"
+    policies.nirmata.io/nist-800-53-control: "SC-7,CM-7"
     policies.kyverno.io/description: >-
       Access to host ports allows potential snooping of network traffic and should not be
       allowed, or at minimum restricted to a known list. This policy ensures the fields spec.containers[*].ports[*].hostPort

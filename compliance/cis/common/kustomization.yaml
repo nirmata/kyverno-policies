@@ -1,10 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+# CIS Kubernetes policies applicable to all distributions (EKS, AKS, GKE, vanilla)
 resources:
 - restrict-cluster-admin-binding/restrict-cluster-admin-binding.yaml
 - restrict-secret-role-access/restrict-secret-role-access.yaml
 - restrict-pod-creation-access/restrict-pod-creation-access.yaml
 - require-network-policy/require-network-policy.yaml
 - require-pss-labels/require-pss-labels.yaml
-- restrict-secrets-as-env-vars/restrict-secrets-as-env-vars.yaml
 - require-ingress-tls/require-ingress-tls.yaml

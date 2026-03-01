@@ -11,6 +11,9 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/podsecurity/restricted/disallow-capabilities-strict/"
     policies.nirmata.io/remediation: "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/restricted/disallow-capabilities-strict/remediate-disallow-capabilities-strict.yaml"
+    policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,soc2,iso27001,pci-dss,nsa-cisa,nist-800-53"
+    policies.nirmata.io/nsa-cisa-control: "Sec.1.4"
+    policies.nirmata.io/nist-800-53-control: "AC-6,CM-7"
     policies.kyverno.io/description: >-
       Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition,
       all containers must explicitly drop `ALL` capabilities.

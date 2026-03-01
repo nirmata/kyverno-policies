@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# NIST SP 800-53 Rev 5
+resources:
+# Common CIS Kubernetes policies
+- ../cis/common
+# Shared policy libraries (pod-security/restricted includes pod-security/baseline)
+- ../../pod-security/restricted
+- ../../rbac-best-practices
+- ../../best-practices-k8s

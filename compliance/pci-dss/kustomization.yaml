@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# PCI DSS v3.2.1 / v4.0
+# Uses pci-dss/kustomization.yaml which provides 6 policies.
+# require-network-policy is excluded here to avoid naming conflicts
+# when composing with other bundles that include CIS common.
+# For standalone PCI-DSS with all 7 policies: kubectl apply -k pci-dss/
+resources:
+- ../../pci-dss

@@ -1,0 +1,382 @@
+apiVersion: nirmata.io/v1alpha1
+kind: ComplianceMappings
+metadata:
+  name: kyverno-compliance-mappings
+  annotations:
+    description: >-
+      Authoritative mapping from Kyverno policies to compliance standard control IDs.
+      Use this file as the machine-queryable source of truth for control coverage.
+      Human-readable standards annotations are also present on each policy YAML.
+
+# CIS controls requiring cloud/node access (not enforceable via Kyverno alone):
+# cis-eks:  2.x (EKS control plane config), 3.x (worker node config), 5.3-5.5 (networking/storage)
+# cis-kubernetes: 1.x (control plane), 2.x (etcd), 3.x (control plane config), 4.x (worker nodes)
+# These controls require aws CLI, SSH, or kubeadm access and are documented in the skills/cis-benchmark-scan skill.
+
+policies:
+  # --- CIS common policies (compliance/cis/) ---
+
+  restrict-cluster-admin-binding:
+    path: compliance/cis/common/restrict-cluster-admin-binding/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
+    cis-eks:        ["4.1.1"]
+    cis-kubernetes: ["5.1.1"]
+    soc2:           ["CC6.1", "CC6.3"]
+    iso27001:       ["A.9.4.1"]
+    nsa-cisa:       ["Sec.3.1"]
+    nist-800-53:    ["AC-2", "AC-6"]
+
+  restrict-secret-role-access:
+    path: compliance/cis/common/restrict-secret-role-access/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    cis-eks:        ["4.1.2"]
+    cis-kubernetes: ["5.1.2"]
+    nsa-cisa:       ["Sec.1.6", "Sec.3.1"]
+    nist-800-53:    ["AC-3", "IA-5"]
+
+  restrict-pod-creation-access:
+    path: compliance/cis/common/restrict-pod-creation-access/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    cis-eks:        ["4.1.4"]
+    cis-kubernetes: ["5.1.4"]
+    nsa-cisa:       ["Sec.3.1"]
+    nist-800-53:    ["AC-3", "AC-6"]
+
+  require-network-policy:
+    path: compliance/cis/common/require-network-policy/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
+    cis-eks:        ["4.3.1"]
+    cis-kubernetes: ["5.3.2"]
+    soc2:           ["A1.2"]
+    nsa-cisa:       ["Sec.2.1"]
+    nist-800-53:    ["SC-7"]
+
+  require-pss-labels:
+    path: compliance/cis/common/require-pss-labels/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    cis-eks:        ["4.4.2"]
+    cis-kubernetes: ["5.7.1"]
+    nsa-cisa:       ["Sec.1.1"]
+    nist-800-53:    ["CM-6", "CM-7"]
+
+  require-ingress-tls:
+    path: compliance/cis/common/require-ingress-tls/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, pci-dss, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.4.5"]
+    cis-kubernetes: ["5.7.5"]
+    pci-dss:        ["4.1"]
+    nsa-cisa:       ["Sec.2.2"]
+    nist-800-53:    ["SC-8", "AC-17"]
+
+  # --- CIS EKS-specific policies (compliance/cis/eks/) ---
+
+  restrict-secrets-as-env-vars:
+    path: compliance/cis/eks/restrict-secrets-as-env-vars/
+    standards:      [cis-eks, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.x"]
+    nsa-cisa:       ["Sec.1.6"]
+    nist-800-53:    ["IA-5", "SC-28"]
+
+  # --- Pod Security Standards (pod-security/baseline/) ---
+
+  disallow-capabilities:
+    path: pod-security/baseline/disallow-capabilities/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.9"]
+    cis-kubernetes: ["5.2.9"]
+    nsa-cisa:       ["Sec.1.4"]
+    nist-800-53:    ["AC-6", "CM-7"]
+
+  disallow-host-namespaces:
+    path: pod-security/baseline/disallow-host-namespaces/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.4"]
+    cis-kubernetes: ["5.2.4"]
+    nsa-cisa:       ["Sec.1.3"]
+    nist-800-53:    ["SC-39", "CM-7"]
+
+  disallow-host-path:
+    path: pod-security/baseline/disallow-host-path/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.6"]
+    cis-kubernetes: ["5.2.6"]
+    nsa-cisa:       ["Sec.1.3"]
+    nist-800-53:    ["SC-39", "CM-7"]
+
+  disallow-host-ports:
+    path: pod-security/baseline/disallow-host-ports/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.7"]
+    cis-kubernetes: ["5.2.7"]
+    nsa-cisa:       ["Sec.2.1"]
+    nist-800-53:    ["SC-7", "CM-7"]
+
+  disallow-host-process:
+    path: pod-security/baseline/disallow-host-process/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.4"]
+    cis-kubernetes: ["5.2.4"]
+    nsa-cisa:       ["Sec.1.3"]
+    nist-800-53:    ["SC-39", "CM-7"]
+
+  disallow-privileged-containers:
+    path: pod-security/baseline/disallow-privileged-containers/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.2"]
+    cis-kubernetes: ["5.2.2"]
+    soc2:           ["CC6.1"]
+    iso27001:       ["A.9.4.1"]
+    nsa-cisa:       ["Sec.1.3"]
+    nist-800-53:    ["AC-6", "CM-7"]
+
+  disallow-proc-mount:
+    path: pod-security/baseline/disallow-proc-mount/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.5"]
+    cis-kubernetes: ["5.2.5"]
+    nsa-cisa:       ["Sec.1.4"]
+    nist-800-53:    ["CM-7"]
+
+  disallow-selinux:
+    path: pod-security/baseline/disallow-selinux/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.3"]
+    cis-kubernetes: ["5.2.3"]
+    nsa-cisa:       ["Sec.1.4"]
+    nist-800-53:    ["CM-7"]
+
+  restrict-apparmor-profiles:
+    path: pod-security/baseline/restrict-apparmor-profiles/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.3"]
+    cis-kubernetes: ["5.2.3"]
+    nsa-cisa:       ["Sec.1.4"]
+    nist-800-53:    ["CM-7"]
+
+  restrict-seccomp:
+    path: pod-security/baseline/restrict-seccomp/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.11"]
+    cis-kubernetes: ["5.2.11"]
+    nsa-cisa:       ["Sec.1.4"]
+    nist-800-53:    ["CM-7", "SI-3"]
+
+  restrict-sysctls:
+    path: pod-security/baseline/restrict-sysctls/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.10"]
+    cis-kubernetes: ["5.2.10"]
+    nsa-cisa:       ["Sec.1.4"]
+    nist-800-53:    ["CM-7"]
+
+  # --- Pod Security Standards (pod-security/restricted/) ---
+
+  disallow-capabilities-strict:
+    path: pod-security/restricted/disallow-capabilities-strict/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.9"]
+    cis-kubernetes: ["5.2.9"]
+    nsa-cisa:       ["Sec.1.4"]
+    nist-800-53:    ["AC-6", "CM-7"]
+
+  disallow-privilege-escalation:
+    path: pod-security/restricted/disallow-privilege-escalation/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.5"]
+    cis-kubernetes: ["5.2.5"]
+    soc2:           ["CC6.1"]
+    iso27001:       ["A.9.4.1"]
+    nsa-cisa:       ["Sec.1.5"]
+    nist-800-53:    ["AC-6", "CM-7"]
+
+  require-run-as-non-root-user:
+    path: pod-security/restricted/require-run-as-non-root-user/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.6"]
+    cis-kubernetes: ["5.2.6"]
+    nsa-cisa:       ["Sec.1.1"]
+    nist-800-53:    ["AC-6", "CM-7"]
+
+  require-run-as-nonroot:
+    path: pod-security/restricted/require-run-as-nonroot/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.6"]
+    cis-kubernetes: ["5.2.6"]
+    nsa-cisa:       ["Sec.1.1"]
+    nist-800-53:    ["AC-6", "CM-7"]
+
+  restrict-seccomp-strict:
+    path: pod-security/restricted/restrict-seccomp-strict/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.2.11"]
+    cis-kubernetes: ["5.2.11"]
+    nsa-cisa:       ["Sec.1.4"]
+    nist-800-53:    ["CM-7", "SI-3"]
+
+  restrict-volume-types:
+    path: pod-security/restricted/restrict-volume-types/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.1.3"]
+    cis-kubernetes: ["5.1.3"]
+    nsa-cisa:       ["Sec.1.3"]
+    nist-800-53:    ["SC-39", "CM-7"]
+
+  # --- RBAC Best Practices (rbac-best-practices/) ---
+
+  disable-automount-sa-token:
+    path: rbac-best-practices/disable-automount-sa-token/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
+    cis-eks:        ["4.1.6"]
+    cis-kubernetes: ["5.1.6"]
+    nsa-cisa:       ["Sec.3.2"]
+    nist-800-53:    ["IA-5", "AC-3"]
+
+  restrict-automount-sa-token:
+    path: rbac-best-practices/restrict-automount-sa-token/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
+    cis-eks:        ["4.1.6"]
+    cis-kubernetes: ["5.1.6"]
+    nsa-cisa:       ["Sec.3.2"]
+    nist-800-53:    ["IA-5", "AC-3"]
+
+  restrict-binding-system-groups:
+    path: rbac-best-practices/restrict-binding-system-groups/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
+    cis-eks:        ["4.1.1"]
+    cis-kubernetes: ["5.1.1"]
+    soc2:           ["CC6.3"]
+    iso27001:       ["A.9.4.1"]
+    nsa-cisa:       ["Sec.3.1"]
+    nist-800-53:    ["AC-2", "AC-6"]
+
+  restrict-clusterrole-nodesproxy:
+    path: rbac-best-practices/restrict-clusterrole-nodesproxy/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    cis-eks:        ["4.1.3"]
+    cis-kubernetes: ["5.1.3"]
+    nsa-cisa:       ["Sec.3.1"]
+    nist-800-53:    ["AC-6"]
+
+  restrict-escalation-verbs-roles:
+    path: rbac-best-practices/restrict-escalation-verbs-roles/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
+    cis-eks:        ["4.1.2"]
+    cis-kubernetes: ["5.1.2"]
+    soc2:           ["CC6.1"]
+    iso27001:       ["A.9.4.1"]
+    nsa-cisa:       ["Sec.3.1"]
+    nist-800-53:    ["AC-3", "AC-6"]
+
+  restrict-wildcard-resources:
+    path: rbac-best-practices/restrict-wildcard-resources/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    cis-eks:        ["4.1.3"]
+    cis-kubernetes: ["5.1.3"]
+    nsa-cisa:       ["Sec.3.1"]
+    nist-800-53:    ["AC-3", "AC-6"]
+
+  # --- Best Practices Kubernetes (best-practices-k8s/) ---
+
+  disallow-default-namespace:
+    path: best-practices-k8s/disallow-default-namespace/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, iso27001, nsa-cisa, nist-800-53]
+    cis-eks:        ["4.5.1"]
+    cis-kubernetes: ["5.7.2"]
+    nsa-cisa:       ["Sec.3.1"]
+    nist-800-53:    ["CM-7", "SC-39"]
+
+  disallow-latest-tag:
+    path: best-practices-k8s/disallow_latest_tag/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, iso27001, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.1.x"]
+    cis-kubernetes: ["5.1.x"]
+    nsa-cisa:       ["Sec.5.1"]
+    nist-800-53:    ["SI-7", "CM-11"]
+
+  disallow-empty-ingress-host:
+    path: best-practices-k8s/disallow-empty-ingress-host/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    nsa-cisa:       ["Sec.2.2"]
+    nist-800-53:    ["SC-7"]
+
+  require-labels:
+    path: best-practices-k8s/require_labels/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, iso27001, nsa-cisa, nist-800-53]
+    nist-800-53:    ["CM-8"]
+
+  require-pod-antiaffinity:
+    path: best-practices-k8s/require_pod_antiaffinity/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+
+  require-pod-requests-limits:
+    path: best-practices-k8s/require_pod_requests_limits/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
+    soc2:           ["A1.1"]
+    nist-800-53:    ["SC-6"]
+
+  require-probes:
+    path: best-practices-k8s/require_probes/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    nist-800-53:    ["SI-2"]
+
+  require-ro-rootfs:
+    path: best-practices-k8s/require_ro_rootfs/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, iso27001, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.1.3"]
+    cis-kubernetes: ["5.1.3"]
+    nsa-cisa:       ["Sec.1.2"]
+    nist-800-53:    ["CM-7", "SI-7"]
+
+  require-rolling-update-strategy:
+    path: best-practices-k8s/require_rolling_update_strategy/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    nist-800-53:    ["SI-2"]
+
+  restrict-node-port:
+    path: best-practices-k8s/restrict_node_port/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    cis-eks:        ["5.4.1"]
+    cis-kubernetes: ["5.4.1"]
+    nsa-cisa:       ["Sec.2.1"]
+    nist-800-53:    ["SC-7", "CM-7"]
+
+  # --- PCI DSS (pci-dss/) ---
+
+  pci-add-annotations:
+    path: pci-dss/add-annotations.yaml
+    standards:      [pci-dss, soc2]
+    pci-dss:        ["12.x"]
+
+  pci-deny-lb-creation:
+    path: pci-dss/deny-lb-creation.yaml
+    standards:      [pci-dss, soc2]
+    pci-dss:        ["1.3"]
+    soc2:           ["A1.2"]
+
+  pci-restrict-basic-auth-secret:
+    path: pci-dss/restrict-basic-auth-secret.yaml
+    standards:      [pci-dss, soc2]
+    pci-dss:        ["8.2"]
+    soc2:           ["CC6.1"]
+
+  pci-require-network-policy:
+    path: pci-dss/require-network-policy.yaml
+    standards:      [pci-dss, soc2]
+    pci-dss:        ["1.3"]
+    soc2:           ["A1.2"]
+
+  pci-require-clamav-enabled:
+    path: pci-dss/require-clamav-enabled.yaml
+    standards:      [pci-dss]
+    pci-dss:        ["5.1"]
+
+  pci-disallow-default-service-account:
+    path: pci-dss/disallow-default-service-account.yaml
+    standards:      [pci-dss, soc2]
+    pci-dss:        ["7.1"]
+    soc2:           ["CC6.3"]
+
+  pci-deny-ingress-creation:
+    path: pci-dss/deny-ingress-creation.yaml
+    standards:      [pci-dss]
+    pci-dss:        ["1.3"]
