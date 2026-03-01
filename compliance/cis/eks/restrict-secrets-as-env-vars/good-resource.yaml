@@ -3,9 +3,22 @@ kind: Pod
 metadata:
   name: pod-with-plain-env
 spec:
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
   containers:
   - name: app
     image: nginx:1.25
+    securityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
     env:
     - name: LOG_LEVEL
       value: info
@@ -17,9 +30,22 @@ kind: Pod
 metadata:
   name: pod-with-volume-secret
 spec:
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
   containers:
   - name: app
     image: nginx:1.25
+    securityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
   volumes:
   - name: db-creds
     secret:
