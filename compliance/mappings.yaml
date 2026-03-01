@@ -28,17 +28,19 @@ policies:
 
   restrict-secret-role-access:
     path: compliance/cis/common/restrict-secret-role-access/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
     cis-eks:        ["4.1.2"]
     cis-kubernetes: ["5.1.2"]
+    soc2:           ["CC6.3"]
     nsa-cisa:       ["Sec.1.6", "Sec.3.1"]
     nist-800-53:    ["AC-3", "IA-5"]
 
   restrict-pod-creation-access:
     path: compliance/cis/common/restrict-pod-creation-access/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
     cis-eks:        ["4.1.4"]
     cis-kubernetes: ["5.1.4"]
+    soc2:           ["CC6.3"]
     nsa-cisa:       ["Sec.3.1"]
     nist-800-53:    ["AC-3", "AC-6"]
 
@@ -47,7 +49,7 @@ policies:
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
     cis-eks:        ["4.3.1"]
     cis-kubernetes: ["5.3.2"]
-    soc2:           ["A1.2"]
+    soc2:           ["CC6.6", "A1.2"]
     nsa-cisa:       ["Sec.2.1"]
     nist-800-53:    ["SC-7"]
 
@@ -61,9 +63,10 @@ policies:
 
   require-ingress-tls:
     path: compliance/cis/common/require-ingress-tls/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, pci-dss, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, pci-dss, nsa-cisa, nist-800-53]
     cis-eks:        ["5.4.5"]
     cis-kubernetes: ["5.7.5"]
+    soc2:           ["CC6.7"]
     pci-dss:        ["4.1"]
     nsa-cisa:       ["Sec.2.2"]
     nist-800-53:    ["SC-8", "AC-17"]
@@ -72,8 +75,10 @@ policies:
 
   restrict-secrets-as-env-vars:
     path: compliance/cis/eks/restrict-secrets-as-env-vars/
-    standards:      [cis-eks, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, soc2, iso27001, nsa-cisa, nist-800-53]
     cis-eks:        ["5.x"]
+    soc2:           ["CC6.7"]
+    iso27001:       ["A.10.1.1"]
     nsa-cisa:       ["Sec.1.6"]
     nist-800-53:    ["IA-5", "SC-28"]
 
@@ -84,6 +89,8 @@ policies:
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
     cis-eks:        ["5.2.9"]
     cis-kubernetes: ["5.2.9"]
+    soc2:           ["CC6.1"]
+    iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["AC-6", "CM-7"]
 
@@ -92,6 +99,8 @@ policies:
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
     cis-eks:        ["5.2.4"]
     cis-kubernetes: ["5.2.4"]
+    soc2:           ["CC6.1"]
+    iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.1.3"]
     nist-800-53:    ["SC-39", "CM-7"]
 
@@ -100,22 +109,28 @@ policies:
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
     cis-eks:        ["5.2.6"]
     cis-kubernetes: ["5.2.6"]
+    soc2:           ["CC6.1"]
+    iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.1.3"]
     nist-800-53:    ["SC-39", "CM-7"]
 
   disallow-host-ports:
     path: pod-security/baseline/disallow-host-ports/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
     cis-eks:        ["5.2.7"]
     cis-kubernetes: ["5.2.7"]
+    soc2:           ["CC6.1"]
+    iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.2.1"]
     nist-800-53:    ["SC-7", "CM-7"]
 
   disallow-host-process:
     path: pod-security/baseline/disallow-host-process/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
     cis-eks:        ["5.2.4"]
     cis-kubernetes: ["5.2.4"]
+    soc2:           ["CC6.1"]
+    iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.1.3"]
     nist-800-53:    ["SC-39", "CM-7"]
 
@@ -131,41 +146,46 @@ policies:
 
   disallow-proc-mount:
     path: pod-security/baseline/disallow-proc-mount/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
     cis-eks:        ["5.2.5"]
     cis-kubernetes: ["5.2.5"]
+    soc2:           ["CC6.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["CM-7"]
 
   disallow-selinux:
     path: pod-security/baseline/disallow-selinux/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
     cis-eks:        ["5.2.3"]
     cis-kubernetes: ["5.2.3"]
+    soc2:           ["CC6.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["CM-7"]
 
   restrict-apparmor-profiles:
     path: pod-security/baseline/restrict-apparmor-profiles/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
     cis-eks:        ["5.2.3"]
     cis-kubernetes: ["5.2.3"]
+    soc2:           ["CC6.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["CM-7"]
 
   restrict-seccomp:
     path: pod-security/baseline/restrict-seccomp/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
     cis-eks:        ["5.2.11"]
     cis-kubernetes: ["5.2.11"]
+    soc2:           ["CC6.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["CM-7", "SI-3"]
 
   restrict-sysctls:
     path: pod-security/baseline/restrict-sysctls/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
     cis-eks:        ["5.2.10"]
     cis-kubernetes: ["5.2.10"]
+    soc2:           ["CC6.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["CM-7"]
 
@@ -176,6 +196,9 @@ policies:
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
     cis-eks:        ["5.2.9"]
     cis-kubernetes: ["5.2.9"]
+    soc2:           ["CC6.1"]
+    iso27001:       ["A.9.4.1"]
+    pci-dss:        ["7.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["AC-6", "CM-7"]
 
@@ -186,6 +209,7 @@ policies:
     cis-kubernetes: ["5.2.5"]
     soc2:           ["CC6.1"]
     iso27001:       ["A.9.4.1"]
+    pci-dss:        ["7.1"]
     nsa-cisa:       ["Sec.1.5"]
     nist-800-53:    ["AC-6", "CM-7"]
 
@@ -194,6 +218,9 @@ policies:
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
     cis-eks:        ["5.2.6"]
     cis-kubernetes: ["5.2.6"]
+    soc2:           ["CC6.1"]
+    iso27001:       ["A.9.4.1"]
+    pci-dss:        ["7.1"]
     nsa-cisa:       ["Sec.1.1"]
     nist-800-53:    ["AC-6", "CM-7"]
 
@@ -202,6 +229,9 @@ policies:
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
     cis-eks:        ["5.2.6"]
     cis-kubernetes: ["5.2.6"]
+    soc2:           ["CC6.1"]
+    iso27001:       ["A.9.4.1"]
+    pci-dss:        ["7.1"]
     nsa-cisa:       ["Sec.1.1"]
     nist-800-53:    ["AC-6", "CM-7"]
 
@@ -210,6 +240,9 @@ policies:
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
     cis-eks:        ["5.2.11"]
     cis-kubernetes: ["5.2.11"]
+    soc2:           ["CC6.1"]
+    iso27001:       ["A.9.4.1"]
+    pci-dss:        ["7.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["CM-7", "SI-3"]
 
@@ -218,6 +251,9 @@ policies:
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
     cis-eks:        ["5.1.3"]
     cis-kubernetes: ["5.1.3"]
+    soc2:           ["CC6.1"]
+    iso27001:       ["A.9.4.1"]
+    pci-dss:        ["7.1"]
     nsa-cisa:       ["Sec.1.3"]
     nist-800-53:    ["SC-39", "CM-7"]
 
@@ -228,6 +264,8 @@ policies:
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
     cis-eks:        ["4.1.6"]
     cis-kubernetes: ["5.1.6"]
+    soc2:           ["CC6.3"]
+    iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.3.2"]
     nist-800-53:    ["IA-5", "AC-3"]
 
@@ -236,6 +274,8 @@ policies:
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
     cis-eks:        ["4.1.6"]
     cis-kubernetes: ["5.1.6"]
+    soc2:           ["CC6.3"]
+    iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.3.2"]
     nist-800-53:    ["IA-5", "AC-3"]
 
@@ -251,9 +291,10 @@ policies:
 
   restrict-clusterrole-nodesproxy:
     path: rbac-best-practices/restrict-clusterrole-nodesproxy/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
     cis-eks:        ["4.1.3"]
     cis-kubernetes: ["5.1.3"]
+    soc2:           ["CC6.1"]
     nsa-cisa:       ["Sec.3.1"]
     nist-800-53:    ["AC-6"]
 
@@ -269,9 +310,10 @@ policies:
 
   restrict-wildcard-resources:
     path: rbac-best-practices/restrict-wildcard-resources/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
     cis-eks:        ["4.1.3"]
     cis-kubernetes: ["5.1.3"]
+    soc2:           ["CC6.1"]
     nsa-cisa:       ["Sec.3.1"]
     nist-800-53:    ["AC-3", "AC-6"]
 
@@ -282,61 +324,78 @@ policies:
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, iso27001, nsa-cisa, nist-800-53]
     cis-eks:        ["4.5.1"]
     cis-kubernetes: ["5.7.2"]
+    iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.3.1"]
     nist-800-53:    ["CM-7", "SC-39"]
 
   disallow-latest-tag:
     path: best-practices-k8s/disallow_latest_tag/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, iso27001, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
     cis-eks:        ["5.1.x"]
     cis-kubernetes: ["5.1.x"]
+    soc2:           ["CC8.1"]
+    iso27001:       ["A.12.5.1"]
     nsa-cisa:       ["Sec.5.1"]
     nist-800-53:    ["SI-7", "CM-11"]
 
   disallow-empty-ingress-host:
     path: best-practices-k8s/disallow-empty-ingress-host/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
+    soc2:           ["CC6.6"]
     nsa-cisa:       ["Sec.2.2"]
     nist-800-53:    ["SC-7"]
 
   require-labels:
     path: best-practices-k8s/require_labels/
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, iso27001, nsa-cisa, nist-800-53]
+    iso27001:       ["A.8.1.1"]
+    nsa-cisa:       ["Sec.3.1"]
     nist-800-53:    ["CM-8"]
 
   require-pod-antiaffinity:
     path: best-practices-k8s/require_pod_antiaffinity/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
+    soc2:           ["A1.3"]
+    nsa-cisa:       ["Sec.6.3"]
+    nist-800-53:    ["SC-6"]
 
   require-pod-requests-limits:
     path: best-practices-k8s/require_pod_requests_limits/
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
     soc2:           ["A1.1"]
+    nsa-cisa:       ["Sec.6.1"]
     nist-800-53:    ["SC-6"]
 
   require-probes:
     path: best-practices-k8s/require_probes/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
+    soc2:           ["CC7.2"]
+    nsa-cisa:       ["Sec.6.2"]
     nist-800-53:    ["SI-2"]
 
   require-ro-rootfs:
     path: best-practices-k8s/require_ro_rootfs/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, iso27001, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
     cis-eks:        ["5.1.3"]
     cis-kubernetes: ["5.1.3"]
+    soc2:           ["CC6.1"]
+    iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.1.2"]
     nist-800-53:    ["CM-7", "SI-7"]
 
   require-rolling-update-strategy:
     path: best-practices-k8s/require_rolling_update_strategy/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
+    soc2:           ["A1.3"]
+    nsa-cisa:       ["Sec.5.2"]
     nist-800-53:    ["SI-2"]
 
   restrict-node-port:
     path: best-practices-k8s/restrict_node_port/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
     cis-eks:        ["5.4.1"]
     cis-kubernetes: ["5.4.1"]
+    soc2:           ["CC6.6", "A1.2"]
     nsa-cisa:       ["Sec.2.1"]
     nist-800-53:    ["SC-7", "CM-7"]
 
@@ -344,26 +403,23 @@ policies:
 
   pci-add-annotations:
     path: pci-dss/add-annotations.yaml
-    standards:      [pci-dss, soc2]
+    standards:      [pci-dss]
     pci-dss:        ["12.x"]
 
   pci-deny-lb-creation:
     path: pci-dss/deny-lb-creation.yaml
-    standards:      [pci-dss, soc2]
+    standards:      [pci-dss]
     pci-dss:        ["1.3"]
-    soc2:           ["A1.2"]
 
   pci-restrict-basic-auth-secret:
     path: pci-dss/restrict-basic-auth-secret.yaml
-    standards:      [pci-dss, soc2]
+    standards:      [pci-dss]
     pci-dss:        ["8.2"]
-    soc2:           ["CC6.1"]
 
   pci-require-network-policy:
     path: pci-dss/require-network-policy.yaml
-    standards:      [pci-dss, soc2]
+    standards:      [pci-dss]
     pci-dss:        ["1.3"]
-    soc2:           ["A1.2"]
 
   pci-require-clamav-enabled:
     path: pci-dss/require-clamav-enabled.yaml
@@ -372,11 +428,163 @@ policies:
 
   pci-disallow-default-service-account:
     path: pci-dss/disallow-default-service-account.yaml
-    standards:      [pci-dss, soc2]
+    standards:      [pci-dss]
     pci-dss:        ["7.1"]
-    soc2:           ["CC6.3"]
 
   pci-deny-ingress-creation:
     path: pci-dss/deny-ingress-creation.yaml
     standards:      [pci-dss]
     pci-dss:        ["1.3"]
+
+# ── Non-automatable controls ────────────────────────────────────────────────────
+# Controls in each standard that CANNOT be assessed by Kyverno policy scans.
+# These require organizational processes, cloud provider APIs, or runtime tooling
+# outside the Kubernetes API. Documented here so reports can flag them explicitly
+# rather than silently omitting them.
+
+non-automatable:
+
+  soc2:
+    - id: "CC1.1–CC1.5"
+      family: "Control Environment"
+      reason: "Board oversight, HR policies, organizational accountability structures — requires governance documentation review"
+    - id: "CC2.1–CC2.3"
+      family: "Communication and Information"
+      reason: "Internal and external communication of control objectives — requires policy and process documentation"
+    - id: "CC3.1–CC3.4"
+      family: "Risk Assessment"
+      reason: "Risk identification, fraud risk assessment, and change risk monitoring — requires risk register and GRC tooling"
+    - id: "CC4.1–CC4.2"
+      family: "Monitoring Activities"
+      reason: "Ongoing evaluation of internal control effectiveness — requires audit logs, SOC reviews, and management sign-off"
+    - id: "CC5.1–CC5.3"
+      family: "Control Activities"
+      reason: "Policy deployment and technology general controls governance — requires documented policies and procedures"
+    - id: "CC6.2"
+      family: "Logical Access — User Provisioning"
+      reason: "User registration, MFA enrollment, credential issuance workflows — requires IAM (Okta, AWS IAM, etc.)"
+    - id: "CC6.4"
+      family: "Physical Access Controls"
+      reason: "Data center physical security and environmental protections — requires cloud provider SOC 2 attestation (AWS, GCP, Azure)"
+    - id: "CC6.5"
+      family: "Authentication Controls"
+      reason: "MFA, application-level authentication, access control lists for users — requires identity provider configuration review"
+    - id: "CC7.1"
+      family: "Configuration Monitoring"
+      reason: "Runtime configuration drift and anomaly detection — requires SIEM or cloud-native monitoring (CloudWatch, Datadog)"
+    - id: "CC7.3–CC7.5"
+      family: "Security Incident Response"
+      reason: "Incident triage, response, and recovery procedures — requires documented runbooks and incident management tooling"
+    - id: "CC9.1–CC9.2"
+      family: "Risk Mitigation and Vendor Management"
+      reason: "Business risk management and vendor/third-party risk assessment — requires vendor contracts and risk documentation"
+    - id: "C1.1–C1.2"
+      family: "Confidentiality"
+      reason: "Data classification and encryption at rest — requires cloud KMS configuration review and data governance policies"
+    - id: "PI1.1–PI1.5"
+      family: "Processing Integrity"
+      reason: "Transaction completeness, accuracy, and data quality — requires application-level audit trails and data validation controls"
+
+  nist-800-53:
+    - id: "AC-2, AC-5"
+      family: "Account Management / Separation of Duties"
+      reason: "User lifecycle management and SoD enforcement — requires IAM system review"
+    - id: "AT-2, AT-3"
+      family: "Awareness and Training"
+      reason: "Security awareness training programs — requires HR/LMS documentation"
+    - id: "AU-2–AU-12"
+      family: "Audit and Accountability"
+      reason: "Audit log generation and review — requires SIEM/CloudTrail/Audit Logging configuration"
+    - id: "CA-2, CA-7"
+      family: "Assessment and Authorization"
+      reason: "Control assessments and continuous monitoring program — requires GRC tooling"
+    - id: "CP-2–CP-10"
+      family: "Contingency Planning"
+      reason: "Disaster recovery and business continuity planning — requires DR plan documentation and testing"
+    - id: "IR-4–IR-8"
+      family: "Incident Response"
+      reason: "Incident handling procedures and testing — requires documented runbooks"
+    - id: "MA-2–MA-6"
+      family: "Maintenance"
+      reason: "System maintenance controls — requires change management process documentation"
+    - id: "MP-2–MP-8"
+      family: "Media Protection"
+      reason: "Storage media handling and disposal — requires data center/cloud provider attestation"
+    - id: "PE-2–PE-20"
+      family: "Physical and Environmental Protection"
+      reason: "Physical access and environmental controls — requires cloud provider SOC 2 / ISO 27001 attestation"
+    - id: "PL-2, PL-4"
+      family: "Planning"
+      reason: "System security plan and rules of behavior — requires documented security policies"
+    - id: "PS-3–PS-9"
+      family: "Personnel Security"
+      reason: "Background screening, termination procedures — requires HR process documentation"
+    - id: "RA-3, RA-5"
+      family: "Risk Assessment / Vulnerability Scanning"
+      reason: "System risk assessment and vulnerability scanning — requires scanner tooling (Trivy, Grype, Qualys)"
+    - id: "SA-9–SA-12"
+      family: "Supply Chain / External Services"
+      reason: "Third-party service provider controls — requires vendor assessments and SLAs"
+
+  nsa-cisa:
+    - id: "Sec.4.x"
+      family: "Audit Logging and Threat Detection"
+      reason: "Kubernetes audit log configuration and SIEM integration — requires cloud provider audit log setup"
+    - id: "Sec.5.x"
+      family: "Vulnerability Management"
+      reason: "Container image and dependency scanning — requires scanner tooling (Trivy, Grype, ECR scanning)"
+    - id: "Sec.6.x"
+      family: "Physical Security and Cloud Provider Controls"
+      reason: "Data center physical security — covered by cloud provider SOC 2 attestation"
+    - id: "Sec.7.x"
+      family: "Cloud Provider Configuration"
+      reason: "EKS/AKS/GKE control plane settings — requires aws/az/gcloud CLI and cloud console review"
+
+  iso27001:
+    - id: "A.5.x"
+      family: "Information Security Policies"
+      reason: "Organizational security policy documentation and governance — requires documented ISMS"
+    - id: "A.6.x"
+      family: "Organization of Information Security"
+      reason: "Roles, responsibilities, and contact with authorities — requires HR and governance documentation"
+    - id: "A.7.x"
+      family: "Human Resource Security"
+      reason: "Background checks, training, disciplinary process — requires HR process documentation"
+    - id: "A.8.x"
+      family: "Asset Management"
+      reason: "Asset inventory and classification — requires CMDB or asset management tooling"
+    - id: "A.11.x"
+      family: "Physical and Environmental Security"
+      reason: "Physical access controls and environmental protections — requires cloud provider ISO 27001 attestation"
+    - id: "A.15.x"
+      family: "Supplier Relationships"
+      reason: "Vendor security management — requires third-party risk assessments and contracts"
+    - id: "A.16.x"
+      family: "Information Security Incident Management"
+      reason: "Incident response procedures and reporting — requires documented runbooks"
+    - id: "A.17.x"
+      family: "Business Continuity Management"
+      reason: "DR planning and BCP — requires documented continuity plans and test results"
+    - id: "A.18.x"
+      family: "Compliance"
+      reason: "Legal and regulatory compliance reviews — requires legal counsel and audit documentation"
+
+  pci-dss:
+    - id: "2.2, 2.3"
+      family: "System Configuration Standards"
+      reason: "Hardening standards and non-console administrative access — requires node-level configuration review"
+    - id: "3.x"
+      family: "Cardholder Data Protection"
+      reason: "Encryption of stored cardholder data — requires application-level and database encryption review"
+    - id: "6.3, 6.4"
+      family: "Vulnerability Management"
+      reason: "Secure development lifecycle and penetration testing — requires SAST/DAST tooling and pentest reports"
+    - id: "9.x"
+      family: "Physical Access"
+      reason: "Physical access to cardholder data environments — requires data center access controls review"
+    - id: "10.x"
+      family: "Audit Logging"
+      reason: "Log monitoring and retention — requires SIEM and log management tooling"
+    - id: "11.3, 11.4"
+      family: "Penetration Testing and IDS/IPS"
+      reason: "Penetration testing and intrusion detection — requires external pentest and runtime security tooling"
