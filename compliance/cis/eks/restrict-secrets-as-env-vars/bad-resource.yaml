@@ -3,9 +3,22 @@ kind: Pod
 metadata:
   name: pod-with-secret-env
 spec:
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
   containers:
   - name: app
     image: nginx:1.25
+    securityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
     env:
     - name: DB_PASSWORD
       valueFrom:
@@ -18,9 +31,22 @@ kind: Pod
 metadata:
   name: pod-with-init-secret-env
 spec:
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
   initContainers:
   - name: init
     image: busybox:1.36
+    securityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
     env:
     - name: API_KEY
       valueFrom:
@@ -30,3 +56,11 @@ spec:
   containers:
   - name: app
     image: nginx:1.25
+    securityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
