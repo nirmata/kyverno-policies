@@ -1,0 +1,44 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-cluster-admin-binding
+  annotations:
+    policies.kyverno.io/title: Restrict Cluster Admin Binding
+    policies.kyverno.io/category: CIS EKS Benchmark
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/subject: ClusterRoleBinding
+    policies.kyverno.io/minversion: "1.6.0"
+    kyverno.io/kubernetes-version: "1.22+"
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/cis-eks/restrict-cluster-admin-binding/"
+    policies.kyverno.io/description: >-
+      CIS EKS Benchmark 4.1.1: The cluster-admin role grants unrestricted access to
+      every resource in the cluster and all namespaces. Service accounts should not be
+      bound to the cluster-admin ClusterRole unless strictly necessary. This policy audits
+      ClusterRoleBindings that assign the cluster-admin role to any ServiceAccount, helping
+      administrators identify and review overly privileged bindings.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+  - name: restrict-cluster-admin-sa-binding
+    match:
+      any:
+      - resources:
+          kinds:
+          - ClusterRoleBinding
+    preconditions:
+      all:
+      - key: "{{ request.object.roleRef.name }}"
+        operator: Equals
+        value: cluster-admin
+    validate:
+      message: >-
+        ClusterRoleBinding '{{ request.object.metadata.name }}' binds a ServiceAccount
+        to cluster-admin. Review and restrict access per CIS EKS 4.1.1. Use least-privilege
+        roles instead of cluster-admin for service accounts.
+      deny:
+        conditions:
+          any:
+          - key: ServiceAccount
+            operator: AnyIn
+            value: "{{ request.object.subjects[].kind }}"

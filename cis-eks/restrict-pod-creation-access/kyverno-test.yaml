@@ -1,0 +1,34 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: restrict-pod-creation-access
+policies:
+  - restrict-pod-creation-access.yaml
+resources:
+  - good-resource.yaml
+  - bad-resource.yaml
+results:
+  - policy: restrict-pod-creation-access
+    rule: minimize-pod-creation-access
+    resources:
+    - ok-pod-reader
+    kind: ClusterRole
+    result: pass
+  - policy: restrict-pod-creation-access
+    rule: minimize-pod-creation-access
+    resources:
+    - ok-deployment-manager
+    kind: ClusterRole
+    result: pass
+  - policy: restrict-pod-creation-access
+    rule: minimize-pod-creation-access
+    resources:
+    - bad-pod-creator
+    kind: ClusterRole
+    result: fail
+  - policy: restrict-pod-creation-access
+    rule: minimize-pod-creation-access
+    resources:
+    - bad-all-wildcard
+    kind: ClusterRole
+    result: fail

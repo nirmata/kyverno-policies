@@ -1,0 +1,34 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: require-pss-labels
+policies:
+  - require-pss-labels.yaml
+resources:
+  - good-resource.yaml
+  - bad-resource.yaml
+results:
+  - policy: require-pss-labels
+    rule: require-pss-enforce-label
+    resources:
+    - ns-with-baseline
+    kind: Namespace
+    result: pass
+  - policy: require-pss-labels
+    rule: require-pss-enforce-label
+    resources:
+    - ns-with-restricted
+    kind: Namespace
+    result: pass
+  - policy: require-pss-labels
+    rule: require-pss-enforce-label
+    resources:
+    - ns-without-pss
+    kind: Namespace
+    result: fail
+  - policy: require-pss-labels
+    rule: require-pss-enforce-label
+    resources:
+    - ns-with-wrong-label
+    kind: Namespace
+    result: fail

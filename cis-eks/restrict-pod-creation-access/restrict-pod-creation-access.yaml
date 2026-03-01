@@ -1,0 +1,43 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-pod-creation-access
+  annotations:
+    policies.kyverno.io/title: Restrict Pod Creation Access
+    policies.kyverno.io/category: CIS EKS Benchmark
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: ClusterRole, Role
+    policies.kyverno.io/minversion: "1.6.0"
+    kyverno.io/kubernetes-version: "1.22+"
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/cis-eks/restrict-pod-creation-access/"
+    policies.kyverno.io/description: >-
+      CIS EKS Benchmark 4.1.4: The ability to create pods in a cluster may allow for
+      privilege escalation since pods can be configured to mount service account tokens,
+      use host namespaces, or access sensitive node resources. This policy audits Roles
+      and ClusterRoles that grant create or wildcard verb access to pods, helping
+      administrators limit pod creation to trusted principals only.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+  - name: minimize-pod-creation-access
+    match:
+      any:
+      - resources:
+          kinds:
+          - ClusterRole
+          - Role
+    validate:
+      message: >-
+        Role '{{ request.object.metadata.name }}' grants pod creation or wildcard access
+        to pods. Minimize pod creation permissions per CIS EKS 4.1.4 to prevent
+        privilege escalation. Restrict to named service accounts where necessary.
+      deny:
+        conditions:
+          all:
+          - key: "{{ (contains(request.object.rules[].resources[], 'pods') || contains(request.object.rules[].resources[], '*')) }}"
+            operator: Equals
+            value: true
+          - key: "{{ (contains(request.object.rules[].verbs[], 'create') || contains(request.object.rules[].verbs[], '*')) }}"
+            operator: Equals
+            value: true

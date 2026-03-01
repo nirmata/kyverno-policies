@@ -1,0 +1,34 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: restrict-secret-role-access
+policies:
+  - restrict-secret-role-access.yaml
+resources:
+  - good-resource.yaml
+  - bad-resource.yaml
+results:
+  - policy: restrict-secret-role-access
+    rule: minimize-secret-access
+    resources:
+    - ok-pod-reader
+    kind: ClusterRole
+    result: pass
+  - policy: restrict-secret-role-access
+    rule: minimize-secret-access
+    resources:
+    - ok-secret-getter
+    kind: ClusterRole
+    result: pass
+  - policy: restrict-secret-role-access
+    rule: minimize-secret-access
+    resources:
+    - bad-secret-wildcard
+    kind: ClusterRole
+    result: fail
+  - policy: restrict-secret-role-access
+    rule: minimize-secret-access
+    resources:
+    - bad-all-resources-wildcard
+    kind: ClusterRole
+    result: fail
