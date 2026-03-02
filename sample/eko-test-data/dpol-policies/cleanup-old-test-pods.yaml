@@ -1,0 +1,22 @@
+apiVersion: policies.kyverno.io/v1
+kind: DeletingPolicy
+metadata:
+  name: cleanup-old-test-pods
+spec:
+  schedule: '0 1 * * *' # Run daily at 1 AM
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['*']
+        resources: ['pods']
+        scope: 'Namespaced'
+    namespaceSelector:
+      matchLabels:
+        environment: test
+  conditions:
+    - name: isOld
+      expression: "has(object.metadata.labels.old) && object.metadata.labels.old == 'true'"
+  variables:
+    - name: isEphemeral
+      expression: "has(object.metadata.labels.ephemeral) && object.metadata.labels.ephemeral == 'true'"
