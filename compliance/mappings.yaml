@@ -366,9 +366,9 @@ policies:
     nsa-cisa:       ["Sec.6.1"]
     nist-800-53:    ["SC-6"]
 
-  require-probes:
-    path: best-practices-k8s/require_probes/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
+  require-pod-probes:
+    path: compliance/common/require-pod-probes/
+    standards:      [soc2, nsa-cisa, nist-800-53]
     soc2:           ["CC7.2"]
     nsa-cisa:       ["Sec.6.2"]
     nist-800-53:    ["SI-2"]
