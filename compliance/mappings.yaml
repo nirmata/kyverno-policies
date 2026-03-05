@@ -390,14 +390,22 @@ policies:
     nsa-cisa:       ["Sec.5.2"]
     nist-800-53:    ["SI-2"]
 
-  restrict-node-port:
-    path: best-practices-k8s/restrict_node_port/
+  restrict-nodeport:
+    path: compliance/common/restrict-nodeport/
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
     cis-eks:        ["5.4.1"]
     cis-kubernetes: ["5.4.1"]
     soc2:           ["CC6.6", "A1.2"]
     nsa-cisa:       ["Sec.2.1"]
     nist-800-53:    ["SC-7", "CM-7"]
+
+  require-image-digest:
+    path: compliance/common/require-image-digest/
+    standards:      [soc2, iso27001, nsa-cisa, nist-800-53]
+    soc2:           ["CC7.2"]
+    iso27001:       ["A.12.5.1"]
+    nsa-cisa:       ["Sec.5.1"]
+    nist-800-53:    ["SA-10", "SI-7"]
 
   # --- PCI DSS (pci-dss/) ---
 

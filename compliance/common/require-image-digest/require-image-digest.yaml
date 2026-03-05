@@ -1,0 +1,51 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-image-digest
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet
+    policies.kyverno.io/title: Require Image Digest
+    policies.kyverno.io/category: Software Supply Chain Security
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Using a mutable image tag (e.g., ':latest' or any named tag) provides no guarantee
+      that the same image will be used on every deployment. Pinning container images to an
+      immutable digest (@sha256:...) ensures that the exact image content cannot change,
+      providing a key supply chain integrity control. This policy requires that all
+      container images (including init containers) specify a SHA256 digest.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: require-image-digest
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      preconditions:
+        all:
+          - key: "{{request.operation || 'BACKGROUND'}}"
+            operator: AnyIn
+            value:
+              - CREATE
+              - UPDATE
+              - BACKGROUND
+      validate:
+        message: "Image '{{element.image}}' must use a digest (@sha256:...) to ensure supply chain integrity."
+        foreach:
+          - list: request.object.spec.containers[]
+            deny:
+              conditions:
+                all:
+                  - key: "{{ element.image }}"
+                    operator: NotMatch
+                    value: ".+@sha256:[a-f0-9]+"
+          - list: request.object.spec.initContainers[]
+            deny:
+              conditions:
+                all:
+                  - key: "{{ element.image }}"
+                    operator: NotMatch
+                    value: ".+@sha256:[a-f0-9]+"

@@ -13,3 +13,5 @@ resources:
 - ../../pci-dss
 # Compliance-specific ClusterPolicy equivalents for policies using newer API versions
 - ../common/require-pod-probes
+- ../common/restrict-nodeport
+- ../common/require-image-digest
