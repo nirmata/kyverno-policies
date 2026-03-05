@@ -1,0 +1,23 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-unsafe-code-execution
+  annotations:
+    policies.kyverno.io/title: Check for unsafe dynamic code execution patterns
+    policies.kyverno.io/category: Security-Review
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Execution Safety
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Functions like eval(), exec(), pickle.load(), and yaml.unsafe_load()
+      execute arbitrary code from strings or serialized data, enabling hidden
+      behavior that cannot be detected through static file inspection.
+    policies.kyverno.io/risk-score: "25"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Unsafe code execution detected: eval(), exec(), or compile() found. These can execute hidden arbitrary code."
+      expression: "!('UNSAFE_CODE_EVAL' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Unsafe deserialization detected: pickle.load(), yaml.unsafe_load(), or marshal.load() found. Deserialization of untrusted data can execute arbitrary code."
+      expression: "!('UNSAFE_DESERIALIZATION' in object.spec.analysis.?indicatorIds.orValue([]))"

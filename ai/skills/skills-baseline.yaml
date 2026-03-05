@@ -1,0 +1,25 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-require-metadata
+  annotations:
+    policies.kyverno.io/title: Check that required frontmatter fields are present
+    policies.kyverno.io/category: Structure
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Discoverability and DX
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/description: >-
+      The Agent Skills specification requires name and description in SKILL.md
+      frontmatter. Without these, the skill cannot be discovered or selected
+      by agents. See https://agentskills.io/specification.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "metadata.name is required (per Agent Skills spec)."
+      expression: "has(object.metadata.name) && object.metadata.name != ''"
+    - message: "metadata.description is required (per Agent Skills spec)."
+      expression: >-
+        has(object.metadata.description) &&
+        object.metadata.description != ''

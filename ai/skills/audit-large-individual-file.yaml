@@ -1,0 +1,27 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-large-individual-file
+  annotations:
+    policies.kyverno.io/title: Check for unusually large individual files
+    policies.kyverno.io/category: Footprint
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Footprint and Complexity
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Files larger than 1MB are unusually large for a skill and are difficult to
+      review for security. They may contain embedded binaries or data dumps.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Audit
+  variables:
+    - name: largeFiles
+      expression: >-
+        object.spec.files.filter(f, f.sizeBytes > 1048576)
+  validations:
+    - message: "Skill contains a file larger than 1MB, which is unusually large and difficult to review for security."
+      messageExpression: >-
+        'Files larger than 1MB: ' +
+        variables.largeFiles.map(f, f.path + ' (' + string(f.sizeBytes) + ' bytes)').join(', ')
+      expression: "variables.largeFiles.size() == 0"

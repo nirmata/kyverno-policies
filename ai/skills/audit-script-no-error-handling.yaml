@@ -1,0 +1,21 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-script-no-error-handling
+  annotations:
+    policies.kyverno.io/title: Check that shell scripts include error handling
+    policies.kyverno.io/category: Quality
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Execution Safety
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Shell scripts without 'set -e' or 'set -eo pipefail' silently continue
+      after errors, which can lead to partial execution, data corruption, or
+      misleading success results.
+    policies.kyverno.io/risk-score: "5"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Shell script missing error handling. Scripts should include 'set -e' or 'set -eo pipefail' near the top to fail fast on errors."
+      expression: "!('SCRIPT_NO_ERROR_HANDLING' in object.spec.analysis.?indicatorIds.orValue([]))"

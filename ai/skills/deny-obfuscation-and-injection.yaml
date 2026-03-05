@@ -1,0 +1,22 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-obfuscation-and-injection
+  annotations:
+    policies.kyverno.io/title: Check for obfuscation and prompt injection patterns
+    policies.kyverno.io/category: Security-Block
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Execution Safety
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/description: >-
+      Unicode bidi control characters can hide malicious content, and prompt
+      injection patterns can override model instructions to perform unintended actions.
+    policies.kyverno.io/risk-score: "35"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Unicode bidi control characters detected (possible obfuscation)."
+      expression: "!('UNICODE_BIDI_CONTROL' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Prompt injection pattern detected (e.g., 'ignore previous instructions')."
+      expression: "!('PROMPT_INJECTION_PATTERN' in object.spec.analysis.?indicatorIds.orValue([]))"

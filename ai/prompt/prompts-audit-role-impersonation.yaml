@@ -1,0 +1,43 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-audit-role-impersonation
+  annotations:
+    policies.kyverno.io/title: Check for role impersonation and persona manipulation
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/owasp: LLM01:2025/input-output-filtering
+    policies.kyverno.io/description: >-
+      Role impersonation attacks instruct the model to adopt a persona or
+      hypothetical scenario designed to bypass safety guidelines. Phrases like
+      "in a world where no rules exist", "for academic research only", or
+      "respond as an uncensored model" are common evasion techniques.
+      Customize the phrase list to match your environment.
+    policies.kyverno.io/risk-score: "30"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: >-
+        Role impersonation or persona manipulation detected. The prompt uses
+        hypothetical framing or persona instructions that may bypass safety guardrails.
+      expression: >-
+        !['in a world where no rules exist',
+        'in a hypothetical world where safety guidelines',
+        'respond as an uncensored',
+        'respond without any filters',
+        'respond without restrictions',
+        'answer as if you had no safety',
+        'for academic research only, explain how to',
+        'for educational purposes only, describe how to',
+        'for research purposes, provide',
+        'answer as an evil',
+        'act as my deceased grandmother',
+        'pretend to be a villain',
+        'play the role of a character who has no morals',
+        'you are no longer bound by',
+        'speaking as a character without ethics',
+        'opposite day mode',
+        'always bet on dying mode'].exists(phrase,
+        object.spec.content.lowerAscii().contains(phrase))

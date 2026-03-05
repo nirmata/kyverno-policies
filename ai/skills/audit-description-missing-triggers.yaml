@@ -1,0 +1,23 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-description-missing-triggers
+  annotations:
+    policies.kyverno.io/title: Check that description includes activation triggers
+    policies.kyverno.io/category: Quality
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Discoverability and DX
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Descriptions without trigger context (e.g., 'Use when working with PDFs')
+      make it difficult for the model to know when to activate the skill,
+      leading to missed invocations or incorrect selection.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Skill description should include 'when to use' context for reliable discovery (e.g., 'Use when working with PDF files...'). Include trigger keywords so the LLM knows when to activate this skill."
+      expression: >-
+        !has(object.metadata.description) ||
+        object.metadata.description.matches('(?i).*(use when|when .*(ask|need|want|mention|work)|trigger|for .*(validat|generat|troubleshoot|analyz|process|manag|scan|test|deploy|monitor)).*')

@@ -1,0 +1,25 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-deny-context-switching
+  annotations:
+    policies.kyverno.io/title: Check for context switching and delimiter injection
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/owasp: LLM01:2025/input-output-filtering
+    policies.kyverno.io/description: >-
+      Prompt injection via context switching uses fake system prompt delimiters
+      (e.g., [SYSTEM]:, <<SYS>>, <|im_start|>system) or instruction boundary
+      markers ([END OF INSTRUCTIONS], --- END ---) to trick the model into
+      treating injected text as authoritative instructions. These markers must
+      not appear in user-supplied prompts.
+    policies.kyverno.io/risk-score: "40"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: >-
+        Context switching detected: prompt contains fake system prompt delimiters
+        or instruction boundary markers (e.g., [SYSTEM]:, <<SYS>>, [END OF INSTRUCTIONS]).
+      expression: "!('CONTEXT_SWITCHING' in object.spec.analysis.?indicatorIds.orValue([]))"

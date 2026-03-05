@@ -1,0 +1,24 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-remote-manifest-execution
+  annotations:
+    policies.kyverno.io/title: Check for remote manifest or template execution
+    policies.kyverno.io/category: Security-Review
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Supply Chain Integrity
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Applying remote Kubernetes manifests (kubectl apply -f https://),
+      Helm charts from unverified repos, or Terraform modules from URLs
+      without pinning introduces supply-chain risk. Remote content can be
+      modified by the upstream at any time.
+    policies.kyverno.io/risk-score: "20"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Remote manifest execution detected: kubectl apply -f with a URL, or kustomize with a remote base. Pin to a specific commit or digest."
+      expression: "!('REMOTE_MANIFEST_APPLY' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Remote Helm chart install detected: helm install/upgrade from a remote repo without pinned version. Pin chart version and verify provenance."
+      expression: "!('REMOTE_HELM_INSTALL' in object.spec.analysis.?indicatorIds.orValue([]))"

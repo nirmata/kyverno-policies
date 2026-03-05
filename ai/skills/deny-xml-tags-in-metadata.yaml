@@ -1,0 +1,24 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-xml-tags-in-metadata
+  annotations:
+    policies.kyverno.io/title: Check for XML tags in metadata fields
+    policies.kyverno.io/category: Structure
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Execution Safety
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      XML tags in name or description fields can be used for prompt injection,
+      causing the model to misinterpret metadata as instructions.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Skill name must not contain XML tags."
+      expression: "!object.metadata.name.matches('.*<[^>]+>.*')"
+    - message: "Skill description must not contain XML tags."
+      expression: >-
+        !has(object.metadata.description) ||
+        !object.metadata.description.matches('.*<[^>]+>.*')

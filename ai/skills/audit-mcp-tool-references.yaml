@@ -1,0 +1,25 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-mcp-tool-references
+  annotations:
+    policies.kyverno.io/title: Check for MCP tool references in SKILL.md
+    policies.kyverno.io/category: Footprint
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Footprint and Complexity
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      MCP tool references (ServerName:tool_name) grant the skill access to
+      external services beyond its own directory, expanding the blast radius
+      if the skill is compromised.
+    policies.kyverno.io/risk-score: "10"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "SKILL.md body references MCP tools (ServerName:tool_name pattern). MCP tool references extend access beyond the skill itself and should be reviewed for security."
+      expression: >-
+        !has(object.spec.documents) ||
+        !has(object.spec.documents.skillMarkdown) ||
+        !has(object.spec.documents.skillMarkdown.body) ||
+        !object.spec.documents.skillMarkdown.body.matches('(?s).*[A-Z][a-zA-Z]+:[a-z][a-z_]+.*')

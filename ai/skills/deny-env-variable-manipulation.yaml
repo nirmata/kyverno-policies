@@ -1,0 +1,23 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-env-variable-manipulation
+  annotations:
+    policies.kyverno.io/title: Check for manipulation of security-sensitive environment variables
+    policies.kyverno.io/category: Security-Block
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Sandbox Integrity
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/description: >-
+      Modifying LD_PRELOAD, DYLD_INSERT_LIBRARIES, or similar loader variables
+      injects shared libraries into all processes. Manipulating PATH with
+      hidden or temp directories enables command hijacking.
+    policies.kyverno.io/risk-score: "30"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Loader injection detected: LD_PRELOAD, DYLD_INSERT_LIBRARIES, or DYLD_LIBRARY_PATH manipulation found."
+      expression: "!('ENV_LOADER_INJECTION' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Suspicious PATH manipulation detected: PATH modified to include /tmp, hidden directories, or relative paths."
+      expression: "!('ENV_PATH_HIJACK' in object.spec.analysis.?indicatorIds.orValue([]))"

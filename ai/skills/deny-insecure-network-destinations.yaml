@@ -1,0 +1,26 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-insecure-network-destinations
+  annotations:
+    policies.kyverno.io/title: Check for insecure or suspicious network destinations
+    policies.kyverno.io/category: Security-Review
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Data Exfiltration Prevention
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Non-HTTPS URLs (http://) transmit data in cleartext and are susceptible
+      to MITM attacks. Raw IP addresses bypass DNS-based security controls.
+      Known exfiltration sinks (webhook.site, requestbin, ngrok, pastebin,
+      Discord/Slack webhooks) are high-signal indicators of data theft.
+    policies.kyverno.io/risk-score: "25"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Insecure HTTP URL detected: skill uses http:// instead of https://, exposing data to interception."
+      expression: "!('NET_INSECURE_HTTP' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Raw IP address destination detected: skill connects to an IP address instead of a domain name, bypassing DNS security controls."
+      expression: "!('NET_RAW_IP_DEST' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Known exfiltration sink detected: webhook.site, requestbin, ngrok, pastebin, or Discord/Slack webhook URL found."
+      expression: "!('NET_EXFIL_SINK' in object.spec.analysis.?indicatorIds.orValue([]))"

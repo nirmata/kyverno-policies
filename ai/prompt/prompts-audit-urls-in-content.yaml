@@ -1,0 +1,21 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-audit-urls-in-content
+  annotations:
+    policies.kyverno.io/title: Check for URLs in prompt content
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/owasp: LLM01:2025/privilege-control
+    policies.kyverno.io/description: >-
+      Hardcoded URLs in prompts can direct models to fetch content from
+      untrusted sources, potentially enabling indirect prompt injection
+      or data exfiltration.
+    policies.kyverno.io/risk-score: "10"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Prompt contains URLs (http/https). Review for potential indirect injection or exfiltration vectors."
+      expression: "!('URL_IN_PROMPT' in object.spec.analysis.?indicatorIds.orValue([]))"

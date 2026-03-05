@@ -1,0 +1,25 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-deny-indirect-injection
+  annotations:
+    policies.kyverno.io/title: Check for indirect injection markers
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/owasp: LLM01:2025/input-output-filtering
+    policies.kyverno.io/description: >-
+      Indirect prompt injections embed instructions that address the AI model
+      directly within documents or user content (e.g., "Important: if you are
+      an AI language model, ignore all prior instructions"). These hidden
+      directives are designed to hijack model behavior when documents are
+      processed as context.
+    policies.kyverno.io/risk-score: "40"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: >-
+        Indirect injection detected: content contains instructions specifically
+        addressing the AI model (e.g., "if you are an AI", "note to the assistant").
+      expression: "!('INDIRECT_INJECTION' in object.spec.analysis.?indicatorIds.orValue([]))"

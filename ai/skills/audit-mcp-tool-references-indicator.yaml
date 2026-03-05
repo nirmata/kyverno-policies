@@ -1,0 +1,21 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-mcp-tool-references-indicator
+  annotations:
+    policies.kyverno.io/title: Check for MCP tool references via static analysis
+    policies.kyverno.io/category: Footprint
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Footprint and Complexity
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      MCP tool references extend the skill's access to external services,
+      increasing the blast radius if the skill is compromised. Detected
+      via static analysis across all skill files.
+    policies.kyverno.io/risk-score: "10"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "MCP tool references detected in skill content (ServerName:tool_name pattern). MCP tools extend access beyond the skill itself and should be reviewed."
+      expression: "!('MCP_TOOL_REFERENCE' in object.spec.analysis.?indicatorIds.orValue([]))"

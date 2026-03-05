@@ -1,0 +1,22 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-reserved-words-in-name
+  annotations:
+    policies.kyverno.io/title: Check that skill name does not use reserved words
+    policies.kyverno.io/category: Structure
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Discoverability and DX
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Reserved words like 'anthropic' or 'claude' in skill names can cause
+      confusion with official platform components and violate naming policies.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Skill name must not contain the reserved word 'anthropic'."
+      expression: "!object.metadata.name.contains('anthropic')"
+    - message: "Skill name must not contain the reserved word 'claude'."
+      expression: "!object.metadata.name.contains('claude')"

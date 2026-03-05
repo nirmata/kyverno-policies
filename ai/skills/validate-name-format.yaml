@@ -1,0 +1,31 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-validate-name-format
+  annotations:
+    policies.kyverno.io/title: Check that skill name uses valid format per Agent Skills spec
+    policies.kyverno.io/category: Structure
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Discoverability and DX
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Skill names must be 1-64 lowercase alphanumeric characters and hyphens,
+      must not start/end with a hyphen or contain consecutive hyphens, and must
+      match the parent directory name. See https://agentskills.io/specification.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Skill name must contain only lowercase letters, numbers, and hyphens."
+      expression: >-
+        object.metadata.name.matches('^[a-z0-9]([a-z0-9-]*[a-z0-9])?$')
+    - message: "Skill name must not exceed 64 characters."
+      expression: "size(object.metadata.name) <= 64"
+    - message: "Skill name must not contain consecutive hyphens (--)."
+      expression: "!object.metadata.name.contains('--')"
+    - message: "Skill name must match the parent directory name."
+      expression: >-
+        !has(object.metadata.dirName) ||
+        object.metadata.dirName == '' ||
+        object.metadata.name == object.metadata.dirName

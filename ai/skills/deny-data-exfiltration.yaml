@@ -1,0 +1,20 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-data-exfiltration
+  annotations:
+    policies.kyverno.io/title: Check for data exfiltration patterns
+    policies.kyverno.io/category: Security-Block
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Data Exfiltration Prevention
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/description: >-
+      Patterns like file reads piped to network tools (cat file | curl) can
+      transmit sensitive data to external servers without the user's knowledge.
+    policies.kyverno.io/risk-score: "35"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Data exfiltration pattern detected: file read operations piped to network tools (e.g., cat file | curl). This can transmit sensitive data externally."
+      expression: "!('DATA_EXFIL_PATTERN' in object.spec.analysis.?indicatorIds.orValue([]))"

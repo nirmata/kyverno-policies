@@ -1,0 +1,31 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-non-descriptive-filenames
+  annotations:
+    policies.kyverno.io/title: Check for non-descriptive filenames
+    policies.kyverno.io/category: Structure
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Discoverability and DX
+    policies.kyverno.io/severity: low
+    policies.kyverno.io/description: >-
+      Generic filenames like 'file1.md' or 'script1.sh' prevent the model from
+      understanding file purpose, reducing its ability to locate and use the
+      right reference content.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Audit
+  variables:
+    - name: vagueFiles
+      expression: >-
+        object.spec.files.filter(f,
+          f.path.matches('(?i).*(^|/)(file|doc|script|info|data|temp|tmp)[0-9]*\\.[a-z]+$')
+        )
+  validations:
+    - message: "Non-descriptive filename detected (e.g., file1.md, doc2.md, script1.sh). Use names that indicate content like 'webhook-timeouts.md' or 'collect_diagnostics.sh'."
+      messageExpression: >-
+        'Non-descriptive filenames detected: ' +
+        variables.vagueFiles.map(f, f.path).join(', ') +
+        '. Rename to indicate content.'
+      expression: "variables.vagueFiles.size() == 0"

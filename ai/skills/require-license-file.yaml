@@ -1,0 +1,23 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-require-license-file
+  annotations:
+    policies.kyverno.io/title: Check that LICENSE file exists when license is declared
+    policies.kyverno.io/category: Structure
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Discoverability and DX
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      When a skill declares a license in its metadata, a corresponding LICENSE
+      file must be present for proper intellectual property compliance.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "A LICENSE file is required when metadata.license is set."
+      expression: >-
+        !has(object.metadata.license) ||
+        object.metadata.license == '' ||
+        object.spec.files.exists(f, f.kind == 'license')

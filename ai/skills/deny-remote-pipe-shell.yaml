@@ -1,0 +1,26 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-remote-pipe-shell
+  annotations:
+    policies.kyverno.io/title: Check for unsafe remote code piped to shell
+    policies.kyverno.io/category: Security-Block
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Supply Chain Integrity
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/description: >-
+      Patterns like curl|sh or wget|sh download and execute remote code without
+      verification, enabling supply-chain attacks and arbitrary code execution.
+    policies.kyverno.io/risk-score: "40"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Unsafe shell pattern detected: curl | sh."
+      expression: "!('SHELL_CURL_PIPE_SH' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Unsafe shell pattern detected: wget | sh."
+      expression: "!('SHELL_WGET_PIPE_SH' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Obfuscated execution detected: base64 decode piped to shell."
+      expression: "!('SHELL_BASE64_DECODE_EXEC' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "PowerShell Invoke-Expression detected."
+      expression: "!('POWERSHELL_INVOKE_EXPRESSION' in object.spec.analysis.?indicatorIds.orValue([]))"

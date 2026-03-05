@@ -1,0 +1,24 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-deny-char-obfuscation
+  annotations:
+    policies.kyverno.io/title: Check for character spacing obfuscation
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/owasp: LLM01:2025/input-output-filtering
+    policies.kyverno.io/description: >-
+      Inserting spaces between individual characters (e.g., "i g n o r e
+      a l l") is a common technique to bypass keyword-based prompt
+      injection filters while remaining readable to LLMs. This is a
+      variant of Best-of-N jailbreaking.
+    policies.kyverno.io/risk-score: "35"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: >-
+        Character spacing obfuscation detected: text contains spaces
+        between individual characters, a technique to evade keyword filters.
+      expression: "!('CHAR_OBFUSCATION' in object.spec.analysis.?indicatorIds.orValue([]))"

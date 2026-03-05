@@ -1,0 +1,21 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-deny-instruction-manipulation
+  annotations:
+    policies.kyverno.io/title: Check for instruction manipulation directives
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/owasp: LLM01:2025/input-output-filtering
+    policies.kyverno.io/description: >-
+      Directives to bypass safety rules, override security policies, or covertly
+      alter LLM behavior undermine model integrity and can enable unauthorized
+      actions.
+    policies.kyverno.io/risk-score: "35"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Instruction manipulation detected: directives to bypass safety rules or override security policies."
+      expression: "!('INSTRUCTION_MANIPULATION' in object.spec.analysis.?indicatorIds.orValue([]))"

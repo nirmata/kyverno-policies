@@ -1,0 +1,21 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-symlink-outside-root
+  annotations:
+    policies.kyverno.io/title: Check for symlinks that resolve outside the skill root
+    policies.kyverno.io/category: Security-Block
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Sandbox Integrity
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/description: >-
+      Symbolic links that resolve outside the skill directory bypass path
+      traversal protections and can read or overwrite sensitive host files
+      such as SSH keys, cloud credentials, or shell profiles.
+    policies.kyverno.io/risk-score: "35"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Symlink escape detected: a symbolic link in the skill resolves to a target outside the skill root directory."
+      expression: "!('SYMLINK_OUTSIDE_ROOT' in object.spec.analysis.?indicatorIds.orValue([]))"
