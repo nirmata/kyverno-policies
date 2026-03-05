@@ -8,3 +8,5 @@ resources:
 - ../../pod-security/restricted
 - ../../rbac-best-practices
 - ../../best-practices-k8s
+# Compliance-specific ClusterPolicy equivalents for policies using newer API versions
+- ../common/require-image-digest
