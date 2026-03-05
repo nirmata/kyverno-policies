@@ -1,0 +1,21 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-network-access-pattern
+  annotations:
+    policies.kyverno.io/title: Check for network access patterns
+    policies.kyverno.io/category: Security-Review
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Data Exfiltration Prevention
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Network tools like curl, wget, or fetch in skill content may make
+      unexpected external calls or exfiltrate data. Each network access
+      point should be reviewed.
+    policies.kyverno.io/risk-score: "10"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Network access patterns detected in skill content (curl, wget, fetch, requests, urllib, etc.). Review for potential data exfiltration or unexpected external calls."
+      expression: "!('NETWORK_ACCESS_PATTERN' in object.spec.analysis.?indicatorIds.orValue([]))"

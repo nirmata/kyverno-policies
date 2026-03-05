@@ -1,0 +1,29 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-deeply-nested-directories
+  annotations:
+    policies.kyverno.io/title: Check for deeply nested directory structures
+    policies.kyverno.io/category: Footprint
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Footprint and Complexity
+    policies.kyverno.io/severity: low
+    policies.kyverno.io/description: >-
+      Deeply nested directories (more than 4 levels) make it difficult for the
+      model to navigate and reference files reliably, and complicate security review.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Audit
+  variables:
+    - name: deepFiles
+      expression: >-
+        object.spec.files.filter(f,
+          f.path.matches('.+/.+/.+/.+/.+')
+        )
+  validations:
+    - message: "Deeply nested directory structure detected (more than 4 levels). Keep references one level deep from SKILL.md for reliable navigation."
+      messageExpression: >-
+        'Deeply nested files (>4 levels): ' +
+        variables.deepFiles.map(f, f.path).join(', ')
+      expression: "variables.deepFiles.size() == 0"

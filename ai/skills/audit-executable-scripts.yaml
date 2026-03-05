@@ -1,0 +1,28 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-executable-scripts
+  annotations:
+    policies.kyverno.io/title: Check for scripts with executable permissions
+    policies.kyverno.io/category: Security-Review
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Execution Safety
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Executable scripts run with the full environment access of the agent
+      and can perform arbitrary system operations. Each should be reviewed
+      before deployment.
+    policies.kyverno.io/risk-score: "10"
+spec:
+  validationActions:
+    - Audit
+  variables:
+    - name: executableScripts
+      expression: >-
+        object.spec.files.filter(f, f.kind == 'script' && f.executable == true)
+  validations:
+    - message: "Skill contains scripts with executable permissions. Scripts run with full environment access and should be reviewed for security before deployment."
+      messageExpression: >-
+        'Scripts with executable permissions requiring review: ' +
+        variables.executableScripts.map(f, f.path).join(', ')
+      expression: "variables.executableScripts.size() == 0"

@@ -1,0 +1,33 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-package-install
+  annotations:
+    policies.kyverno.io/title: Check for external package dependency files
+    policies.kyverno.io/category: Security-Review
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Supply Chain Integrity
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Package dependency files like requirements.txt or package.json introduce
+      supply-chain risk by pulling in third-party code at install time.
+    policies.kyverno.io/risk-score: "10"
+spec:
+  validationActions:
+    - Audit
+  variables:
+    - name: depFiles
+      expression: >-
+        object.spec.files.filter(f,
+          f.path.endsWith('requirements.txt') ||
+          f.path.endsWith('package.json') ||
+          f.path.endsWith('Gemfile') ||
+          f.path.endsWith('go.mod') ||
+          f.path.endsWith('Cargo.toml')
+        )
+  validations:
+    - message: "Skill includes external package dependency files (supply-chain risk, review required)."
+      messageExpression: >-
+        'External package dependency files detected (supply-chain risk): ' +
+        variables.depFiles.map(f, f.path).join(', ')
+      expression: "variables.depFiles.size() == 0"

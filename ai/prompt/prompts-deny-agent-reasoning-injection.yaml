@@ -1,0 +1,26 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-deny-agent-reasoning-injection
+  annotations:
+    policies.kyverno.io/title: Check for agent reasoning chain injection
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/owasp: LLM01:2025/input-output-filtering
+    policies.kyverno.io/description: >-
+      ReAct-style LLM agents use structured reasoning markers like
+      "Thought:", "Observation:", "Action:", and "Tool Output:" to
+      chain tool calls. Injecting fake markers into user input can
+      hijack the agent's reasoning, forge tool outputs, or trigger
+      unauthorized actions.
+    policies.kyverno.io/risk-score: "40"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: >-
+        Agent reasoning injection detected: prompt contains fake
+        Thought/Observation/Action/Tool Output markers that could
+        hijack a ReAct agent's reasoning chain.
+      expression: "!('AGENT_REASONING_INJECTION' in object.spec.analysis.?indicatorIds.orValue([]))"

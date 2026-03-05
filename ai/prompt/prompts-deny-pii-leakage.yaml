@@ -1,0 +1,21 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-deny-pii-leakage
+  annotations:
+    policies.kyverno.io/title: Check for personally identifiable information in prompts
+    policies.kyverno.io/category: Privacy
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/owasp: LLM01:2025/input-output-filtering
+    policies.kyverno.io/description: >-
+      Hardcoded email addresses, phone numbers, SSNs, or other PII in prompt
+      templates risk data leakage through model outputs or logging. Use
+      placeholders for user-specific data.
+    policies.kyverno.io/risk-score: "35"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Personally identifiable information (PII) detected in prompt. Use placeholders instead of hardcoded personal data."
+      expression: "!('PII_IN_PROMPT' in object.spec.analysis.?indicatorIds.orValue([]))"

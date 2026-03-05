@@ -1,0 +1,26 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-persistence-mechanisms
+  annotations:
+    policies.kyverno.io/title: Check for host persistence mechanisms
+    policies.kyverno.io/category: Security-Block
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Persistence Prevention
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/description: >-
+      Skills that install cron jobs, modify shell profiles (.bashrc, .zshrc),
+      create LaunchAgents/systemd services, or inject git hooks establish
+      persistence that survives skill removal. This is a hallmark of
+      malicious software.
+    policies.kyverno.io/risk-score: "35"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Shell profile modification detected: skill writes to .bashrc, .zshrc, .profile, or similar shell configuration files."
+      expression: "!('PERSISTENCE_SHELL_PROFILE' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Scheduled task detected: skill installs a cron job, LaunchAgent, LaunchDaemon, or systemd service."
+      expression: "!('PERSISTENCE_SCHEDULED_TASK' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Git hook injection detected: skill modifies .git/hooks/ to execute code on git operations."
+      expression: "!('PERSISTENCE_GIT_HOOKS' in object.spec.analysis.?indicatorIds.orValue([]))"

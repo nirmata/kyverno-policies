@@ -1,0 +1,22 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-deny-unicode-obfuscation
+  annotations:
+    policies.kyverno.io/title: Check for invisible Unicode characters used for obfuscation
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/owasp: LLM01:2025/input-output-filtering
+    policies.kyverno.io/description: >-
+      Invisible Unicode characters such as zero-width spaces (U+200B),
+      zero-width joiners (U+200D), byte-order marks (U+FEFF), and soft
+      hyphens (U+00AD) can be used to hide instructions or bypass text
+      filters. These characters have no legitimate use in prompt content.
+    policies.kyverno.io/risk-score: "35"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Invisible Unicode characters detected in prompt (zero-width space, BOM, soft hyphen, etc.). Possible obfuscation attack."
+      expression: "!('UNICODE_OBFUSCATION' in object.spec.analysis.?indicatorIds.orValue([]))"

@@ -1,0 +1,20 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-unexpected-executable
+  annotations:
+    policies.kyverno.io/title: Check for executable permissions on non-script files
+    policies.kyverno.io/category: Security-Review
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Execution Safety
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Non-script files with executable permissions may indicate a disguised
+      binary or a misconfigured file that could be exploited for code execution.
+    policies.kyverno.io/risk-score: "15"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Non-script file with executable permission detected. Only script files should have executable permissions."
+      expression: "!('UNEXPECTED_EXECUTABLE' in object.spec.analysis.?indicatorIds.orValue([]))"

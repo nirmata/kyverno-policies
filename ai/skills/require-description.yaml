@@ -1,0 +1,22 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-require-description
+  annotations:
+    policies.kyverno.io/title: Check that description is present and meaningful
+    policies.kyverno.io/category: Structure
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Discoverability and DX
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      A clear description (at least 20 characters) is essential for the model
+      to understand when and how to invoke the skill.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "metadata.description is required and must be at least 20 characters."
+      expression: >-
+        has(object.metadata.description) &&
+        size(object.metadata.description) >= 20

@@ -1,0 +1,22 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-inline-interpreter-exec
+  annotations:
+    policies.kyverno.io/title: Check for inline interpreter code execution
+    policies.kyverno.io/category: Security-Review
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Execution Safety
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Inline interpreter commands (python -c, node -e, bash -c, ruby -e,
+      perl -e) execute code passed as a string argument, making it harder
+      to review and audit. These patterns are often used to hide small
+      payloads that bypass file-based scanning.
+    policies.kyverno.io/risk-score: "15"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Inline interpreter execution detected: python -c, node -e, ruby -e, perl -e, or bash -c used to run code from a string argument."
+      expression: "!('INLINE_INTERPRETER_EXEC' in object.spec.analysis.?indicatorIds.orValue([]))"

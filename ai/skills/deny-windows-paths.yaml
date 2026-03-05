@@ -1,0 +1,27 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-windows-paths
+  annotations:
+    policies.kyverno.io/title: Check for Windows-style backslash paths
+    policies.kyverno.io/category: Structure
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Discoverability and DX
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Windows-style backslash paths break on Linux and macOS. Skills must use
+      forward slashes for cross-platform compatibility.
+    policies.kyverno.io/risk-score: "5"
+spec:
+  validationActions:
+    - Deny
+  variables:
+    - name: windowsPathFiles
+      expression: >-
+        object.spec.files.filter(f, f.path.contains('\\'))
+  validations:
+    - message: "Windows-style backslash paths detected in file entries. Use forward slashes for cross-platform compatibility."
+      messageExpression: >-
+        'Windows-style backslash paths detected: ' +
+        variables.windowsPathFiles.map(f, f.path).join(', ')
+      expression: "variables.windowsPathFiles.size() == 0"

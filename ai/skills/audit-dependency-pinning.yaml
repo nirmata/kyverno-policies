@@ -1,0 +1,24 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-dependency-pinning
+  annotations:
+    policies.kyverno.io/title: Check for unpinned dependencies and missing lockfiles
+    policies.kyverno.io/category: Security-Review
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Supply Chain Integrity
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Unpinned dependencies (>=, ~=, *, latest) allow silent upgrades that
+      may introduce malicious code. Lockfiles (package-lock.json, poetry.lock,
+      etc.) ensure reproducible builds. Skills with dependency files should
+      include corresponding lockfiles.
+    policies.kyverno.io/risk-score: "15"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Unpinned dependencies detected: dependency file contains version ranges (>=, ~=, ^, *) or 'latest' instead of exact pinned versions."
+      expression: "!('DEPS_UNPINNED' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Missing lockfile: dependency file found without a corresponding lockfile (package-lock.json, poetry.lock, Pipfile.lock, yarn.lock, pnpm-lock.yaml, Cargo.lock, go.sum)."
+      expression: "!('DEPS_NO_LOCKFILE' in object.spec.analysis.?indicatorIds.orValue([]))"

@@ -1,0 +1,20 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-large-file-count
+  annotations:
+    policies.kyverno.io/title: Check for excessive number of files
+    policies.kyverno.io/category: Footprint
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Footprint and Complexity
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Skills with more than 50 files are difficult to review for security and
+      may indicate unnecessary bundled content or poor organization.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Skill contains more than 50 files, making it difficult to review for security."
+      expression: "size(object.spec.files) <= 50"

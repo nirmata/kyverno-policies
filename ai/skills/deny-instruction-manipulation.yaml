@@ -1,0 +1,21 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-instruction-manipulation
+  annotations:
+    policies.kyverno.io/title: Check for instruction manipulation directives
+    policies.kyverno.io/category: Security-Review
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Execution Safety
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/description: >-
+      Directives to bypass safety rules, override security policies, or alter
+      LLM behavior can compromise the agent's integrity and allow unauthorized
+      actions.
+    policies.kyverno.io/risk-score: "35"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Instruction manipulation detected: directives to bypass safety rules, override security policies, or alter LLM behavior found in skill content."
+      expression: "!('INSTRUCTION_MANIPULATION' in object.spec.analysis.?indicatorIds.orValue([]))"

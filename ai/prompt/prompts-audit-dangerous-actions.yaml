@@ -1,0 +1,29 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-audit-dangerous-actions
+  annotations:
+    policies.kyverno.io/title: Check for dangerous action phrases in prompts
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/owasp: LLM01:2025/input-output-filtering
+    policies.kyverno.io/description: >-
+      Prompts that instruct the model to perform dangerous actions such as
+      deleting data, resetting accounts, executing commands, or contacting
+      external parties may indicate social engineering attacks. Customize the
+      phrase list below to match your environment.
+    policies.kyverno.io/risk-score: "25"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Prompt contains phrases associated with dangerous actions. Review for potential social engineering."
+      expression: >-
+        !['reset all accounts', 'delete all data', 'drop all tables',
+        'execute command', 'run command', 'notify attackers',
+        'send credentials to', 'forward all emails to',
+        'transfer funds', 'wire money', 'disable security',
+        'disable logging', 'disable monitoring', 'turn off audit',
+        'grant admin', 'escalate privileges'].exists(phrase,
+        object.spec.content.lowerAscii().contains(phrase))

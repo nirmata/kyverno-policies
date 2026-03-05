@@ -1,0 +1,21 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-symlink-internal
+  annotations:
+    policies.kyverno.io/title: Check for symbolic links within the skill directory
+    policies.kyverno.io/category: Security-Review
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Sandbox Integrity
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Symbolic links within the skill directory may be legitimate but can also
+      obscure actual file contents, making security review more difficult.
+      Review each symlink to confirm it serves a valid purpose.
+    policies.kyverno.io/risk-score: "10"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Internal symlink detected: symbolic links within the skill directory should be reviewed to ensure they serve a valid purpose."
+      expression: "!('SYMLINK_INTERNAL' in object.spec.analysis.?indicatorIds.orValue([]))"

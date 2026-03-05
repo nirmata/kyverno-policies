@@ -1,0 +1,30 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-hidden-files
+  annotations:
+    policies.kyverno.io/title: Check for hidden dotfiles in skill directory
+    policies.kyverno.io/category: Security-Review
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Sandbox Integrity
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Hidden files (dotfiles) can conceal malicious scripts, configuration
+      overrides, or credential files that bypass normal security review.
+    policies.kyverno.io/risk-score: "15"
+spec:
+  validationActions:
+    - Deny
+  variables:
+    - name: hiddenFiles
+      expression: >-
+        object.spec.files.filter(f,
+          f.path.startsWith('.') ||
+          f.path.contains('/.')
+        )
+  validations:
+    - message: "Hidden files (dotfiles) detected in skill directory. These may conceal malicious content and should be removed."
+      messageExpression: >-
+        'Hidden files (dotfiles) detected in skill directory: ' +
+        variables.hiddenFiles.map(f, f.path).join(', ')
+      expression: "variables.hiddenFiles.size() == 0"

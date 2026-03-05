@@ -1,0 +1,25 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-container-escape
+  annotations:
+    policies.kyverno.io/title: Check for container escape patterns
+    policies.kyverno.io/category: Security-Block
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Sandbox Integrity
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Access to the Docker socket, nsenter, unshare, or host filesystem mounts
+      can break out of container isolation. When skills run in a sandboxed
+      container runtime, these patterns grant full host access.
+    policies.kyverno.io/risk-score: "25"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Docker socket access detected: skill references /var/run/docker.sock or docker.sock, which provides full host control from inside a container."
+      expression: "!('CONTAINER_ESCAPE_DOCKER_SOCK' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Namespace escape detected: nsenter, unshare, or --privileged flag found. These can break container isolation."
+      expression: "!('CONTAINER_ESCAPE_NAMESPACE' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Host filesystem mount detected: mounting / or /host patterns found. These expose the host filesystem inside a container."
+      expression: "!('CONTAINER_ESCAPE_HOST_MOUNT' in object.spec.analysis.?indicatorIds.orValue([]))"

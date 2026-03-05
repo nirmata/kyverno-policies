@@ -1,0 +1,26 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-disable-security-controls
+  annotations:
+    policies.kyverno.io/title: Check for commands that disable host security controls
+    policies.kyverno.io/category: Security-Block
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Sandbox Integrity
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/description: >-
+      Skills must never disable firewalls, Gatekeeper, antivirus, or EDR
+      agents. Commands like ufw disable, spctl --master-disable, or Windows
+      Defender exclusions weaken the host's security posture and are a
+      hallmark of malware deployment.
+    policies.kyverno.io/risk-score: "40"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Firewall disable detected: skill attempts to disable ufw, pfctl, iptables, or Windows Firewall."
+      expression: "!('SECURITY_DISABLE_FIREWALL' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "macOS Gatekeeper or security framework disable detected: spctl --master-disable or csrutil disable found."
+      expression: "!('SECURITY_DISABLE_GATEKEEPER' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Antivirus/EDR tampering detected: Windows Defender exclusion, Set-MpPreference, or EDR stop/disable command found."
+      expression: "!('SECURITY_DISABLE_AV' in object.spec.analysis.?indicatorIds.orValue([]))"

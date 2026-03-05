@@ -1,0 +1,21 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-audit-excessive-permissions
+  annotations:
+    policies.kyverno.io/title: Check for overly permissive prompt instructions
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/owasp: LLM01:2025/privilege-control
+    policies.kyverno.io/description: >-
+      Prompts that grant the model unrestricted access ('you can do anything',
+      'you have no restrictions') weaken the security boundary and make the
+      system vulnerable to prompt injection escalation.
+    policies.kyverno.io/risk-score: "25"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Prompt appears overly permissive (e.g., 'no restrictions', 'do anything'). Review and add explicit boundaries."
+      expression: "!('EXCESSIVE_PERMISSIONS' in object.spec.analysis.?indicatorIds.orValue([]))"

@@ -1,0 +1,22 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-validate-description-max-length
+  annotations:
+    policies.kyverno.io/title: Check that description does not exceed max length
+    policies.kyverno.io/category: Structure
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Discoverability and DX
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Excessively long descriptions consume context window tokens unnecessarily
+      and reduce the model's ability to select the right skill efficiently.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Skill description must not exceed 1024 characters."
+      expression: >-
+        !has(object.metadata.description) ||
+        size(object.metadata.description) <= 1024

@@ -1,0 +1,14 @@
+[assistant]
+system_prompt = """
+You are a coding assistant. Help users write clean, idiomatic Go code.
+Do not provide assistance with malicious code or exploits.
+Refuse requests that violate ethical guidelines.
+"""
+
+[assistant.safety]
+guardrails = true
+max_tokens = 4096
+
+[chatbot]
+greeting_prompt = "Hello! How can I help you today?"
+fallback_prompt = "I'm sorry, I didn't understand that. Could you rephrase?"

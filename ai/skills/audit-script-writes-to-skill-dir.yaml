@@ -1,0 +1,21 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-script-writes-to-skill-dir
+  annotations:
+    policies.kyverno.io/title: Check that scripts write output to working directory
+    policies.kyverno.io/category: Quality
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Sandbox Integrity
+    policies.kyverno.io/severity: low
+    policies.kyverno.io/description: >-
+      Scripts that write to relative paths inside the skill directory instead of
+      $PWD pollute the skill package and may cause unexpected behavior across
+      invocations. Output should default to the user's working directory.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Script appears to write output files to the skill directory instead of the user's working directory ($PWD). Output should default to $PWD or accept an output path parameter."
+      expression: "!('SCRIPT_WRITES_TO_SKILL_DIR' in object.spec.analysis.?indicatorIds.orValue([]))"

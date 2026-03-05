@@ -1,0 +1,21 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-deny-encoded-payload
+  annotations:
+    policies.kyverno.io/title: Check for encoded payloads in prompt content
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/owasp: LLM01:2025/input-output-filtering
+    policies.kyverno.io/description: >-
+      Hex escape sequences (\x41), unicode escapes (\u0041), and Base64-encoded
+      blobs in prompts can be used to smuggle instructions past text filters.
+      Prompts should contain plaintext instructions only.
+    policies.kyverno.io/risk-score: "30"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Encoded payload detected in prompt content (hex escapes, unicode escapes, or Base64). Possible filter bypass."
+      expression: "!('ENCODED_PAYLOAD' in object.spec.analysis.?indicatorIds.orValue([]))"

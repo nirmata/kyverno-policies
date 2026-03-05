@@ -1,0 +1,20 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-deny-profanity
+  annotations:
+    policies.kyverno.io/title: Check for profanity or offensive language
+    policies.kyverno.io/category: Content-Safety
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/owasp: LLM01:2025/input-output-filtering
+    policies.kyverno.io/description: >-
+      Prompts containing profanity or offensive language can cause the model to
+      generate harmful or inappropriate outputs, violating content policies.
+    policies.kyverno.io/risk-score: "30"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Profanity or offensive language detected in prompt content."
+      expression: "!('PROFANITY_DETECTED' in object.spec.analysis.?indicatorIds.orValue([]))"

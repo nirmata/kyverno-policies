@@ -1,0 +1,27 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-vague-name
+  annotations:
+    policies.kyverno.io/title: Check for vague or generic skill names
+    policies.kyverno.io/category: Quality
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Discoverability and DX
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Generic names like 'utils' or 'helper' make it hard for the model to
+      distinguish between skills and select the right one for a task.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Skill name appears too vague or generic. Use a descriptive name like 'processing-pdfs' or 'troubleshooting-kyverno'."
+      expression: >-
+        !(object.metadata.name in [
+          'helper', 'utils', 'tools', 'utility',
+          'documents', 'data', 'files',
+          'kubernetes', 'policies', 'cluster',
+          'stuff', 'misc', 'general', 'common',
+          'main', 'default', 'test', 'demo'
+        ])

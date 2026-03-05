@@ -1,0 +1,37 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-binary-files
+  annotations:
+    policies.kyverno.io/title: Check for binary or archive files
+    policies.kyverno.io/category: Security-Review
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Execution Safety
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Binary files and archives cannot be inspected for malicious content,
+      making them a common vector for hiding malware or unauthorized executables.
+    policies.kyverno.io/risk-score: "20"
+spec:
+  validationActions:
+    - Audit
+  variables:
+    - name: binaryFiles
+      expression: >-
+        object.spec.files.filter(f,
+          f.mediaType == 'application/octet-stream' ||
+          f.path.endsWith('.tar.gz') ||
+          f.path.endsWith('.zip') ||
+          f.path.endsWith('.whl') ||
+          f.path.endsWith('.jar') ||
+          f.path.endsWith('.exe') ||
+          f.path.endsWith('.dll') ||
+          f.path.endsWith('.so') ||
+          f.path.endsWith('.dylib')
+        )
+  validations:
+    - message: "Skill contains binary or archive files that cannot be inspected for malicious content."
+      messageExpression: >-
+        'Skill contains binary or archive files that cannot be inspected for malicious content: ' +
+        variables.binaryFiles.map(f, f.path).join(', ')
+      expression: "variables.binaryFiles.size() == 0"

@@ -1,0 +1,23 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-baseline
+  annotations:
+    policies.kyverno.io/title: Validate required prompt fields are present
+    policies.kyverno.io/category: Structure
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/owasp: LLM01:2025/constrain-model-behavior
+    policies.kyverno.io/description: >-
+      Validates that the normalized prompt object has required fields populated,
+      ensuring the prompt was correctly extracted and can be evaluated by
+      downstream policies.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Prompt content must not be empty."
+      expression: "has(object.spec.content) && object.spec.content != ''"
+    - message: "Prompt metadata.name is required."
+      expression: "has(object.metadata.name) && object.metadata.name != ''"

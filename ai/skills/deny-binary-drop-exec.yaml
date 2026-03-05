@@ -1,0 +1,22 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-binary-drop-exec
+  annotations:
+    policies.kyverno.io/title: Check for download-and-execute binary chains
+    policies.kyverno.io/category: Security-Block
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Supply Chain Integrity
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/description: >-
+      Patterns that download a file, make it executable, and then run it
+      (e.g., curl -o /tmp/x && chmod +x /tmp/x && /tmp/x) are a primary
+      vector for deploying malware on developer endpoints. This is distinct
+      from curl|sh in that the payload is written to disk first.
+    policies.kyverno.io/risk-score: "40"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Binary drop-and-execute chain detected: a file is downloaded, made executable, and then run."
+      expression: "!('BINARY_DROP_EXEC' in object.spec.analysis.?indicatorIds.orValue([]))"

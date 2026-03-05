@@ -1,0 +1,26 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-no-reference-files
+  annotations:
+    policies.kyverno.io/title: Check that large skills use reference files
+    policies.kyverno.io/category: Quality
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Footprint and Complexity
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Large SKILL.md files without separate reference documents waste context
+      window tokens. Splitting content into referenced files enables progressive
+      disclosure and improves model performance.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "SKILL.md body is large (>20000 chars) but the skill has no additional markdown reference files. Consider splitting content into separate files for progressive disclosure and better performance."
+      expression: >-
+        !has(object.spec.documents) ||
+        !has(object.spec.documents.skillMarkdown) ||
+        !has(object.spec.documents.skillMarkdown.body) ||
+        size(object.spec.documents.skillMarkdown.body) <= 20000 ||
+        object.spec.files.exists(f, f.kind == 'markdown' && f.path != 'SKILL.md')

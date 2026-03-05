@@ -1,0 +1,25 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-privilege-escalation
+  annotations:
+    policies.kyverno.io/title: Check for privilege escalation commands
+    policies.kyverno.io/category: Security-Block
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Execution Safety
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/description: >-
+      Commands like sudo, su, chmod +s (setuid), and setcap allow a skill
+      to escalate beyond user-level permissions. Skills should not require
+      elevated privileges; any such usage must go through an approval workflow.
+    policies.kyverno.io/risk-score: "35"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Privilege escalation detected: sudo, su, or doas command found in skill content."
+      expression: "!('PRIVILEGE_ESCALATION_SUDO' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Setuid/setcap detected: chmod +s, chown root, or setcap found in skill content."
+      expression: "!('PRIVILEGE_ESCALATION_SETUID' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "System directory write detected: skill attempts to write to /etc, /Library/LaunchDaemons, or /etc/systemd/system."
+      expression: "!('PRIVILEGE_ESCALATION_SYSTEM_WRITE' in object.spec.analysis.?indicatorIds.orValue([]))"

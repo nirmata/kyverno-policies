@@ -1,0 +1,28 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-high-script-count
+  annotations:
+    policies.kyverno.io/title: Check for excessive number of scripts
+    policies.kyverno.io/category: Footprint
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Footprint and Complexity
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Skills with more than 10 scripts have a large attack surface and are
+      burdensome to review. Consider consolidating or verifying each script
+      is necessary.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Audit
+  variables:
+    - name: scripts
+      expression: >-
+        object.spec.files.filter(f, f.kind == 'script')
+  validations:
+    - message: "Skill contains more than 10 scripts, which increases the attack surface and review burden. Consider consolidating scripts or verifying each one is necessary."
+      messageExpression: >-
+        'Skill contains ' + string(variables.scripts.size()) + ' scripts (max recommended: 10): ' +
+        variables.scripts.map(f, f.path).join(', ')
+      expression: "variables.scripts.size() <= 10"

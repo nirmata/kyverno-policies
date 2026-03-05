@@ -1,0 +1,24 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-sensitive-touchpoints
+  annotations:
+    policies.kyverno.io/title: Check for access to sensitive system resources
+    policies.kyverno.io/category: Security-Review
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Credential Hygiene
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Skills that access kubeconfig, SSH keys, or exfiltrate environment variables
+      may compromise system security and should be carefully reviewed.
+    policies.kyverno.io/risk-score: "20"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Skill references KUBECONFIG (review required)."
+      expression: "!('TOUCHES_KUBECONFIG' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Skill references SSH keys (review required)."
+      expression: "!('TOUCHES_SSH_KEYS' in object.spec.analysis.?indicatorIds.orValue([]))"
+    - message: "Skill appears to reference environment variables in a suspicious way (review required)."
+      expression: "!('SUSPICIOUS_ENV_EXFIL' in object.spec.analysis.?indicatorIds.orValue([]))"

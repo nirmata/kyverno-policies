@@ -1,0 +1,21 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-audit-excessive-length
+  annotations:
+    policies.kyverno.io/title: Check for excessively long prompts
+    policies.kyverno.io/category: Quality
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/owasp: LLM01:2025/constrain-model-behavior
+    policies.kyverno.io/description: >-
+      Extremely long prompts consume context window tokens, increase latency
+      and cost, and may indicate that the prompt should be split or use
+      retrieval-augmented generation instead.
+    policies.kyverno.io/risk-score: "5"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Prompt exceeds 8192 characters. Consider splitting or using retrieval-augmented generation."
+      expression: "object.spec.contentLength <= 8192"

@@ -1,0 +1,35 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-audit-excessive-agency
+  annotations:
+    policies.kyverno.io/title: Check for prompts granting excessive tool or function access
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/owasp: LLM06:2025/excessive-agency
+    policies.kyverno.io/description: >-
+      Prompts that grant the model broad tool access, unrestricted function
+      calling, or direct system access without explicit boundaries increase
+      the risk of unintended actions. Prompts should follow the principle
+      of least privilege by specifying exactly which tools or functions are
+      permitted and under what conditions.
+    policies.kyverno.io/risk-score: "25"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: >-
+        Prompt grants broad tool or system access without explicit boundaries.
+        Specify exactly which tools are permitted and add usage constraints.
+      expression: >-
+        !['access to all tools', 'access to all functions',
+        'execute any function', 'execute any command', 'run any command',
+        'call any api', 'call any function', 'full database access',
+        'full file system access', 'full filesystem access',
+        'access to any system', 'unrestricted tool access',
+        'unrestricted function access', 'use any tool you want',
+        'any tool at your disposal', 'access all apis',
+        'run arbitrary code', 'execute arbitrary code',
+        'shell access', 'root access'].exists(phrase,
+        object.spec.content.lowerAscii().contains(phrase))

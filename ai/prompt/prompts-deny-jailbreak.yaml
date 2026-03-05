@@ -1,0 +1,21 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-deny-jailbreak
+  annotations:
+    policies.kyverno.io/title: Check for jailbreak patterns
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/owasp: LLM01:2025/input-output-filtering
+    policies.kyverno.io/description: >-
+      Jailbreak patterns such as 'DAN mode', 'developer mode enabled', or
+      instructions to act as unrestricted attempt to remove model safety
+      boundaries and must not appear in prompts.
+    policies.kyverno.io/risk-score: "40"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Jailbreak pattern detected (e.g., 'DAN mode', 'developer mode enabled', 'act as unrestricted')."
+      expression: "!('JAILBREAK_PATTERN' in object.spec.analysis.?indicatorIds.orValue([]))"

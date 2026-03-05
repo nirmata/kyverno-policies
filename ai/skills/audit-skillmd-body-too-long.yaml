@@ -1,0 +1,25 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-skillmd-body-too-long
+  annotations:
+    policies.kyverno.io/title: Check that SKILL.md body is not excessively long
+    policies.kyverno.io/category: Quality
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Footprint and Complexity
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      An overly large SKILL.md (over ~500 lines / 40000 chars) consumes too much
+      context window, degrading model performance. Content should be split into
+      separate reference files.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "SKILL.md body exceeds recommended size (~500 lines / 40000 characters). Split content into separate reference files for optimal performance."
+      expression: >-
+        !has(object.spec.documents) ||
+        !has(object.spec.documents.skillMarkdown) ||
+        !has(object.spec.documents.skillMarkdown.body) ||
+        size(object.spec.documents.skillMarkdown.body) <= 40000

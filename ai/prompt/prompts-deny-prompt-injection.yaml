@@ -1,0 +1,21 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prompts-deny-prompt-injection
+  annotations:
+    policies.kyverno.io/title: Check for prompt injection patterns
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/type: LLM Prompt Validation
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/owasp: LLM01:2025/input-output-filtering
+    policies.kyverno.io/description: >-
+      Prompt injection patterns such as 'ignore previous instructions' or
+      'DAN mode' can override model safety guardrails and cause unintended
+      behavior. These patterns must not appear in production prompts.
+    policies.kyverno.io/risk-score: "40"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "Prompt injection pattern detected (e.g., 'ignore previous instructions', 'jailbreak', 'DAN mode')."
+      expression: "!('PROMPT_INJECTION_PATTERN' in object.spec.analysis.?indicatorIds.orValue([]))"

@@ -1,0 +1,27 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-description-not-third-person
+  annotations:
+    policies.kyverno.io/title: Check that description uses third-person voice
+    policies.kyverno.io/category: Quality
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Discoverability and DX
+    policies.kyverno.io/severity: low
+    policies.kyverno.io/description: >-
+      Descriptions in first or second person (e.g., 'I can help...') confuse
+      the model during skill selection. Third-person voice provides an objective
+      summary of the skill's capabilities.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "Skill description should be written in third person (e.g., 'Processes PDF files...'). Avoid first person like 'I can help...'."
+      expression: >-
+        !has(object.metadata.description) ||
+        !object.metadata.description.matches('(?i)^I (can|will|help|am)\\b.*')
+    - message: "Skill description should be written in third person (e.g., 'Processes PDF files...'). Avoid second person like 'You can use this...'."
+      expression: >-
+        !has(object.metadata.description) ||
+        !object.metadata.description.matches('(?i)^You (can|will|should|may)\\b.*')

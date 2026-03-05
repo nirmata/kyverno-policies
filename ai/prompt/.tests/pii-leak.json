@@ -1,0 +1,4 @@
+{
+  "system_prompt": "You are a customer service agent for Acme Corp. The customer's email is john.doe@example.com and their phone number is 555-123-4567. Their SSN is 123-45-6789. Help them with their account issues.",
+  "context": "Customer account lookup for order #12345"
+}

@@ -1,0 +1,24 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-audit-urls-in-skillmd
+  annotations:
+    policies.kyverno.io/title: Check for URLs in SKILL.md body
+    policies.kyverno.io/category: Quality
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Data Exfiltration Prevention
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      URLs in skill instructions can be data exfiltration vectors or trigger
+      unexpected network access. Each URL should be reviewed for legitimacy.
+    policies.kyverno.io/risk-score: "5"
+spec:
+  validationActions:
+    - Audit
+  validations:
+    - message: "SKILL.md body contains URLs (http/https/ftp). Review for potential data exfiltration vectors or unexpected network access patterns."
+      expression: >-
+        !has(object.spec.documents) ||
+        !has(object.spec.documents.skillMarkdown) ||
+        !has(object.spec.documents.skillMarkdown.body) ||
+        !object.spec.documents.skillMarkdown.body.matches('(?s).*(https?://|ftp://).*')

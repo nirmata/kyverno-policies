@@ -1,0 +1,27 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-deny-path-traversal
+  annotations:
+    policies.kyverno.io/title: Check for path traversal sequences in file paths
+    policies.kyverno.io/category: Security-Block
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Sandbox Integrity
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/description: >-
+      Path traversal sequences (..) in file paths can escape the skill directory
+      sandbox and access or overwrite sensitive files on the host system.
+    policies.kyverno.io/risk-score: "30"
+spec:
+  validationActions:
+    - Deny
+  variables:
+    - name: traversalFiles
+      expression: >-
+        object.spec.files.filter(f, f.path.contains('..'))
+  validations:
+    - message: "Path traversal detected: file paths must not contain '..' sequences (potential access outside skill directory)."
+      messageExpression: >-
+        'Path traversal detected in file paths: ' +
+        variables.traversalFiles.map(f, f.path).join(', ')
+      expression: "variables.traversalFiles.size() == 0"

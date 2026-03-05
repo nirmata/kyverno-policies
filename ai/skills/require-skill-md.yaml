@@ -1,0 +1,20 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: skills-require-skillmd
+  annotations:
+    policies.kyverno.io/title: Check that SKILL.md file exists
+    policies.kyverno.io/category: Structure
+    policies.kyverno.io/type: Agent Skill Validation
+    policies.kyverno.io/control-objective: Discoverability and DX
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/description: >-
+      SKILL.md is the primary entry point that defines a skill's instructions
+      and metadata. Without it, the skill cannot be discovered or executed.
+    policies.kyverno.io/risk-score: "0"
+spec:
+  validationActions:
+    - Deny
+  validations:
+    - message: "SKILL.md is required in the skill directory."
+      expression: "!('SKILL_MD_MISSING' in object.spec.analysis.?indicatorIds.orValue([]))"
