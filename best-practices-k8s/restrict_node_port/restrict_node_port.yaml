@@ -7,6 +7,9 @@ metadata:
         policies.kyverno.io/category: Best Practices
         policies.kyverno.io/severity: medium
         policies.kyverno.io/subject: Service
+        policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,nsa-cisa,nist-800-53"
+        policies.nirmata.io/nsa-cisa-control: "Sec.2.1"
+        policies.nirmata.io/nist-800-53-control: "SC-7,CM-7"
         policies.kyverno.io/description: >-
             A Kubernetes Service of type NodePort uses a host port to receive traffic from any source. A NetworkPolicy cannot be used to control traffic to host ports. Although NodePort Services can be useful, their use must be limited to Services with additional upstream security checks. This policy validates that any new Services do not use the `NodePort` type.
 spec:

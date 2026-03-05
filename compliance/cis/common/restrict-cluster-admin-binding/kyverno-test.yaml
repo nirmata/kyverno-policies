@@ -1,0 +1,28 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: restrict-cluster-admin-binding
+policies:
+  - restrict-cluster-admin-binding.yaml
+resources:
+  - good-resource.yaml
+  - bad-resource.yaml
+results:
+  - policy: restrict-cluster-admin-binding
+    rule: restrict-cluster-admin-sa-binding
+    resources:
+    - ok-view-binding
+    kind: ClusterRoleBinding
+    result: skip
+  - policy: restrict-cluster-admin-binding
+    rule: restrict-cluster-admin-sa-binding
+    resources:
+    - ok-user-admin-binding
+    kind: ClusterRoleBinding
+    result: pass
+  - policy: restrict-cluster-admin-binding
+    rule: restrict-cluster-admin-sa-binding
+    resources:
+    - bad-sa-admin-binding
+    kind: ClusterRoleBinding
+    result: fail

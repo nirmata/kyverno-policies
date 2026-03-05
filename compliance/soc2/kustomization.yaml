@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# SOC 2 Type II — Security, Availability, Confidentiality
+resources:
+# Common CIS Kubernetes policies (includes require-network-policy)
+- ../cis/common
+# Shared policy libraries (pod-security/restricted includes pod-security/baseline)
+- ../../pod-security/restricted
+- ../../rbac-best-practices
+# General best practices (require-requests-limits, disallow-latest-tag, etc.)
+- ../../best-practices-k8s
+# PCI-DSS policies relevant to SOC 2 (require-network-policy managed via pci-dss/kustomization.yaml)
+- ../../pci-dss
+# Compliance-specific ClusterPolicy equivalents for policies using newer API versions
+- ../common/require-pod-probes

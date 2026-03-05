@@ -1,0 +1,49 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-pss-labels
+  annotations:
+    policies.kyverno.io/title: Require Pod Security Standards Labels
+    policies.kyverno.io/category: CIS EKS Benchmark
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Namespace
+    policies.kyverno.io/minversion: "1.6.0"
+    kyverno.io/kubernetes-version: "1.23+"
+    policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/cis-eks/require-pss-labels/"
+    policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,nsa-cisa,nist-800-53"
+    policies.nirmata.io/nsa-cisa-control: "Sec.1.1"
+    policies.nirmata.io/nist-800-53-control: "CM-6,CM-7"
+    policies.nirmata.io/cis-eks-control: "4.4.2"
+    policies.kyverno.io/description: >-
+      CIS EKS Benchmark 4.4.2: Kubernetes Pod Security Standards (PSS) provide a
+      standardized security framework for pods. Namespaces should declare their pod
+      security enforcement level using the pod-security.kubernetes.io/enforce label,
+      set to at minimum 'baseline'. This policy audits Namespaces that lack the PSS
+      enforcement label, ensuring all workloads run under a defined and enforced security
+      profile rather than the default permissive configuration.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+  - name: require-pss-enforce-label
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    exclude:
+      any:
+      - resources:
+          names:
+          - kube-system
+          - kube-public
+          - kube-node-lease
+    validate:
+      message: >-
+        Namespace '{{ request.object.metadata.name }}' is missing the
+        'pod-security.kubernetes.io/enforce' label. Set it to 'baseline' or
+        'restricted' per CIS EKS 4.4.2 to enforce pod security standards.
+      pattern:
+        metadata:
+          labels:
+            pod-security.kubernetes.io/enforce: "?*"

@@ -9,6 +9,9 @@ metadata:
     policies.kyverno.io/subject: ClusterRole, RBAC
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kubernetes-version: "1.23"
+    policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,nsa-cisa,nist-800-53"
+    policies.nirmata.io/nsa-cisa-control: "Sec.3.1"
+    policies.nirmata.io/nist-800-53-control: "AC-6"
     policies.kyverno.io/description: >-
       A ClusterRole with nodes/proxy resource access allows a user to
       perform anything the kubelet API allows. It also allows users to bypass

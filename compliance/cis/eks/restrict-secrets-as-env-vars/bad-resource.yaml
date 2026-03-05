@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-secret-env
+spec:
+  containers:
+  - name: app
+    image: nginx:1.25
+    env:
+    - name: DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: db-secret
+          key: password
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-init-secret-env
+spec:
+  initContainers:
+  - name: init
+    image: busybox:1.36
+    env:
+    - name: API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: api-secret
+          key: key
+  containers:
+  - name: app
+    image: nginx:1.25

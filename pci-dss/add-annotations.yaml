@@ -8,6 +8,8 @@ metadata:
     policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Annotation
+    policies.kyverno.io/standards: "pci-dss,soc2"
+    policies.nirmata.io/pci-dss-control: "12.x"
     policies.kyverno.io/description: >-
       Annotations are key/value pairs, which is used as an important source of metadata describing
       objects in various ways or triggering other functionality. Annotations are also a very basic

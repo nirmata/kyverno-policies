@@ -10,6 +10,9 @@ metadata:
     kyverno.io/kubernetes-version: "1.22-1.23"
     policies.nirmata.io/remediation-docs: "https://docs.nirmata.io/policysets/podsecurity/restricted/restrict-seccomp-strict/"
     policies.nirmata.io/remediation: "https://github.com/nirmata/kyverno-policies/tree/main/pod-security/restricted/restrict-seccomp-strict/remediate-restrict-seccomp-strict.yaml"
+    policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,soc2,iso27001,pci-dss,nsa-cisa,nist-800-53"
+    policies.nirmata.io/nsa-cisa-control: "Sec.1.4"
+    policies.nirmata.io/nist-800-53-control: "CM-7,SI-3"
     policies.kyverno.io/description: >-
       The seccomp profile in the Restricted group must not be explicitly set to Unconfined
       but additionally must also not allow an unset value. This policy, 

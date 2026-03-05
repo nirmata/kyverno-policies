@@ -9,6 +9,9 @@ metadata:
     policies.kyverno.io/subject: ServiceAccount
     policies.kyverno.io/minversion: 1.6.0
     kyverno.io/kubernetes-version: "1.21"
+    policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,soc2,iso27001,nsa-cisa,nist-800-53"
+    policies.nirmata.io/nsa-cisa-control: "Sec.3.2"
+    policies.nirmata.io/nist-800-53-control: "IA-5,AC-3"
     policies.kyverno.io/description: >-
       A new ServiceAccount called `default` is created whenever a new Namespace is created.
       Pods spawned in that Namespace, unless otherwise set, will be assigned this ServiceAccount.
