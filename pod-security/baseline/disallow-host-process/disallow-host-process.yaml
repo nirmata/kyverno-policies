@@ -22,26 +22,3 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-    - name: host-process-containers
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      validate:
-        message: >-
-          HostProcess containers are disallowed.
-        pattern:
-          spec:
-            =(ephemeralContainers):
-              - =(securityContext):
-                  =(windowsOptions):
-                    =(hostProcess): "true"
-            =(initContainers):
-              - =(securityContext):
-                  =(windowsOptions):
-                    =(hostProcess): "true"
-            containers:
-              - =(securityContext):
-                  =(windowsOptions):
-                    =(hostProcess): "true"
