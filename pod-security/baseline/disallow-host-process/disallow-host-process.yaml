@@ -36,12 +36,12 @@ spec:
             =(ephemeralContainers):
               - =(securityContext):
                   =(windowsOptions):
-                    =(hostProcess): "false"
+                    =(hostProcess): "true"
             =(initContainers):
               - =(securityContext):
                   =(windowsOptions):
-                    =(hostProcess): "false"
+                    =(hostProcess): "true"
             containers:
               - =(securityContext):
                   =(windowsOptions):
-                    =(hostProcess): "false"
+                    =(hostProcess): "true"
