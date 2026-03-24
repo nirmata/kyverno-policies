@@ -1,0 +1,69 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: require-slsa-attestation
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: supply-chain
+    policies.kyverno.io/description: >
+      For each third-party action pinned to a full commit SHA, queries the
+      GitHub Attestations API to verify that at least one SLSA provenance
+      attestation exists for that commit. Actions without attestations
+      cannot have their build provenance verified — meaning there is no
+      cryptographic proof that the published action was built from the
+      claimed source code.
+
+      Background: GitHub Artifact Attestations (released 2024) allow action
+      authors to generate SLSA Build Level 2 provenance using
+      slsa-framework/slsa-github-generator or actions/attest-build-provenance.
+      At the time of the March 2026 Trivy/Checkmarx supply-chain attacks,
+      neither aquasecurity/trivy-action nor checkmarx/ast-github-action
+      published SLSA attestations — meaning consumers had no independent
+      way to verify whether the code they ran matched the published source.
+
+      Note: This policy requires network access to api.github.com at scan
+      time. Unauthenticated requests are subject to GitHub's rate limit
+      (60/hour); set GITHUB_TOKEN for higher limits. Only actions pinned to
+      a full 40-character commit SHA are checked; tag references are skipped
+      (use require-pinned-actions to enforce SHA pinning first).
+
+      Limitation: The GitHub attestation API queries artifact attestations
+      by subject digest (sha256 of a built artifact). This policy checks
+      whether the action's repository has published any SLSA attestations
+      at all. A more precise check would verify attestation for the exact
+      artifact at the pinned SHA; this requires the action author to publish
+      attestations as part of their release workflow.
+spec:
+  evaluation:
+    mode: JSON
+  variables:
+    - name: ghAPI
+      expression: '"https://api.github.com/repos"'
+  validations:
+    - message: >
+        This action is pinned to a commit SHA but its repository has not
+        published any SLSA provenance attestations. Without attestations,
+        there is no cryptographic proof that the code you are running was
+        built from the claimed source. Ask the action author to add
+        'actions/attest-build-provenance' to their release workflow, or
+        use an action that already publishes SLSA attestations.
+
+        To check manually: gh attestation verify oci://ghcr.io/<owner>/<repo>
+        or visit https://github.com/<owner>/<repo>/attestations
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          object.jobs[j].steps != null &&
+          object.jobs[j].steps.exists(s,
+            has(s.uses) &&
+            s.uses.matches('@[a-f0-9]{40}$') &&
+            !s.uses.startsWith('./') &&
+            size(
+              http.Get(
+                variables.ghAPI + "/" +
+                string(s.uses).split('@')[0] +
+                "/attestations"
+              )['attestations']
+            ) == 0
+          )
+        )
