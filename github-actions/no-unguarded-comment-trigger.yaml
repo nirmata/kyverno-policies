@@ -21,7 +21,10 @@ spec:
         Add an if condition on each job to restrict execution to trusted actors,
         or switch to the pull_request trigger for contributor workflows.
       expression: >-
-        !('issue_comment' in object.on)
+        !has(object['on']) || !(
+          object['on'] == 'issue_comment' ||
+          ('issue_comment' in object['on'])
+        )
 ---
 apiVersion: policies.kyverno.io/v1beta1
 kind: ValidatingPolicy
@@ -47,4 +50,7 @@ spec:
         github.event.workflow_run.head_repository.fork to avoid executing
         untrusted fork code in a privileged context.
       expression: >-
-        !('workflow_run' in object.on)
+        !has(object['on']) || !(
+          object['on'] == 'workflow_run' ||
+          ('workflow_run' in object['on'])
+        )
