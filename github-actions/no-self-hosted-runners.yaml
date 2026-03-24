@@ -1,0 +1,27 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-self-hosted-runners
+  annotations:
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/category: runner-security
+    policies.kyverno.io/description: >
+      Self-hosted runners on public repositories allow any contributor to
+      trigger workflow runs that execute code on your infrastructure. Combined
+      with pull_request_target this is especially dangerous. Use GitHub-hosted
+      runners or restrict triggers to trusted actors only.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Job uses a self-hosted runner. On public repositories, any user can
+        trigger workflows that run on your infrastructure. Use GitHub-hosted
+        runners or restrict the trigger to trusted actors only.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          'runs-on' in object.jobs[j] &&
+          object.jobs[j]['runs-on'] != null &&
+          string(object.jobs[j]['runs-on']).contains('self-hosted')
+        )

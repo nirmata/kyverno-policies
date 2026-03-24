@@ -1,0 +1,24 @@
+# unguarded-comment-trigger.yml — triggers no-unguarded-comment-trigger
+# Any user posting a comment can trigger this workflow, which runs with
+# access to repository secrets and write permissions via GITHUB_TOKEN.
+name: Comment Command
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions: read-all
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      # VIOLATION: no author_association check — any commenter triggers this
+      - name: Run command
+        run: echo "Running command from comment"
+        timeout-minutes: 5

@@ -1,0 +1,33 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-prt-with-pr-ref-checkout
+  annotations:
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/category: supply-chain
+    policies.kyverno.io/description: >
+      Workflows triggered by pull_request_target run with write permissions and
+      access to secrets. Checking out the PR branch (e.g. with.ref: ${{ github.event.pull_request.head.sha }})
+      exposes those privileges to attacker-controlled code. Use pull_request instead,
+      or restrict checkout to the base branch.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Workflow uses pull_request_target and checks out the PR branch with a
+        pull_request context ref. This gives attacker-controlled code access to
+        secrets and write permissions. Use pull_request trigger or only check
+        out the base branch.
+      expression: >-
+        !('pull_request_target' in object.on) ||
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          object.jobs[j].steps != null &&
+          object.jobs[j].steps.exists(s,
+            has(s.uses) && s.uses.contains('checkout') &&
+            ('with' in s) && has(s['with'].ref) &&
+            (s['with'].ref.contains('${{ github.event.pull_request') ||
+             s['with'].ref.contains('${{ github.head_ref'))
+          )
+        )

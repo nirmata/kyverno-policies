@@ -1,0 +1,30 @@
+# script-injection.yml — triggers Policy 4 (no-script-injection)
+# An attacker controlling a PR title or branch name can inject arbitrary
+# shell commands via the ${{ github.event.pull_request.* }} context expression.
+name: Script Injection
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions: read-all
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        timeout-minutes: 5
+
+      # VIOLATION: PR title is attacker-controlled and interpolated directly into shell
+      - name: Echo PR title
+        run: echo "PR title is ${{ github.event.pull_request.title }}"
+        timeout-minutes: 5
+
+      # VIOLATION: head_ref (branch name) is attacker-controlled
+      - name: Check branch
+        run: echo "Branch is ${{ github.head_ref }}"
+        timeout-minutes: 5

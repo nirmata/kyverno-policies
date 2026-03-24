@@ -1,0 +1,15 @@
+# unpinned-reusable-workflow.yml — triggers require-pinned-actions/reusable-workflows-pinned-to-sha
+# Job-level uses: with a mutable tag is vulnerable to the same tag-mutation
+# supply chain attack as unpinned step actions.
+name: Unpinned Reusable Workflow
+
+on:
+  push:
+    branches: [main]
+
+permissions: read-all
+
+jobs:
+  call:
+    # VIOLATION: mutable ref @main — use a full 40-char SHA instead
+    uses: some-org/some-repo/.github/workflows/ci.yml@main

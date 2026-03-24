@@ -1,0 +1,32 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-ssh-debug-action
+  annotations:
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/category: rce
+    policies.kyverno.io/description: >
+      Debug actions such as mxschmitt/action-tmate and lhotari/action-upterm
+      open an interactive SSH session on the runner, giving anyone with access
+      to the session URL full shell access to the machine and all secrets
+      loaded into the environment. These actions must never appear in
+      production workflows.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Step uses a known SSH debug action that opens an interactive shell on
+        the runner, exposing all secrets and write access to the repository.
+        Remove this step before merging.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          object.jobs[j].steps != null &&
+          object.jobs[j].steps.exists(s,
+            has(s.uses) && (
+              s.uses.startsWith('mxschmitt/action-tmate') ||
+              s.uses.startsWith('lhotari/action-upterm')
+            )
+          )
+        )

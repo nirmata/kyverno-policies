@@ -1,0 +1,46 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: impostor-commit
+  annotations:
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/category: supply-chain
+    policies.kyverno.io/description: >
+      Verifies that the SHA pinned in a uses: field matches the commit the
+      version tag currently resolves to on GitHub. A mismatch means the tag
+      has been moved to point to different (potentially malicious) code after
+      the workflow was written. Requires the version tag to be present as an
+      inline comment (e.g. "uses: actions/foo@sha  # v1.2.3") and network
+      access to api.github.com at scan time. Unauthenticated requests are
+      subject to GitHub's rate limit (60/hour); set GITHUB_TOKEN for higher
+      limits.
+spec:
+  evaluation:
+    mode: JSON
+  variables:
+    - name: ghAPI
+      expression: '"https://api.github.com/repos"'
+  validations:
+    - message: >
+        Pinned SHA does not match the commit the version tag currently points
+        to on GitHub — the tag may have been moved to malicious code. Re-pin
+        to the current commit SHA for the intended tag and verify the diff.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          object.jobs[j].steps != null &&
+          object.jobs[j].steps.exists(s,
+            has(s.uses) &&
+            ('uses-tag' in s) &&
+            s['uses-tag'] != "" &&
+            s.uses.matches('@[a-f0-9]{40}$') &&
+            (
+              http.Get(
+                variables.ghAPI + "/" +
+                string(s.uses).split('@')[0] +
+                "/git/ref/tags/" +
+                string(s['uses-tag'])
+              )['object']['sha'] != string(s.uses).split('@')[1]
+            )
+          )
+        )

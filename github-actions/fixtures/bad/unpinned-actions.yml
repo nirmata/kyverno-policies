@@ -1,0 +1,29 @@
+# unpinned-actions.yml — triggers Policy 2 (require-pinned-actions)
+# Actions are referenced by mutable tags (@v4, @main) rather than full commit SHAs.
+name: Unpinned Actions
+
+on:
+  push:
+    branches: [main]
+
+permissions: read-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      # VIOLATION: @v4 is a mutable tag — can be repointed to malicious code
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # VIOLATION: @v5 is a mutable tag
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Build
+        run: make build
+        timeout-minutes: 20

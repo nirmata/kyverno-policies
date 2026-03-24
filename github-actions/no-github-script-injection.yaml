@@ -1,0 +1,42 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-github-script-injection
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: injection
+    policies.kyverno.io/description: >
+      Using attacker-controlled GitHub context expressions directly in the
+      script: parameter of actions/github-script allows injection of arbitrary
+      JavaScript. Pass untrusted values through step-level env vars and
+      reference them via process.env inside the script instead.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Step uses actions/github-script with an untrusted context expression
+        interpolated directly in the script. An attacker can inject arbitrary
+        JavaScript. Pass untrusted values via step-level env vars and read them
+        with process.env inside the script.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          object.jobs[j].steps != null &&
+          object.jobs[j].steps.exists(s,
+            has(s.uses) &&
+            s.uses.startsWith('actions/github-script') &&
+            ('with' in s) &&
+            has(s['with'].script) &&
+            (
+              s['with'].script.contains('${{ github.event.pull_request') ||
+              s['with'].script.contains('${{ github.event.issue') ||
+              s['with'].script.contains('${{ github.head_ref') ||
+              s['with'].script.contains('${{ github.event.comment') ||
+              s['with'].script.contains('${{ github.event.review') ||
+              s['with'].script.contains('${{ github.event.discussion') ||
+              s['with'].script.contains('${{ github.event.inputs.') ||
+              s['with'].script.contains('${{ inputs.')
+            )
+          )
+        )

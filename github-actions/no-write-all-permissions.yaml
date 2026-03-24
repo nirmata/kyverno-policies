@@ -1,0 +1,27 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-write-all-permissions
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: least-privilege
+    policies.kyverno.io/description: >
+      permissions: write-all grants the GITHUB_TOKEN write access to every
+      repository scope, equivalent to admin access during the workflow run.
+      Grant only the specific permissions required for the workflow or job.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Workflow or job sets permissions to write-all. Grant only the specific
+        permissions required (e.g., contents: read, pull-requests: write).
+      expression: >-
+        (!has(object.permissions) || object.permissions != 'write-all') &&
+        (
+          object.jobs == null ||
+          !object.jobs.exists(j,
+            has(object.jobs[j].permissions) &&
+            object.jobs[j].permissions == 'write-all'
+          )
+        )

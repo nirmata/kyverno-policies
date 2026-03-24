@@ -1,0 +1,45 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: known-vulnerable-actions
+  annotations:
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/category: supply-chain
+    policies.kyverno.io/description: >
+      Cross-references each pinned action against the OSV.dev vulnerability
+      database using the version tag extracted from the inline comment
+      (e.g. "uses: actions/foo@sha  # v1.2.3"). If OSV.dev reports a known
+      vulnerability for that action at that version the step fails. Requires
+      network access to api.osv.dev at scan time. Annotate each uses: line
+      with a version comment so the tag is available for the lookup.
+spec:
+  evaluation:
+    mode: JSON
+  variables:
+    - name: osvURL
+      expression: '"https://api.osv.dev/v1/query"'
+  validations:
+    - message: >
+        Step uses an action with a known security vulnerability. Update to a
+        patched version, re-pin to the new SHA, and update the version comment.
+        Check https://osv.dev for details on the specific advisory.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          object.jobs[j].steps != null &&
+          object.jobs[j].steps.exists(s,
+            has(s.uses) &&
+            ('uses-tag' in s) &&
+            s['uses-tag'] != "" &&
+            size(
+              http.Post(
+                variables.osvURL,
+                json.unmarshal(
+                  '{"package":{"name":"' + string(s.uses).split('@')[0] +
+                  '","ecosystem":"GitHub Actions"},"version":"' +
+                  string(s['uses-tag']) + '"}'
+                )
+              ).vulns
+            ) > 0
+          )
+        )

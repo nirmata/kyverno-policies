@@ -1,0 +1,36 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-excessive-job-permissions
+  annotations:
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/category: permissions
+    policies.kyverno.io/description: >
+      A job that requests id-token: write (OIDC) together with other write
+      scopes (e.g. contents: write, packages: write) is over-provisioned.
+      id-token: write should be scoped to the specific job that exchanges the
+      OIDC token with a cloud provider. Granting additional write permissions
+      in the same job unnecessarily broadens the blast radius if the job is
+      compromised. Separate cloud-auth jobs from jobs that need write access
+      to repository contents or packages.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Job grants id-token: write together with at least one other write
+        scope. id-token: write is for OIDC cloud authentication and should
+        not be combined with broad write permissions in the same job. Split
+        the cloud-auth step into a dedicated job with only id-token: write,
+        or remove write permissions that are not required by this job.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          has(object.jobs[j].permissions) &&
+          object.jobs[j].permissions != null &&
+          'id-token' in object.jobs[j].permissions &&
+          object.jobs[j].permissions['id-token'] == 'write' &&
+          object.jobs[j].permissions.exists(k,
+            k != 'id-token' && object.jobs[j].permissions[k] == 'write'
+          )
+        )

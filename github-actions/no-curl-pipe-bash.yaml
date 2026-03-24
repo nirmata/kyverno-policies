@@ -1,0 +1,38 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-curl-wget-pipe-shell
+  annotations:
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/category: supply-chain
+    policies.kyverno.io/description: >
+      Piping curl or wget output directly to bash or sh fetches and immediately
+      executes arbitrary remote code with no integrity check. A compromised
+      server, MITM attack, or redirect can serve a malicious payload. Download
+      the script, verify its checksum or signature, then execute it explicitly.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Step pipes curl or wget output directly to bash or sh. This executes
+        arbitrary remote code with no integrity verification. Download the
+        script first, verify its checksum or signature, then execute it
+        explicitly.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          object.jobs[j].steps != null &&
+          object.jobs[j].steps.exists(s,
+            has(s.run) &&
+            (s.run.contains('curl') || s.run.contains('wget')) &&
+            (
+              s.run.contains('| bash') ||
+              s.run.contains('| sh') ||
+              s.run.contains('|bash') ||
+              s.run.contains('|sh') ||
+              s.run.contains('| /bin/bash') ||
+              s.run.contains('| /bin/sh')
+            )
+          )
+        )

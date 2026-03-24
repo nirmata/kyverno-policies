@@ -1,0 +1,26 @@
+# unjustified-write-permissions.yml — triggers no-unjustified-write-permissions
+# The job grants packages: write but no step uses an action that requires it.
+# All steps use known actions (actions/checkout only needs contents: read),
+# so the policy can safely flag the unjustified write permission.
+name: Unjustified Write Permissions
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write   # VIOLATION: no step in this job needs packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        timeout-minutes: 5
+
+      - name: Build
+        run: make build
+        timeout-minutes: 10

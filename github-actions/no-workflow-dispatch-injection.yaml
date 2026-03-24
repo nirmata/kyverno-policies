@@ -1,0 +1,32 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-workflow-dispatch-injection
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: injection
+    policies.kyverno.io/description: >
+      Using workflow_dispatch inputs (${{ github.event.inputs.* }} or
+      ${{ inputs.* }}) directly inside run steps allows injection of arbitrary
+      shell commands. Workflow inputs are caller-controlled and must be passed
+      through intermediate env vars, never interpolated directly in shell.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Step interpolates a workflow_dispatch input directly in a run step.
+        Inputs are caller-controlled and can contain shell metacharacters.
+        Pass the value via a step-level env var and reference it quoted in
+        shell instead of interpolating the expression directly.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          object.jobs[j].steps != null &&
+          object.jobs[j].steps.exists(s,
+            has(s.run) && (
+              s.run.contains('${{ github.event.inputs.') ||
+              s.run.contains('${{ inputs.')
+            )
+          )
+        )

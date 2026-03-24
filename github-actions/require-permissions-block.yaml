@@ -1,0 +1,23 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: workflow-has-permissions
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: least-privilege
+    policies.kyverno.io/description: >
+      Workflows without an explicit permissions block inherit the repository's
+      default token permissions, which is write for all scopes on many
+      repositories. Always declare permissions explicitly at the workflow level
+      and grant write only where needed at the job level.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Workflow has no top-level permissions block. Without explicit permissions,
+        GITHUB_TOKEN inherits repository defaults (often write). Add
+        'permissions: read-all' at the workflow level and grant write only where
+        needed.
+      expression: >-
+        has(object.permissions) && object.permissions != null
