@@ -39,7 +39,7 @@ spec:
                   '","ecosystem":"GitHub Actions"},"version":"' +
                   string(s['uses-tag']) + '"}'
                 )
-              )
+              ).vulns
             ) > 0
           )
         )

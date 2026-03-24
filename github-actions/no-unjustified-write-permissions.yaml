@@ -20,7 +20,7 @@ spec:
     - name: actionRequires
       expression: >-
         {
-          "actions/checkout":                  ["contents"],
+          "actions/checkout":                  [],
           "actions/upload-artifact":           [],
           "actions/download-artifact":         [],
           "actions/create-release":            ["contents"],
@@ -51,6 +51,8 @@ spec:
           object.jobs[j].permissions != null &&
           object.jobs[j].permissions != "write-all" &&
           object.jobs[j].permissions != "read-all" &&
+          has(object.jobs[j].steps) &&
+          object.jobs[j].steps != null &&
           object.jobs[j].permissions.exists(perm,
             object.jobs[j].permissions[perm] == "write" &&
             !object.jobs[j].steps.exists(s,
