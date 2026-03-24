@@ -1,0 +1,23 @@
+# job-debug-env.yml — triggers no-job-debug-env
+# ACTIONS_STEP_DEBUG in a job-level env block causes GitHub Actions to print
+# all environment variables and runner diagnostics to the log, including secrets.
+name: Debug Env Enabled
+
+on:
+  push:
+    branches: [main]
+
+permissions: read-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    # VIOLATION: dumps all env vars (including secrets) to the workflow log
+    env:
+      ACTIONS_STEP_DEBUG: "true"
+    steps:
+      - name: Build
+        run: make build
+        timeout-minutes: 10

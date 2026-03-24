@@ -1,0 +1,23 @@
+# job-env-injection.yml — triggers no-job-env-injection
+# Setting attacker-controlled context expressions in a job-level env block
+# propagates untrusted data to every step in the job.
+name: Job Env Injection
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions: read-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    # VIOLATION: attacker-controlled PR title set at job level env
+    env:
+      PR_TITLE: ${{ github.event.pull_request.title }}
+    steps:
+      - name: Build
+        run: make build
+        timeout-minutes: 10

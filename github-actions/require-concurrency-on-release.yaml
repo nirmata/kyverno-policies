@@ -1,0 +1,25 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: release-workflow-has-concurrency
+  annotations:
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/category: resource-management
+    policies.kyverno.io/description: >
+      Release workflows without a concurrency group can run simultaneously if
+      two releases are published in quick succession. Concurrent publish jobs
+      can corrupt release artifacts, double-publish packages, or leave the
+      registry in an inconsistent state. Add a concurrency block to serialise
+      release runs.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Workflow is triggered by a release event but has no concurrency block.
+        Two simultaneous release runs can corrupt artifacts or publish duplicate
+        packages. Add a concurrency group to serialise execution, for example:
+        concurrency: { group: "release-${{ github.ref }}", cancel-in-progress: true }
+      expression: >-
+        !('release' in object.on) ||
+        (has(object.concurrency) && object.concurrency != null)

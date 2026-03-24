@@ -1,0 +1,24 @@
+# known-vulnerable-action.yml — triggers known-vulnerable-actions
+# Uses reviewdog/action-setup@v1 which is recorded in OSV.dev as
+# GHSA-qmg3-hpqr-gqvc (supply-chain compromise, March 2025).
+name: Known Vulnerable Action
+
+on:
+  push:
+    branches: [main]
+
+permissions: read-all
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Setup reviewdog
+        # VIOLATION: reviewdog/action-setup@v1 is a known-compromised version
+        uses: reviewdog/action-setup@f0d342d24037bb11d26b9bd8496e0808ba32e9ec  # v1
+        timeout-minutes: 5

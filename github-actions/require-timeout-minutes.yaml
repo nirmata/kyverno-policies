@@ -1,0 +1,28 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: steps-have-timeout
+  annotations:
+    policies.kyverno.io/severity: low
+    policies.kyverno.io/category: resource-management
+    policies.kyverno.io/description: >
+      Steps without timeout-minutes can run indefinitely, enabling
+      denial-of-service attacks against your runner pool and consuming GitHub
+      Actions minutes. Set a timeout-minutes value appropriate for the
+      expected runtime of each run step.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Step has no timeout-minutes set. Without a timeout, a hung step can
+        consume all available runner minutes. Add a timeout-minutes value
+        appropriate for the expected runtime.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          object.jobs[j].steps != null &&
+          object.jobs[j].steps.exists(s,
+            has(s.run) && !('timeout-minutes' in s)
+          )
+        )

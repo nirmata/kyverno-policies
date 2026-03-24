@@ -1,0 +1,27 @@
+# unguarded-workflow-run.yml — triggers no-unguarded-comment-trigger/workflow-run-trigger-requires-fork-check
+# The workflow_run trigger runs with base-repository secrets and permissions but
+# can be initiated by a fork PR's workflow. Without checking
+# github.event.workflow_run.head_repository.fork, artifacts from an untrusted
+# fork can influence privileged execution.
+name: Post-CI
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions: read-all
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      # VIOLATION: no check on github.event.workflow_run.head_repository.fork
+      - name: Process results
+        run: echo "Processing workflow results"
+        timeout-minutes: 5

@@ -1,0 +1,50 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: comment-trigger-requires-author-check
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: authorization
+    policies.kyverno.io/description: >
+      Workflows triggered by issue_comment run in the base repository context
+      with access to secrets and write permissions. Without an author_association
+      guard, any external contributor can trigger privileged code execution by
+      posting a comment. Restrict execution to trusted actors or switch to the
+      pull_request trigger for contributor workflows.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Workflow uses the issue_comment trigger, which grants any user the
+        ability to trigger privileged code execution by posting a comment.
+        Add an if condition on each job to restrict execution to trusted actors,
+        or switch to the pull_request trigger for contributor workflows.
+      expression: >-
+        !('issue_comment' in object.on)
+---
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: workflow-run-trigger-requires-fork-check
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: authorization
+    policies.kyverno.io/description: >
+      Workflows triggered by workflow_run run with base repository secrets and
+      permissions but can be initiated by a fork PR workflow. Before downloading
+      or using any artifacts from the triggering run, verify that the workflow
+      was not triggered by a fork to avoid executing untrusted code in a
+      privileged context.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Workflow uses the workflow_run trigger, which runs with base repository
+        secrets and permissions but can be initiated by a fork PR workflow.
+        Before using artifacts from the triggering run, check
+        github.event.workflow_run.head_repository.fork to avoid executing
+        untrusted fork code in a privileged context.
+      expression: >-
+        !('workflow_run' in object.on)

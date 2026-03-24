@@ -1,0 +1,30 @@
+# head-ref-in-action-input.yml — triggers no-pr-head-ref-in-action-input
+# Passing github.head_ref (an attacker-controlled branch name) directly in
+# the with: params of an action step. Branch names can contain shell
+# metacharacters that may be interpreted unsafely inside the action.
+name: Head Ref in Action Input
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions: read-all
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Comment with branch name
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
+        with:
+          # VIOLATION: attacker-controlled head_ref passed directly as action input
+          branch: ${{ github.head_ref }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Branch: ${process.env.BRANCH}`
+            })

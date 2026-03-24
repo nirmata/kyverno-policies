@@ -1,0 +1,30 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-always-true-step-condition
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: logic
+    policies.kyverno.io/description: >
+      An if condition set to the literal boolean true (or the string "true")
+      always evaluates to true, making the condition meaningless. This is
+      almost always a mistake — a leftover from debugging or a YAML parsing
+      issue where an expression was intended. Remove the condition or replace
+      it with the correct expression.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Step has if: true, which always evaluates to true and makes the
+        condition meaningless. A security-gate step with if: true provides
+        no protection. Remove the condition or replace it with the intended
+        expression.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          object.jobs[j].steps != null &&
+          object.jobs[j].steps.exists(s,
+            ('if' in s) && (s['if'] == true || s['if'] == 'true')
+          )
+        )

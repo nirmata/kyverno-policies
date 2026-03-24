@@ -1,0 +1,58 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: actions-pinned-to-sha
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: supply-chain
+    policies.kyverno.io/description: >
+      Unpinned actions (using tags like @v3 or @main) are vulnerable to tag
+      mutation. An attacker who compromises an action's repository can push a
+      malicious version under an existing tag. Pin all actions to a full
+      40-character commit SHA to guarantee immutability.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        One or more steps use an action not pinned to a full commit SHA. Use
+        the format 'owner/repo@<40-char-sha>' to prevent supply chain attacks
+        via tag mutation.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          object.jobs[j].steps != null &&
+          object.jobs[j].steps.exists(s,
+            has(s.uses) &&
+            !s.uses.startsWith('./') &&
+            !s.uses.matches('^[^@]+@[0-9a-f]{40}$')
+          )
+        )
+---
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: reusable-workflows-pinned-to-sha
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: supply-chain
+    policies.kyverno.io/description: >
+      Reusable workflows called via jobs[*].uses must be pinned to a full
+      commit SHA. Tag or branch references are mutable and can be silently
+      replaced with malicious content.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        One or more jobs call a reusable workflow not pinned to a full
+        40-character commit SHA. Pin every external reusable workflow reference
+        to a full SHA to prevent supply chain attacks via tag mutation.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          has(object.jobs[j].uses) &&
+          object.jobs[j].uses != '' &&
+          !object.jobs[j].uses.startsWith('./') &&
+          !object.jobs[j].uses.matches('^[^@]+@[0-9a-f]{40}$')
+        )

@@ -1,0 +1,25 @@
+# github-env-injection.yml — triggers no-github-env-injection
+# Writing an attacker-controlled PR title to $GITHUB_ENV persists the
+# untrusted value into the environment for all subsequent steps.
+name: GitHub ENV Injection
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions: read-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Expose PR title
+        # VIOLATION: attacker-controlled PR title written to GITHUB_ENV
+        run: echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+        timeout-minutes: 5
+
+      - name: Use title
+        run: echo "Building $PR_TITLE"
+        timeout-minutes: 5

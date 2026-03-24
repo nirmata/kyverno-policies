@@ -1,0 +1,40 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-pr-head-ref-in-action-input
+  annotations:
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/category: injection
+    policies.kyverno.io/description: >
+      Passing github.head_ref (an attacker-controlled branch name) directly
+      in the with: parameters of an action step can lead to injection in
+      actions that interpolate inputs into shell or API calls internally.
+      Branch names can contain special characters including slashes, quotes,
+      and semicolons. Pass head_ref through a step-level env var and validate
+      or sanitise before use. Checkout actions are excluded because they
+      handle ref parameters safely via git plumbing.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Step passes github.head_ref directly in a with: parameter to an
+        action. Branch names are attacker-controlled and can contain shell
+        metacharacters or path components that may be interpreted unsafely
+        by the action. Use a step-level env var to hold the value and
+        validate it before passing it to the action, or avoid forwarding
+        raw branch names to external actions.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          object.jobs[j].steps != null &&
+          object.jobs[j].steps.exists(s,
+            has(s.uses) &&
+            !s.uses.contains('checkout') &&
+            ('with' in s) &&
+            s['with'] != null &&
+            s['with'].exists(k,
+              string(s['with'][k]).contains('${{ github.head_ref')
+            )
+          )
+        )

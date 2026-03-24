@@ -1,0 +1,66 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-unjustified-write-permissions
+  annotations:
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/category: least-privilege
+    policies.kyverno.io/description: >
+      A job-level write permission that no step in the job requires violates
+      least-privilege. For each known action in the manifest the policy checks
+      whether the write permissions granted to the job are actually needed.
+      Jobs that contain at least one action not in the manifest are skipped
+      (the unknown action may legitimately require the permission). Extend
+      the actionRequires variable in a custom policy overlay to cover your
+      own internal actions.
+spec:
+  evaluation:
+    mode: JSON
+  variables:
+    - name: actionRequires
+      expression: >-
+        {
+          "actions/checkout":                  ["contents"],
+          "actions/upload-artifact":           [],
+          "actions/download-artifact":         [],
+          "actions/create-release":            ["contents"],
+          "actions/deploy-pages":              ["pages"],
+          "docker/build-push-action":          ["packages"],
+          "docker/login-action":               [],
+          "github/codeql-action/init":         ["actions"],
+          "github/codeql-action/autobuild":    ["actions"],
+          "github/codeql-action/analyze":      ["security-events"],
+          "github/codeql-action/upload-sarif": ["security-events"],
+          "softprops/action-gh-release":       ["contents"],
+          "peter-evans/create-pull-request":   ["contents", "pull-requests"],
+          "peaceiris/actions-gh-pages":        ["contents"],
+          "aws-actions/configure-aws-credentials": ["id-token"],
+          "azure/login":                       ["id-token"],
+          "google-github-actions/auth":        ["id-token"]
+        }
+  validations:
+    - message: >
+        Job grants a write permission that no step in the job requires.
+        Remove write permissions not needed by any action in this job. If you
+        use an internal or unlisted action that requires this permission, add
+        it to the actionRequires map in a custom policy overlay.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          has(object.jobs[j].permissions) &&
+          object.jobs[j].permissions != null &&
+          object.jobs[j].permissions != "write-all" &&
+          object.jobs[j].permissions != "read-all" &&
+          object.jobs[j].permissions.exists(perm,
+            object.jobs[j].permissions[perm] == "write" &&
+            !object.jobs[j].steps.exists(s,
+              has(s.uses) &&
+              !(s.uses.split('@')[0] in variables.actionRequires)
+            ) &&
+            !object.jobs[j].steps.exists(s,
+              has(s.uses) &&
+              s.uses.split('@')[0] in variables.actionRequires &&
+              perm in variables.actionRequires[s.uses.split('@')[0]]
+            )
+          )
+        )

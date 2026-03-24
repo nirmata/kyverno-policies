@@ -1,0 +1,28 @@
+# github-script-injection.yml — triggers no-github-script-injection
+# Interpolating attacker-controlled context expressions directly in the
+# script: parameter of actions/github-script allows arbitrary JS injection.
+name: GitHub Script Injection
+
+on:
+  issues:
+    types: [opened]
+
+permissions: read-all
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Add label
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
+        with:
+          # VIOLATION: PR title (attacker-controlled) interpolated in script
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['${{ github.event.issue.title }}']
+            })
