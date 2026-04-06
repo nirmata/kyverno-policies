@@ -1,0 +1,35 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: require-aibom-attestation-test
+# NOTE: verifyImageSignatures and verifyAttestationSignatures always hit a
+# real registry — they cannot be mocked by the kyverno CLI test framework.
+# These tests validate policy structure and resource matching only.
+# Full attestation testing requires a registry with real cosign-signed images
+# and AIBOM attestations (type: https://nirmata.com/aibom/v1).
+# For integration testing, use Chainsaw against a real cluster, or point
+# matchImageReferences at pre-signed images in a test registry.
+policies:
+- ../require-aibom-attestation.yaml
+resources:
+- resources.yaml
+context: context.yaml
+results:
+- isImageValidatingPolicy: true
+  kind: Pod
+  policy: require-aibom-attestation
+  resources:
+  - signed-and-attested-pod
+  result: pass
+- isImageValidatingPolicy: true
+  kind: Pod
+  policy: require-aibom-attestation
+  resources:
+  - unsigned-image-pod
+  result: fail
+- isImageValidatingPolicy: true
+  kind: Pod
+  policy: require-aibom-attestation
+  resources:
+  - missing-aibom-attestation-pod
+  result: fail

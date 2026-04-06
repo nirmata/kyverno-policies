@@ -1,0 +1,54 @@
+---
+# PASS: image has both a valid Sigstore signature and a valid AIBOM attestation
+apiVersion: v1
+kind: Pod
+metadata:
+  name: signed-and-attested-pod
+  namespace: default
+  labels:
+    app: chat-api
+    nirmata.io/ai: "true"
+spec:
+  containers:
+  - name: chat-api
+    image: registry.example.com/agents/chat-api:v1.2.3
+    resources:
+      limits:
+        cpu: "2"
+        memory: 4Gi
+---
+# FAIL: image has no Sigstore signature
+apiVersion: v1
+kind: Pod
+metadata:
+  name: unsigned-image-pod
+  namespace: default
+  labels:
+    app: unsigned-api
+    nirmata.io/ai: "true"
+spec:
+  containers:
+  - name: unsigned-api
+    image: registry.example.com/agents/no-sig-api:v1.0.0
+    resources:
+      limits:
+        cpu: "1"
+        memory: 2Gi
+---
+# FAIL: image is signed but has no AIBOM attestation
+apiVersion: v1
+kind: Pod
+metadata:
+  name: missing-aibom-attestation-pod
+  namespace: default
+  labels:
+    app: no-aibom-api
+    nirmata.io/ai: "true"
+spec:
+  containers:
+  - name: no-aibom-api
+    image: registry.example.com/agents/no-aibom-api:v2.0.0
+    resources:
+      limits:
+        cpu: "1"
+        memory: 2Gi

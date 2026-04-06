@@ -1,0 +1,54 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: enforce-aibom-constraints-test
+# NOTE: verifyAttestationSignatures and extractPayload always hit a real
+# registry — they cannot be mocked by the kyverno CLI test framework.
+# These tests validate policy structure and resource matching only.
+# Full constraint enforcement testing requires a registry with real cosign-signed
+# images carrying AIBOM attestations (type: https://nirmata.com/aibom/v1)
+# whose payloads contain varying frameworks, tools, and model names.
+# For integration testing, use Chainsaw against a real cluster, or point
+# matchImageReferences at pre-signed images in a test registry.
+policies:
+- ../enforce-aibom-constraints.yaml
+resources:
+- resources.yaml
+context: context.yaml
+results:
+- isImageValidatingPolicy: true
+  kind: Pod
+  policy: enforce-aibom-constraints
+  resources:
+  - approved-agent-pod
+  result: pass
+- isImageValidatingPolicy: true
+  kind: Pod
+  policy: enforce-aibom-constraints
+  resources:
+  - multi-container-approved-pod
+  result: pass
+- isImageValidatingPolicy: true
+  kind: Pod
+  policy: enforce-aibom-constraints
+  resources:
+  - unapproved-framework-pod
+  result: fail
+- isImageValidatingPolicy: true
+  kind: Pod
+  policy: enforce-aibom-constraints
+  resources:
+  - filesystem-tool-pod
+  result: fail
+- isImageValidatingPolicy: true
+  kind: Pod
+  policy: enforce-aibom-constraints
+  resources:
+  - shell-tool-pod
+  result: fail
+- isImageValidatingPolicy: true
+  kind: Pod
+  policy: enforce-aibom-constraints
+  resources:
+  - unapproved-model-pod
+  result: fail
