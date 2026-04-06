@@ -1,0 +1,44 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-mcp-server-authentication
+  annotations:
+    policies.kyverno.io/title: Require MCP Server Authentication Configuration
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Ensures that MCP (Model Context Protocol) server pods declare an authentication method in their configuration to prevent unauthorized access. Validates that pods have appropriate annotations or environment variables indicating authentication configuration like API keys, OAuth, mTLS, etc.
+spec:
+  evaluation:
+    background:
+      enabled: true
+  matchConditions:
+  - name: is-mcp-server
+    expression: "(has(object.metadata.labels) && ('app' in object.metadata.labels && object.metadata.labels['app'].contains('mcp')) || ('component' in object.metadata.labels && object.metadata.labels['component'].contains('mcp-server'))) || (has(object.metadata.annotations) && object.metadata.annotations.exists(k, k.contains('mcp') && k.contains('server'))) || (object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])).exists(c, c.name.contains('mcp') || (has(c.image) && c.image.contains('mcp')))"
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+  validationActions: ["Audit"]
+  validations:
+  - expression: "variables.hasAuthAnnotation || variables.hasAuthEnvVar || variables.hasAuthSecretRef || variables.hasTLSVolumeMount"
+    messageExpression: "'MCP server pod must declare an authentication method. Configure one of: annotations (mcp.auth/method, mcp.security/auth-type), environment variables (MCP_AUTH_METHOD, MCP_AUTHENTICATION_MODE), secret references for auth tokens/keys, or TLS/certificate volume mounts for mTLS authentication.'"
+  - expression: "!variables.hasAuthAnnotation || object.metadata.annotations.filter(k, k.startsWith('mcp.auth/') || k.startsWith('security.mcp/') || k in ['mcp.auth/method', 'mcp.security/auth-type', 'mcp.config/authentication']).all(k, object.metadata.annotations[k] != '' && object.metadata.annotations[k] != null)"
+    messageExpression: "'MCP authentication annotations must have non-empty values'"
+  - expression: "!variables.hasAuthEnvVar || variables.allContainers.filter(c, has(c.env) && c.env.exists(e, e.name in ['MCP_AUTH_METHOD', 'MCP_AUTH_TYPE', 'MCP_AUTHENTICATION_MODE'] || e.name.startsWith('MCP_AUTH_'))).all(c, c.env.filter(e, e.name in ['MCP_AUTH_METHOD', 'MCP_AUTH_TYPE', 'MCP_AUTHENTICATION_MODE'] || e.name.startsWith('MCP_AUTH_')).all(e, (has(e.value) && e.value != '' && e.value != null) || has(e.valueFrom)))"
+    messageExpression: "'MCP authentication environment variables must have non-empty values or reference secrets/configmaps'"
+  variables:
+  - name: allContainers
+    expression: "object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])"
+  - name: hasAuthAnnotation
+    expression: "has(object.metadata.annotations) && (object.metadata.annotations.exists(k, k in ['mcp.auth/method', 'mcp.security/auth-type', 'mcp.config/authentication']) || object.metadata.annotations.exists(k, k.startsWith('mcp.auth/') || k.startsWith('security.mcp/')))"
+  - name: hasAuthEnvVar
+    expression: "variables.allContainers.exists(c, has(c.env) && c.env.exists(e, e.name in ['MCP_AUTH_METHOD', 'MCP_AUTH_TYPE', 'MCP_AUTHENTICATION_MODE', 'MCP_SECURITY_AUTH', 'AUTH_METHOD', 'AUTHENTICATION_TYPE'] || e.name.startsWith('MCP_AUTH_') || e.name.startsWith('MCP_SECURITY_')))"
+  - name: hasAuthSecretRef
+    expression: "variables.allContainers.exists(c, has(c.env) && c.env.exists(e, has(e.valueFrom) && has(e.valueFrom.secretKeyRef) && (e.name.contains('AUTH') || e.name.contains('TOKEN') || e.name.contains('KEY') || e.name.contains('CERT'))))"
+  - name: hasTLSVolumeMount
+    expression: "has(object.spec.volumes) && object.spec.volumes.exists(v, v.name.contains('tls') || v.name.contains('cert') || v.name.contains('ssl')) && variables.allContainers.exists(c, has(c.volumeMounts) && c.volumeMounts.exists(vm, vm.name.contains('tls') || vm.name.contains('cert') || vm.name.contains('ssl')))"
+  - name: authMethods
+    expression: "['api-key', 'oauth', 'oauth2', 'bearer-token', 'jwt', 'mtls', 'tls', 'basic-auth', 'digest-auth', 'certificate', 'x509', 'sasl', 'kerberos']"

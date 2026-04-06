@@ -1,0 +1,33 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: audit-mcp-server-network-exposure
+  annotations:
+    policies.kyverno.io/title: Audit MCP Server Network Exposure
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Audits MCP (Model Context Protocol) servers with external network exposure through LoadBalancer/NodePort services or Ingress resources to ensure proper network security governance and prevent unintended public access.
+spec:
+  evaluation:
+    background:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["services"]
+    - apiGroups: ["networking.k8s.io"]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["ingresses"]
+  validationActions: ["Audit"]
+  validations:
+  - expression: "!(variables.isMCPServer && variables.hasExternalExposure)"
+    messageExpression: "'SECURITY ALERT: MCP server ' + object.metadata.name + ' in namespace ' + object.metadata.namespace + ' has external network exposure via ' + object.kind + ' with type ' + (has(object.spec.type) ? object.spec.type : 'Ingress') + '. This may allow unintended public access to the Model Context Protocol server. Review network security configuration.'"
+  variables:
+  - name: isMCPServer
+    expression: "has(object.metadata.labels) && ('app' in object.metadata.labels && (object.metadata.labels['app'].contains('mcp') || object.metadata.labels['app'].contains('model-context-protocol'))) || ('component' in object.metadata.labels && (object.metadata.labels['component'].contains('mcp') || object.metadata.labels['component'].contains('model-context-protocol'))) || ('app.kubernetes.io/name' in object.metadata.labels && (object.metadata.labels['app.kubernetes.io/name'].contains('mcp') || object.metadata.labels['app.kubernetes.io/name'].contains('model-context-protocol')))"
+  - name: hasExternalExposure
+    expression: "(object.kind == 'Service' && (object.spec.type == 'LoadBalancer' || object.spec.type == 'NodePort')) || object.kind == 'Ingress'"

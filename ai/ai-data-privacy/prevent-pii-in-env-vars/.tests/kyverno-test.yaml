@@ -1,0 +1,99 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: prevent-pii-in-env-vars-test
+policies:
+- ../prevent-pii-in-env-vars.yaml
+resources:
+- resources.yaml
+results:
+- kind: Pod
+  policy: prevent-pii-in-env-vars
+  resources:
+  - ai-pipeline-clean
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: prevent-pii-in-env-vars
+  resources:
+  - ml-pipeline-clean
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: prevent-pii-in-env-vars
+  resources:
+  - data-pipeline-clean
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: prevent-pii-in-env-vars
+  resources:
+  - workload-type-ai
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: prevent-pii-in-env-vars
+  resources:
+  - pipeline-type-labeled
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: prevent-pii-in-env-vars
+  resources:
+  - ai-pipeline-with-email
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: prevent-pii-in-env-vars
+  resources:
+  - ml-pipeline-with-phone
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: prevent-pii-in-env-vars
+  resources:
+  - data-pipeline-with-ssn
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: prevent-pii-in-env-vars
+  resources:
+  - ai-pipeline-with-ccn
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: prevent-pii-in-env-vars
+  resources:
+  - ml-pipeline-with-secret-ref
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: prevent-pii-in-env-vars
+  resources:
+  - ai-pipeline-multiple-pii
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: prevent-pii-in-env-vars
+  resources:
+  - regular-pod-with-pii
+  result: skip
+  rule: ""
+- kind: Pod
+  policy: prevent-pii-in-env-vars
+  resources:
+  - ai-pipeline-configmap-ref
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: prevent-pii-in-env-vars
+  resources:
+  - ai-pipeline-no-env
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: prevent-pii-in-env-vars
+  resources:
+  - ai-pipeline-empty-env-value
+  result: pass
+  rule: ""

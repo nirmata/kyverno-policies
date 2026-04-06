@@ -1,0 +1,48 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: restrict-gpu-workload-privileges
+  annotations:
+    policies.kyverno.io/title: Restrict GPU Workload Privileges
+    policies.kyverno.io/category: Pod Security Standards
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Restricts GPU workloads to minimum required privileges by preventing privileged containers, host network access, and dangerous capabilities beyond what's necessary for GPU access.
+spec:
+  evaluation:
+    background:
+      enabled: true
+  matchConditions:
+  - name: has-gpu-request
+    expression: "(object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])).exists(c, has(c.resources) && has(c.resources.limits) && ('nvidia.com/gpu' in c.resources.limits || 'amd.com/gpu' in c.resources.limits))"
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+  validationActions: ["Audit"]
+  validations:
+  - expression: "variables.gpuContainers.all(c, !has(c.securityContext) || !has(c.securityContext.privileged) || c.securityContext.privileged == false)"
+    messageExpression: "'GPU containers must not run in privileged mode'"
+  - expression: "!has(object.spec.securityContext) || !has(object.spec.securityContext.hostNetwork) || object.spec.securityContext.hostNetwork == false"
+    messageExpression: "'GPU workloads must not use host network'"
+  - expression: "!has(object.spec.securityContext) || !has(object.spec.securityContext.hostPID) || object.spec.securityContext.hostPID == false"
+    messageExpression: "'GPU workloads must not use host PID namespace'"
+  - expression: "!has(object.spec.securityContext) || !has(object.spec.securityContext.hostIPC) || object.spec.securityContext.hostIPC == false"
+    messageExpression: "'GPU workloads must not use host IPC namespace'"
+  - expression: "variables.gpuContainers.all(c, !has(c.securityContext) || !has(c.securityContext.capabilities) || !has(c.securityContext.capabilities.add) || c.securityContext.capabilities.add.all(cap, cap in variables.allowedCapabilities))"
+    messageExpression: "'GPU containers may only add capabilities from the allowed list: SYS_ADMIN, MKNOD, SYS_RAWIO (and standard baseline capabilities)'"
+  - expression: "!has(object.spec.volumes) || object.spec.volumes.all(v, !has(v.hostPath) || (!v.hostPath.path.startsWith('/dev') || v.hostPath.path.startsWith('/dev/nvidia') || v.hostPath.path.startsWith('/dev/dri') || v.hostPath.path.startsWith('/dev/amd')))"
+    messageExpression: "'Host path volumes for GPU workloads must only access GPU device paths (/dev/nvidia*, /dev/dri*, /dev/amd*)'"
+  - expression: "variables.gpuContainers.all(c, !has(c.securityContext) || !has(c.securityContext.allowPrivilegeEscalation) || c.securityContext.allowPrivilegeEscalation == false)"
+    messageExpression: "'GPU containers must not allow privilege escalation'"
+  - expression: "variables.gpuContainers.all(c, !has(c.securityContext) || !has(c.securityContext.runAsUser) || c.securityContext.runAsUser != 0)"
+    messageExpression: "'GPU containers should not run as root user (UID 0)'"
+  variables:
+  - name: allContainers
+    expression: "object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])"
+  - name: allowedCapabilities
+    expression: "['SYS_ADMIN', 'MKNOD', 'SYS_RAWIO', 'NET_BIND_SERVICE', 'CHOWN', 'DAC_OVERRIDE', 'FOWNER', 'FSETID', 'KILL', 'SETGID', 'SETUID', 'SETPCAP', 'SETFCAP', 'AUDIT_WRITE', 'SYS_CHROOT']"
+  - name: gpuContainers
+    expression: "variables.allContainers.filter(c, has(c.resources) && has(c.resources.limits) && ('nvidia.com/gpu' in c.resources.limits || 'amd.com/gpu' in c.resources.limits))"

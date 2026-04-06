@@ -1,0 +1,35 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-immutable-ai-model-tags
+  annotations:
+    policies.kyverno.io/title: Require Immutable Image Tags for AI Model Containers
+    policies.kyverno.io/category: Supply Chain Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Enforces supply chain security for AI/ML workloads by requiring containers to use specific version tags (not 'latest' or other mutable tags) and preferably image digests for immutability. Ensures reproducible AI model deployments and prevents unexpected model changes.
+spec:
+  evaluation:
+    background:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+  validationActions: ["Audit"]
+  validations:
+  - expression: "size(variables.aiModelContainers) == 0 || variables.aiModelContainers.all(c, c.image.contains(':'))"
+    messageExpression: "'AI model containers must specify an explicit tag or digest, found containers without tags: ' + variables.aiModelContainers.filter(c, !c.image.contains(':')).map(c, c.image).join(', ')"
+  - expression: "size(variables.aiModelContainers) == 0 || variables.aiModelContainers.all(c, !c.image.contains(':') || !(c.image.split(':')[1] in variables.mutableTags))"
+    messageExpression: "'AI model containers must not use mutable tags (latest, main, dev, etc.), found: ' + variables.aiModelContainers.filter(c, c.image.contains(':') && c.image.split(':')[1] in variables.mutableTags).map(c, c.image).join(', ')"
+  - expression: "size(variables.aiModelContainers) == 0 || variables.aiModelContainers.all(c, c.image.startsWith('localhost/') || c.image.contains('.local/') || c.image.contains('@sha256:') || (c.image.contains(':') && c.image.split(':')[1].matches('^v?[0-9]+\\\\.[0-9]+\\\\.[0-9]+')))"
+    messageExpression: "'AI model containers should use digest tags (@sha256:) or semantic version tags (v1.2.3), found non-compliant images: ' + variables.aiModelContainers.filter(c, !c.image.startsWith('localhost/') && !c.image.contains('.local/') && !c.image.contains('@sha256:') && (!c.image.contains(':') || !c.image.split(':')[1].matches('^v?[0-9]+\\\\.[0-9]+\\\\.[0-9]+'))).map(c, c.image).join(', ')"
+  variables:
+  - name: allContainers
+    expression: "object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])"
+  - name: aiModelContainers
+    expression: "variables.allContainers.filter(c, c.image.contains('/ai/') || c.image.contains('/ml/') || c.image.contains('/model/') || c.image.contains('tensorflow') || c.image.contains('pytorch') || c.image.contains('scikit') || c.image.contains('huggingface') || c.image.contains('transformers') || c.image.contains('cuda') || c.image.contains('jupyter') || c.image.contains('mlflow') || c.image.contains('kubeflow'))"
+  - name: mutableTags
+    expression: "['latest', 'main', 'master', 'dev', 'develop', 'development', 'test', 'testing', 'staging', 'prod', 'production', 'stable', 'nightly', 'edge', 'beta', 'alpha', 'rc']"

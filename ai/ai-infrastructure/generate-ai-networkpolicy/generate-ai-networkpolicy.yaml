@@ -1,0 +1,31 @@
+apiVersion: policies.kyverno.io/v1
+kind: GeneratingPolicy
+metadata:
+  name: generate-ai-networkpolicy
+  annotations:
+    policies.kyverno.io/title: Generate NetworkPolicy for AI Namespaces
+    policies.kyverno.io/category: Multi-Tenancy, Network Security, AI Workloads
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: NetworkPolicy
+    policies.kyverno.io/description: >-
+      This policy automatically generates a default NetworkPolicy in namespaces labeled for AI workloads to ensure proper network isolation for model endpoints and control traffic flow. The policy creates a deny-all NetworkPolicy that blocks ingress and egress traffic by default, requiring explicit NetworkPolicies to allow necessary communications.
+spec:
+  evaluation:
+    synchronize:
+      enabled: true
+  matchConditions:
+  - name: is-ai-namespace
+    expression: "has(object.metadata.labels) && ('ai-workload' in object.metadata.labels && object.metadata.labels['ai-workload'] == 'true' || 'workload-type' in object.metadata.labels && object.metadata.labels['workload-type'] == 'ai' || object.metadata.name.startsWith('ai-') || object.metadata.name.contains('-ai-') || object.metadata.name.endsWith('-ai'))"
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["namespaces"]
+  variables:
+  - name: targetNs
+    expression: "object.metadata.name"
+  - name: downstream
+    expression: "[{\"kind\": dyn(\"NetworkPolicy\"), \"apiVersion\": dyn(\"networking.k8s.io/v1\"), \"metadata\": dyn({\"name\": \"ai-default-deny\"}), \"spec\": dyn({\"podSelector\": dyn({}), \"policyTypes\": dyn([\"Ingress\", \"Egress\"])})}]"
+  generate:
+  - expression: "generator.Apply(variables.targetNs, variables.downstream)"

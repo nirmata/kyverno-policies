@@ -1,0 +1,75 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: require-ai-model-card-annotations-test
+policies:
+- ../require-ai-model-card-annotations.yaml
+resources:
+- resources.yaml
+results:
+- kind: Pod
+  policy: require-ai-model-card-annotations
+  resources:
+  - ai-model-complete
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-card-annotations
+  resources:
+  - ml-model-complete
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-card-annotations
+  resources:
+  - inference-server-complete
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-card-annotations
+  resources:
+  - model-server-critical-risk
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-card-annotations
+  resources:
+  - ai-model-missing-annotations
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-card-annotations
+  resources:
+  - ml-model-empty-annotations
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-card-annotations
+  resources:
+  - inference-server-invalid-risk
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-card-annotations
+  resources:
+  - model-server-invalid-version
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-card-annotations
+  resources:
+  - ai-model-no-annotations
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-card-annotations
+  resources:
+  - non-ai-workload
+  result: skip
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-card-annotations
+  resources:
+  - database-pod
+  result: skip
+  rule: ""

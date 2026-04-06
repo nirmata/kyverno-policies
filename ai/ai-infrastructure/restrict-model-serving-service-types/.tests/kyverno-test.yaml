@@ -1,0 +1,123 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: restrict-model-serving-service-types-test
+policies:
+- ../restrict-model-serving-service-types.yaml
+resources:
+- resources.yaml
+results:
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - ml-model-clusterip
+  result: pass
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - ai-model-clusterip
+  result: pass
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - inference-server-clusterip
+  result: pass
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - model-server-clusterip
+  result: pass
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - ml-serving-clusterip
+  result: pass
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - ml-model-nodeport-denied
+  result: fail
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - ai-model-loadbalancer-denied
+  result: fail
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - inference-nodeport-denied
+  result: fail
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - model-server-loadbalancer-denied
+  result: fail
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - ml-serving-nodeport-denied
+  result: fail
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - ml-model-nodeport-approved
+  result: pass
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - ai-model-loadbalancer-approved
+  result: pass
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - inference-nodeport-approved
+  result: pass
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - model-server-loadbalancer-approved
+  result: pass
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - ml-serving-loadbalancer-approved
+  result: pass
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - approval-annotation-false
+  result: fail
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - non-model-serving-nodeport
+  result: skip
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - non-model-serving-loadbalancer
+  result: skip
+  rule: ""
+- kind: Service
+  policy: restrict-model-serving-service-types
+  resources:
+  - ml-model-default-type
+  result: pass
+  rule: ""

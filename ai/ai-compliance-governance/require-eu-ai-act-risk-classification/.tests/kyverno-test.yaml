@@ -1,0 +1,81 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: eu-ai-act-high-risk-compliance-test
+policies:
+- ../eu-ai-act-high-risk-compliance.yaml
+resources:
+- resources.yaml
+results:
+- kind: Pod
+  policy: eu-ai-act-high-risk-compliance
+  resources:
+  - compliant-high-risk-ai-pod
+  result: pass
+  rule: ""
+- kind: Deployment
+  policy: eu-ai-act-high-risk-compliance
+  resources:
+  - compliant-ai-deployment
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: eu-ai-act-high-risk-compliance
+  resources:
+  - missing-annotations-pod
+  result: fail
+  rule: ""
+- kind: Deployment
+  policy: eu-ai-act-high-risk-compliance
+  resources:
+  - invalid-monitoring-deployment
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: eu-ai-act-high-risk-compliance
+  resources:
+  - invalid-logging-pod
+  result: fail
+  rule: ""
+- kind: Deployment
+  policy: eu-ai-act-high-risk-compliance
+  resources:
+  - invalid-oversight-deployment
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: eu-ai-act-high-risk-compliance
+  resources:
+  - empty-quality-mgmt-pod
+  result: fail
+  rule: ""
+- kind: Deployment
+  policy: eu-ai-act-high-risk-compliance
+  resources:
+  - invalid-accuracy-monitoring
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: eu-ai-act-high-risk-compliance
+  resources:
+  - invalid-robustness-testing
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: eu-ai-act-high-risk-compliance
+  resources:
+  - non-high-risk-pod
+  result: skip
+  rule: ""
+- kind: Deployment
+  policy: eu-ai-act-high-risk-compliance
+  resources:
+  - no-risk-label-deployment
+  result: skip
+  rule: ""
+- kind: Pod
+  policy: eu-ai-act-high-risk-compliance
+  resources:
+  - alternative-valid-values-pod
+  result: pass
+  rule: ""

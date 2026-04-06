@@ -1,0 +1,40 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-ai-model-metadata
+  annotations:
+    policies.kyverno.io/title: Require AI Model Metadata Annotations
+    policies.kyverno.io/category: AI/ML Governance
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Requires AI workload pods to have proper model metadata annotations including model name, version, provider, and license information for governance and compliance tracking.
+spec:
+  evaluation:
+    background:
+      enabled: true
+  matchConditions:
+  - name: is-ai-workload
+    expression: "has(object.metadata.labels) && ('app.type' in object.metadata.labels && object.metadata.labels['app.type'] in ['ai', 'ml', 'inference', 'training'] || 'workload.type' in object.metadata.labels && object.metadata.labels['workload.type'] in ['ai', 'ml', 'inference', 'training'] || 'component' in object.metadata.labels && object.metadata.labels['component'] in ['model-server', 'inference-service', 'training-job'])"
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+  validationActions: ["Audit"]
+  validations:
+  - expression: "variables.requiredAnnotations.all(annotation, annotation in variables.annotations)"
+    messageExpression: "'AI workload pods must have all required model metadata annotations: ' + variables.requiredAnnotations.filter(a, !(a in variables.annotations)).join(', ') + '. Found annotations: ' + string(size(variables.annotations)) + ' total'"
+  - expression: "variables.annotations['ai.model/name'] != '' && size(variables.annotations['ai.model/name']) > 0"
+    messageExpression: "'ai.model/name annotation cannot be empty'"
+  - expression: "variables.annotations['ai.model/version'] != '' && size(variables.annotations['ai.model/version']) > 0"
+    messageExpression: "'ai.model/version annotation cannot be empty'"
+  - expression: "variables.annotations['ai.model/provider'] != '' && size(variables.annotations['ai.model/provider']) > 0"
+    messageExpression: "'ai.model/provider annotation cannot be empty'"
+  - expression: "variables.annotations['ai.model/license'] != '' && size(variables.annotations['ai.model/license']) > 0"
+    messageExpression: "'ai.model/license annotation cannot be empty'"
+  variables:
+  - name: requiredAnnotations
+    expression: "['ai.model/name', 'ai.model/version', 'ai.model/provider', 'ai.model/license']"
+  - name: annotations
+    expression: "object.metadata.?annotations.orValue({})"

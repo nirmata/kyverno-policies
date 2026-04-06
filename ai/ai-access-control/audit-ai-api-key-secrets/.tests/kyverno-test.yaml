@@ -1,0 +1,105 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: audit-ai-api-key-secrets-test
+policies:
+- ../audit-ai-api-key-secrets.yaml
+resources:
+- resources.yaml
+results:
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - clean-secret
+  result: pass
+  rule: ""
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - openai-secret-sk-prefix
+  result: fail
+  rule: ""
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - google-ai-secret
+  result: fail
+  rule: ""
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - anthropic-secret
+  result: fail
+  rule: ""
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - claude-secret
+  result: fail
+  rule: ""
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - suspicious-key-generic
+  result: fail
+  rule: ""
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - short-suspicious-key
+  result: pass
+  rule: ""
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - long-non-suspicious-key
+  result: pass
+  rule: ""
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - openai-wrong-length
+  result: pass
+  rule: ""
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - google-wrong-length
+  result: pass
+  rule: ""
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - mixed-keys
+  result: fail
+  rule: ""
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - empty-secret
+  result: pass
+  rule: ""
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - azure-openai-secret
+  result: fail
+  rule: ""
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - llm-secret
+  result: fail
+  rule: ""
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - token-secret
+  result: fail
+  rule: ""
+- kind: Secret
+  policy: audit-ai-api-key-secrets
+  resources:
+  - case-insensitive-test
+  result: fail
+  rule: ""

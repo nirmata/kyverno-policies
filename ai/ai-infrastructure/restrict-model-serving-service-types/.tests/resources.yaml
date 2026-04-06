@@ -1,0 +1,320 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    ml.kyverno.io/model-serving: "true"
+  name: ml-model-clusterip
+  namespace: default
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: ml-model
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    ai.kyverno.io/model-serving: "true"
+  name: ai-model-clusterip
+  namespace: default
+spec:
+  ports:
+  - port: 9000
+    targetPort: 9000
+  selector:
+    app: ai-model
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: inference-server
+  name: inference-server-clusterip
+  namespace: default
+spec:
+  ports:
+  - port: 8000
+    targetPort: 8000
+  selector:
+    app: inference-server
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: model-server
+  name: model-server-clusterip
+  namespace: default
+spec:
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    app: model-server
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: ml-serving
+  name: ml-serving-clusterip
+  namespace: default
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: ml-serving
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    ml.kyverno.io/model-serving: "true"
+  name: ml-model-nodeport-denied
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30080
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: ml-model
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    ai.kyverno.io/model-serving: "true"
+  name: ai-model-loadbalancer-denied
+  namespace: default
+spec:
+  ports:
+  - port: 9000
+    targetPort: 9000
+  selector:
+    app: ai-model
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: inference-server
+  name: inference-nodeport-denied
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30000
+    port: 8000
+    targetPort: 8000
+  selector:
+    app: inference-server
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: model-server
+  name: model-server-loadbalancer-denied
+  namespace: default
+spec:
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    app: model-server
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: ml-serving
+  name: ml-serving-nodeport-denied
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30180
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: ml-serving
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    ml.kyverno.io/allow-external-access: "true"
+  labels:
+    ml.kyverno.io/model-serving: "true"
+  name: ml-model-nodeport-approved
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30081
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: ml-model
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    ml.kyverno.io/allow-external-access: "true"
+  labels:
+    ai.kyverno.io/model-serving: "true"
+  name: ai-model-loadbalancer-approved
+  namespace: default
+spec:
+  ports:
+  - port: 9000
+    targetPort: 9000
+  selector:
+    app: ai-model
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    ml.kyverno.io/allow-external-access: "true"
+  labels:
+    app.kubernetes.io/component: inference-server
+  name: inference-nodeport-approved
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30001
+    port: 8000
+    targetPort: 8000
+  selector:
+    app: inference-server
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    ml.kyverno.io/allow-external-access: "true"
+  labels:
+    app.kubernetes.io/component: model-server
+  name: model-server-loadbalancer-approved
+  namespace: default
+spec:
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    app: model-server
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    ml.kyverno.io/allow-external-access: "true"
+  labels:
+    app.kubernetes.io/component: ml-serving
+  name: ml-serving-loadbalancer-approved
+  namespace: default
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: ml-serving
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    ml.kyverno.io/allow-external-access: "false"
+  labels:
+    ml.kyverno.io/model-serving: "true"
+  name: approval-annotation-false
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30082
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: ml-model
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: regular-app
+  name: non-model-serving-nodeport
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30083
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: regular-app
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: another-app
+  name: non-model-serving-loadbalancer
+  namespace: default
+spec:
+  ports:
+  - port: 9000
+    targetPort: 9000
+  selector:
+    app: another-app
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    ml.kyverno.io/model-serving: "true"
+  name: ml-model-default-type
+  namespace: default
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: ml-model

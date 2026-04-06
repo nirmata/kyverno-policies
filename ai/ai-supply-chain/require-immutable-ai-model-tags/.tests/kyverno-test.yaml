@@ -1,0 +1,123 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: require-immutable-ai-model-tags-test
+policies:
+- ../require-immutable-ai-model-tags.yaml
+resources:
+- resources.yaml
+results:
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - compliant-ai-pod-with-digest
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - compliant-ai-pod-with-semver
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - compliant-ai-pod-semver-no-v
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - compliant-local-ai-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - compliant-local-registry-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - compliant-mixed-containers
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - compliant-init-containers
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - compliant-ephemeral-containers
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - non-ai-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - fail-ai-no-tag
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - fail-ai-latest-tag
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - fail-ai-dev-tag
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - fail-ai-multiple-mutable
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - fail-ai-non-semver-tag
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - fail-ai-staging-tag
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - fail-ai-mixed-violations
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - fail-ai-init-container-violation
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - fail-ai-ephemeral-violation
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-immutable-ai-model-tags
+  resources:
+  - fail-ai-path-based-detection
+  result: fail
+  rule: ""

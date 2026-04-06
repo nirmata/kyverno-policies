@@ -1,0 +1,33 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: disallow-unauthenticated-mcp-servers
+  annotations:
+    policies.kyverno.io/title: Disallow Unauthenticated MCP Server Endpoints
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Prevents Services from exposing MCP servers without proper authentication annotations to avoid unauthorized access to AI model context protocols.
+spec:
+  matchConditions:
+  - name: is-mcp-server
+    expression: "has(object.metadata.labels) && ('app' in object.metadata.labels && object.metadata.labels['app'].contains('mcp') || 'service' in object.metadata.labels && object.metadata.labels['service'].contains('mcp') || 'component' in object.metadata.labels && object.metadata.labels['component'].contains('mcp')) || (has(object.metadata.annotations) && object.metadata.annotations.exists(key, key.contains('mcp')))"
+  - name: has-external-access
+    expression: "object.spec.type in ['LoadBalancer', 'NodePort'] || (has(object.metadata.annotations) && 'service.beta.kubernetes.io/aws-load-balancer-type' in object.metadata.annotations) || (has(object.metadata.annotations) && 'cloud.google.com/load-balancer-type' in object.metadata.annotations)"
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["services"]
+  validationActions: ["Audit"]
+  validations:
+  - expression: "variables.hasAuthAnnotation"
+    messageExpression: "'MCP server services with external access must have authentication configured. Required annotations: ' + variables.requiredAuthAnnotations.join(', ') + '. Service type: ' + object.spec.type"
+  - expression: "!has(object.metadata.annotations) || !('mcp.security/auth-required' in object.metadata.annotations) || object.metadata.annotations['mcp.security/auth-required'] != 'false'"
+    messageExpression: "'MCP server services cannot explicitly disable authentication with mcp.security/auth-required=false'"
+  variables:
+  - name: requiredAuthAnnotations
+    expression: "['mcp.security/auth-required', 'mcp.security/authentication-method', 'security.policy/authentication']"
+  - name: hasAuthAnnotation
+    expression: "has(object.metadata.annotations) && variables.requiredAuthAnnotations.exists(ann, ann in object.metadata.annotations && object.metadata.annotations[ann] != '' && object.metadata.annotations[ann] != 'false')"

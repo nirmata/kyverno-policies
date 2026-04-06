@@ -1,0 +1,262 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: ai-pipeline
+  name: ai-pipeline-clean
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: LOG_LEVEL
+      value: INFO
+    - name: MODEL_PATH
+      value: /models/inference
+    - name: API_ENDPOINT
+      value: https://api.example.com
+    image: ai-processor:latest
+    name: processor
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: ml-pipeline
+  name: ml-pipeline-clean
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: BATCH_SIZE
+      value: "32"
+    image: ml-trainer:v2
+    name: trainer
+  initContainers:
+  - env:
+    - name: DATASET_URL
+      value: s3://bucket/dataset
+    image: data-prep:latest
+    name: data-prep
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: data-pipeline
+  name: data-pipeline-clean
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: OUTPUT_FORMAT
+      value: parquet
+    image: etl-processor:latest
+    name: etl
+  ephemeralContainers:
+  - env:
+    - name: DEBUG_MODE
+      value: "true"
+    image: debug:latest
+    name: debugger
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    workload.type: ai
+  name: workload-type-ai
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: WORKER_ID
+      value: worker-001
+    image: ai-worker:latest
+    name: ai-worker
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    pipeline.type: ml-inference
+  name: pipeline-type-labeled
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: INFERENCE_MODE
+      value: batch
+    image: inference:latest
+    name: inference
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: ai-pipeline
+  name: ai-pipeline-with-email
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: ADMIN_EMAIL
+      value: admin@company.com
+    - name: LOG_LEVEL
+      value: INFO
+    image: ai-processor:latest
+    name: processor
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: ml-pipeline
+  name: ml-pipeline-with-phone
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: SUPPORT_PHONE
+      value: 555-123-4567
+    image: ml-trainer:v2
+    name: trainer
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: data-pipeline
+  name: data-pipeline-with-ssn
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: TEST_SSN
+      value: 123-45-6789
+    image: etl-processor:latest
+    name: etl
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: ai-pipeline
+  name: ai-pipeline-with-ccn
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: TEST_CARD
+      value: 4111 1111 1111 1111
+    image: ai-processor:latest
+    name: processor
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: ml-pipeline
+  name: ml-pipeline-with-secret-ref
+  namespace: default
+spec:
+  containers:
+  - envFrom:
+    - secretRef:
+        name: sensitive-data
+    image: ml-trainer:v2
+    name: trainer
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: ai-pipeline
+  name: ai-pipeline-multiple-pii
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: USER_EMAIL
+      value: user@example.org
+    - name: CONTACT_PHONE
+      value: 555 987 6543
+    image: ai-processor:latest
+    name: processor
+  initContainers:
+  - env:
+    - name: CARD_NUMBER
+      value: 5555-5555-5555-4444
+    image: init:latest
+    name: init
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: web-server
+  name: regular-pod-with-pii
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: ADMIN_EMAIL
+      value: admin@company.com
+    image: nginx:latest
+    name: web
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: ai-pipeline
+  name: ai-pipeline-configmap-ref
+  namespace: default
+spec:
+  containers:
+  - envFrom:
+    - configMapRef:
+        name: app-config
+    image: ai-processor:latest
+    name: processor
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: ai-pipeline
+  name: ai-pipeline-no-env
+  namespace: default
+spec:
+  containers:
+  - image: ai-processor:latest
+    name: processor
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: ai-pipeline
+  name: ai-pipeline-empty-env-value
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: EMPTY_VAR
+      value: ""
+    - name: NULL_VAR
+    image: ai-processor:latest
+    name: processor

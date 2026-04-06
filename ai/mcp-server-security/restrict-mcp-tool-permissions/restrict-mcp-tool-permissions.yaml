@@ -1,0 +1,57 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: restrict-mcp-tool-permissions
+  annotations:
+    policies.kyverno.io/title: Restrict MCP Tool Permissions
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Enforces least-privilege principles by restricting MCP server tool permissions to safe, approved operations and preventing dangerous system-level access.
+spec:
+  matchConditions:
+  - name: is-mcp-resource
+    expression: "object.metadata.?labels['app'].orValue('').contains('mcp') || object.metadata.?labels['component'].orValue('').contains('mcp') || object.metadata.name.contains('mcp') || object.metadata.?annotations.orValue({}).exists(key, key.startsWith('mcp.') || key.startsWith('modelcontextprotocol.'))"
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods", "configmaps"]
+    - apiGroups: ["apps"]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["deployments", "statefulsets", "daemonsets"]
+  validationActions: ["Audit"]
+  validations:
+  - expression: "object.kind == 'ConfigMap' || !variables.mcpAnnotations.exists(key, variables.dangerousTools.exists(tool, object.metadata.annotations[key].contains(tool)))"
+    messageExpression: "'MCP annotations contain dangerous tools. Found dangerous tools in annotations.'"
+  - expression: "object.kind == 'ConfigMap' || !variables.mcpEnvVars.exists(env, variables.dangerousTools.exists(tool, env.?value.orValue('').contains(tool)))"
+    messageExpression: "'MCP environment variables contain dangerous tools. Check MCP_TOOLS, TOOL_PERMISSIONS, or similar variables.'"
+  - expression: "object.kind == 'ConfigMap' || !variables.mcpAnnotations.exists(key, variables.dangerousPaths.exists(path, object.metadata.annotations[key].contains(path)))"
+    messageExpression: "'MCP annotations reference dangerous system paths. Avoid paths like /etc/, /bin/, /root/, etc.'"
+  - expression: "object.kind == 'ConfigMap' || !variables.mcpEnvVars.exists(env, variables.dangerousPaths.exists(path, env.?value.orValue('').contains(path)))"
+    messageExpression: "'MCP environment variables reference dangerous system paths. File access should be restricted to safe directories only.'"
+  - expression: "object.kind == 'ConfigMap' || variables.allContainers.all(c, !c.?securityContext.?privileged.orValue(false))"
+    messageExpression: "'MCP server containers must not run in privileged mode'"
+  - expression: "object.kind == 'ConfigMap' || variables.allContainers.all(c, !c.?securityContext.?allowPrivilegeEscalation.orValue(true))"
+    messageExpression: "'MCP server containers must disable privilege escalation'"
+  - expression: "object.kind == 'ConfigMap' || variables.allContainers.all(c, c.?securityContext.?runAsNonRoot.orValue(false))"
+    messageExpression: "'MCP server containers must run as non-root user'"
+  - expression: "object.kind != 'ConfigMap' || !object.data.orValue({}).exists(key, variables.dangerousTools.exists(tool, object.data[key].contains(tool)))"
+    messageExpression: "'ConfigMap contains dangerous MCP tools in data fields'"
+  - expression: "object.kind != 'ConfigMap' || !object.data.orValue({}).exists(key, variables.dangerousPaths.exists(path, object.data[key].contains(path)))"
+    messageExpression: "'ConfigMap contains dangerous system paths in data fields'"
+  variables:
+  - name: dangerousTools
+    expression: "['shell', 'bash', 'exec', 'system', 'subprocess', 'file_system', 'raw_file_access', 'admin', 'root_access', 'docker', 'kubectl', 'sudo', 'chmod', 'chown', 'rm', 'delete_files', 'network_admin', 'process_manager']"
+  - name: approvedTools
+    expression: "['read_only_file', 'text_editor', 'calculator', 'json_parser', 'yaml_validator', 'log_viewer', 'status_checker', 'health_monitor', 'metrics_reader', 'config_reader', 'search', 'filter', 'transform']"
+  - name: dangerousPaths
+    expression: "['/etc/', '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/root/', '/var/lib/docker/', '/proc/', '/sys/', '/dev/', '/tmp/', '/var/tmp/']"
+  - name: allContainers
+    expression: "object.spec.?containers.orValue([]) + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])"
+  - name: mcpAnnotations
+    expression: "object.metadata.?annotations.orValue({}).filter(key, key.startsWith('mcp.') || key.startsWith('modelcontextprotocol.'))"
+  - name: mcpEnvVars
+    expression: "variables.allContainers.map(c, c.?env.orValue([])).flatten().filter(env, env.name.contains('MCP') || env.name.contains('TOOL') || env.name.contains('PERMISSION'))"
