@@ -14,7 +14,7 @@ spec:
       enabled: true
   matchConditions:
   - name: is-ai-workload
-    expression: "(has(object.metadata.labels) && ('workload-type' in object.metadata.labels && object.metadata.labels['workload-type'] in ['ai', 'ml', 'machine-learning', 'artificial-intelligence']) || ('app.kubernetes.io/component' in object.metadata.labels && object.metadata.labels['app.kubernetes.io/component'] in ['ai', 'ml', 'training', 'inference']) || ('ai' in object.metadata.labels || 'ml' in object.metadata.labels)) || (object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])).exists(c, c.image.contains('tensorflow') || c.image.contains('pytorch') || c.image.contains('jupyter') || c.image.contains('cuda') || c.image.contains('nvidia') || c.image.contains('gpu'))"
+    expression: "(has(object.metadata.labels) && (('workload-type' in object.metadata.labels && object.metadata.labels['workload-type'] in ['ai', 'ml', 'machine-learning', 'artificial-intelligence']) || ('app.kubernetes.io/component' in object.metadata.labels && object.metadata.labels['app.kubernetes.io/component'] in ['ai', 'ml', 'training', 'inference']) || ('ai' in object.metadata.labels || 'ml' in object.metadata.labels))) || (object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])).exists(c, c.image.contains('tensorflow') || c.image.contains('pytorch') || c.image.contains('jupyter') || c.image.contains('cuda') || c.image.contains('nvidia') || c.image.contains('gpu'))"
   matchConstraints:
     resourceRules:
     - apiGroups: [""]

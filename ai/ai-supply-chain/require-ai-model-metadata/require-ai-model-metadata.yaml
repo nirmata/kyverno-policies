@@ -25,13 +25,13 @@ spec:
   validations:
   - expression: "variables.requiredAnnotations.all(annotation, annotation in variables.annotations)"
     messageExpression: "'AI workload pods must have all required model metadata annotations: ' + variables.requiredAnnotations.filter(a, !(a in variables.annotations)).join(', ') + '. Found annotations: ' + string(size(variables.annotations)) + ' total'"
-  - expression: "variables.annotations['ai.model/name'] != '' && size(variables.annotations['ai.model/name']) > 0"
+  - expression: "variables.annotations.?['ai.model/name'].orValue('') != ''"
     messageExpression: "'ai.model/name annotation cannot be empty'"
-  - expression: "variables.annotations['ai.model/version'] != '' && size(variables.annotations['ai.model/version']) > 0"
+  - expression: "variables.annotations.?['ai.model/version'].orValue('') != ''"
     messageExpression: "'ai.model/version annotation cannot be empty'"
-  - expression: "variables.annotations['ai.model/provider'] != '' && size(variables.annotations['ai.model/provider']) > 0"
+  - expression: "variables.annotations.?['ai.model/provider'].orValue('') != ''"
     messageExpression: "'ai.model/provider annotation cannot be empty'"
-  - expression: "variables.annotations['ai.model/license'] != '' && size(variables.annotations['ai.model/license']) > 0"
+  - expression: "variables.annotations.?['ai.model/license'].orValue('') != ''"
     messageExpression: "'ai.model/license annotation cannot be empty'"
   variables:
   - name: requiredAnnotations

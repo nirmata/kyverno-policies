@@ -20,12 +20,12 @@ spec:
       resources: ["pods"]
   validationActions: ["Audit"]
   validations:
-  - expression: "size(variables.aiModelContainers) == 0 || variables.aiModelContainers.all(c, c.image.contains(':'))"
-    messageExpression: "'AI model containers must specify an explicit tag or digest, found containers without tags: ' + variables.aiModelContainers.filter(c, !c.image.contains(':')).map(c, c.image).join(', ')"
-  - expression: "size(variables.aiModelContainers) == 0 || variables.aiModelContainers.all(c, !c.image.contains(':') || !(c.image.split(':')[1] in variables.mutableTags))"
-    messageExpression: "'AI model containers must not use mutable tags (latest, main, dev, etc.), found: ' + variables.aiModelContainers.filter(c, c.image.contains(':') && c.image.split(':')[1] in variables.mutableTags).map(c, c.image).join(', ')"
-  - expression: "size(variables.aiModelContainers) == 0 || variables.aiModelContainers.all(c, c.image.startsWith('localhost/') || c.image.contains('.local/') || c.image.contains('@sha256:') || (c.image.contains(':') && c.image.split(':')[1].matches('^v?[0-9]+\\\\.[0-9]+\\\\.[0-9]+')))"
-    messageExpression: "'AI model containers should use digest tags (@sha256:) or semantic version tags (v1.2.3), found non-compliant images: ' + variables.aiModelContainers.filter(c, !c.image.startsWith('localhost/') && !c.image.contains('.local/') && !c.image.contains('@sha256:') && (!c.image.contains(':') || !c.image.split(':')[1].matches('^v?[0-9]+\\\\.[0-9]+\\\\.[0-9]+'))).map(c, c.image).join(', ')"
+  - expression: "size(variables.aiModelContainers) == 0 || variables.aiModelContainers.all(c, c.image.contains('@sha256:') || c.image.matches('.*:[^/:]+$'))"
+    messageExpression: "'AI model containers must specify an explicit tag or digest, found containers without tags: ' + variables.aiModelContainers.filter(c, !c.image.contains('@sha256:') && !c.image.matches('.*:[^/:]+$')).map(c, c.image).join(', ')"
+  - expression: "size(variables.aiModelContainers) == 0 || variables.aiModelContainers.all(c, c.image.contains('@sha256:') || !c.image.matches('.*:(latest|main|master|dev|develop|development|test|testing|staging|prod|production|stable|nightly|edge|beta|alpha|rc)$'))"
+    messageExpression: "'AI model containers must not use mutable tags (latest, main, dev, etc.), found: ' + variables.aiModelContainers.filter(c, !c.image.contains('@sha256:') && c.image.matches('.*:(latest|main|master|dev|develop|development|test|testing|staging|prod|production|stable|nightly|edge|beta|alpha|rc)$')).map(c, c.image).join(', ')"
+  - expression: "size(variables.aiModelContainers) == 0 || variables.aiModelContainers.all(c, c.image.startsWith('localhost/') || c.image.contains('.local/') || c.image.contains('@sha256:') || c.image.matches('.*:v?[0-9]+\\\\.[0-9]+\\\\.[0-9]+([.-][^/:]*)?$'))"
+    messageExpression: "'AI model containers should use digest tags (@sha256:) or semantic version tags (v1.2.3), found non-compliant images: ' + variables.aiModelContainers.filter(c, !c.image.startsWith('localhost/') && !c.image.contains('.local/') && !c.image.contains('@sha256:') && !c.image.matches('.*:v?[0-9]+\\\\.[0-9]+\\\\.[0-9]+([.-][^/:]*)?$')).map(c, c.image).join(', ')"
   variables:
   - name: allContainers
     expression: "object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])"

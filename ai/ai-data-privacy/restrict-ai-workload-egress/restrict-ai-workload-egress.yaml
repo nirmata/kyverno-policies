@@ -24,17 +24,15 @@ spec:
   validationActions: ["Audit"]
   validations:
   - expression: "size(variables.egressRules) == 0 || variables.hasValidEgress"
-    messageExpression: "'NetworkPolicy egress rules in AI namespace must only allow traffic to approved data endpoints or internal networks. Approved endpoints: ' + variables.approvedDataEndpoints.join(', ') + '. Approved internal CIDRs: ' + variables.approvedCIDRs.join(', ')"
+    messageExpression: "'NetworkPolicy egress rules in AI namespace must only allow traffic to internal workloads or approved internal CIDR ranges. Approved internal CIDRs: ' + variables.approvedCIDRs.join(', ')"
   - expression: "object.spec.?policyTypes.orValue([]).exists(type, type == 'Egress') || size(variables.egressRules) == 0"
     message: "NetworkPolicy in AI namespace must explicitly define Egress policy type when egress rules are specified"
   - expression: "!has(object.spec.egress) || object.spec.egress.all(rule, !has(rule.to) || rule.to.size() > 0)"
     message: "Empty egress 'to' field allows all traffic - this is not permitted for AI workloads"
   variables:
-  - name: approvedDataEndpoints
-    expression: '["s3.amazonaws.com", "storage.googleapis.com", "dfs.core.windows.net", "huggingface.co", "kaggle.com", "data.gov", "registry-1.docker.io", "gcr.io", "quay.io"]'
   - name: approvedCIDRs
     expression: '["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
   - name: egressRules
     expression: "object.spec.?egress.orValue([])"
   - name: hasValidEgress
-    expression: "variables.egressRules.all(rule, !has(rule.to) || rule.to.all(peer, has(peer.namespaceSelector) || has(peer.podSelector) || (has(peer.ipBlock) && (peer.ipBlock.cidr in variables.approvedCIDRs || variables.approvedDataEndpoints.exists(endpoint, cidr(peer.ipBlock.cidr).containsIP(ip(endpoint)) || peer.ipBlock.cidr.contains(endpoint))))))"
+    expression: "variables.egressRules.all(rule, !has(rule.to) || rule.to.all(peer, has(peer.namespaceSelector) || has(peer.podSelector) || (has(peer.ipBlock) && peer.ipBlock.cidr in variables.approvedCIDRs)))"

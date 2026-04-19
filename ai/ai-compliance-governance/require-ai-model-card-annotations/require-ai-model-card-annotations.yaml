@@ -25,6 +25,12 @@ spec:
   validations:
   - expression: "size(variables.missingAnnotations) == 0"
     messageExpression: "'AI/ML workload must include all required model card annotations for regulatory compliance. Missing annotations: ' + variables.missingAnnotations.join(', ')"
+  - expression: "variables.requiredModelCardAnnotations.all(annotation, variables.annotations.?[annotation].orValue('') != '')"
+    messageExpression: "'All model card annotations must have non-empty values. Empty annotations: ' + variables.requiredModelCardAnnotations.filter(a, variables.annotations.?[a].orValue('') == '').join(', ')"
+  - expression: "variables.annotations.?['ai.model-card/risk-assessment'].orValue('low') in variables.allowedRiskLevels"
+    messageExpression: "'ai.model-card/risk-assessment must be one of: ' + variables.allowedRiskLevels.join(', ') + '. Got: ' + variables.annotations.?['ai.model-card/risk-assessment'].orValue('')"
+  - expression: "variables.annotations.?['ai.model-card/model-version'].orValue('') == '' || variables.annotations.?['ai.model-card/model-version'].orValue('').matches('^v?[0-9]+\\\\.[0-9]+\\\\.[0-9]+')"
+    messageExpression: "'ai.model-card/model-version must follow semantic versioning (e.g. v1.2.3 or 1.2.3). Got: ' + variables.annotations.?['ai.model-card/model-version'].orValue('')"
   variables:
   - name: requiredModelCardAnnotations
     expression: "['ai.model-card/purpose', 'ai.model-card/capabilities', 'ai.model-card/limitations', 'ai.model-card/training-data', 'ai.model-card/performance-metrics', 'ai.model-card/ethical-considerations', 'ai.model-card/model-version', 'ai.model-card/risk-assessment']"
@@ -32,7 +38,5 @@ spec:
     expression: "object.metadata.?annotations.orValue({})"
   - name: missingAnnotations
     expression: "variables.requiredModelCardAnnotations.filter(annotation, !(annotation in variables.annotations))"
-  - name: riskAssessmentKey
-    expression: "'ai.model-card/risk-assessment'"
-  - name: modelVersionKey
-    expression: "'ai.model-card/model-version'"
+  - name: allowedRiskLevels
+    expression: "['low', 'medium', 'high', 'critical']"

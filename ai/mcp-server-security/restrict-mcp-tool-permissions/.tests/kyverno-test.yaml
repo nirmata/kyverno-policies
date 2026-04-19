@@ -1,0 +1,69 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: restrict-mcp-tool-permissions-test
+policies:
+- ../restrict-mcp-tool-permissions.yaml
+resources:
+- resources.yaml
+results:
+- kind: Pod
+  policy: restrict-mcp-tool-permissions
+  resources:
+  - default/mcp-safe-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: restrict-mcp-tool-permissions
+  resources:
+  - default/mcp-annotated-safe-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: restrict-mcp-tool-permissions
+  resources:
+  - default/mcp-privileged-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-mcp-tool-permissions
+  resources:
+  - default/mcp-dangerous-tools-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-mcp-tool-permissions
+  resources:
+  - default/mcp-dangerous-env-pod
+  result: fail
+  rule: ""
+- kind: ConfigMap
+  policy: restrict-mcp-tool-permissions
+  resources:
+  - default/mcp-safe-config
+  result: pass
+  rule: ""
+- kind: ConfigMap
+  policy: restrict-mcp-tool-permissions
+  resources:
+  - default/mcp-dangerous-config
+  result: fail
+  rule: ""
+- kind: Deployment
+  policy: restrict-mcp-tool-permissions
+  resources:
+  - default/mcp-safe-deployment
+  result: pass
+  rule: ""
+- kind: Deployment
+  policy: restrict-mcp-tool-permissions
+  resources:
+  - default/mcp-root-deployment
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-mcp-tool-permissions
+  resources:
+  - default/non-mcp-pod
+  result: pass
+  rule: ""

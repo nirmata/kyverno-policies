@@ -1,0 +1,167 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: mcp-server
+  name: mcp-safe-pod
+  namespace: default
+spec:
+  containers:
+  - image: registry.example.com/mcp-server:1.0.0
+    name: mcp-server
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    mcp.config/tools: "text_editor,log_viewer"
+  labels:
+    component: mcp-server
+  name: mcp-annotated-safe-pod
+  namespace: default
+spec:
+  containers:
+  - image: registry.example.com/mcp-server:2.0.0
+    name: mcp-server
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: mcp-server
+  name: mcp-privileged-pod
+  namespace: default
+spec:
+  containers:
+  - image: registry.example.com/mcp-server:1.0.0
+    name: mcp-server
+    securityContext:
+      privileged: true
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    mcp.config/tools: "shell,bash,exec"
+  labels:
+    app: mcp-server
+  name: mcp-dangerous-tools-pod
+  namespace: default
+spec:
+  containers:
+  - image: registry.example.com/mcp-server:1.0.0
+    name: mcp-server
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: mcp-server
+  name: mcp-dangerous-env-pod
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: MCP_TOOLS
+      value: shell,exec,subprocess
+    image: registry.example.com/mcp-server:1.0.0
+    name: mcp-server
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: mcp-server
+  name: mcp-safe-config
+  namespace: default
+data:
+  tools: "text_editor,log_viewer,calculator"
+  config: "read_only=true"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcp-dangerous-config
+  namespace: default
+data:
+  tools: "shell,bash,sudo"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mcp-server
+  name: mcp-safe-deployment
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: mcp-server
+  template:
+    metadata:
+      labels:
+        app: mcp-server
+    spec:
+      containers:
+      - image: registry.example.com/mcp-server:1.0.0
+        name: mcp-server
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mcp-server
+  name: mcp-root-deployment
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: mcp-server
+  template:
+    metadata:
+      labels:
+        app: mcp-server
+    spec:
+      containers:
+      - image: registry.example.com/mcp-server:1.0.0
+        name: mcp-server
+        securityContext:
+          runAsNonRoot: false
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: regular-app
+  name: non-mcp-pod
+  namespace: default
+spec:
+  containers:
+  - image: nginx:1.21
+    name: nginx
+    securityContext:
+      privileged: true

@@ -45,8 +45,6 @@ spec:
   variables:
   - name: dangerousTools
     expression: "['shell', 'bash', 'exec', 'system', 'subprocess', 'file_system', 'raw_file_access', 'admin', 'root_access', 'docker', 'kubectl', 'sudo', 'chmod', 'chown', 'rm', 'delete_files', 'network_admin', 'process_manager']"
-  - name: approvedTools
-    expression: "['read_only_file', 'text_editor', 'calculator', 'json_parser', 'yaml_validator', 'log_viewer', 'status_checker', 'health_monitor', 'metrics_reader', 'config_reader', 'search', 'filter', 'transform']"
   - name: dangerousPaths
     expression: "['/etc/', '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/root/', '/var/lib/docker/', '/proc/', '/sys/', '/dev/', '/tmp/', '/var/tmp/']"
   - name: allContainers

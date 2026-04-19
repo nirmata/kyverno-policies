@@ -21,7 +21,7 @@ metadata:
 
 ---
 apiVersion: v1
-kind: namespace
+kind: Namespace
 metadata:
   name: data-ai-pipeline
 

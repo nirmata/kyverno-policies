@@ -15,7 +15,7 @@ spec:
       enabled: true
   matchConditions:
   - name: is-ai-namespace
-    expression: "has(object.metadata.labels) && ('ai-workload' in object.metadata.labels && object.metadata.labels['ai-workload'] == 'true' || 'workload-type' in object.metadata.labels && object.metadata.labels['workload-type'] == 'ai' || object.metadata.name.startsWith('ai-') || object.metadata.name.contains('-ai-') || object.metadata.name.endsWith('-ai'))"
+    expression: "((has(object.metadata.labels) && (('ai-workload' in object.metadata.labels && object.metadata.labels['ai-workload'] == 'true') || ('workload-type' in object.metadata.labels && object.metadata.labels['workload-type'] == 'ai'))) || object.metadata.name.startsWith('ai-') || object.metadata.name.contains('-ai-') || object.metadata.name.endsWith('-ai'))"
   matchConstraints:
     resourceRules:
     - apiGroups: [""]

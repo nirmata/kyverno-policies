@@ -14,7 +14,7 @@ spec:
       enabled: true
   matchConditions:
   - name: has-gpu-request
-    expression: "(object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])).exists(c, has(c.resources) && has(c.resources.limits) && ('nvidia.com/gpu' in c.resources.limits || 'amd.com/gpu' in c.resources.limits))"
+    expression: "(object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])).exists(c, has(c.resources) && (has(c.resources.limits) && ('nvidia.com/gpu' in c.resources.limits || 'amd.com/gpu' in c.resources.limits) || has(c.resources.requests) && ('nvidia.com/gpu' in c.resources.requests || 'amd.com/gpu' in c.resources.requests)))"
   matchConstraints:
     resourceRules:
     - apiGroups: [""]
@@ -25,11 +25,11 @@ spec:
   validations:
   - expression: "variables.gpuContainers.all(c, !has(c.securityContext) || !has(c.securityContext.privileged) || c.securityContext.privileged == false)"
     messageExpression: "'GPU containers must not run in privileged mode'"
-  - expression: "!has(object.spec.securityContext) || !has(object.spec.securityContext.hostNetwork) || object.spec.securityContext.hostNetwork == false"
+  - expression: "!has(object.spec.hostNetwork) || object.spec.hostNetwork == false"
     messageExpression: "'GPU workloads must not use host network'"
-  - expression: "!has(object.spec.securityContext) || !has(object.spec.securityContext.hostPID) || object.spec.securityContext.hostPID == false"
+  - expression: "!has(object.spec.hostPID) || object.spec.hostPID == false"
     messageExpression: "'GPU workloads must not use host PID namespace'"
-  - expression: "!has(object.spec.securityContext) || !has(object.spec.securityContext.hostIPC) || object.spec.securityContext.hostIPC == false"
+  - expression: "!has(object.spec.hostIPC) || object.spec.hostIPC == false"
     messageExpression: "'GPU workloads must not use host IPC namespace'"
   - expression: "variables.gpuContainers.all(c, !has(c.securityContext) || !has(c.securityContext.capabilities) || !has(c.securityContext.capabilities.add) || c.securityContext.capabilities.add.all(cap, cap in variables.allowedCapabilities))"
     messageExpression: "'GPU containers may only add capabilities from the allowed list: SYS_ADMIN, MKNOD, SYS_RAWIO (and standard baseline capabilities)'"
@@ -45,4 +45,4 @@ spec:
   - name: allowedCapabilities
     expression: "['SYS_ADMIN', 'MKNOD', 'SYS_RAWIO', 'NET_BIND_SERVICE', 'CHOWN', 'DAC_OVERRIDE', 'FOWNER', 'FSETID', 'KILL', 'SETGID', 'SETUID', 'SETPCAP', 'SETFCAP', 'AUDIT_WRITE', 'SYS_CHROOT']"
   - name: gpuContainers
-    expression: "variables.allContainers.filter(c, has(c.resources) && has(c.resources.limits) && ('nvidia.com/gpu' in c.resources.limits || 'amd.com/gpu' in c.resources.limits))"
+    expression: "variables.allContainers.filter(c, has(c.resources) && (has(c.resources.limits) && ('nvidia.com/gpu' in c.resources.limits || 'amd.com/gpu' in c.resources.limits) || has(c.resources.requests) && ('nvidia.com/gpu' in c.resources.requests || 'amd.com/gpu' in c.resources.requests)))"

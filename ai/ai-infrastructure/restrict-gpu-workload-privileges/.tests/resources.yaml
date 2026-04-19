@@ -45,14 +45,13 @@ metadata:
   name: host-network-gpu-pod
   namespace: default
 spec:
+  hostNetwork: true
   containers:
   - image: amd/rocm:latest
     name: gpu-workload
     resources:
       limits:
         amd.com/gpu: "1"
-  securityContext:
-    hostNetwork: true
 
 ---
 apiVersion: v1
@@ -61,14 +60,13 @@ metadata:
   name: host-pid-gpu-pod
   namespace: default
 spec:
+  hostPID: true
   containers:
   - image: nvidia/cuda:11.0-runtime-ubuntu18.04
     name: gpu-workload
     resources:
       limits:
         nvidia.com/gpu: "2"
-  securityContext:
-    hostPID: true
 
 ---
 apiVersion: v1
@@ -77,14 +75,13 @@ metadata:
   name: host-ipc-gpu-pod
   namespace: default
 spec:
+  hostIPC: true
   containers:
   - image: nvidia/cuda:11.0-runtime-ubuntu18.04
     name: gpu-workload
     resources:
       limits:
         nvidia.com/gpu: "1"
-  securityContext:
-    hostIPC: true
 
 ---
 apiVersion: v1

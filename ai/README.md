@@ -118,8 +118,8 @@ All are **new policies** to be created.
 | 4. Data & Privacy | 4 | 0 | 4 |
 | 5. MCP Server Security | 4 | 0 | 4 |
 | 6. LLM / Agent Security | 0 | 73 (existing) | 73 |
-| 7. AI Compliance & Governance | 5 | 0 | 5 |
-| **Total** | **25 new** | **5 references** | **103** |
+| 7. AI Compliance & Governance | 3 | 0 | 3 |
+| **Total** | **23 new** | **5 references** | **101** |
 
 ---
 

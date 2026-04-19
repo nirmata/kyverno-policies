@@ -1,0 +1,119 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    mcp.security/auth-required: "true"
+    mcp.security/authentication-method: oauth2
+  labels:
+    app: mcp-server
+  name: mcp-authed-loadbalancer
+  namespace: default
+spec:
+  ports:
+  - port: 443
+    targetPort: 8443
+  selector:
+    app: mcp-server
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    security.policy/authentication: api-key
+  labels:
+    app: mcp-server
+  name: mcp-authed-nodeport
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30443
+    port: 443
+    targetPort: 8443
+  selector:
+    app: mcp-server
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mcp-server
+  name: mcp-unauthenticated-loadbalancer
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: mcp-server
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: mcp-server
+  name: mcp-unauthenticated-nodeport
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30080
+    port: 80
+    targetPort: 8080
+  selector:
+    component: mcp-server
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    mcp.security/auth-required: "false"
+  labels:
+    app: mcp-server
+  name: mcp-auth-disabled-service
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: mcp-server
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mcp-server
+  name: mcp-clusterip-service
+  namespace: default
+spec:
+  ports:
+  - port: 9090
+    targetPort: 9090
+  selector:
+    app: mcp-server
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: regular-app
+  name: non-mcp-loadbalancer
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: regular-app
+  type: LoadBalancer
