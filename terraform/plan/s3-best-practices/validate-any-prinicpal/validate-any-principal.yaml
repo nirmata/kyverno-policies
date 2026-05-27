@@ -10,7 +10,7 @@ metadata:
      Principal value in an IAM policy specifies which user or entity
      is allowed or denied access to a resource. For policies attached
      to an S3 bucket, this policy validates if the Principal allowed is
-     `*`, which means ANY Principal is allowed access to the resource.
+     '*', which means ANY Principal is allowed access to the resource.
 spec:
   validationActions:
     - Deny
@@ -26,17 +26,26 @@ spec:
         operations: ["CREATE", "UPDATE"]
   matchConditions:
     - name: is-terraform-plan
-      expression: "has(object.planned_values) && has(object.terraform_version)"
+      expression: "has(object.resource_changes) && has(object.terraform_version)"
     - name: has-s3-bucket-policy
-      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket_policy')"
+      expression: |
+        object.resource_changes.exists(rc,
+          rc.mode == 'managed'
+          && rc.type == 'aws_s3_bucket_policy'
+          && rc.change.actions.exists(a, a == 'create' || a == 'update'))
+  variables:
+    - name: resource_changes
+      expression: |
+        object.resource_changes.filter(rc,
+          rc.mode == 'managed'
+          && rc.change.actions.exists(a, a == 'create' || a == 'update'))
+    - name: bucket_policies
+      expression: "variables.resource_changes.filter(rc, rc.type == 'aws_s3_bucket_policy')"
   validations:
     - expression: |
-        object.planned_values.root_module.resources.filter(r, r.type == 'aws_s3_bucket_policy').all(policy,
-          has(policy.values.policy) && 
-          policy.values.policy != null &&
-          !(policy.values.policy.contains('"Principal":"*"') || 
-            policy.values.policy.contains('"Principal": "*"') ||
-            policy.values.policy.contains('"AWS":"*"') ||
-            policy.values.policy.contains('"AWS": "*"'))
-        )
+        variables.bucket_policies.all(bp,
+          !(bp.change.after.policy.orValue('').contains('"Principal":"*"') ||
+            bp.change.after.policy.orValue('').contains('"Principal": "*"') ||
+            bp.change.after.policy.orValue('').contains('"AWS":"*"') ||
+            bp.change.after.policy.orValue('').contains('"AWS": "*"')))
       message: "Principal should not be set to '*' in the Bucket Policy."

@@ -8,9 +8,9 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       S3 Object Ownership is an Amazon S3 bucket-level setting that
-      you can use to control ownership of objects uploaded to your bucket 
+      you can use to control ownership of objects uploaded to your bucket
       and to disable or enable ACLs. By default, Object Ownership is set to
-      the Bucket owner enforced setting and all ACLs are disabled. 
+      the Bucket owner enforced setting and all ACLs are disabled.
       When ACLs are disabled, the bucket owner owns all the objects in the bucket
       and manages access to data exclusively using access management policies.
 spec:
@@ -28,17 +28,24 @@ spec:
         operations: ["CREATE", "UPDATE"]
   matchConditions:
     - name: is-terraform-plan
-      expression: "has(object.planned_values) && has(object.terraform_version)"
-    - name: has-s3-bucket-ownership-controls
-      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket_ownership_controls' || r.type == 'aws_s3_bucket')"
+      expression: "has(object.resource_changes) && has(object.terraform_version)"
+    - name: has-s3-bucket-or-ownership-controls
+      expression: |
+        object.resource_changes.exists(rc,
+          rc.mode == 'managed'
+          && (rc.type == 'aws_s3_bucket_ownership_controls' || rc.type == 'aws_s3_bucket')
+          && rc.change.actions.exists(a, a == 'create' || a == 'update'))
+  variables:
+    - name: resource_changes
+      expression: |
+        object.resource_changes.filter(rc,
+          rc.mode == 'managed'
+          && rc.change.after != null)
+    - name: ownership_controls
+      expression: "variables.resource_changes.filter(rc, rc.type == 'aws_s3_bucket_ownership_controls')"
   validations:
     - expression: |
-        object.planned_values.root_module.resources.filter(r, r.type == 'aws_s3_bucket_ownership_controls').all(controls,
-          has(controls.values.rule) && 
-          controls.values.rule != null &&
-          controls.values.rule.exists(rule,
-            has(rule.object_ownership) && 
-            rule.object_ownership == 'BucketOwnerEnforced'
-          )
-        )
-      message: "Access Control List(ACL) should be disabled for an S3 Bucket" 
+        variables.ownership_controls.all(oc,
+          oc.change.after.rule.orValue([]).exists(rule,
+            rule.object_ownership == 'BucketOwnerEnforced'))
+      message: "Access Control List (ACL) should be disabled for an S3 Bucket."

@@ -8,11 +8,11 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       All Amazon S3 buckets have encryption configured by default,
-      and all new objects that are uploaded to an S3 bucket are automatically 
-      encrypted at rest. Server-side encryption with Amazon S3 managed keys (SSE-S3) 
+      and all new objects that are uploaded to an S3 bucket are automatically
+      encrypted at rest. Server-side encryption with Amazon S3 managed keys (SSE-S3)
       is the default encryption configuration for every bucket in Amazon S3. To use a
       different type of encryption, you can either specify the type of server-side encryption
-      to use in your S3 PUT requests, or you can set the default encryption configuration in 
+      to use in your S3 PUT requests, or you can set the default encryption configuration in
       the destination bucket.
 spec:
   validationActions:
@@ -29,25 +29,32 @@ spec:
         operations: ["CREATE", "UPDATE"]
   matchConditions:
     - name: is-terraform-plan
-      expression: "has(object.planned_values) && has(object.terraform_version)"
-    - name: has-s3-bucket
-      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket')"
+      expression: "has(object.resource_changes) && has(object.terraform_version)"
+    - name: has-s3-bucket-or-encryption
+      expression: |
+        object.resource_changes.exists(rc,
+          rc.mode == 'managed'
+          && (rc.type == 'aws_s3_bucket' || rc.type == 'aws_s3_bucket_server_side_encryption_configuration')
+          && rc.change.actions.exists(a, a == 'create' || a == 'update'))
+  variables:
+    - name: resource_changes
+      expression: |
+        object.resource_changes.filter(rc,
+          rc.mode == 'managed'
+          && rc.change.after != null)
+    - name: encryption_resources
+      expression: "variables.resource_changes.filter(rc, rc.type == 'aws_s3_bucket_server_side_encryption_configuration')"
+    - name: s3_buckets
+      expression: |
+        variables.resource_changes.filter(rc,
+          rc.type == 'aws_s3_bucket'
+          && rc.change.actions.exists(a, a == 'create' || a == 'update'))
   validations:
+    - expression: "variables.encryption_resources.size() >= variables.s3_buckets.size()"
+      message: "Use the 'aws_s3_bucket_server_side_encryption_configuration' resource to set the S3 server side encryption to KMS."
     - expression: |
-        object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket_server_side_encryption_configuration')
-      message: "Use the 'aws_s3_bucket_server_side_encryption_configuration' resource to set the S3 server side encryption to KMS"
-    - expression: |
-        object.planned_values.root_module.resources.filter(r, r.type == 'aws_s3_bucket_server_side_encryption_configuration').all(encryption,
-          has(encryption.values.rule) && 
-          encryption.values.rule != null &&
-          encryption.values.rule.exists(rule,
-            has(rule.apply_server_side_encryption_by_default) &&
-            rule.apply_server_side_encryption_by_default != null &&
-            rule.apply_server_side_encryption_by_default.exists(defaultEnc,
-              has(defaultEnc.sse_algorithm) && 
-              defaultEnc.sse_algorithm == 'aws:kms'
-            )
-          )
-        )
-      message: "S3 server side encryption is not set to KMS"
-  
+        variables.encryption_resources.all(enc,
+          enc.change.after.rule.orValue([]).exists(rule,
+            rule.apply_server_side_encryption_by_default.orValue([]).exists(d,
+              d.sse_algorithm == 'aws:kms')))
+      message: "S3 server side encryption is not set to KMS."

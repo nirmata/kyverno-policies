@@ -7,10 +7,10 @@ metadata:
     policies.kyverno.io/category: AWS S3 Security Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
-      Versioning in Amazon S3 is a means of keeping multiple variants of an object 
+      Versioning in Amazon S3 is a means of keeping multiple variants of an object
       in the same bucket. You can use the S3 Versioning feature to preserve, retrieve,
-      and restore every version of every object stored in your buckets. With versioning 
-      you can recover more easily from both unintended user actions and application 
+      and restore every version of every object stored in your buckets. With versioning
+      you can recover more easily from both unintended user actions and application
       failures. After versioning is enabled for a bucket, if Amazon S3 receives multiple
       write requests for the same object simultaneously, it stores all of those objects.
 spec:
@@ -28,21 +28,31 @@ spec:
         operations: ["CREATE", "UPDATE"]
   matchConditions:
     - name: is-terraform-plan
-      expression: "has(object.planned_values) && has(object.terraform_version)"
-    - name: has-s3-bucket
-      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket')"
+      expression: "has(object.resource_changes) && has(object.terraform_version)"
+    - name: has-s3-bucket-or-versioning
+      expression: |
+        object.resource_changes.exists(rc,
+          rc.mode == 'managed'
+          && (rc.type == 'aws_s3_bucket' || rc.type == 'aws_s3_bucket_versioning')
+          && rc.change.actions.exists(a, a == 'create' || a == 'update'))
+  variables:
+    - name: resource_changes
+      expression: |
+        object.resource_changes.filter(rc,
+          rc.mode == 'managed'
+          && rc.change.after != null)
+    - name: s3_versioning_resources
+      expression: "variables.resource_changes.filter(rc, rc.type == 'aws_s3_bucket_versioning')"
+    - name: s3_buckets
+      expression: |
+        variables.resource_changes.filter(rc,
+          rc.type == 'aws_s3_bucket'
+          && rc.change.actions.exists(a, a == 'create' || a == 'update'))
   validations:
+    - expression: "variables.s3_versioning_resources.size() >= variables.s3_buckets.size()"
+      message: "Use the 'aws_s3_bucket_versioning' resource to enable versioning for each S3 bucket."
     - expression: |
-        object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket_versioning')
-      message: "Use the 'aws_s3_bucket_versioning' resource to enable versioning."
-    - expression: |
-        object.planned_values.root_module.resources.filter(r, r.type == 'aws_s3_bucket_versioning').all(versioning,
-          has(versioning.values.versioning_configuration) && 
-          versioning.values.versioning_configuration != null &&
-          versioning.values.versioning_configuration.exists(config, 
-            has(config.status) && config.status == 'Enabled'
-          )
-        )
-      message: "S3 Bucket Versioning needs to be set to 'Enabled'"
-            
-           
+        variables.s3_versioning_resources.all(rv,
+          rv.change.after.versioning_configuration.orValue([]).size() > 0
+          && rv.change.after.versioning_configuration[0].status == 'Enabled')
+      message: "S3 Bucket Versioning needs to be set to 'Enabled'."

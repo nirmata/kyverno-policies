@@ -8,9 +8,9 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
       CloudTrail stores Amazon S3 data event logs in an S3 bucket of your choosing.
-      Consider using a bucket in a separate AWS account to better organize events from 
+      Consider using a bucket in a separate AWS account to better organize events from
       multiple buckets that you might own into a central place for easier querying and
-      analysis. AWS Organizations helps you create an AWS account that is linked to 
+      analysis. AWS Organizations helps you create an AWS account that is linked to
       the account that owns the bucket that you're monitoring.
 spec:
   validationActions:
@@ -27,14 +27,23 @@ spec:
         operations: ["CREATE", "UPDATE"]
   matchConditions:
     - name: is-terraform-plan
-      expression: "has(object.planned_values) && has(object.terraform_version)"
-    - name: has-s3-bucket
-      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket')"
+      expression: "has(object.resource_changes) && has(object.terraform_version)"
+    - name: has-cloudtrail
+      expression: |
+        object.resource_changes.exists(rc,
+          rc.mode == 'managed'
+          && rc.type == 'aws_cloudtrail'
+          && rc.change.actions.exists(a, a == 'create' || a == 'update'))
+  variables:
+    - name: resource_changes
+      expression: |
+        object.resource_changes.filter(rc,
+          rc.mode == 'managed'
+          && rc.change.actions.exists(a, a == 'create' || a == 'update'))
+    - name: cloudtrail_resources
+      expression: "variables.resource_changes.filter(rc, rc.type == 'aws_cloudtrail')"
   validations:
     - expression: |
-        object.planned_values.root_module.resources.filter(r, r.type == 'aws_cloudtrail').all(trail,
-          has(trail.values.enable_logging) && 
-          trail.values.enable_logging == true
-        )
-      message: "Set the enable_logging argument in aws_cloudtrail resource to true"
-                   
+        variables.cloudtrail_resources.all(trail,
+          trail.change.after.enable_logging.orValue(false) == true)
+      message: "Set the enable_logging argument in aws_cloudtrail resource to true."

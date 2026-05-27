@@ -28,11 +28,26 @@ spec:
         operations: ["CREATE", "UPDATE"]
   matchConditions:
     - name: is-terraform-plan
-      expression: "has(object.planned_values) && has(object.terraform_version)"
-    - name: has-s3-bucket
-      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket')"
+      expression: "has(object.resource_changes) && has(object.terraform_version)"
+    - name: has-s3-bucket-or-logging
+      expression: |
+        object.resource_changes.exists(rc,
+          rc.mode == 'managed'
+          && (rc.type == 'aws_s3_bucket' || rc.type == 'aws_s3_bucket_logging')
+          && rc.change.actions.exists(a, a == 'create' || a == 'update'))
+  variables:
+    - name: resource_changes
+      expression: |
+        object.resource_changes.filter(rc,
+          rc.mode == 'managed'
+          && rc.change.after != null)
+    - name: logging_resources
+      expression: "variables.resource_changes.filter(rc, rc.type == 'aws_s3_bucket_logging')"
+    - name: s3_buckets
+      expression: |
+        variables.resource_changes.filter(rc,
+          rc.type == 'aws_s3_bucket'
+          && rc.change.actions.exists(a, a == 'create' || a == 'update'))
   validations:
-    - expression: |
-        object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket_logging')
-      message: "Use the aws_s3_bucket_logging resource to enable server access logging"
-                   
+    - expression: "variables.logging_resources.size() > 0"
+      message: "Use the aws_s3_bucket_logging resource to enable server access logging."

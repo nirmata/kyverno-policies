@@ -7,7 +7,7 @@ metadata:
     policies.kyverno.io/category: AWS S3 Security Best Practices
     policies.kyverno.io/severity: medium
     policies.kyverno.io/description: >-
-      Amazon S3 supports a bucket lifecycle rule that you can use to direct Amazon S3 
+      Amazon S3 supports a bucket lifecycle rule that you can use to direct Amazon S3
       to stop multipart uploads that aren't completed within a specified number of days
       after being initiated. When a multipart upload isn't completed within the specified time
       frame, it becomes eligible for an abort operation. Amazon S3 then stops the multipart
@@ -27,33 +27,38 @@ spec:
         operations: ["CREATE", "UPDATE"]
   matchConditions:
     - name: is-terraform-plan
-      expression: "has(object.planned_values) && has(object.terraform_version)"
-    - name: has-s3-bucket
-      expression: "has(object.planned_values) && has(object.planned_values.root_module) && has(object.planned_values.root_module.resources) && object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket')"
+      expression: "has(object.resource_changes) && has(object.terraform_version)"
+    - name: has-s3-bucket-or-lifecycle
+      expression: |
+        object.resource_changes.exists(rc,
+          rc.mode == 'managed'
+          && (rc.type == 'aws_s3_bucket' || rc.type == 'aws_s3_bucket_lifecycle_configuration')
+          && rc.change.actions.exists(a, a == 'create' || a == 'update'))
+  variables:
+    - name: resource_changes
+      expression: |
+        object.resource_changes.filter(rc,
+          rc.mode == 'managed'
+          && rc.change.after != null)
+    - name: lifecycle_resources
+      expression: "variables.resource_changes.filter(rc, rc.type == 'aws_s3_bucket_lifecycle_configuration')"
+    - name: s3_buckets
+      expression: |
+        variables.resource_changes.filter(rc,
+          rc.type == 'aws_s3_bucket'
+          && rc.change.actions.exists(a, a == 'create' || a == 'update'))
   validations:
-    - expression: |
-        object.planned_values.root_module.resources.exists(r, r.type == 'aws_s3_bucket_lifecycle_configuration')
+    - expression: "variables.lifecycle_resources.size() >= variables.s3_buckets.size()"
       message: "Use the 'aws_s3_bucket_lifecycle_configuration' resource to enable lifecycle configuration."
     - expression: |
-        object.planned_values.root_module.resources.filter(r, r.type == 'aws_s3_bucket_lifecycle_configuration').all(config,
-          has(config.values.rule) && 
-          config.values.rule != null && 
-          config.values.rule.exists(rule, has(rule.status) && rule.status == 'Enabled')
-        )
-      message: "S3 Bucket Lifecycle Configuration 'status' needs to be set to 'Enabled'"
+        variables.lifecycle_resources.all(lc,
+          lc.change.after.rule.orValue([]).exists(rule,
+            rule.status == 'Enabled'))
+      message: "S3 Bucket Lifecycle Configuration 'status' needs to be set to 'Enabled'."
     - expression: |
-        object.planned_values.root_module.resources.filter(r, r.type == 'aws_s3_bucket_lifecycle_configuration').all(config,
-          has(config.values.rule) && 
-          config.values.rule != null && 
-          config.values.rule.filter(rule, has(rule.status) && rule.status == 'Enabled').all(enabledRule,
-            has(enabledRule.abort_incomplete_multipart_upload) && 
-            enabledRule.abort_incomplete_multipart_upload != null &&
-            enabledRule.abort_incomplete_multipart_upload.all(abort, 
-              has(abort.days_after_initiation) && 
-              abort.days_after_initiation != null &&
-              int(abort.days_after_initiation) > 0
-            )
-          )
-        )
-      message: "Set the 'days_after_initiation' argument value to a Positive Integer value in 'abort_incomplete_multipart_upload' inside the lifecycle configuration block"
-
+        variables.lifecycle_resources.all(lc,
+          lc.change.after.rule.orValue([]).filter(rule,
+            rule.status == 'Enabled').all(rule,
+              rule.?abort_incomplete_multipart_upload.orValue([]).size() > 0
+              && rule.abort_incomplete_multipart_upload[0].days_after_initiation > 0))
+      message: "Set the 'days_after_initiation' argument value to a Positive Integer value in 'abort_incomplete_multipart_upload' inside the lifecycle configuration block."
