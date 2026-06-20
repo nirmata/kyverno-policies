@@ -1,0 +1,38 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-github-path-injection
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: injection
+    policies.kyverno.io/description: >
+      Writing attacker-controlled GitHub context expressions to $GITHUB_PATH
+      appends arbitrary directories to PATH for all subsequent steps. An
+      attacker can use this to shadow trusted binaries with malicious ones.
+      Never write untrusted values to $GITHUB_PATH.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Step writes an untrusted context expression to $GITHUB_PATH. An
+        attacker can prepend arbitrary directories to PATH, shadowing trusted
+        binaries with malicious ones in subsequent steps. Never write
+        attacker-controlled values to $GITHUB_PATH.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          object.jobs[j].steps != null &&
+          object.jobs[j].steps.exists(s,
+            has(s.run) &&
+            s.run.contains('$GITHUB_PATH') &&
+            (
+              s.run.contains('${{ github.event.pull_request') ||
+              s.run.contains('${{ github.event.issue') ||
+              s.run.contains('${{ github.head_ref') ||
+              s.run.contains('${{ github.event.comment') ||
+              s.run.contains('${{ github.event.inputs.') ||
+              s.run.contains('${{ inputs.')
+            )
+          )
+        )

@@ -1,0 +1,28 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-debug-env-workflow
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: secret-exposure
+    policies.kyverno.io/description: >
+      ACTIONS_STEP_DEBUG and ACTIONS_RUNNER_DEBUG cause GitHub Actions to print
+      all environment variables and runner diagnostics to the workflow log,
+      including any secrets injected via the env block. These settings must not
+      be hardcoded in workflow files. Enable them temporarily via repository
+      secrets when debugging and remove them before merging.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Workflow env block enables ACTIONS_STEP_DEBUG or ACTIONS_RUNNER_DEBUG.
+        These settings dump all environment variables (including secrets) to
+        the workflow log. Remove them before merging; enable via repository
+        secrets when debugging.
+      expression: >-
+        !has(object.env) || object.env == null ||
+        (
+          !('ACTIONS_STEP_DEBUG' in object.env) &&
+          !('ACTIONS_RUNNER_DEBUG' in object.env)
+        )

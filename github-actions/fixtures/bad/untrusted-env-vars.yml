@@ -1,0 +1,30 @@
+# untrusted-env-vars.yml — triggers no-untrusted-env-vars
+# The workflow-level env block contains github.head_ref, which is controlled
+# by the PR author. If any downstream step uses BRANCH_NAME in an unquoted
+# shell context, an attacker can inject arbitrary commands via the branch name.
+name: Env Injection
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions: read-all
+
+# VIOLATION: attacker-controlled value set at workflow scope
+env:
+  BRANCH_NAME: ${{ github.head_ref }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Build
+        run: echo "Building branch $BRANCH_NAME"
+        timeout-minutes: 10

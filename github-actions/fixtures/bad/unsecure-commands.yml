@@ -1,0 +1,28 @@
+# unsecure-commands.yml — triggers no-unsecure-commands
+# ACTIONS_ALLOW_UNSECURE_COMMANDS re-enables the deprecated ::set-env and
+# ::add-path workflow commands. Any log output can then inject into environment
+# variables and PATH, enabling code execution via influenced log lines.
+name: Unsecure Commands
+
+on:
+  push:
+    branches: [main]
+
+permissions: read-all
+
+# VIOLATION: re-enables deprecated injection vector for all jobs
+env:
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Build
+        run: make build
+        timeout-minutes: 20

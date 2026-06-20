@@ -1,0 +1,44 @@
+# secure-workflow.yml — passes all built-in policies
+name: Secure CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Policy 3 + 7: explicit permissions block, not write-all
+permissions: read-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Policy 6: no self-hosted
+
+    # Policy 3: job permissions not write-all
+    permissions:
+      contents: read
+
+    steps:
+      # Policy 2: pinned to full SHA
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      # Policy 2: pinned to full SHA
+      - name: Setup Go
+        uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34  # v5.3.0
+        with:
+          go-version: "1.22"
+
+      # Policy 4: no untrusted context in run; Policy 8: has timeout-minutes
+      - name: Build
+        run: make build
+        timeout-minutes: 20
+
+      # Policy 4: safe use of env var instead of direct context expression
+      # Policy 8: has timeout-minutes
+      - name: Test
+        env:
+          # Policy 5: no ${{ secrets.* }} at workflow level; secrets are scoped to this step
+          TEST_TOKEN: ${{ secrets.TEST_TOKEN }}
+        run: make test
+        timeout-minutes: 15

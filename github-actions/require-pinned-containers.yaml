@@ -1,0 +1,31 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: container-image-pinned-to-digest
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: supply-chain
+    policies.kyverno.io/description: >
+      Container images referenced with mutable tags (e.g. ubuntu:latest) are
+      vulnerable to image substitution. A registry compromise or stale local
+      cache can silently change what executes in the job. Pin all container
+      images to a specific SHA256 digest to guarantee immutability.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Job uses a container image not pinned to a SHA256 digest. Use the
+        format 'image@sha256:<digest>' to prevent unexpected image substitution
+        from tag mutation or cache poisoning.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          has(object.jobs[j].container) &&
+          object.jobs[j].container != null &&
+          !(
+            ('image' in object.jobs[j].container)
+              ? object.jobs[j].container.image.contains('@sha256:')
+              : string(object.jobs[j].container).contains('@sha256:')
+          )
+        )

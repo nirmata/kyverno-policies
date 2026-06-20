@@ -1,0 +1,25 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-unsecure-commands-workflow-env
+  annotations:
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/category: injection
+    policies.kyverno.io/description: >
+      ACTIONS_ALLOW_UNSECURE_COMMANDS re-enables the deprecated ::set-env and
+      ::add-path workflow commands, which allow any log output to inject values
+      into environment variables and the PATH for subsequent steps. An attacker
+      who influences any output can use this to execute arbitrary code. This
+      setting must never be used.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Workflow env block sets ACTIONS_ALLOW_UNSECURE_COMMANDS. This
+        re-enables deprecated ::set-env and ::add-path commands, allowing
+        any log output to inject into environment variables and PATH for all
+        jobs. Remove this setting.
+      expression: >-
+        !has(object.env) || object.env == null ||
+        !('ACTIONS_ALLOW_UNSECURE_COMMANDS' in object.env)

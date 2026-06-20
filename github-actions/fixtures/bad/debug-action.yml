@@ -1,0 +1,24 @@
+# debug-action.yml — triggers no-debug-actions
+# action-tmate opens an interactive SSH session on the runner, giving anyone
+# with the session URL full shell access and access to all secrets.
+name: Debug Action
+
+on:
+  push:
+    branches: [main]
+
+permissions: read-all
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      # VIOLATION: opens SSH shell on the runner
+      - name: Debug session
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 30

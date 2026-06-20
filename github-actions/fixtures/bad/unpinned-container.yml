@@ -1,0 +1,23 @@
+# unpinned-container.yml — triggers require-pinned-containers
+# A mutable container tag is vulnerable to image substitution. A registry
+# compromise or stale cache can silently change what runs in the job.
+name: Unpinned Container
+
+on:
+  push:
+    branches: [main]
+
+permissions: read-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # VIOLATION: mutable tag — use image@sha256:<digest> instead
+    container:
+      image: ubuntu:latest
+    permissions:
+      contents: read
+    steps:
+      - name: Build
+        run: make build
+        timeout-minutes: 20

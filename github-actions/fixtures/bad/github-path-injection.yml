@@ -1,0 +1,24 @@
+# github-path-injection.yml — triggers no-github-path-injection
+# Writing attacker-controlled input to $GITHUB_PATH allows prepending
+# arbitrary directories to PATH, enabling binary shadowing attacks.
+name: GITHUB_PATH Injection
+
+on:
+  workflow_dispatch:
+    inputs:
+      tool_path:
+        description: Path to tool directory
+        required: true
+
+permissions: read-all
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Add tool to PATH
+        # VIOLATION: caller-controlled input written to GITHUB_PATH
+        run: echo "${{ github.event.inputs.tool_path }}" >> $GITHUB_PATH
+        timeout-minutes: 5

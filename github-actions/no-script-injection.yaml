@@ -1,0 +1,38 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-untrusted-input-in-run
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: injection
+    policies.kyverno.io/description: >
+      Using GitHub context expressions (${{ github.event.* }}) directly inside
+      run steps allows injection of arbitrary shell commands via PR titles,
+      branch names, or commit messages controlled by an attacker. Use an
+      intermediate env var to safely pass attacker-controlled values.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Step uses untrusted GitHub context expression in a run step.
+        Attacker-controlled values (PR titles, branch names, review bodies,
+        comments, and discussion content) can inject shell commands. Use an
+        intermediate env var to hold the value, then reference the env var
+        quoted in the run step instead of interpolating the expression directly.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          object.jobs[j].steps != null &&
+          object.jobs[j].steps.exists(s,
+            has(s.run) && (
+              s.run.contains('${{ github.event.pull_request') ||
+              s.run.contains('${{ github.event.issue') ||
+              s.run.contains('${{ github.head_ref') ||
+              s.run.contains('${{ github.event.comment') ||
+              s.run.contains('${{ github.event.review') ||
+              s.run.contains('${{ github.event.discussion') ||
+              s.run.contains('${{ github.event.workflow_run.head_branch')
+            )
+          )
+        )

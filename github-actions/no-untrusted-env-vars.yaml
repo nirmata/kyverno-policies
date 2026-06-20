@@ -1,0 +1,35 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-workflow-env-injection
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: injection
+    policies.kyverno.io/description: >
+      Setting attacker-controlled GitHub context expressions in workflow-level
+      env blocks propagates untrusted data to every downstream step. If any
+      step uses the variable in an unquoted shell context, command injection
+      is possible. Scope env vars containing attacker-controlled values to the
+      specific step that needs them.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Workflow-level env block contains an attacker-controllable GitHub
+        context expression. An attacker can inject shell commands via these
+        values. Scope the env var to the specific step that needs it and
+        reference it quoted in shell, or use an intermediate sanitisation step.
+      expression: >-
+        !has(object.env) || object.env == null ||
+        object.env.all(k,
+          !(
+            string(object.env[k]).contains('${{ github.event.pull_request') ||
+            string(object.env[k]).contains('${{ github.head_ref') ||
+            string(object.env[k]).contains('${{ github.event.issue') ||
+            string(object.env[k]).contains('${{ github.event.comment') ||
+            string(object.env[k]).contains('${{ github.event.review') ||
+            string(object.env[k]).contains('${{ github.event.discussion') ||
+            string(object.env[k]).contains('${{ github.event.workflow_run.head_branch')
+          )
+        )

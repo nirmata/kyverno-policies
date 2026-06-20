@@ -1,0 +1,24 @@
+# workflow-dispatch-injection.yml — triggers no-workflow-dispatch-injection
+# Interpolating workflow_dispatch inputs directly in run steps allows
+# callers to inject arbitrary shell commands.
+name: Dispatch Injection
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Deploy target
+        required: true
+
+permissions: read-all
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Deploy
+        # VIOLATION: caller-controlled input interpolated directly in shell
+        run: ./deploy.sh ${{ github.event.inputs.target }}
+        timeout-minutes: 10

@@ -1,0 +1,45 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-github-env-injection
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: injection
+    policies.kyverno.io/description: >
+      Writing attacker-controlled GitHub context expressions to $GITHUB_ENV
+      persists untrusted values into the environment for all subsequent steps.
+      Any step that references that env var in an unquoted shell context can
+      be exploited. This check covers PR titles/bodies, issue titles, branch
+      names, comments, reviews, discussions, and workflow_dispatch inputs.
+      The companion policy no-secret-written-to-github-env covers the secrets
+      case. Use step-level env blocks with static values instead.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Step writes an attacker-controlled context expression to $GITHUB_ENV.
+        The value is then available as an environment variable to every
+        subsequent step, enabling injection if any step uses it in an unquoted
+        shell context. Pass values through step-level env vars with static
+        content, or sanitise before writing.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          object.jobs[j].steps != null &&
+          object.jobs[j].steps.exists(s,
+            has(s.run) &&
+            s.run.contains('$GITHUB_ENV') &&
+            (
+              s.run.contains('${{ github.event.pull_request') ||
+              s.run.contains('${{ github.head_ref') ||
+              s.run.contains('${{ github.event.issue') ||
+              s.run.contains('${{ github.event.comment') ||
+              s.run.contains('${{ github.event.review') ||
+              s.run.contains('${{ github.event.discussion') ||
+              s.run.contains('${{ github.event.inputs.') ||
+              s.run.contains('${{ inputs.') ||
+              s.run.contains('${{ github.event.workflow_run.head_branch')
+            )
+          )
+        )

@@ -1,0 +1,18 @@
+# write-all-permissions.yml — triggers no-write-all-permissions
+# permissions: write-all grants the GITHUB_TOKEN write access to every
+# repository scope, equivalent to admin access during the workflow run.
+name: Write-All Permissions
+
+on:
+  push:
+    branches: [main]
+
+# VIOLATION: write-all grants unrestricted token access
+permissions: write-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2

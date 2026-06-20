@@ -1,0 +1,101 @@
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-job-env-injection
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: injection
+    policies.kyverno.io/description: >
+      Setting attacker-controlled GitHub context expressions in job-level env
+      blocks propagates untrusted data to every step in the job. If any step
+      uses the variable in an unquoted shell context, command injection is
+      possible. Scope env vars containing attacker-controlled values to the
+      specific step that needs them.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Job-level env block contains an attacker-controllable GitHub context
+        expression. An attacker can inject shell commands via these values.
+        Scope the env var to the specific step that needs it and reference it
+        quoted in shell.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          has(object.jobs[j].env) &&
+          object.jobs[j].env != null &&
+          !object.jobs[j].env.all(k,
+            !(
+              string(object.jobs[j].env[k]).contains('${{ github.event.pull_request') ||
+              string(object.jobs[j].env[k]).contains('${{ github.head_ref') ||
+              string(object.jobs[j].env[k]).contains('${{ github.event.issue') ||
+              string(object.jobs[j].env[k]).contains('${{ github.event.comment') ||
+              string(object.jobs[j].env[k]).contains('${{ github.event.review') ||
+              string(object.jobs[j].env[k]).contains('${{ github.event.discussion') ||
+              string(object.jobs[j].env[k]).contains('${{ github.event.workflow_run.head_branch')
+            )
+          )
+        )
+---
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-job-unsecure-commands
+  annotations:
+    policies.kyverno.io/severity: critical
+    policies.kyverno.io/category: injection
+    policies.kyverno.io/description: >
+      ACTIONS_ALLOW_UNSECURE_COMMANDS in a job-level env block re-enables the
+      deprecated ::set-env and ::add-path workflow commands for all steps in
+      that job. An attacker who influences any log output can inject into
+      environment variables and PATH. Remove this setting.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Job env block sets ACTIONS_ALLOW_UNSECURE_COMMANDS. This re-enables
+        deprecated ::set-env and ::add-path commands for all steps in this
+        job, allowing log output to inject into environment variables and
+        PATH. Remove this setting.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          has(object.jobs[j].env) &&
+          object.jobs[j].env != null &&
+          'ACTIONS_ALLOW_UNSECURE_COMMANDS' in object.jobs[j].env
+        )
+---
+apiVersion: policies.kyverno.io/v1beta1
+kind: ValidatingPolicy
+metadata:
+  name: no-job-debug-env
+  annotations:
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/category: secret-exposure
+    policies.kyverno.io/description: >
+      ACTIONS_STEP_DEBUG or ACTIONS_RUNNER_DEBUG in a job-level env block
+      causes GitHub Actions to print all environment variables and runner
+      diagnostics to the workflow log, including secrets. These settings must
+      not be hardcoded. Enable them temporarily via repository secrets when
+      debugging.
+spec:
+  evaluation:
+    mode: JSON
+  validations:
+    - message: >
+        Job env block enables ACTIONS_STEP_DEBUG or ACTIONS_RUNNER_DEBUG.
+        These settings dump all environment variables (including secrets) to
+        the workflow log. Remove them before merging; enable via repository
+        secrets when debugging.
+      expression: >-
+        object.jobs == null ||
+        !object.jobs.exists(j,
+          has(object.jobs[j].env) &&
+          object.jobs[j].env != null &&
+          (
+            'ACTIONS_STEP_DEBUG' in object.jobs[j].env ||
+            'ACTIONS_RUNNER_DEBUG' in object.jobs[j].env
+          )
+        )

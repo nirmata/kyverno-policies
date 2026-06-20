@@ -1,0 +1,21 @@
+# no-permissions.yml — triggers Policy 3 (require-permissions-block)
+# Workflow has no top-level permissions block, so GITHUB_TOKEN inherits
+# repository defaults which may grant write access to all scopes.
+name: No Permissions
+
+on:
+  push:
+    branches: [main]
+
+# VIOLATION: no permissions block — GITHUB_TOKEN uses repository defaults
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Build
+        run: make build
+        timeout-minutes: 20
