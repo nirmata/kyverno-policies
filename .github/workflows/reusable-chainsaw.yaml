@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - name: Clone Kyverno Policies Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
         with:
           repository: nirmata/kyverno-policies
           ref: ${{ inputs.kyverno_policies_branch }}
@@ -36,12 +36,12 @@ jobs:
           fetch-depth: 1
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff  # v5
         with:
           go-version: 'stable'
 
       - name: Install Kyverno CLI
-        uses: kyverno/action-install-cli@v0.2.0
+        uses: kyverno/action-install-cli@fcee92fca5c883169ef9927acf543e0b5fc58289  # v0.2.0
         with:
           release: v1.14.2
 
@@ -63,7 +63,7 @@ jobs:
         working-directory: kyverno-policies
 
       - name: Install chainsaw
-        uses: kyverno/action-install-chainsaw@v0.2.7
+        uses: kyverno/action-install-chainsaw@7ad918efe13995d01bafa59aef8203a5246f5d04  # v0.2.7
 
       - name: Verify Chainsaw Installation
         run: chainsaw version
