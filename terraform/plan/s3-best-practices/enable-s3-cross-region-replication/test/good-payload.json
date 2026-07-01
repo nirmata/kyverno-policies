@@ -649,20 +649,9 @@
       "provider_name": "registry.terraform.io/hashicorp/aws",
       "change": {
         "actions": [
-          "no-op"
+          "create"
         ],
-        "before": {
-          "arn": "arn:aws:iam::844333597536:policy/tf-iam-role-policy-replication-12345",
-          "description": "",
-          "id": "arn:aws:iam::844333597536:policy/tf-iam-role-policy-replication-12345",
-          "name": "tf-iam-role-policy-replication-12345",
-          "name_prefix": "",
-          "path": "/",
-          "policy": "{\"Statement\":[{\"Action\":[\"s3:ListBucket\",\"s3:GetReplicationConfiguration\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::tf-test-bucket-source-nitish-12345\"},{\"Action\":[\"s3:GetObjectVersionTagging\",\"s3:GetObjectVersionForReplication\",\"s3:GetObjectVersionAcl\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::tf-test-bucket-source-nitish-12345/*\"},{\"Action\":[\"s3:ReplicateTags\",\"s3:ReplicateObject\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::tf-test-bucket-destination-nitish-12345/*\"}],\"Version\":\"2012-10-17\"}",
-          "policy_id": "ANPA4JFRUINQLTD64575W",
-          "tags": {},
-          "tags_all": {}
-        },
+        "before": null,
         "after": {
           "arn": "arn:aws:iam::844333597536:policy/tf-iam-role-policy-replication-12345",
           "description": "",
@@ -694,28 +683,9 @@
       "provider_name": "registry.terraform.io/hashicorp/aws",
       "change": {
         "actions": [
-          "no-op"
+          "create"
         ],
-        "before": {
-          "arn": "arn:aws:iam::844333597536:role/tf-iam-role-replication-12345",
-          "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"s3.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
-          "create_date": "2024-01-24T10:55:42Z",
-          "description": "",
-          "force_detach_policies": false,
-          "id": "tf-iam-role-replication-12345",
-          "inline_policy": [],
-          "managed_policy_arns": [
-            "arn:aws:iam::844333597536:policy/tf-iam-role-policy-replication-12345"
-          ],
-          "max_session_duration": 3600,
-          "name": "tf-iam-role-replication-12345",
-          "name_prefix": "",
-          "path": "/",
-          "permissions_boundary": "",
-          "tags": {},
-          "tags_all": {},
-          "unique_id": "AROA4JFRUINQIGIEP43IO"
-        },
+        "before": null,
         "after": {
           "arn": "arn:aws:iam::844333597536:role/tf-iam-role-replication-12345",
           "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"s3.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
@@ -763,13 +733,9 @@
       "provider_name": "registry.terraform.io/hashicorp/aws",
       "change": {
         "actions": [
-          "no-op"
+          "create"
         ],
-        "before": {
-          "id": "tf-iam-role-replication-12345-20240124105702515800000001",
-          "policy_arn": "arn:aws:iam::844333597536:policy/tf-iam-role-policy-replication-12345",
-          "role": "tf-iam-role-replication-12345"
-        },
+        "before": null,
         "after": {
           "id": "tf-iam-role-replication-12345-20240124105702515800000001",
           "policy_arn": "arn:aws:iam::844333597536:policy/tf-iam-role-policy-replication-12345",
@@ -788,66 +754,9 @@
       "provider_name": "registry.terraform.io/hashicorp/aws",
       "change": {
         "actions": [
-          "no-op"
+          "create"
         ],
-        "before": {
-          "acceleration_status": "",
-          "acl": null,
-          "arn": "arn:aws:s3:::tf-test-bucket-destination-nitish-12345",
-          "bucket": "tf-test-bucket-destination-nitish-12345",
-          "bucket_domain_name": "tf-test-bucket-destination-nitish-12345.s3.amazonaws.com",
-          "bucket_prefix": "",
-          "bucket_regional_domain_name": "tf-test-bucket-destination-nitish-12345.s3.eu-west-1.amazonaws.com",
-          "cors_rule": [],
-          "force_destroy": false,
-          "grant": [
-            {
-              "id": "62ea66bd2e8f7e76e4fb466e942a41389d6057fcc90d732feaac373bb0d0a7a5",
-              "permissions": [
-                "FULL_CONTROL"
-              ],
-              "type": "CanonicalUser",
-              "uri": ""
-            }
-          ],
-          "hosted_zone_id": "Z1BKCTXD74EZPE",
-          "id": "tf-test-bucket-destination-nitish-12345",
-          "lifecycle_rule": [],
-          "logging": [],
-          "object_lock_configuration": [],
-          "object_lock_enabled": false,
-          "policy": "",
-          "region": "eu-west-1",
-          "replication_configuration": [],
-          "request_payer": "BucketOwner",
-          "server_side_encryption_configuration": [
-            {
-              "rule": [
-                {
-                  "apply_server_side_encryption_by_default": [
-                    {
-                      "kms_master_key_id": "",
-                      "sse_algorithm": "AES256"
-                    }
-                  ],
-                  "bucket_key_enabled": false
-                }
-              ]
-            }
-          ],
-          "tags": {},
-          "tags_all": {},
-          "timeouts": null,
-          "versioning": [
-            {
-              "enabled": true,
-              "mfa_delete": false
-            }
-          ],
-          "website": [],
-          "website_domain": null,
-          "website_endpoint": null
-        },
+        "before": null,
         "after": {
           "acceleration_status": "",
           "acl": null,
@@ -979,66 +888,9 @@
       "provider_name": "registry.terraform.io/hashicorp/aws",
       "change": {
         "actions": [
-          "no-op"
+          "create"
         ],
-        "before": {
-          "acceleration_status": "",
-          "acl": null,
-          "arn": "arn:aws:s3:::tf-test-bucket-source-nitish-12345",
-          "bucket": "tf-test-bucket-source-nitish-12345",
-          "bucket_domain_name": "tf-test-bucket-source-nitish-12345.s3.amazonaws.com",
-          "bucket_prefix": "",
-          "bucket_regional_domain_name": "tf-test-bucket-source-nitish-12345.s3.eu-central-1.amazonaws.com",
-          "cors_rule": [],
-          "force_destroy": false,
-          "grant": [
-            {
-              "id": "62ea66bd2e8f7e76e4fb466e942a41389d6057fcc90d732feaac373bb0d0a7a5",
-              "permissions": [
-                "FULL_CONTROL"
-              ],
-              "type": "CanonicalUser",
-              "uri": ""
-            }
-          ],
-          "hosted_zone_id": "Z21DNDUVLTQW6Q",
-          "id": "tf-test-bucket-source-nitish-12345",
-          "lifecycle_rule": [],
-          "logging": [],
-          "object_lock_configuration": [],
-          "object_lock_enabled": false,
-          "policy": "",
-          "region": "eu-central-1",
-          "replication_configuration": [],
-          "request_payer": "BucketOwner",
-          "server_side_encryption_configuration": [
-            {
-              "rule": [
-                {
-                  "apply_server_side_encryption_by_default": [
-                    {
-                      "kms_master_key_id": "",
-                      "sse_algorithm": "AES256"
-                    }
-                  ],
-                  "bucket_key_enabled": false
-                }
-              ]
-            }
-          ],
-          "tags": {},
-          "tags_all": {},
-          "timeouts": null,
-          "versioning": [
-            {
-              "enabled": true,
-              "mfa_delete": false
-            }
-          ],
-          "website": [],
-          "website_domain": null,
-          "website_endpoint": null
-        },
+        "before": null,
         "after": {
           "acceleration_status": "",
           "acl": null,
@@ -1274,20 +1126,9 @@
       "provider_name": "registry.terraform.io/hashicorp/aws",
       "change": {
         "actions": [
-          "no-op"
+          "create"
         ],
-        "before": {
-          "bucket": "tf-test-bucket-destination-nitish-12345",
-          "expected_bucket_owner": "",
-          "id": "tf-test-bucket-destination-nitish-12345",
-          "mfa": null,
-          "versioning_configuration": [
-            {
-              "mfa_delete": "",
-              "status": "Enabled"
-            }
-          ]
-        },
+        "before": null,
         "after": {
           "bucket": "tf-test-bucket-destination-nitish-12345",
           "expected_bucket_owner": "",
@@ -1321,20 +1162,9 @@
       "provider_name": "registry.terraform.io/hashicorp/aws",
       "change": {
         "actions": [
-          "no-op"
+          "create"
         ],
-        "before": {
-          "bucket": "tf-test-bucket-source-nitish-12345",
-          "expected_bucket_owner": "",
-          "id": "tf-test-bucket-source-nitish-12345",
-          "mfa": null,
-          "versioning_configuration": [
-            {
-              "mfa_delete": "",
-              "status": "Enabled"
-            }
-          ]
-        },
+        "before": null,
         "after": {
           "bucket": "tf-test-bucket-source-nitish-12345",
           "expected_bucket_owner": "",
@@ -1889,15 +1719,13 @@
       "aws": {
         "name": "aws",
         "full_name": "registry.terraform.io/hashicorp/aws",
-        "expressions": {
-        }
+        "expressions": {}
       },
       "aws.central": {
         "name": "aws",
         "full_name": "registry.terraform.io/hashicorp/aws",
         "alias": "central",
-        "expressions": {
-        }
+        "expressions": {}
       }
     },
     "root_module": {

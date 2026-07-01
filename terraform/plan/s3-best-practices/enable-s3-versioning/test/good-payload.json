@@ -328,66 +328,9 @@
       "provider_name": "registry.terraform.io/hashicorp/aws",
       "change": {
         "actions": [
-          "no-op"
+          "create"
         ],
-        "before": {
-          "acceleration_status": "",
-          "acl": null,
-          "arn": "arn:aws:s3:::test-bucket-demo-18012003",
-          "bucket": "test-bucket-demo-18012003",
-          "bucket_domain_name": "test-bucket-demo-18012003.s3.amazonaws.com",
-          "bucket_prefix": "",
-          "bucket_regional_domain_name": "test-bucket-demo-18012003.s3.us-west-2.amazonaws.com",
-          "cors_rule": [],
-          "force_destroy": false,
-          "grant": [
-            {
-              "id": "62ea66bd2e8f7e76e4fb466e942a41389d6057fcc90d732feaac373bb0d0a7a5",
-              "permissions": [
-                "FULL_CONTROL"
-              ],
-              "type": "CanonicalUser",
-              "uri": ""
-            }
-          ],
-          "hosted_zone_id": "Z3BJ6K6RIION7M",
-          "id": "test-bucket-demo-18012003",
-          "lifecycle_rule": [],
-          "logging": [],
-          "object_lock_configuration": [],
-          "object_lock_enabled": false,
-          "policy": "",
-          "region": "us-west-2",
-          "replication_configuration": [],
-          "request_payer": "BucketOwner",
-          "server_side_encryption_configuration": [
-            {
-              "rule": [
-                {
-                  "apply_server_side_encryption_by_default": [
-                    {
-                      "kms_master_key_id": "",
-                      "sse_algorithm": "AES256"
-                    }
-                  ],
-                  "bucket_key_enabled": false
-                }
-              ]
-            }
-          ],
-          "tags": {},
-          "tags_all": {},
-          "timeouts": null,
-          "versioning": [
-            {
-              "enabled": false,
-              "mfa_delete": false
-            }
-          ],
-          "website": [],
-          "website_domain": null,
-          "website_endpoint": null
-        },
+        "before": null,
         "after": {
           "acceleration_status": "",
           "acl": null,
@@ -662,8 +605,7 @@
         "name": "aws",
         "full_name": "registry.terraform.io/hashicorp/aws",
         "version_constraint": "~> 4.16",
-        "expressions": {
-        }
+        "expressions": {}
       }
     },
     "root_module": {
