@@ -1,0 +1,231 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: compliant-ai-pod-with-digest
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/tensorflow@sha256:a1b2c3d4e5f6789012345678901234567890123456789012345678901234567890
+    name: tensorflow-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: compliant-ai-pod-with-semver
+  namespace: default
+spec:
+  containers:
+  - image: pytorch/pytorch:v1.12.1
+    name: pytorch-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: compliant-ai-pod-semver-no-v
+  namespace: default
+spec:
+  containers:
+  - image: huggingface/transformers:4.21.3
+    name: huggingface-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: compliant-local-ai-pod
+  namespace: default
+spec:
+  containers:
+  - image: localhost/ai/my-model:v1.0.0
+    name: local-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: compliant-local-registry-pod
+  namespace: default
+spec:
+  containers:
+  - image: registry.local/ml/custom-model:2.1.0
+    name: local-registry-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: compliant-mixed-containers
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/tensorflow:2.9.1
+    name: tensorflow-model
+  - image: nginx:latest
+    name: regular-app
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: compliant-init-containers
+  namespace: default
+spec:
+  containers:
+  - image: busybox:1.35
+    name: app
+  initContainers:
+  - image: mlflow/mlflow:v2.5.0
+    name: model-downloader
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: compliant-ephemeral-containers
+  namespace: default
+spec:
+  containers:
+  - image: busybox:1.35
+    name: app
+  ephemeralContainers:
+  - image: jupyter/base-notebook:2023.06.26
+    name: debug-jupyter
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: non-ai-pod
+  namespace: default
+spec:
+  containers:
+  - image: nginx:latest
+    name: web-server
+  - image: postgres
+    name: database
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fail-ai-no-tag
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/tensorflow
+    name: tensorflow-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fail-ai-latest-tag
+  namespace: default
+spec:
+  containers:
+  - image: pytorch/pytorch:latest
+    name: pytorch-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fail-ai-dev-tag
+  namespace: default
+spec:
+  containers:
+  - image: huggingface/transformers:dev
+    name: huggingface-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fail-ai-multiple-mutable
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/tensorflow:nightly
+    name: tensorflow-model
+  - image: pytorch/pytorch:edge
+    name: pytorch-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fail-ai-non-semver-tag
+  namespace: default
+spec:
+  containers:
+  - image: scikit-learn/scikit-learn:gpu-py38
+    name: scikit-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fail-ai-staging-tag
+  namespace: default
+spec:
+  containers:
+  - image: nvidia/cuda:staging
+    name: cuda-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fail-ai-mixed-violations
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/tensorflow:2.9.1
+    name: good-model
+  - image: pytorch/pytorch
+    name: bad-model-no-tag
+  - image: kubeflow/katib:main
+    name: bad-model-mutable
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fail-ai-init-container-violation
+  namespace: default
+spec:
+  containers:
+  - image: busybox:1.35
+    name: app
+  initContainers:
+  - image: mlflow/mlflow:beta
+    name: model-setup
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fail-ai-ephemeral-violation
+  namespace: default
+spec:
+  containers:
+  - image: busybox:1.35
+    name: app
+  ephemeralContainers:
+  - image: jupyter/base-notebook:alpha
+    name: debug-jupyter
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fail-ai-path-based-detection
+  namespace: default
+spec:
+  containers:
+  - image: myregistry.com/ai/custom-model:production
+    name: custom-ai-model
+  - image: myregistry.com/ml/processor:stable
+    name: ml-processor

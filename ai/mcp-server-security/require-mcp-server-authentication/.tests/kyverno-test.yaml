@@ -1,0 +1,51 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: require-mcp-server-authentication-test
+policies:
+- ../require-mcp-server-authentication.yaml
+resources:
+- resources.yaml
+results:
+- kind: Pod
+  policy: require-mcp-server-authentication
+  resources:
+  - default/mcp-auth-annotation-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-mcp-server-authentication
+  resources:
+  - default/mcp-auth-env-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-mcp-server-authentication
+  resources:
+  - default/mcp-auth-secret-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-mcp-server-authentication
+  resources:
+  - default/mcp-auth-tls-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-mcp-server-authentication
+  resources:
+  - default/mcp-no-auth-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-mcp-server-authentication
+  resources:
+  - default/mcp-component-no-auth-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-mcp-server-authentication
+  resources:
+  - default/non-mcp-pod
+  result: pass
+  rule: ""

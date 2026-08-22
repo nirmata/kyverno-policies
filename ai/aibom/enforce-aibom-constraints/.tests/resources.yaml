@@ -1,0 +1,117 @@
+---
+# PASS: approved framework (anthropic_sdk), approved tool (web_search),
+#       approved model (claude-3-5-sonnet-20241022)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: approved-agent-pod
+  namespace: default
+  labels:
+    app: research-agent
+    nirmata.io/ai: "true"
+spec:
+  containers:
+  - name: research-agent
+    image: registry.example.com/agents/approved-agent:v1.0.0
+    resources:
+      limits:
+        cpu: "2"
+        memory: 4Gi
+---
+# PASS: multi-container pod — both containers use approved frameworks and models
+# (langgraph is an extension of langchain; add it to the allowlist if your
+# organisation approves it; here it is used to represent an approved variant)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: multi-container-approved-pod
+  namespace: default
+  labels:
+    app: orchestrator-agent
+    nirmata.io/ai: "true"
+spec:
+  containers:
+  - name: orchestrator
+    image: registry.example.com/agents/multi-container-agent:v2.0.0
+    resources:
+      limits:
+        cpu: "4"
+        memory: 8Gi
+  - name: sidecar-logger
+    image: registry.example.com/agents/multi-container-agent:v2.0.0
+    resources:
+      limits:
+        cpu: "500m"
+        memory: 512Mi
+---
+# FAIL: agent uses an unapproved framework ("unknown_framework")
+apiVersion: v1
+kind: Pod
+metadata:
+  name: unapproved-framework-pod
+  namespace: default
+  labels:
+    app: custom-agent
+    nirmata.io/ai: "true"
+spec:
+  containers:
+  - name: custom-agent
+    image: registry.example.com/agents/bad-framework-agent:v1.0.0
+    resources:
+      limits:
+        cpu: "2"
+        memory: 4Gi
+---
+# FAIL: agent declares a "filesystem" tool — prohibited
+apiVersion: v1
+kind: Pod
+metadata:
+  name: filesystem-tool-pod
+  namespace: default
+  labels:
+    app: file-agent
+    nirmata.io/ai: "true"
+spec:
+  containers:
+  - name: file-agent
+    image: registry.example.com/agents/filesystem-tool-agent:v1.0.0
+    resources:
+      limits:
+        cpu: "1"
+        memory: 2Gi
+---
+# FAIL: agent declares a "shell_exec" tool — shell_* tools are prohibited
+apiVersion: v1
+kind: Pod
+metadata:
+  name: shell-tool-pod
+  namespace: default
+  labels:
+    app: shell-agent
+    nirmata.io/ai: "true"
+spec:
+  containers:
+  - name: shell-agent
+    image: registry.example.com/agents/shell-tool-agent:v1.0.0
+    resources:
+      limits:
+        cpu: "1"
+        memory: 2Gi
+---
+# FAIL: agent uses model "gpt-3.5-turbo" which is not in the approved list
+apiVersion: v1
+kind: Pod
+metadata:
+  name: unapproved-model-pod
+  namespace: default
+  labels:
+    app: model-agent
+    nirmata.io/ai: "true"
+spec:
+  containers:
+  - name: model-agent
+    image: registry.example.com/agents/unapproved-model-agent:v1.0.0
+    resources:
+      limits:
+        cpu: "2"
+        memory: 4Gi

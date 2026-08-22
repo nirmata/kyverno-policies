@@ -1,0 +1,277 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: valid-gpu-pod
+  namespace: default
+spec:
+  containers:
+  - image: nvidia/cuda:11.0-runtime-ubuntu18.04
+    name: gpu-workload
+    resources:
+      limits:
+        nvidia.com/gpu: "1"
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        add:
+        - SYS_ADMIN
+      privileged: false
+      runAsUser: 1000
+  securityContext:
+    hostIPC: false
+    hostNetwork: false
+    hostPID: false
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: privileged-gpu-pod
+  namespace: default
+spec:
+  containers:
+  - image: nvidia/cuda:11.0-runtime-ubuntu18.04
+    name: gpu-workload
+    resources:
+      limits:
+        nvidia.com/gpu: "1"
+    securityContext:
+      privileged: true
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: host-network-gpu-pod
+  namespace: default
+spec:
+  hostNetwork: true
+  containers:
+  - image: amd/rocm:latest
+    name: gpu-workload
+    resources:
+      limits:
+        amd.com/gpu: "1"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: host-pid-gpu-pod
+  namespace: default
+spec:
+  hostPID: true
+  containers:
+  - image: nvidia/cuda:11.0-runtime-ubuntu18.04
+    name: gpu-workload
+    resources:
+      limits:
+        nvidia.com/gpu: "2"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: host-ipc-gpu-pod
+  namespace: default
+spec:
+  hostIPC: true
+  containers:
+  - image: nvidia/cuda:11.0-runtime-ubuntu18.04
+    name: gpu-workload
+    resources:
+      limits:
+        nvidia.com/gpu: "1"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: invalid-capabilities-gpu-pod
+  namespace: default
+spec:
+  containers:
+  - image: nvidia/cuda:11.0-runtime-ubuntu18.04
+    name: gpu-workload
+    resources:
+      limits:
+        nvidia.com/gpu: "1"
+    securityContext:
+      capabilities:
+        add:
+        - SYS_PTRACE
+        - NET_ADMIN
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: invalid-hostpath-gpu-pod
+  namespace: default
+spec:
+  containers:
+  - image: nvidia/cuda:11.0-runtime-ubuntu18.04
+    name: gpu-workload
+    resources:
+      limits:
+        nvidia.com/gpu: "1"
+  volumes:
+  - hostPath:
+      path: /dev/sda
+    name: host-dev
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: valid-gpu-hostpath-pod
+  namespace: default
+spec:
+  containers:
+  - image: nvidia/cuda:11.0-runtime-ubuntu18.04
+    name: gpu-workload
+    resources:
+      limits:
+        nvidia.com/gpu: "1"
+  volumes:
+  - hostPath:
+      path: /dev/nvidia0
+    name: nvidia-dev
+  - hostPath:
+      path: /dev/dri/card0
+    name: dri-dev
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: privilege-escalation-gpu-pod
+  namespace: default
+spec:
+  containers:
+  - image: nvidia/cuda:11.0-runtime-ubuntu18.04
+    name: gpu-workload
+    resources:
+      limits:
+        nvidia.com/gpu: "1"
+    securityContext:
+      allowPrivilegeEscalation: true
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: root-user-gpu-pod
+  namespace: default
+spec:
+  containers:
+  - image: nvidia/cuda:11.0-runtime-ubuntu18.04
+    name: gpu-workload
+    resources:
+      limits:
+        nvidia.com/gpu: "1"
+    securityContext:
+      runAsUser: 0
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mixed-containers-gpu-pod
+  namespace: default
+spec:
+  containers:
+  - image: nvidia/cuda:11.0-runtime-ubuntu18.04
+    name: gpu-workload
+    resources:
+      limits:
+        nvidia.com/gpu: "1"
+    securityContext:
+      privileged: false
+      runAsUser: 1000
+  - image: busybox
+    name: sidecar
+    resources:
+      limits:
+        cpu: 100m
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: multi-gpu-valid-pod
+  namespace: default
+spec:
+  containers:
+  - image: nvidia/cuda:11.0-runtime-ubuntu18.04
+    name: nvidia-gpu
+    resources:
+      limits:
+        nvidia.com/gpu: "1"
+    securityContext:
+      privileged: false
+      runAsUser: 1000
+  - image: amd/rocm:latest
+    name: amd-gpu
+    resources:
+      limits:
+        amd.com/gpu: "1"
+    securityContext:
+      privileged: false
+      runAsUser: 1001
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: non-gpu-pod
+  namespace: default
+spec:
+  containers:
+  - image: nginx
+    name: web-server
+    securityContext:
+      privileged: true
+      runAsUser: 0
+  securityContext:
+    hostNetwork: true
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: init-container-gpu-pod
+  namespace: default
+spec:
+  containers:
+  - image: busybox
+    name: main
+  initContainers:
+  - image: nvidia/cuda:11.0-runtime-ubuntu18.04
+    name: gpu-init
+    resources:
+      limits:
+        nvidia.com/gpu: "1"
+    securityContext:
+      privileged: true
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: valid-allowed-caps-gpu-pod
+  namespace: default
+spec:
+  containers:
+  - image: nvidia/cuda:11.0-runtime-ubuntu18.04
+    name: gpu-workload
+    resources:
+      limits:
+        nvidia.com/gpu: "1"
+    securityContext:
+      capabilities:
+        add:
+        - SYS_ADMIN
+        - MKNOD
+        - SYS_RAWIO
+      runAsUser: 1000

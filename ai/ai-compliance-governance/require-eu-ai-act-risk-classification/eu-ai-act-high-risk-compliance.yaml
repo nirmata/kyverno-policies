@@ -1,0 +1,70 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: eu-ai-act-high-risk-compliance
+  annotations:
+    policies.kyverno.io/title: EU AI Act Article 9 High-Risk AI Systems Compliance
+    policies.kyverno.io/category: AI Governance, Compliance
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Audits high-risk AI workloads according to EU AI Act Article 9 requirements. Ensures high-risk AI systems have mandatory compliance annotations for monitoring, logging, and human oversight as required by EU AI Act regulations.
+spec:
+  evaluation:
+    background:
+      enabled: true
+  matchConditions:
+  - name: is-high-risk-ai-system
+    expression: "has(object.metadata.labels) && 'eu-ai-act.io/risk-level' in object.metadata.labels && object.metadata.labels['eu-ai-act.io/risk-level'] == 'high'"
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+    - apiGroups: ["apps"]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["deployments"]
+  validationActions: ["Audit"]
+  validations:
+  - expression: "variables.requiredAnnotations.all(ann, ann in variables.currentAnnotations)"
+    messageExpression: "'High-risk AI system missing required EU AI Act compliance annotations: ' + variables.missingAnnotations.join(', ')"
+  - expression: "!('eu-ai-act.io/monitoring-system' in variables.currentAnnotations) || variables.monitoringSystemValue in variables.validMonitoringSystems"
+    messageExpression: "'Invalid monitoring system. Must be one of: ' + variables.validMonitoringSystems.join(', ') + ', received: ' + variables.monitoringSystemValue"
+  - expression: "!('eu-ai-act.io/logging-level' in variables.currentAnnotations) || variables.loggingLevelValue in variables.validLoggingLevels"
+    messageExpression: "'Invalid logging level. Must be one of: ' + variables.validLoggingLevels.join(', ') + ', received: ' + variables.loggingLevelValue"
+  - expression: "!('eu-ai-act.io/human-oversight' in variables.currentAnnotations) || variables.humanOversightValue in variables.validHumanOversight"
+    messageExpression: "'Invalid human oversight level. Must be one of: ' + variables.validHumanOversight.join(', ') + ', received: ' + variables.humanOversightValue"
+  - expression: "!('eu-ai-act.io/quality-management' in variables.currentAnnotations) || variables.currentAnnotations['eu-ai-act.io/quality-management'] != ''"
+    messageExpression: "'Quality management system identifier cannot be empty'"
+  - expression: "!('eu-ai-act.io/data-governance' in variables.currentAnnotations) || variables.currentAnnotations['eu-ai-act.io/data-governance'] != ''"
+    messageExpression: "'Data governance framework identifier cannot be empty'"
+  - expression: "!('eu-ai-act.io/transparency-documentation' in variables.currentAnnotations) || variables.currentAnnotations['eu-ai-act.io/transparency-documentation'] != ''"
+    messageExpression: "'Transparency documentation reference cannot be empty'"
+  - expression: "!('eu-ai-act.io/accuracy-monitoring' in variables.currentAnnotations) || variables.accuracyMonitoringValue in ['enabled', 'continuous', 'periodic']"
+    messageExpression: "'Accuracy monitoring must be one of: enabled, continuous, periodic, received: ' + variables.accuracyMonitoringValue"
+  - expression: "!('eu-ai-act.io/robustness-testing' in variables.currentAnnotations) || variables.robustnessTestingValue in ['passed', 'ongoing', 'scheduled']"
+    messageExpression: "'Robustness testing status must be one of: passed, ongoing, scheduled, received: ' + variables.robustnessTestingValue"
+  variables:
+  - name: requiredAnnotations
+    expression: "['eu-ai-act.io/monitoring-system', 'eu-ai-act.io/logging-level', 'eu-ai-act.io/human-oversight', 'eu-ai-act.io/quality-management', 'eu-ai-act.io/data-governance', 'eu-ai-act.io/transparency-documentation', 'eu-ai-act.io/accuracy-monitoring', 'eu-ai-act.io/robustness-testing']"
+  - name: validMonitoringSystems
+    expression: "['prometheus', 'datadog', 'newrelic', 'splunk', 'elastic']"
+  - name: validLoggingLevels
+    expression: "['detailed', 'comprehensive', 'audit']"
+  - name: validHumanOversight
+    expression: "['continuous', 'periodic', 'on-demand']"
+  - name: currentAnnotations
+    expression: "object.metadata.?annotations.orValue({})"
+  - name: missingAnnotations
+    expression: "variables.requiredAnnotations.filter(ann, !(ann in variables.currentAnnotations))"
+  - name: monitoringSystemValue
+    expression: "variables.currentAnnotations['eu-ai-act.io/monitoring-system'].orValue('none')"
+  - name: loggingLevelValue
+    expression: "variables.currentAnnotations['eu-ai-act.io/logging-level'].orValue('none')"
+  - name: humanOversightValue
+    expression: "variables.currentAnnotations['eu-ai-act.io/human-oversight'].orValue('none')"
+  - name: accuracyMonitoringValue
+    expression: "variables.currentAnnotations['eu-ai-act.io/accuracy-monitoring'].orValue('none')"
+  - name: robustnessTestingValue
+    expression: "variables.currentAnnotations['eu-ai-act.io/robustness-testing'].orValue('none')"

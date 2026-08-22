@@ -1,0 +1,69 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: restrict-ai-workload-egress-test
+policies:
+- ../restrict-ai-workload-egress.yaml
+resources:
+- resources.yaml
+results:
+- kind: NetworkPolicy
+  policy: restrict-ai-workload-egress
+  resources:
+  - ai-training/valid-ai-netpol-internal-only
+  result: pass
+  rule: ""
+- kind: NetworkPolicy
+  policy: restrict-ai-workload-egress
+  resources:
+  - ml-inference/valid-ai-netpol-approved-endpoints
+  result: pass
+  rule: ""
+- kind: NetworkPolicy
+  policy: restrict-ai-workload-egress
+  resources:
+  - ai-research/valid-ai-netpol-no-egress
+  result: pass
+  rule: ""
+- kind: NetworkPolicy
+  policy: restrict-ai-workload-egress
+  resources:
+  - data-ai-pipeline/valid-ai-netpol-empty-egress
+  result: pass
+  rule: ""
+- kind: NetworkPolicy
+  policy: restrict-ai-workload-egress
+  resources:
+  - ai-training/invalid-ai-netpol-unapproved-cidr
+  result: fail
+  rule: ""
+- kind: NetworkPolicy
+  policy: restrict-ai-workload-egress
+  resources:
+  - ml-inference/invalid-ai-netpol-empty-to-field
+  result: fail
+  rule: ""
+- kind: NetworkPolicy
+  policy: restrict-ai-workload-egress
+  resources:
+  - ai-research/invalid-ai-netpol-missing-egress-policy-type
+  result: fail
+  rule: ""
+- kind: NetworkPolicy
+  policy: restrict-ai-workload-egress
+  resources:
+  - data-ai-pipeline/invalid-ai-netpol-no-to-field
+  result: fail
+  rule: ""
+- kind: NetworkPolicy
+  policy: restrict-ai-workload-egress
+  resources:
+  - web-application/valid-non-ai-netpol-unrestricted
+  result: skip
+  rule: ""
+- kind: NetworkPolicy
+  policy: restrict-ai-workload-egress
+  resources:
+  - ai-training/valid-ai-netpol-mixed-selectors
+  result: pass
+  rule: ""

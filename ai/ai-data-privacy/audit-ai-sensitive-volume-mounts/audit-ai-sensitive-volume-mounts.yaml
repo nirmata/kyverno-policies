@@ -1,0 +1,37 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: audit-ai-sensitive-volume-mounts
+  annotations:
+    policies.kyverno.io/title: Audit Sensitive Volume Mounts in AI Workloads
+    policies.kyverno.io/category: AI Security
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Audits and logs when AI workloads mount volumes to sensitive data paths like /data, /datasets, /models, or /secrets to ensure proper access governance and compliance with data handling policies.
+spec:
+  evaluation:
+    background:
+      enabled: true
+  matchConditions:
+  - name: is-ai-workload
+    expression: "has(object.metadata.labels) && (object.metadata.labels.?app.orValue('').contains('ai') || object.metadata.labels.?workload.orValue('').contains('ml') || object.metadata.labels.?component.orValue('').contains('model') || 'ai.workload/type' in object.metadata.labels || 'ml.workload/type' in object.metadata.labels)"
+  - name: has-sensitive-volume-mounts
+    expression: "(object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])).exists(c, has(c.volumeMounts) && c.volumeMounts.exists(vm, vm.mountPath.startsWith('/data') || vm.mountPath.startsWith('/datasets') || vm.mountPath.startsWith('/models') || vm.mountPath.startsWith('/secrets') || vm.mountPath.startsWith('/model-data') || vm.mountPath.startsWith('/training-data') || vm.mountPath.startsWith('/inference-data')))"
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+  validationActions: ["Audit"]
+  validations:
+  - expression: "true"
+    messageExpression: "'AI workload ' + object.metadata.name + ' in namespace ' + object.metadata.namespace + ' is mounting sensitive data volumes: ' + variables.sensitiveMounts.map(vm, vm.mountPath + ' (from volume: ' + vm.name + ')').join(', ') + '. Please ensure proper data access governance and compliance policies are followed.'"
+    reason: "SensitiveVolumeMount"
+  variables:
+  - name: allContainers
+    expression: "object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])"
+  - name: sensitiveDataPaths
+    expression: "['/data', '/datasets', '/models', '/secrets', '/model-data', '/training-data', '/inference-data']"
+  - name: sensitiveMounts
+    expression: "variables.allContainers.map(c, c.?volumeMounts.orValue([])).flatten().filter(vm, variables.sensitiveDataPaths.exists(path, vm.mountPath.startsWith(path)))"

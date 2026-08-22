@@ -1,0 +1,87 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: require-ai-model-metadata-test
+policies:
+- ../require-ai-model-metadata.yaml
+resources:
+- resources.yaml
+results:
+- kind: Pod
+  policy: require-ai-model-metadata
+  resources:
+  - ai-inference-pod-complete
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-metadata
+  resources:
+  - ml-training-pod-complete
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-metadata
+  resources:
+  - inference-service-complete
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-metadata
+  resources:
+  - training-job-complete
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-metadata
+  resources:
+  - inference-service-complete-alt
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-metadata
+  resources:
+  - ai-pod-missing-all-annotations
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-metadata
+  resources:
+  - ml-pod-missing-some-annotations
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-metadata
+  resources:
+  - inference-pod-empty-values
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-metadata
+  resources:
+  - training-pod-empty-version
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-metadata
+  resources:
+  - model-server-empty-provider
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-metadata
+  resources:
+  - inference-service-empty-license
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-metadata
+  resources:
+  - regular-web-app
+  result: skip
+  rule: ""
+- kind: Pod
+  policy: require-ai-model-metadata
+  resources:
+  - database-pod
+  result: skip
+  rule: ""

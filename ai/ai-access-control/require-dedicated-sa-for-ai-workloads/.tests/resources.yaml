@@ -1,0 +1,237 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: ml-training
+    workload: ai
+  name: ai-workload-with-dedicated-sa
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/tensorflow:latest
+    name: tensorflow
+  serviceAccountName: ai-ml-service-account
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    component: ml
+  name: ml-workload-with-dedicated-sa
+  namespace: default
+spec:
+  containers:
+  - image: pytorch/pytorch:latest
+    name: pytorch
+  serviceAccountName: machine-learning-sa
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    type: machine-learning
+  name: machine-learning-workload-pass
+  namespace: default
+spec:
+  containers:
+  - image: python:3.9
+    name: scikit-learn
+  serviceAccountName: ml-dedicated-sa
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    workload: artificial-intelligence
+  name: artificial-intelligence-workload-pass
+  namespace: default
+spec:
+  containers:
+  - image: nvidia/cuda:11.8-runtime-ubuntu20.04
+    name: ai-model
+  serviceAccountName: ai-custom-sa
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    ai: "true"
+    version: v1.0
+  name: ai-label-key-only-pass
+  namespace: default
+spec:
+  containers:
+  - image: python:3.9
+    name: ai-inference
+  serviceAccountName: ai-specific-sa
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: data-processing
+    ml: ""
+  name: ml-label-key-only-pass
+  namespace: default
+spec:
+  containers:
+  - image: python:3.9
+    name: data-processor
+  serviceAccountName: ml-worker-sa
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    machine-learning: enabled
+  name: machine-learning-label-key-pass
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/tensorflow:2.12.0
+    name: model-trainer
+  serviceAccountName: ml-training-sa
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    artificial-intelligence: v2
+  name: artificial-intelligence-label-key-pass
+  namespace: default
+spec:
+  containers:
+  - image: nvidia/tritonserver:22.12-py3
+    name: ai-server
+  serviceAccountName: ai-inference-sa
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: neural-network
+    workload: ai
+  name: ai-workload-default-sa-fail
+  namespace: default
+spec:
+  containers:
+  - image: pytorch/pytorch:latest
+    name: pytorch
+  serviceAccountName: default
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    component: ml
+  name: ml-workload-default-sa-fail
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/tensorflow:2.11.0
+    name: tensorflow
+  serviceAccountName: default
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    type: machine-learning
+  name: machine-learning-no-sa-fail
+  namespace: default
+spec:
+  containers:
+  - image: python:3.10
+    name: ml-pipeline
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    workload: artificial-intelligence
+  name: artificial-intelligence-implicit-default-fail
+  namespace: default
+spec:
+  containers:
+  - image: jupyter/tensorflow-notebook:latest
+    name: ai-training
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    ai: production
+    version: "2.0"
+  name: ai-label-key-default-sa-fail
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/serving:2.12.0
+    name: ai-model-server
+  serviceAccountName: default
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    ml: inference
+  name: ml-label-key-no-sa-fail
+  namespace: default
+spec:
+  containers:
+  - image: python:3.9-slim
+    name: ml-inference
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: web-server
+    tier: frontend
+  name: regular-workload-skip
+  namespace: default
+spec:
+  containers:
+  - image: nginx:1.21
+    name: nginx
+  serviceAccountName: default
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    component: database
+    workload: backend
+  name: database-workload-skip
+  namespace: default
+spec:
+  containers:
+  - image: postgres:14
+    name: postgres
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: no-labels-skip
+  namespace: default
+spec:
+  containers:
+  - image: busybox:latest
+    name: busybox
+  serviceAccountName: default

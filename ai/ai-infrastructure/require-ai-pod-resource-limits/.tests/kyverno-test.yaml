@@ -1,0 +1,87 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: require-ai-pod-resource-limits-test
+policies:
+- ../require-ai-pod-resource-limits.yaml
+resources:
+- resources.yaml
+results:
+- kind: Pod
+  policy: require-ai-pod-resource-limits
+  resources:
+  - ai-workload-complete-resources
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-pod-resource-limits
+  resources:
+  - ml-workload-with-gpu
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-pod-resource-limits
+  resources:
+  - ai-workload-missing-cpu-limits
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-pod-resource-limits
+  resources:
+  - ai-workload-missing-memory-limits
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-pod-resource-limits
+  resources:
+  - ai-workload-missing-cpu-requests
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-pod-resource-limits
+  resources:
+  - ai-workload-missing-memory-requests
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-pod-resource-limits
+  resources:
+  - ai-workload-gpu-without-requests
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-pod-resource-limits
+  resources:
+  - ai-workload-no-resources
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-pod-resource-limits
+  resources:
+  - ai-workload-with-init-containers
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-pod-resource-limits
+  resources:
+  - ai-workload-init-container-missing-limits
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-pod-resource-limits
+  resources:
+  - non-ai-workload
+  result: skip
+  rule: ""
+- kind: Pod
+  policy: require-ai-pod-resource-limits
+  resources:
+  - ai-workload-amd-gpu
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-pod-resource-limits
+  resources:
+  - ai-workload-intel-gpu
+  result: pass
+  rule: ""

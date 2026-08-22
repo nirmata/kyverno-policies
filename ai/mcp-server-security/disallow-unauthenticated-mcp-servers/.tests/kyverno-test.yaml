@@ -1,0 +1,51 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: disallow-unauthenticated-mcp-servers-test
+policies:
+- ../disallow-unauthenticated-mcp-servers.yaml
+resources:
+- resources.yaml
+results:
+- kind: Service
+  policy: disallow-unauthenticated-mcp-servers
+  resources:
+  - default/mcp-authed-loadbalancer
+  result: pass
+  rule: ""
+- kind: Service
+  policy: disallow-unauthenticated-mcp-servers
+  resources:
+  - default/mcp-authed-nodeport
+  result: pass
+  rule: ""
+- kind: Service
+  policy: disallow-unauthenticated-mcp-servers
+  resources:
+  - default/mcp-unauthenticated-loadbalancer
+  result: fail
+  rule: ""
+- kind: Service
+  policy: disallow-unauthenticated-mcp-servers
+  resources:
+  - default/mcp-unauthenticated-nodeport
+  result: fail
+  rule: ""
+- kind: Service
+  policy: disallow-unauthenticated-mcp-servers
+  resources:
+  - default/mcp-auth-disabled-service
+  result: fail
+  rule: ""
+- kind: Service
+  policy: disallow-unauthenticated-mcp-servers
+  resources:
+  - default/mcp-clusterip-service
+  result: pass
+  rule: ""
+- kind: Service
+  policy: disallow-unauthenticated-mcp-servers
+  resources:
+  - default/non-mcp-loadbalancer
+  result: pass
+  rule: ""

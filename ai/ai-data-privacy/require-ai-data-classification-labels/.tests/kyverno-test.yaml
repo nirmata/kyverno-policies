@@ -1,0 +1,117 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: require-ai-data-classification-labels-test
+policies:
+- ../require-ai-data-classification-labels.yaml
+resources:
+- resources.yaml
+results:
+- kind: Namespace
+  policy: require-ai-data-classification-labels
+  resources:
+  - ai-training-namespace
+  result: pass
+  rule: ""
+- kind: Namespace
+  policy: require-ai-data-classification-labels
+  resources:
+  - ml-inference-namespace
+  result: pass
+  rule: ""
+- kind: Namespace
+  policy: require-ai-data-classification-labels
+  resources:
+  - ai-development
+  result: pass
+  rule: ""
+- kind: Namespace
+  policy: require-ai-data-classification-labels
+  resources:
+  - ai-production-namespace
+  result: fail
+  rule: ""
+- kind: Namespace
+  policy: require-ai-data-classification-labels
+  resources:
+  - ml-invalid-classification
+  result: fail
+  rule: ""
+- kind: Namespace
+  policy: require-ai-data-classification-labels
+  resources:
+  - ai-missing-owner
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-data-classification-labels
+  resources:
+  - ai-training-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-data-classification-labels
+  resources:
+  - ml-inference-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-data-classification-labels
+  resources:
+  - ai-research-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-data-classification-labels
+  resources:
+  - ai-processing-restricted
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-data-classification-labels
+  resources:
+  - ml-model-server
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-data-classification-labels
+  resources:
+  - ai-missing-classification
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-data-classification-labels
+  resources:
+  - ml-invalid-classification
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-data-classification-labels
+  resources:
+  - ai-invalid-pii
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-data-classification-labels
+  resources:
+  - ai-restricted-missing-retention
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-ai-data-classification-labels
+  resources:
+  - non-ai-regular-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-data-classification-labels
+  resources:
+  - ai-model-deployment
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-ai-data-classification-labels
+  resources:
+  - ml-batch-job
+  result: skip
+  rule: ""

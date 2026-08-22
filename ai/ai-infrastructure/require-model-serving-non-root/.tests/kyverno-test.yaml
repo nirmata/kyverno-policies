@@ -1,0 +1,87 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: require-model-serving-non-root-test
+policies:
+- ../require-model-serving-non-root.yaml
+resources:
+- resources.yaml
+results:
+- kind: Pod
+  policy: require-model-serving-non-root
+  resources:
+  - model-server-compliant
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-model-serving-non-root
+  resources:
+  - ml-models/inference-service-compliant
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-model-serving-non-root
+  resources:
+  - serving-pod-compliant
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-model-serving-non-root
+  resources:
+  - ai-workloads/ml-framework-compliant
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-model-serving-non-root
+  resources:
+  - model-serving-label-compliant
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-model-serving-non-root
+  resources:
+  - model-server-root-pod-context
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-model-serving-non-root
+  resources:
+  - model-server-root-user-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-model-serving-non-root
+  resources:
+  - inference-root-container
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-model-serving-non-root
+  resources:
+  - serving-mixed-containers
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-model-serving-non-root
+  resources:
+  - ml-framework-init-container-root
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-model-serving-non-root
+  resources:
+  - no-security-context-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-model-serving-non-root
+  resources:
+  - non-model-serving-pod
+  result: skip
+  rule: ""
+- kind: Pod
+  policy: require-model-serving-non-root
+  resources:
+  - ephemeral-container-test
+  result: fail
+  rule: ""

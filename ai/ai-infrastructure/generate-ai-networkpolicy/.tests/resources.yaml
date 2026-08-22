@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    ai-workload: "true"
+  name: ai-training
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    workload-type: ai
+  name: ml-models
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-inference-prod
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod-ai-platform
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: chatbot-ai
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    environment: production
+  name: regular-app
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    workload-type: web
+  name: web-frontend
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    ai-workload: "false"
+  name: ai-namespace
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: database-cluster
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring-system
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kube-system

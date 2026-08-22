@@ -1,0 +1,27 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Context
+metadata:
+  name: require-aibom-attestation-context
+spec:
+  # Image metadata mocked for kyverno CLI. Note: this populates imagedata()
+  # CEL function only. verifyImageSignatures and verifyAttestationSignatures
+  # always hit the real registry and cannot be mocked here.
+  images:
+  - image: "registry.example.com/agents/chat-api:v1.2.3"
+    resolvedImage: "registry.example.com/agents/chat-api@sha256:aaabbbccc111222333444555666777888999000aaabbbccc111222333444555666"
+    registry: "registry.example.com"
+    repository: "agents/chat-api"
+    tag: "v1.2.3"
+    digest: "sha256:aaabbbccc111222333444555666777888999000aaabbbccc111222333444555666"
+  - image: "registry.example.com/agents/no-sig-api:v1.0.0"
+    resolvedImage: "registry.example.com/agents/no-sig-api@sha256:111222333444555666777888999000aaabbbccc111222333444555666777888999"
+    registry: "registry.example.com"
+    repository: "agents/no-sig-api"
+    tag: "v1.0.0"
+    digest: "sha256:111222333444555666777888999000aaabbbccc111222333444555666777888999"
+  - image: "registry.example.com/agents/no-aibom-api:v2.0.0"
+    resolvedImage: "registry.example.com/agents/no-aibom-api@sha256:222333444555666777888999000aaabbbccc111222333444555666777888999000"
+    registry: "registry.example.com"
+    repository: "agents/no-aibom-api"
+    tag: "v2.0.0"
+    digest: "sha256:222333444555666777888999000aaabbbccc111222333444555666777888999000"

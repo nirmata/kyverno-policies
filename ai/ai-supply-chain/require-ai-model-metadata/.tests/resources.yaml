@@ -1,0 +1,215 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model/license: Commercial
+    ai.model/name: gpt-3.5-turbo
+    ai.model/provider: OpenAI
+    ai.model/version: v1.2.3
+  labels:
+    app.type: ai
+  name: ai-inference-pod-complete
+  namespace: default
+spec:
+  containers:
+  - image: ai-inference:latest
+    name: inference-server
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model/license: Apache-2.0
+    ai.model/name: bert-base-uncased
+    ai.model/provider: HuggingFace
+    ai.model/version: v2.1.0
+  labels:
+    workload.type: ml
+  name: ml-training-pod-complete
+  namespace: default
+spec:
+  containers:
+  - image: ml-training:v1.0
+    name: training-worker
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model/license: Custom License Agreement
+    ai.model/name: llama-2-7b
+    ai.model/provider: Meta
+    ai.model/version: v1.0.0
+  labels:
+    component: model-server
+  name: inference-service-complete
+  namespace: default
+spec:
+  containers:
+  - image: llama-server:latest
+    name: model-server
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model/license: BSD-3-Clause
+    ai.model/name: resnet-50
+    ai.model/provider: PyTorch
+    ai.model/version: v1.5.2
+  labels:
+    component: training-job
+  name: training-job-complete
+  namespace: default
+spec:
+  containers:
+  - image: pytorch-training:v1.12
+    name: training-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model/license: CreativeML Open RAIL++-M
+    ai.model/name: stable-diffusion-xl
+    ai.model/provider: Stability AI
+    ai.model/version: v1.0
+  labels:
+    component: inference-service
+  name: inference-service-complete-alt
+  namespace: default
+spec:
+  containers:
+  - image: stable-diffusion:xl
+    name: diffusion-server
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.type: ai
+  name: ai-pod-missing-all-annotations
+  namespace: default
+spec:
+  containers:
+  - image: ai-service:latest
+    name: ai-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model/name: incomplete-model
+    ai.model/version: v1.0.0
+  labels:
+    workload.type: ml
+  name: ml-pod-missing-some-annotations
+  namespace: default
+spec:
+  containers:
+  - image: ml-service:latest
+    name: ml-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model/license: MIT
+    ai.model/name: ""
+    ai.model/provider: SomeProvider
+    ai.model/version: v1.0
+  labels:
+    app.type: inference
+  name: inference-pod-empty-values
+  namespace: default
+spec:
+  containers:
+  - image: inference:latest
+    name: inference-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model/license: GPL-3.0
+    ai.model/name: training-model
+    ai.model/provider: Custom
+    ai.model/version: ""
+  labels:
+    workload.type: training
+  name: training-pod-empty-version
+  namespace: default
+spec:
+  containers:
+  - image: training:latest
+    name: training-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model/license: Apache-2.0
+    ai.model/name: test-model
+    ai.model/provider: ""
+    ai.model/version: v2.0.0
+  labels:
+    component: model-server
+  name: model-server-empty-provider
+  namespace: default
+spec:
+  containers:
+  - image: model-server:v2
+    name: model-server-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model/license: ""
+    ai.model/name: inference-model
+    ai.model/provider: TestProvider
+    ai.model/version: v3.1.0
+  labels:
+    component: inference-service
+  name: inference-service-empty-license
+  namespace: default
+spec:
+  containers:
+  - image: inference-service:v3
+    name: inference-service-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: webapp
+  name: regular-web-app
+  namespace: default
+spec:
+  containers:
+  - image: nginx:latest
+    name: web-server
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    component: database
+  name: database-pod
+  namespace: default
+spec:
+  containers:
+  - image: postgres:14
+    name: postgres

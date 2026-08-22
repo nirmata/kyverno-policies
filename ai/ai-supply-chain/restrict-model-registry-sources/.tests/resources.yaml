@@ -1,0 +1,203 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: approved-tensorflow-pod
+  namespace: default
+spec:
+  containers:
+  - image: docker.io/tensorflow/tensorflow:2.8.0
+    name: tensorflow-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: approved-kubeflow-pod
+  namespace: default
+spec:
+  containers:
+  - image: gcr.io/kubeflow-images-public/jupyter-tensorflow:v1.4.0
+    name: kubeflow-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: approved-nvidia-pod
+  namespace: default
+spec:
+  containers:
+  - image: nvcr.io/nvidia/pytorch:22.08-py3
+    name: nvidia-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: approved-multiple-containers-pod
+  namespace: default
+spec:
+  containers:
+  - image: docker.io/tensorflow/serving:2.8.0
+    name: tensorflow-container
+  - image: public.ecr.aws/pytorch/pytorch:1.12.0-cpu
+    name: pytorch-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: approved-with-init-containers
+  namespace: default
+spec:
+  containers:
+  - image: huggingface.co/transformers/pytorch:4.21.0
+    name: main-container
+  initContainers:
+  - image: registry.k8s.io/busybox:1.35
+    name: init-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: approved-azureml-pod
+  namespace: ml-namespace
+spec:
+  containers:
+  - image: mcr.microsoft.com/azureml/pytorch:1.11-ubuntu18.04-py38-cpu
+    name: azureml-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: approved-modelmesh-pod
+  namespace: default
+spec:
+  containers:
+  - image: quay.io/modelmesh/modelmesh-serving:0.8.0
+    name: modelmesh-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: approved-redhat-ubi-pod
+  namespace: default
+spec:
+  containers:
+  - image: registry.redhat.io/ubi8/python-38:1-112
+    name: ubi-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: unapproved-dockerhub-pod
+  namespace: default
+spec:
+  containers:
+  - image: docker.io/nginx:latest
+    name: nginx-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: unapproved-custom-registry-pod
+  namespace: default
+spec:
+  containers:
+  - image: custom-registry.com/malicious/model:v1.0
+    name: custom-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mixed-approved-unapproved-pod
+  namespace: default
+spec:
+  containers:
+  - image: docker.io/tensorflow/tensorflow:2.8.0
+    name: approved-container
+  - image: docker.io/nginx:latest
+    name: unapproved-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: unapproved-init-container-pod
+  namespace: default
+spec:
+  containers:
+  - image: docker.io/tensorflow/tensorflow:2.8.0
+    name: approved-container
+  initContainers:
+  - image: docker.io/alpine:latest
+    name: unapproved-init
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: unapproved-gcr-non-kubeflow-pod
+  namespace: default
+spec:
+  containers:
+  - image: gcr.io/google-containers/nginx:1.0
+    name: gcr-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: unapproved-multiple-containers-pod
+  namespace: default
+spec:
+  containers:
+  - image: docker.io/redis:latest
+    name: redis-container
+  - image: docker.io/postgres:13
+    name: postgres-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: no-registry-prefix-pod
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow:latest
+    name: no-prefix-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ephemeral-container-approved-pod
+  namespace: default
+spec:
+  containers:
+  - image: docker.io/tensorflow/tensorflow:2.8.0
+    name: main-container
+  ephemeralContainers:
+  - image: registry.k8s.io/busybox:1.35
+    name: debug-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ephemeral-container-unapproved-pod
+  namespace: default
+spec:
+  containers:
+  - image: docker.io/tensorflow/tensorflow:2.8.0
+    name: main-container
+  ephemeralContainers:
+  - image: docker.io/alpine:latest
+    name: debug-container

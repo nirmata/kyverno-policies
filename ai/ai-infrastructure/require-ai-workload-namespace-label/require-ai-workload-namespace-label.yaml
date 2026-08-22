@@ -1,0 +1,24 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-ai-workload-namespace-label
+  annotations:
+    policies.kyverno.io/title: Require AI Workload Namespace Label
+    policies.kyverno.io/category: AI Governance
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Requires AI workload namespaces to have an 'ai-workload: true' label for proper identification and governance of AI workloads.
+spec:
+  matchConditions:
+  - name: is-ai-workload-namespace
+    expression: "object.metadata.name.contains('ai-') || object.metadata.name.contains('ml-') || object.metadata.name.contains('gpu-') || (has(object.metadata.annotations) && ('ai-workload' in object.metadata.annotations || 'ml-workload' in object.metadata.annotations))"
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["namespaces"]
+  validationActions: ["Audit"]
+  validations:
+  - expression: "has(object.metadata.labels) && 'ai-workload' in object.metadata.labels && object.metadata.labels['ai-workload'] == 'true'"
+    messageExpression: "'AI workload namespace ' + object.metadata.name + ' must have label ai-workload=true for proper governance and identification'"

@@ -1,0 +1,227 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    data.classification/sensitivity: confidential
+    data.governance/owner: data-science-team
+    workload.type/ai: "true"
+  name: ai-training-namespace
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.category: machine-learning
+    data.classification/sensitivity: internal
+    data.governance/owner: ml-ops-team
+  name: ml-inference-namespace
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    component: ai-pipeline
+    data.classification/sensitivity: public
+    data.governance/owner: dev-team
+  name: ai-development
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    workload.type/ai: "true"
+  name: ai-production-namespace
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    data.classification/sensitivity: top-secret
+    data.governance/owner: security-team
+    workload.type/ml: "true"
+  name: ml-invalid-classification
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.category: artificial-intelligence
+    data.classification/sensitivity: restricted
+  name: ai-missing-owner
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    data.classification/pii: "false"
+    data.classification/sensitivity: confidential
+    workload.type/ai: "true"
+  name: ai-training-pod
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/tensorflow:latest
+    name: trainer
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.category: ml
+    data.classification/pii: "true"
+    data.classification/sensitivity: internal
+  name: ml-inference-pod
+  namespace: default
+spec:
+  containers:
+  - image: pytorch/pytorch:latest
+    name: inference
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    component: ai-research
+    data.classification/sensitivity: public
+  name: ai-research-pod
+  namespace: default
+spec:
+  containers:
+  - image: jupyter/datascience-notebook
+    name: research
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    data.classification/pii: "true"
+    data.classification/sensitivity: restricted
+    data.retention/period: 7-years
+    workload.type/ai: "true"
+  name: ai-processing-restricted
+  namespace: default
+spec:
+  containers:
+  - image: custom/ai-processor:v1.0
+    name: processor
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.category: data-science
+    data.classification/sensitivity: restricted
+    data.retention/period: 5-years
+  name: ml-model-server
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/serving:latest
+    name: model-server
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    workload.type/ai: "true"
+  name: ai-missing-classification
+  namespace: default
+spec:
+  containers:
+  - image: custom/ai-app:latest
+    name: ai-app
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    data.classification/sensitivity: ultra-secret
+    workload.type/ml: "true"
+  name: ml-invalid-classification
+  namespace: default
+spec:
+  containers:
+  - image: custom/ml-app:latest
+    name: ml-app
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    data.classification/pii: maybe
+    data.classification/sensitivity: internal
+    workload.type/ai: "true"
+  name: ai-invalid-pii
+  namespace: default
+spec:
+  containers:
+  - image: custom/ai-app:latest
+    name: ai-app
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    data.classification/pii: "true"
+    data.classification/sensitivity: restricted
+    workload.type/ai: "true"
+  name: ai-restricted-missing-retention
+  namespace: default
+spec:
+  containers:
+  - image: custom/ai-app:latest
+    name: ai-app
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: nginx
+  name: non-ai-regular-pod
+  namespace: default
+spec:
+  containers:
+  - image: nginx:latest
+    name: nginx
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.category: ai
+    data.classification/pii: "false"
+    data.classification/sensitivity: confidential
+    model.version: v2.1
+  name: ai-model-deployment
+  namespace: default
+spec:
+  containers:
+  - image: custom/ai-model:v2.1
+    name: model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ml-batch-job
+  namespace: default
+spec:
+  containers:
+  - image: custom/ml-batch:latest
+    name: batch

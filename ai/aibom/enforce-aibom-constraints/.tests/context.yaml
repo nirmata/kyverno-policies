@@ -1,0 +1,45 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Context
+metadata:
+  name: enforce-aibom-constraints-context
+spec:
+  # Image metadata mocked for kyverno CLI. Note: this populates imagedata()
+  # CEL function only. verifyAttestationSignatures and extractPayload always
+  # hit the real registry and cannot be mocked here.
+  images:
+  - image: "registry.example.com/agents/approved-agent:v1.0.0"
+    resolvedImage: "registry.example.com/agents/approved-agent@sha256:aaa111bbb222ccc333ddd444eee555fff666000aaa111bbb222ccc333ddd444ee"
+    registry: "registry.example.com"
+    repository: "agents/approved-agent"
+    tag: "v1.0.0"
+    digest: "sha256:aaa111bbb222ccc333ddd444eee555fff666000aaa111bbb222ccc333ddd444ee"
+  - image: "registry.example.com/agents/bad-framework-agent:v1.0.0"
+    resolvedImage: "registry.example.com/agents/bad-framework-agent@sha256:bbb222ccc333ddd444eee555fff666000aaa111bbb222ccc333ddd444eee555ff"
+    registry: "registry.example.com"
+    repository: "agents/bad-framework-agent"
+    tag: "v1.0.0"
+    digest: "sha256:bbb222ccc333ddd444eee555fff666000aaa111bbb222ccc333ddd444eee555ff"
+  - image: "registry.example.com/agents/filesystem-tool-agent:v1.0.0"
+    resolvedImage: "registry.example.com/agents/filesystem-tool-agent@sha256:ccc333ddd444eee555fff666000aaa111bbb222ccc333ddd444eee555fff66600"
+    registry: "registry.example.com"
+    repository: "agents/filesystem-tool-agent"
+    tag: "v1.0.0"
+    digest: "sha256:ccc333ddd444eee555fff666000aaa111bbb222ccc333ddd444eee555fff66600"
+  - image: "registry.example.com/agents/shell-tool-agent:v1.0.0"
+    resolvedImage: "registry.example.com/agents/shell-tool-agent@sha256:ddd444eee555fff666000aaa111bbb222ccc333ddd444eee555fff666000aaa11"
+    registry: "registry.example.com"
+    repository: "agents/shell-tool-agent"
+    tag: "v1.0.0"
+    digest: "sha256:ddd444eee555fff666000aaa111bbb222ccc333ddd444eee555fff666000aaa11"
+  - image: "registry.example.com/agents/unapproved-model-agent:v1.0.0"
+    resolvedImage: "registry.example.com/agents/unapproved-model-agent@sha256:eee555fff666000aaa111bbb222ccc333ddd444eee555fff666000aaa111bbb22"
+    registry: "registry.example.com"
+    repository: "agents/unapproved-model-agent"
+    tag: "v1.0.0"
+    digest: "sha256:eee555fff666000aaa111bbb222ccc333ddd444eee555fff666000aaa111bbb22"
+  - image: "registry.example.com/agents/multi-container-agent:v2.0.0"
+    resolvedImage: "registry.example.com/agents/multi-container-agent@sha256:fff666000aaa111bbb222ccc333ddd444eee555fff666000aaa111bbb222ccc33"
+    registry: "registry.example.com"
+    repository: "agents/multi-container-agent"
+    tag: "v2.0.0"
+    digest: "sha256:fff666000aaa111bbb222ccc333ddd444eee555fff666000aaa111bbb222ccc33"

@@ -1,0 +1,75 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: generate-ai-networkpolicy-test
+policies:
+- ../generate-ai-networkpolicy.yaml
+resources:
+- resources.yaml
+results:
+- kind: Namespace
+  policy: generate-ai-networkpolicy
+  resources:
+  - ai-training
+  result: pass
+  rule: ""
+- kind: Namespace
+  policy: generate-ai-networkpolicy
+  resources:
+  - ml-models
+  result: pass
+  rule: ""
+- kind: Namespace
+  policy: generate-ai-networkpolicy
+  resources:
+  - ai-inference-prod
+  result: pass
+  rule: ""
+- kind: Namespace
+  policy: generate-ai-networkpolicy
+  resources:
+  - prod-ai-platform
+  result: pass
+  rule: ""
+- kind: Namespace
+  policy: generate-ai-networkpolicy
+  resources:
+  - chatbot-ai
+  result: pass
+  rule: ""
+- kind: Namespace
+  policy: generate-ai-networkpolicy
+  resources:
+  - regular-app
+  result: skip
+  rule: ""
+- kind: Namespace
+  policy: generate-ai-networkpolicy
+  resources:
+  - web-frontend
+  result: skip
+  rule: ""
+- kind: Namespace
+  policy: generate-ai-networkpolicy
+  resources:
+  - ai-namespace
+  result: skip
+  rule: ""
+- kind: Namespace
+  policy: generate-ai-networkpolicy
+  resources:
+  - database-cluster
+  result: skip
+  rule: ""
+- kind: Namespace
+  policy: generate-ai-networkpolicy
+  resources:
+  - monitoring-system
+  result: skip
+  rule: ""
+- kind: Namespace
+  policy: generate-ai-networkpolicy
+  resources:
+  - kube-system
+  result: skip
+  rule: ""

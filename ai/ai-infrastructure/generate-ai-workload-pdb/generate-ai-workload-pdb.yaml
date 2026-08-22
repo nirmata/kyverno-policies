@@ -1,0 +1,53 @@
+apiVersion: policies.kyverno.io/v1
+kind: GeneratingPolicy
+metadata:
+  name: ai-workload-pdb-generator
+  annotations:
+    policies.kyverno.io/title: Generate PodDisruptionBudget for AI Workloads
+    policies.kyverno.io/category: AI/ML, Availability
+    policies.kyverno.io/minversion: "1.15.0"
+    policies.kyverno.io/subject: Deployment, PodDisruptionBudget
+    policies.kyverno.io/description: >-
+      Automatically creates PodDisruptionBudget resources for AI/ML workloads to ensure availability during node maintenance and updates. Targets deployments with AI/ML related labels.
+spec:
+  evaluation:
+    synchronize:
+      enabled: true
+  matchConditions:
+  - name: has-ai-ml-labels
+    expression: "has(object.metadata.labels) && (('app.kubernetes.io/component' in object.metadata.labels && object.metadata.labels['app.kubernetes.io/component'] in ['ai', 'ml', 'model-serving', 'inference']) || ('workload.type' in object.metadata.labels && object.metadata.labels['workload.type'] in ['ai', 'ml', 'inference', 'model-serving']) || ('ai.serving/enabled' in object.metadata.labels && object.metadata.labels['ai.serving/enabled'] == 'true'))"
+  - name: has-replicas
+    expression: "object.spec.?replicas.orValue(1) > 1"
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ["apps"]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["deployments"]
+  variables:
+  - name: targetNamespace
+    expression: "object.metadata.namespace"
+  - name: deploymentName
+    expression: "object.metadata.name"
+  - name: pdbName
+    expression: "variables.deploymentName + '-ai-pdb'"
+  - name: replicas
+    expression: "object.spec.?replicas.orValue(1)"
+  - name: minAvailable
+    expression: "variables.replicas > 3 ? int(variables.replicas * 0.6) : (variables.replicas > 1 ? variables.replicas - 1 : 1)"
+  - name: selector
+    expression: "object.spec.selector"
+  generate:
+  - expression: "generator.Apply(variables.targetNamespace, [
+      {
+        \"kind\": dyn(\"PodDisruptionBudget\"),
+        \"apiVersion\": dyn(\"policy/v1\"),
+        \"metadata\": dyn({
+          \"name\": variables.pdbName
+        }),
+        \"spec\": dyn({
+          \"minAvailable\": dyn(variables.minAvailable),
+          \"selector\": dyn(variables.selector)
+        })
+      }
+    ])"

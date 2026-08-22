@@ -1,0 +1,240 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: model-server
+  name: model-server-compliant
+  namespace: default
+spec:
+  containers:
+  - image: pytorch/torchserve:latest
+    name: pytorch-server
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1001
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: inference
+  name: inference-service-compliant
+  namespace: ml-models
+spec:
+  containers:
+  - image: tensorflow/serving:latest
+    name: tensorflow-serving
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 2000
+  securityContext:
+    runAsNonRoot: true
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: serving
+  name: serving-pod-compliant
+  namespace: default
+spec:
+  containers:
+  - image: custom/model-server:v1.0
+    name: model-container
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1500
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    ml-framework: pytorch
+  name: ml-framework-compliant
+  namespace: ai-workloads
+spec:
+  containers:
+  - image: pytorch/pytorch:latest
+    name: pytorch-worker
+    securityContext:
+      runAsNonRoot: true
+  initContainers:
+  - image: busybox
+    name: model-downloader
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1300
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1200
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    model-serving: "true"
+  name: model-serving-label-compliant
+  namespace: default
+spec:
+  containers:
+  - image: custom/ai-model:latest
+    name: custom-model-server
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1100
+  securityContext:
+    runAsNonRoot: true
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: model-server
+  name: model-server-root-pod-context
+  namespace: default
+spec:
+  containers:
+  - image: pytorch/torchserve:latest
+    name: pytorch-server
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1001
+  securityContext:
+    runAsNonRoot: false
+    runAsUser: 0
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: model-server
+  name: model-server-root-user-pod
+  namespace: default
+spec:
+  containers:
+  - image: pytorch/torchserve:latest
+    name: pytorch-server
+  securityContext:
+    runAsUser: 0
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: inference
+  name: inference-root-container
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/serving:latest
+    name: tensorflow-serving
+    securityContext:
+      runAsNonRoot: false
+      runAsUser: 0
+  securityContext:
+    runAsNonRoot: true
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: serving
+  name: serving-mixed-containers
+  namespace: default
+spec:
+  containers:
+  - image: model/server:v1
+    name: compliant-container
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+  - image: model/server:v2
+    name: non-compliant-container
+    securityContext:
+      runAsNonRoot: false
+      runAsUser: 0
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    ml-framework: tensorflow
+  name: ml-framework-init-container-root
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/serving:latest
+    name: tf-serving
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+  initContainers:
+  - image: busybox
+    name: root-init
+    securityContext:
+      runAsUser: 0
+  securityContext:
+    runAsNonRoot: true
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    model-serving: "true"
+  name: no-security-context-pod
+  namespace: default
+spec:
+  containers:
+  - image: model/server:latest
+    name: default-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: web-server
+  name: non-model-serving-pod
+  namespace: default
+spec:
+  containers:
+  - image: nginx:latest
+    name: nginx
+  securityContext:
+    runAsUser: 0
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: model-server
+  name: ephemeral-container-test
+  namespace: default
+spec:
+  containers:
+  - image: model/server:latest
+    name: main-container
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+  ephemeralContainers:
+  - image: busybox
+    name: debug-container
+    securityContext:
+      runAsUser: 0
+  securityContext:
+    runAsNonRoot: true
