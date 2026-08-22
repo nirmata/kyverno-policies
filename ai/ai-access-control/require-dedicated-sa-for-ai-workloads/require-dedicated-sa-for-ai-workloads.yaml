@@ -1,0 +1,27 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-dedicated-sa-for-ai-workloads
+  annotations:
+    policies.kyverno.io/title: Require Dedicated ServiceAccounts for AI Workloads
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      Ensures AI/ML workloads use dedicated ServiceAccounts instead of the default ServiceAccount to follow least-privilege security practices.
+spec:
+  evaluation:
+    background:
+      enabled: true
+  matchConditions:
+  - name: has-ai-ml-labels
+    expression: "has(object.metadata.labels) && (object.metadata.labels.?workload.orValue('') in ['ai', 'ml', 'machine-learning', 'artificial-intelligence'] || object.metadata.labels.?component.orValue('') in ['ai', 'ml', 'machine-learning', 'artificial-intelligence'] || object.metadata.labels.?type.orValue('') in ['ai', 'ml', 'machine-learning', 'artificial-intelligence'] || 'ai' in object.metadata.labels || 'ml' in object.metadata.labels || 'machine-learning' in object.metadata.labels || 'artificial-intelligence' in object.metadata.labels)"
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+  validationActions: ["Audit"]
+  validations:
+  - expression: "object.spec.?serviceAccountName.orValue('default') != 'default'"
+    messageExpression: "'AI/ML workloads must use a dedicated ServiceAccount instead of default. Pod has labels: ' + string(object.metadata.labels)"

@@ -1,0 +1,75 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: generate-ai-workload-pdb-test
+policies:
+- ../generate-ai-workload-pdb.yaml
+resources:
+- resources.yaml
+results:
+- kind: Deployment
+  policy: ai-workload-pdb-generator
+  resources:
+  - ai-workloads/ai-model-server
+  result: pass
+  rule: ""
+- kind: Deployment
+  policy: ai-workload-pdb-generator
+  resources:
+  - ml-platform/ml-training-job
+  result: pass
+  rule: ""
+- kind: Deployment
+  policy: ai-workload-pdb-generator
+  resources:
+  - default/inference-service
+  result: pass
+  rule: ""
+- kind: Deployment
+  policy: ai-workload-pdb-generator
+  resources:
+  - ai-workloads/workload-ai
+  result: pass
+  rule: ""
+- kind: Deployment
+  policy: ai-workload-pdb-generator
+  resources:
+  - production/ml-inference
+  result: pass
+  rule: ""
+- kind: Deployment
+  policy: ai-workload-pdb-generator
+  resources:
+  - default/ai-serving-enabled
+  result: pass
+  rule: ""
+- kind: Deployment
+  policy: ai-workload-pdb-generator
+  resources:
+  - ai-workloads/single-replica-ai
+  result: fail
+  rule: ""
+- kind: Deployment
+  policy: ai-workload-pdb-generator
+  resources:
+  - default/no-labels-deployment
+  result: fail
+  rule: ""
+- kind: Deployment
+  policy: ai-workload-pdb-generator
+  resources:
+  - default/wrong-component-label
+  result: fail
+  rule: ""
+- kind: Deployment
+  policy: ai-workload-pdb-generator
+  resources:
+  - default/ai-serving-disabled
+  result: fail
+  rule: ""
+- kind: Deployment
+  policy: ai-workload-pdb-generator
+  resources:
+  - default/no-replicas-field
+  result: fail
+  rule: ""

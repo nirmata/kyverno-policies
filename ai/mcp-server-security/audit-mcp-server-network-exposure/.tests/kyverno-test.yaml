@@ -1,0 +1,69 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: audit-mcp-server-network-exposure-test
+policies:
+- ../audit-mcp-server-network-exposure.yaml
+resources:
+- resources.yaml
+results:
+- kind: Service
+  policy: audit-mcp-server-network-exposure
+  resources:
+  - default/mcp-server-loadbalancer
+  result: fail
+  rule: ""
+- kind: Service
+  policy: audit-mcp-server-network-exposure
+  resources:
+  - production/model-context-protocol-nodeport
+  result: fail
+  rule: ""
+- kind: Service
+  policy: audit-mcp-server-network-exposure
+  resources:
+  - default/mcp-api-clusterip
+  result: pass
+  rule: ""
+- kind: Service
+  policy: audit-mcp-server-network-exposure
+  resources:
+  - default/regular-web-service
+  result: pass
+  rule: ""
+- kind: Service
+  policy: audit-mcp-server-network-exposure
+  resources:
+  - backend/database-service
+  result: pass
+  rule: ""
+- kind: Ingress
+  policy: audit-mcp-server-network-exposure
+  resources:
+  - default/mcp-server-ingress
+  result: fail
+  rule: ""
+- kind: Ingress
+  policy: audit-mcp-server-network-exposure
+  resources:
+  - mcp-system/model-context-ingress
+  result: fail
+  rule: ""
+- kind: Ingress
+  policy: audit-mcp-server-network-exposure
+  resources:
+  - default/regular-app-ingress
+  result: pass
+  rule: ""
+- kind: Service
+  policy: audit-mcp-server-network-exposure
+  resources:
+  - test/mcp-edge-case
+  result: pass
+  rule: ""
+- kind: Service
+  policy: audit-mcp-server-network-exposure
+  resources:
+  - default/partial-mcp-match
+  result: pass
+  rule: ""

@@ -1,0 +1,173 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mcp-server
+  name: mcp-server-loadbalancer
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: mcp-server
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: model-context-protocol-gateway
+  name: model-context-protocol-nodeport
+  namespace: production
+spec:
+  ports:
+  - nodePort: 30443
+    port: 443
+    targetPort: 8443
+  selector:
+    component: mcp-gateway
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: mcp-api-server
+  name: mcp-api-clusterip
+  namespace: default
+spec:
+  ports:
+  - port: 9090
+    targetPort: 9090
+  selector:
+    app: mcp-api
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: web-frontend
+  name: regular-web-service
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: frontend
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    tier: database
+  name: database-service
+  namespace: backend
+spec:
+  ports:
+  - nodePort: 30432
+    port: 5432
+    targetPort: 5432
+  selector:
+    app: postgres
+  type: NodePort
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app: mcp-protocol-server
+  name: mcp-server-ingress
+  namespace: default
+spec:
+  rules:
+  - host: mcp.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: mcp-server
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    component: model-context-protocol
+  name: model-context-ingress
+  namespace: mcp-system
+spec:
+  rules:
+  - host: api.mcp-system.io
+    http:
+      paths:
+      - backend:
+          service:
+            name: mcp-api
+            port:
+              number: 8080
+        path: /api
+        pathType: Prefix
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app: webapp
+  name: regular-app-ingress
+  namespace: default
+spec:
+  rules:
+  - host: webapp.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: webapp
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: my-mcp-service
+  name: mcp-edge-case
+  namespace: test
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: mcp
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: partial-mcp-match
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: web
+  type: LoadBalancer

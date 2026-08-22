@@ -1,0 +1,207 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model-card/capabilities: "Classifies 1000+ object types with 95% accuracy, real-time inference under 100ms latency"
+    ai.model-card/ethical-considerations: "Bias testing performed across demographic groups, fairness metrics evaluated, no discriminatory patterns detected"
+    ai.model-card/limitations: "Performance degrades in low-light conditions, not suitable for medical diagnosis applications"
+    ai.model-card/model-version: "2.1.3"
+    ai.model-card/performance-metrics: "Accuracy: 95.2%, Precision: 94.8%, Recall: 93.5%, F1-Score: 94.1%, Inference time: 85ms"
+    ai.model-card/purpose: "Computer vision model for image classification and object detection in autonomous vehicles"
+    ai.model-card/risk-assessment: "medium"
+    ai.model-card/training-data: "ImageNet dataset with 14M images, augmented with proprietary automotive dataset of 2M images"
+  labels:
+    ai.workload/type: inference
+  name: ai-model-complete
+  namespace: default
+spec:
+  containers:
+  - image: registry.ai.com/vision-model:2.1.3
+    name: ai-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model-card/capabilities: "Multi-language sentiment classification supporting English, Spanish, French with 92% accuracy"
+    ai.model-card/ethical-considerations: "Privacy-preserving training with differential privacy, no personal identifiers in training data"
+    ai.model-card/limitations: "Limited performance on sarcasm detection, requires preprocessing for non-standard text formats"
+    ai.model-card/model-version: "1.0.0"
+    ai.model-card/performance-metrics: "Overall accuracy: 92.1%, English: 94.2%, Spanish: 91.3%, French: 89.8%, Processing: 50ms per text"
+    ai.model-card/purpose: "Natural language processing model for sentiment analysis in customer feedback systems"
+    ai.model-card/risk-assessment: "low"
+    ai.model-card/training-data: "Combined dataset of 50M customer reviews from e-commerce platforms, social media, and surveys"
+  labels:
+    ml.workload/type: training
+  name: ml-model-complete
+  namespace: default
+spec:
+  containers:
+  - image: registry.ml.com/nlp-sentiment:1.0.0
+    name: ml-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model-card/capabilities: "Multi-turn conversation, question answering, text summarization, code generation with context awareness"
+    ai.model-card/ethical-considerations: "Content filtering implemented, bias evaluation across protected groups, safety fine-tuning applied"
+    ai.model-card/limitations: "May generate hallucinations for factual queries, not suitable for legal or medical advice generation"
+    ai.model-card/model-version: "3.2.1"
+    ai.model-card/performance-metrics: "BLEU score: 89.2%, ROUGE-L: 87.4%, Human evaluation: 4.2/5.0, Tokens per second: 150"
+    ai.model-card/purpose: "Large language model serving for conversational AI applications in customer support"
+    ai.model-card/risk-assessment: "high"
+    ai.model-card/training-data: "Curated dataset of 100B tokens from web crawl, books, academic papers, filtered for quality and safety"
+  labels:
+    app.kubernetes.io/component: inference-server
+  name: inference-server-complete
+  namespace: default
+spec:
+  containers:
+  - image: registry.ai.com/llm-server:3.2.1
+    name: inference-server
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model-card/capabilities: "Radiological image analysis for pneumonia detection, tumor identification, fracture detection"
+    ai.model-card/ethical-considerations: "Patient privacy protection, informed consent process, bias testing across demographics and institutions"
+    ai.model-card/limitations: "Not FDA approved for clinical use, requires human expert validation, performance varies by imaging equipment"
+    ai.model-card/model-version: "4.0.0"
+    ai.model-card/performance-metrics: "Sensitivity: 94.5%, Specificity: 92.8%, AUC: 0.96, False positive rate: 7.2%"
+    ai.model-card/purpose: "Medical diagnostic AI for analyzing medical imaging data and providing diagnostic recommendations"
+    ai.model-card/risk-assessment: "critical"
+    ai.model-card/training-data: "De-identified medical imaging dataset of 500K images from 50 hospitals with expert annotations"
+  labels:
+    app.kubernetes.io/component: model-server
+  name: model-server-critical-risk
+  namespace: default
+spec:
+  containers:
+  - image: registry.medical.com/diagnostic-ai:4.0.0-beta
+    name: medical-ai
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model-card/capabilities: Basic image classification
+    ai.model-card/purpose: Image classification model
+  labels:
+    ai.workload/type: inference
+  name: ai-model-missing-annotations
+  namespace: default
+spec:
+  containers:
+  - image: registry.ai.com/basic-model:1.0.0
+    name: ai-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model-card/capabilities: Text analysis
+    ai.model-card/ethical-considerations: Considered
+    ai.model-card/limitations: Limited
+    ai.model-card/model-version: "1.0.0"
+    ai.model-card/performance-metrics: Good
+    ai.model-card/purpose: ""
+    ai.model-card/risk-assessment: "low"
+    ai.model-card/training-data: Dataset
+  labels:
+    ml.workload/type: training
+  name: ml-model-empty-annotations
+  namespace: default
+spec:
+  containers:
+  - image: registry.ml.com/text-model:1.0.0
+    name: ml-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model-card/capabilities: "Real-time personalized recommendations based on user behavior and product catalog analysis"
+    ai.model-card/ethical-considerations: "User privacy protection, transparent recommendation logic, option to opt-out of personalization"
+    ai.model-card/limitations: "Cold start problem for new users, requires significant user interaction data for accuracy"
+    ai.model-card/model-version: "2.0.0"
+    ai.model-card/performance-metrics: "Click-through rate: 15.3%, Conversion rate: 8.7%, Mean average precision: 0.82"
+    ai.model-card/purpose: "Recommendation system for e-commerce platform providing personalized product suggestions"
+    ai.model-card/risk-assessment: "very-high"
+    ai.model-card/training-data: "Historical user interaction data spanning 2 years with 10M users and 1M products"
+  labels:
+    app.kubernetes.io/component: inference-server
+  name: inference-server-invalid-risk
+  namespace: default
+spec:
+  containers:
+  - image: registry.ai.com/recommendation:2.0.0
+    name: recommendation-engine
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    ai.model-card/capabilities: "Real-time transaction scoring, anomaly detection, risk assessment for payment processing"
+    ai.model-card/ethical-considerations: "Fair lending compliance, demographic bias testing, transparent scoring methodology"
+    ai.model-card/limitations: "Higher false positive rates during high-volume periods, requires periodic retraining for new fraud patterns"
+    ai.model-card/model-version: "v2.1-stable"
+    ai.model-card/performance-metrics: "Precision: 89.5%, Recall: 92.1%, F1-score: 90.8%, Processing latency: <50ms per transaction"
+    ai.model-card/purpose: "Fraud detection system for financial transactions using machine learning algorithms"
+    ai.model-card/risk-assessment: "high"
+    ai.model-card/training-data: "Historical transaction data with 100M samples over 3 years, labeled fraud cases included"
+  labels:
+    app.kubernetes.io/component: model-server
+  name: model-server-invalid-version
+  namespace: default
+spec:
+  containers:
+  - image: registry.fintech.com/fraud-detector:v2.1
+    name: fraud-detection
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    ai.workload/type: inference
+  name: ai-model-no-annotations
+  namespace: default
+spec:
+  containers:
+  - image: registry.ai.com/simple-model:1.0.0
+    name: ai-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: web-server
+  name: non-ai-workload
+  namespace: default
+spec:
+  containers:
+  - image: nginx:latest
+    name: nginx
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: database
+  name: database-pod
+  namespace: default
+spec:
+  containers:
+  - image: postgres:14
+    name: postgres

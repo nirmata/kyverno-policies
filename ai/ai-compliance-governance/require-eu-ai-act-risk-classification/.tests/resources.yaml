@@ -1,0 +1,294 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    eu-ai-act.io/accuracy-monitoring: enabled
+    eu-ai-act.io/data-governance: DGF-EU-GDPR-001
+    eu-ai-act.io/human-oversight: continuous
+    eu-ai-act.io/logging-level: detailed
+    eu-ai-act.io/monitoring-system: prometheus
+    eu-ai-act.io/quality-management: QMS-2024-001
+    eu-ai-act.io/robustness-testing: passed
+    eu-ai-act.io/transparency-documentation: TD-AI-SYS-001
+  labels:
+    app: ai-system
+    eu-ai-act.io/risk-level: high
+  name: compliant-high-risk-ai-pod
+  namespace: default
+spec:
+  containers:
+  - image: ai-registry/high-risk-model:v1.0
+    name: ai-model
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    eu-ai-act.io/accuracy-monitoring: continuous
+    eu-ai-act.io/data-governance: GDPR-COMPLIANT-001
+    eu-ai-act.io/human-oversight: periodic
+    eu-ai-act.io/logging-level: comprehensive
+    eu-ai-act.io/monitoring-system: datadog
+    eu-ai-act.io/quality-management: ISO-13485-2024
+    eu-ai-act.io/robustness-testing: ongoing
+    eu-ai-act.io/transparency-documentation: https://docs.example.com/ai-transparency
+  labels:
+    app: ai-deployment
+    eu-ai-act.io/risk-level: high
+  name: compliant-ai-deployment
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ai-deployment
+  template:
+    metadata:
+      labels:
+        app: ai-deployment
+    spec:
+      containers:
+      - image: ai-registry/compliant-service:latest
+        name: ai-service
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    eu-ai-act.io/logging-level: detailed
+    eu-ai-act.io/monitoring-system: prometheus
+  labels:
+    app: non-compliant
+    eu-ai-act.io/risk-level: high
+  name: missing-annotations-pod
+  namespace: default
+spec:
+  containers:
+  - image: ai-registry/incomplete-model:v1.0
+    name: ai-model
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    eu-ai-act.io/accuracy-monitoring: enabled
+    eu-ai-act.io/data-governance: DGF-001
+    eu-ai-act.io/human-oversight: continuous
+    eu-ai-act.io/logging-level: detailed
+    eu-ai-act.io/monitoring-system: custom-system
+    eu-ai-act.io/quality-management: QMS-001
+    eu-ai-act.io/robustness-testing: passed
+    eu-ai-act.io/transparency-documentation: TD-001
+  labels:
+    app: invalid-monitoring
+    eu-ai-act.io/risk-level: high
+  name: invalid-monitoring-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: invalid-monitoring
+  template:
+    metadata:
+      labels:
+        app: invalid-monitoring
+    spec:
+      containers:
+      - image: ai-registry/service:v1.0
+        name: ai-service
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    eu-ai-act.io/accuracy-monitoring: enabled
+    eu-ai-act.io/data-governance: DGF-002
+    eu-ai-act.io/human-oversight: continuous
+    eu-ai-act.io/logging-level: basic
+    eu-ai-act.io/monitoring-system: prometheus
+    eu-ai-act.io/quality-management: QMS-002
+    eu-ai-act.io/robustness-testing: passed
+    eu-ai-act.io/transparency-documentation: TD-002
+  labels:
+    app: invalid-logging
+    eu-ai-act.io/risk-level: high
+  name: invalid-logging-pod
+  namespace: default
+spec:
+  containers:
+  - image: ai-registry/model:v2.0
+    name: ai-model
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    eu-ai-act.io/accuracy-monitoring: enabled
+    eu-ai-act.io/data-governance: DGF-003
+    eu-ai-act.io/human-oversight: automated
+    eu-ai-act.io/logging-level: detailed
+    eu-ai-act.io/monitoring-system: prometheus
+    eu-ai-act.io/quality-management: QMS-003
+    eu-ai-act.io/robustness-testing: passed
+    eu-ai-act.io/transparency-documentation: TD-003
+  labels:
+    app: invalid-oversight
+    eu-ai-act.io/risk-level: high
+  name: invalid-oversight-deployment
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: invalid-oversight
+  template:
+    metadata:
+      labels:
+        app: invalid-oversight
+    spec:
+      containers:
+      - image: ai-registry/oversight-service:v1.0
+        name: ai-service
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    eu-ai-act.io/accuracy-monitoring: enabled
+    eu-ai-act.io/data-governance: DGF-004
+    eu-ai-act.io/human-oversight: continuous
+    eu-ai-act.io/logging-level: detailed
+    eu-ai-act.io/monitoring-system: prometheus
+    eu-ai-act.io/quality-management: ""
+    eu-ai-act.io/robustness-testing: passed
+    eu-ai-act.io/transparency-documentation: TD-004
+  labels:
+    app: empty-fields
+    eu-ai-act.io/risk-level: high
+  name: empty-quality-mgmt-pod
+  namespace: default
+spec:
+  containers:
+  - image: ai-registry/model:v3.0
+    name: ai-model
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    eu-ai-act.io/accuracy-monitoring: disabled
+    eu-ai-act.io/data-governance: DGF-005
+    eu-ai-act.io/human-oversight: continuous
+    eu-ai-act.io/logging-level: detailed
+    eu-ai-act.io/monitoring-system: prometheus
+    eu-ai-act.io/quality-management: QMS-005
+    eu-ai-act.io/robustness-testing: passed
+    eu-ai-act.io/transparency-documentation: TD-005
+  labels:
+    app: invalid-accuracy
+    eu-ai-act.io/risk-level: high
+  name: invalid-accuracy-monitoring
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: invalid-accuracy
+  template:
+    metadata:
+      labels:
+        app: invalid-accuracy
+    spec:
+      containers:
+      - image: ai-registry/accuracy-service:v1.0
+        name: ai-service
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    eu-ai-act.io/accuracy-monitoring: enabled
+    eu-ai-act.io/data-governance: DGF-006
+    eu-ai-act.io/human-oversight: continuous
+    eu-ai-act.io/logging-level: detailed
+    eu-ai-act.io/monitoring-system: prometheus
+    eu-ai-act.io/quality-management: QMS-006
+    eu-ai-act.io/robustness-testing: failed
+    eu-ai-act.io/transparency-documentation: TD-006
+  labels:
+    app: invalid-robustness
+    eu-ai-act.io/risk-level: high
+  name: invalid-robustness-testing
+  namespace: default
+spec:
+  containers:
+  - image: ai-registry/robustness-model:v1.0
+    name: ai-model
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: low-risk-ai
+    eu-ai-act.io/risk-level: low
+  name: non-high-risk-pod
+  namespace: default
+spec:
+  containers:
+  - image: ai-registry/low-risk-model:v1.0
+    name: ai-model
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: regular-app
+  name: no-risk-label-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: regular-app
+  template:
+    metadata:
+      labels:
+        app: regular-app
+    spec:
+      containers:
+      - image: nginx:latest
+        name: web-service
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    eu-ai-act.io/accuracy-monitoring: periodic
+    eu-ai-act.io/data-governance: HIPAA-COMPLIANT-001
+    eu-ai-act.io/human-oversight: on-demand
+    eu-ai-act.io/logging-level: audit
+    eu-ai-act.io/monitoring-system: splunk
+    eu-ai-act.io/quality-management: FDA-510K-2024
+    eu-ai-act.io/robustness-testing: scheduled
+    eu-ai-act.io/transparency-documentation: DOC-REF-ALT-001
+  labels:
+    app: alternative-values
+    eu-ai-act.io/risk-level: high
+  name: alternative-valid-values-pod
+  namespace: default
+spec:
+  containers:
+  - image: ai-registry/alternative-model:v1.0
+    name: ai-model

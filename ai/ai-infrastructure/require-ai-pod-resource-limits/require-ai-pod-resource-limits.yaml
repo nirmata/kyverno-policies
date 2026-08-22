@@ -1,0 +1,40 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-ai-pod-resource-limits
+  annotations:
+    policies.kyverno.io/title: Require AI Pod Resource Limits
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Ensures AI workload pods have CPU, memory, and GPU resource limits defined for cost control and DoS prevention. Applies to pods with AI/ML related labels or images.
+spec:
+  evaluation:
+    background:
+      enabled: true
+  matchConditions:
+  - name: is-ai-workload
+    expression: "(has(object.metadata.labels) && (('workload-type' in object.metadata.labels && object.metadata.labels['workload-type'] in ['ai', 'ml', 'machine-learning', 'artificial-intelligence']) || ('app.kubernetes.io/component' in object.metadata.labels && object.metadata.labels['app.kubernetes.io/component'] in ['ai', 'ml', 'training', 'inference']) || ('ai' in object.metadata.labels || 'ml' in object.metadata.labels))) || (object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])).exists(c, c.image.contains('tensorflow') || c.image.contains('pytorch') || c.image.contains('jupyter') || c.image.contains('cuda') || c.image.contains('nvidia') || c.image.contains('gpu'))"
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+  validationActions: ["Audit"]
+  validations:
+  - expression: "variables.allContainers.all(c, has(c.resources) && has(c.resources.limits) && has(c.resources.limits.cpu))"
+    message: "AI workload containers must have CPU limits defined"
+  - expression: "variables.allContainers.all(c, has(c.resources) && has(c.resources.limits) && has(c.resources.limits.memory))"
+    message: "AI workload containers must have memory limits defined"
+  - expression: "variables.allContainers.all(c, has(c.resources) && has(c.resources.requests) && has(c.resources.requests.cpu))"
+    message: "AI workload containers must have CPU requests defined"
+  - expression: "variables.allContainers.all(c, has(c.resources) && has(c.resources.requests) && has(c.resources.requests.memory))"
+    message: "AI workload containers must have memory requests defined"
+  - expression: "variables.allContainers.all(c, !has(c.resources) || !has(c.resources.limits) || !variables.gpuResourceKeys.exists(gpu, gpu in c.resources.limits) || variables.gpuResourceKeys.exists(gpu, gpu in c.resources.limits && gpu in c.resources.?requests.orValue({})))"
+    message: "Containers requesting GPU resources must also define GPU requests"
+  variables:
+  - name: allContainers
+    expression: "object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])"
+  - name: gpuResourceKeys
+    expression: "['nvidia.com/gpu', 'amd.com/gpu', 'intel.com/gpu', 'kubernetes.io/gpu']"

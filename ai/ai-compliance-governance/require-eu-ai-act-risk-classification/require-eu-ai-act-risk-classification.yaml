@@ -1,0 +1,42 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: require-eu-ai-act-risk-classification
+  annotations:
+    policies.kyverno.io/title: Require EU AI Act Risk Classification Labels
+    policies.kyverno.io/category: Regulatory Compliance
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Enforces EU AI Act Article 6 compliance by requiring AI workloads to have proper risk classification labels. All AI system pods must be labeled with ai-risk-classification containing valid EU AI Act risk categories: minimal, limited, high-risk, or unacceptable-risk.
+spec:
+  evaluation:
+    background:
+      enabled: true
+  matchConditions:
+  - name: is-ai-workload
+    expression: "has(object.metadata.labels) && ('ai-system' in object.metadata.labels || 'ml-workload' in object.metadata.labels || 'artificial-intelligence' in object.metadata.labels || object.metadata.name.contains('ai-') || object.metadata.name.contains('ml-') || namespaceObject.metadata.?labels['ai-enabled'].orValue('') == 'true')"
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+  validationActions: ["Audit"]
+  validations:
+  - expression: "variables.hasRiskLabel && variables.riskLevel in variables.validRiskLevels"
+    messageExpression: "'AI workload must have ai-risk-classification label with valid EU AI Act risk level. Valid values: ' + variables.validRiskLevels.join(', ') + '. Current value: ' + variables.riskLevel"
+  - expression: "variables.riskLevel != 'unacceptable-risk'"
+    messageExpression: "'AI systems with unacceptable-risk classification are prohibited under EU AI Act Article 5. Risk level: ' + variables.riskLevel"
+  - expression: "variables.riskLevel != 'high-risk' || (has(object.metadata.annotations) && 'eu-ai-act.compliance/conformity-assessment' in object.metadata.annotations)"
+    messageExpression: "'High-risk AI systems must include conformity assessment annotation as required by EU AI Act Article 43'"
+  - expression: "variables.namespaceRiskLevel == '' || variables.namespaceRiskLevel == variables.riskLevel || (variables.namespaceRiskLevel == 'high-risk' && variables.riskLevel in ['high-risk', 'unacceptable-risk'])"
+    messageExpression: "'Pod risk classification (' + variables.riskLevel + ') must not exceed namespace risk classification (' + variables.namespaceRiskLevel + ')'"
+  variables:
+  - name: validRiskLevels
+    expression: "['minimal', 'limited', 'high-risk', 'unacceptable-risk']"
+  - name: hasRiskLabel
+    expression: "has(object.metadata.labels) && 'ai-risk-classification' in object.metadata.labels"
+  - name: riskLevel
+    expression: "object.metadata.?labels['ai-risk-classification'].orValue('')"
+  - name: namespaceRiskLevel
+    expression: "namespaceObject.metadata.?labels['ai-risk-classification'].orValue('')"

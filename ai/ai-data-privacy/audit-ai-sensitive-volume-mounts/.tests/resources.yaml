@@ -1,0 +1,211 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: ai-trainer
+    component: training
+  name: ai-training-pod-sensitive
+  namespace: ai-workloads
+spec:
+  containers:
+  - image: tensorflow/tensorflow:latest
+    name: trainer
+    volumeMounts:
+    - mountPath: /data/training
+      name: training-data-volume
+      readOnly: true
+    - mountPath: /models/checkpoint
+      name: model-storage
+  volumes:
+  - name: training-data-volume
+    persistentVolumeClaim:
+      claimName: training-data-pvc
+  - name: model-storage
+    persistentVolumeClaim:
+      claimName: model-storage-pvc
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    tier: production
+    workload: ml-inference
+  name: ml-inference-pod-sensitive
+  namespace: ml-platform
+spec:
+  containers:
+  - image: pytorch/pytorch:latest
+    name: inference-server
+    volumeMounts:
+    - mountPath: /datasets/processed
+      name: dataset-volume
+    - mountPath: /secrets/api-keys
+      name: secrets-volume
+  initContainers:
+  - image: python:3.9
+    name: data-preprocessor
+    volumeMounts:
+    - mountPath: /training-data/raw
+      name: raw-data
+  volumes:
+  - name: dataset-volume
+    persistentVolumeClaim:
+      claimName: datasets-pvc
+  - name: secrets-volume
+    secret:
+      secretName: api-credentials
+  - name: raw-data
+    persistentVolumeClaim:
+      claimName: raw-data-pvc
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    ai.workload/type: inference
+    component: model-server
+  name: model-serving-pod-sensitive
+  namespace: ai-platform
+spec:
+  containers:
+  - image: nvidia/triton:latest
+    name: model-server
+    volumeMounts:
+    - mountPath: /model-data/repository
+      name: model-repo
+    - mountPath: /inference-data/cache
+      name: inference-cache
+  ephemeralContainers:
+  - image: busybox
+    name: debug-container
+    volumeMounts:
+    - mountPath: /data/debug
+      name: debug-data
+  volumes:
+  - name: model-repo
+    persistentVolumeClaim:
+      claimName: model-repo-pvc
+  - emptyDir: {}
+    name: inference-cache
+  - emptyDir: {}
+    name: debug-data
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: ai-research
+    environment: development
+  name: ai-research-pod-non-sensitive
+  namespace: research
+spec:
+  containers:
+  - image: jupyter/tensorflow-notebook:latest
+    name: research-notebook
+    volumeMounts:
+    - mountPath: /workspace
+      name: workspace
+    - mountPath: /var/log/jupyter
+      name: logs
+  volumes:
+  - emptyDir: {}
+    name: workspace
+  - emptyDir: {}
+    name: logs
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    ml.workload/type: training
+    stage: experimental
+  name: ml-experiment-pod-mixed
+  namespace: experiments
+spec:
+  containers:
+  - image: scikit-learn:latest
+    name: experiment-runner
+    volumeMounts:
+    - mountPath: /config
+      name: config
+    - mountPath: /datasets/experiment
+      name: experiment-data
+  volumes:
+  - configMap:
+      name: experiment-config
+    name: config
+  - name: experiment-data
+    persistentVolumeClaim:
+      claimName: experiment-data-pvc
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: web-frontend
+    tier: frontend
+  name: regular-web-app-pod
+  namespace: web-apps
+spec:
+  containers:
+  - image: nginx:latest
+    name: web-server
+    volumeMounts:
+    - mountPath: /usr/share/nginx/html
+      name: web-content
+    - mountPath: /etc/nginx/conf.d
+      name: config
+  volumes:
+  - name: web-content
+    persistentVolumeClaim:
+      claimName: web-content-pvc
+  - configMap:
+      name: nginx-config
+    name: config
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: ai-compute
+    workload: cpu-intensive
+  name: ai-pod-no-volumes
+  namespace: ai-workloads
+spec:
+  containers:
+  - image: tensorflow/tensorflow:latest
+    name: ai-worker
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    component: model-trainer
+  name: ai-pod-edge-case-paths
+  namespace: ai-platform
+spec:
+  containers:
+  - image: pytorch/pytorch:latest
+    name: trainer
+    volumeMounts:
+    - mountPath: /data-backup
+      name: data-subpath
+    - mountPath: /models
+      name: models-exact
+    - mountPath: /secrets/nested/path
+      name: secrets-nested
+  volumes:
+  - emptyDir: {}
+    name: data-subpath
+  - emptyDir: {}
+    name: models-exact
+  - name: secrets-nested
+    secret:
+      secretName: nested-secrets

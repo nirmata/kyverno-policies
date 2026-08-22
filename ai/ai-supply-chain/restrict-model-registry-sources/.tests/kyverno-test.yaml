@@ -1,0 +1,111 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: restrict-model-registry-sources-test
+policies:
+- ../restrict-model-registry-sources.yaml
+resources:
+- resources.yaml
+results:
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - approved-tensorflow-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - approved-kubeflow-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - approved-nvidia-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - approved-multiple-containers-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - approved-with-init-containers
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - ml-namespace/approved-azureml-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - approved-modelmesh-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - approved-redhat-ubi-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - ephemeral-container-approved-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - unapproved-dockerhub-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - unapproved-custom-registry-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - mixed-approved-unapproved-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - unapproved-init-container-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - unapproved-gcr-non-kubeflow-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - unapproved-multiple-containers-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - no-registry-prefix-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-model-registry-sources
+  resources:
+  - ephemeral-container-unapproved-pod
+  result: fail
+  rule: ""

@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    mcp.auth/method: oauth2
+  labels:
+    app: mcp-server
+  name: mcp-auth-annotation-pod
+  namespace: default
+spec:
+  containers:
+  - image: registry.example.com/mcp-server:1.0.0
+    name: mcp-server
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: mcp-server
+  name: mcp-auth-env-pod
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: MCP_AUTH_METHOD
+      value: api-key
+    image: registry.example.com/mcp-server:1.0.0
+    name: mcp-server
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: mcp-server
+  name: mcp-auth-secret-pod
+  namespace: default
+spec:
+  containers:
+  - env:
+    - name: MCP_API_KEY
+      valueFrom:
+        secretKeyRef:
+          key: api-key
+          name: mcp-credentials
+    image: registry.example.com/mcp-server:1.0.0
+    name: mcp-server
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: mcp-server
+  name: mcp-auth-tls-pod
+  namespace: default
+spec:
+  containers:
+  - image: registry.example.com/mcp-server:1.0.0
+    name: mcp-server
+    volumeMounts:
+    - mountPath: /etc/tls
+      name: tls-certs
+  volumes:
+  - name: tls-certs
+    secret:
+      secretName: mcp-tls-secret
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: mcp-server
+  name: mcp-no-auth-pod
+  namespace: default
+spec:
+  containers:
+  - image: registry.example.com/mcp-server:1.0.0
+    name: mcp-server
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    component: mcp-server
+  name: mcp-component-no-auth-pod
+  namespace: default
+spec:
+  containers:
+  - image: registry.example.com/mcp-server:2.0.0
+    name: mcp-server
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: regular-app
+  name: non-mcp-pod
+  namespace: default
+spec:
+  containers:
+  - image: nginx:1.21
+    name: nginx

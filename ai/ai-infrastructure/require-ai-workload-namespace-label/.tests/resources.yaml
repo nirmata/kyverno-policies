@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    ai-workload: "true"
+  name: ai-training
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    ai-workload: "true"
+  name: ml-inference
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    ai-workload: "true"
+  name: gpu-compute
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    ai-workload: enabled
+  labels:
+    ai-workload: "true"
+  name: model-serving
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    ml-workload: pytorch
+  labels:
+    ai-workload: "true"
+  name: data-pipeline
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-research
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    ai-workload: "false"
+  name: ml-development
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    workload-type: ai
+  name: gpu-cluster
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    ai-workload: tensorflow
+  name: model-training
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    ml-workload: inference
+  labels:
+    env: production
+  name: inference-service
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: regular-app
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: web
+  name: web-frontend

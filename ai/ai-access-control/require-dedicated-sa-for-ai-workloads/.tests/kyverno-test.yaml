@@ -1,0 +1,111 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: require-dedicated-sa-for-ai-workloads-test
+policies:
+- ../require-dedicated-sa-for-ai-workloads.yaml
+resources:
+- resources.yaml
+results:
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - ai-workload-with-dedicated-sa
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - ml-workload-with-dedicated-sa
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - machine-learning-workload-pass
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - artificial-intelligence-workload-pass
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - ai-label-key-only-pass
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - ml-label-key-only-pass
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - machine-learning-label-key-pass
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - artificial-intelligence-label-key-pass
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - ai-workload-default-sa-fail
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - ml-workload-default-sa-fail
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - machine-learning-no-sa-fail
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - artificial-intelligence-implicit-default-fail
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - ai-label-key-default-sa-fail
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - ml-label-key-no-sa-fail
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - regular-workload-skip
+  result: skip
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - database-workload-skip
+  result: skip
+  rule: ""
+- kind: Pod
+  policy: require-dedicated-sa-for-ai-workloads
+  resources:
+  - no-labels-skip
+  result: skip
+  rule: ""

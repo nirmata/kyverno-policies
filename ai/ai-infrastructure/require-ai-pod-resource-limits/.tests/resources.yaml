@@ -1,0 +1,260 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    workload-type: ai
+  name: ai-workload-complete-resources
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/tensorflow:latest
+    name: tensorflow-container
+    resources:
+      limits:
+        cpu: "2"
+        memory: 4Gi
+      requests:
+        cpu: "1"
+        memory: 2Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: training
+  name: ml-workload-with-gpu
+  namespace: default
+spec:
+  containers:
+  - image: pytorch/pytorch:latest
+    name: pytorch-container
+    resources:
+      limits:
+        cpu: "4"
+        memory: 16Gi
+        nvidia.com/gpu: "1"
+      requests:
+        cpu: "2"
+        memory: 8Gi
+        nvidia.com/gpu: "1"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    workload-type: machine-learning
+  name: ai-workload-missing-cpu-limits
+  namespace: default
+spec:
+  containers:
+  - image: jupyter/tensorflow-notebook:latest
+    name: jupyter-container
+    resources:
+      limits:
+        memory: 4Gi
+      requests:
+        cpu: "1"
+        memory: 2Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    ai: enabled
+  name: ai-workload-missing-memory-limits
+  namespace: default
+spec:
+  containers:
+  - image: nvidia/cuda:latest
+    name: cuda-container
+    resources:
+      limits:
+        cpu: "2"
+      requests:
+        cpu: "1"
+        memory: 2Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    ml: training
+  name: ai-workload-missing-cpu-requests
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/serving:latest
+    name: tensorflow-container
+    resources:
+      limits:
+        cpu: "2"
+        memory: 4Gi
+      requests:
+        memory: 2Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    workload-type: artificial-intelligence
+  name: ai-workload-missing-memory-requests
+  namespace: default
+spec:
+  containers:
+  - image: pytorch/pytorch:latest
+    name: pytorch-container
+    resources:
+      limits:
+        cpu: "2"
+        memory: 4Gi
+      requests:
+        cpu: "1"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: inference
+  name: ai-workload-gpu-without-requests
+  namespace: default
+spec:
+  containers:
+  - image: nvidia/tensorflow:latest
+    name: gpu-container
+    resources:
+      limits:
+        cpu: "4"
+        memory: 16Gi
+        nvidia.com/gpu: "2"
+      requests:
+        cpu: "2"
+        memory: 8Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    workload-type: ai
+  name: ai-workload-no-resources
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/tensorflow:latest
+    name: tensorflow-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    workload-type: ml
+  name: ai-workload-with-init-containers
+  namespace: default
+spec:
+  containers:
+  - image: pytorch/pytorch:latest
+    name: training-container
+    resources:
+      limits:
+        cpu: "4"
+        memory: 8Gi
+      requests:
+        cpu: "2"
+        memory: 4Gi
+  initContainers:
+  - image: tensorflow/tensorflow:latest
+    name: data-loader
+    resources:
+      limits:
+        cpu: "1"
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app.kubernetes.io/component: ai
+  name: ai-workload-init-container-missing-limits
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/serving:latest
+    name: inference-container
+    resources:
+      limits:
+        cpu: "2"
+        memory: 4Gi
+      requests:
+        cpu: "1"
+        memory: 2Gi
+  initContainers:
+  - image: jupyter/base-notebook:latest
+    name: model-downloader
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: web-server
+  name: non-ai-workload
+  namespace: default
+spec:
+  containers:
+  - image: nginx:latest
+    name: nginx-container
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ai-workload-amd-gpu
+  namespace: default
+spec:
+  containers:
+  - image: tensorflow/tensorflow:latest-gpu
+    name: gpu-container
+    resources:
+      limits:
+        amd.com/gpu: "1"
+        cpu: "4"
+        memory: 16Gi
+      requests:
+        amd.com/gpu: "1"
+        cpu: "2"
+        memory: 8Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ai-workload-intel-gpu
+  namespace: default
+spec:
+  containers:
+  - image: pytorch/pytorch:latest
+    name: pytorch-container
+    resources:
+      limits:
+        cpu: "2"
+        intel.com/gpu: "1"
+        memory: 8Gi
+      requests:
+        cpu: "1"
+        intel.com/gpu: "1"
+        memory: 4Gi

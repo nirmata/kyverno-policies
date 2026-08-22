@@ -1,0 +1,38 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: prevent-pii-in-env-vars
+  annotations:
+    policies.kyverno.io/title: Prevent PII in Environment Variables
+    policies.kyverno.io/category: Data Protection
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Prevents personally identifiable information (PII) from being stored in environment variables for AI pipeline pods. Validates that environment variables do not contain email addresses, phone numbers, SSNs, or credit card numbers.
+spec:
+  evaluation:
+    background:
+      enabled: true
+  matchConditions:
+  - name: is-ai-pipeline-pod
+    expression: "has(object.metadata.labels) && ('app.kubernetes.io/component' in object.metadata.labels && object.metadata.labels['app.kubernetes.io/component'] in ['ai-pipeline', 'ml-pipeline', 'data-pipeline'] || 'workload.type' in object.metadata.labels && object.metadata.labels['workload.type'] in ['ai', 'ml', 'data-processing'] || 'pipeline.type' in object.metadata.labels)"
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["pods"]
+  validationActions: ["Audit"]
+  validations:
+  - expression: "variables.allContainers.all(container, container.?env.orValue([]).all(envVar, !string(envVar.?value.orValue('')).contains('@') || !string(envVar.?value.orValue('')).matches('[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}')))"
+    message: "Environment variables must not contain email addresses in AI pipeline containers"
+  - expression: "variables.allContainers.all(container, container.?env.orValue([]).all(envVar, !string(envVar.?value.orValue('')).matches('.*[0-9]{3}[-\\\\s]?[0-9]{3}[-\\\\s]?[0-9]{4}.*')))"
+    message: "Environment variables must not contain phone numbers in AI pipeline containers"
+  - expression: "variables.allContainers.all(container, container.?env.orValue([]).all(envVar, !string(envVar.?value.orValue('')).matches('.*[0-9]{3}-?[0-9]{2}-?[0-9]{4}.*')))"
+    message: "Environment variables must not contain Social Security Numbers in AI pipeline containers"
+  - expression: "variables.allContainers.all(container, container.?env.orValue([]).all(envVar, !string(envVar.?value.orValue('')).matches('.*[0-9]{4}[-\\\\s]?[0-9]{4}[-\\\\s]?[0-9]{4}[-\\\\s]?[0-9]{4}.*')))"
+    message: "Environment variables must not contain credit card numbers in AI pipeline containers"
+  - expression: "variables.allContainers.all(container, container.?envFrom.orValue([]).all(envFrom, !has(envFrom.secretRef)))"
+    message: "PII-sensitive workloads must not load entire secrets as environment variables via envFrom.secretRef"
+  variables:
+  - name: allContainers
+    expression: "object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])"

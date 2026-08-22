@@ -1,0 +1,81 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: require-ai-workload-namespace-label-test
+policies:
+- ../require-ai-workload-namespace-label.yaml
+resources:
+- resources.yaml
+results:
+- kind: Namespace
+  policy: require-ai-workload-namespace-label
+  resources:
+  - ai-training
+  result: pass
+  rule: ""
+- kind: Namespace
+  policy: require-ai-workload-namespace-label
+  resources:
+  - ml-inference
+  result: pass
+  rule: ""
+- kind: Namespace
+  policy: require-ai-workload-namespace-label
+  resources:
+  - gpu-compute
+  result: pass
+  rule: ""
+- kind: Namespace
+  policy: require-ai-workload-namespace-label
+  resources:
+  - model-serving
+  result: pass
+  rule: ""
+- kind: Namespace
+  policy: require-ai-workload-namespace-label
+  resources:
+  - data-pipeline
+  result: pass
+  rule: ""
+- kind: Namespace
+  policy: require-ai-workload-namespace-label
+  resources:
+  - ai-research
+  result: fail
+  rule: ""
+- kind: Namespace
+  policy: require-ai-workload-namespace-label
+  resources:
+  - ml-development
+  result: fail
+  rule: ""
+- kind: Namespace
+  policy: require-ai-workload-namespace-label
+  resources:
+  - gpu-cluster
+  result: fail
+  rule: ""
+- kind: Namespace
+  policy: require-ai-workload-namespace-label
+  resources:
+  - model-training
+  result: fail
+  rule: ""
+- kind: Namespace
+  policy: require-ai-workload-namespace-label
+  resources:
+  - inference-service
+  result: fail
+  rule: ""
+- kind: Namespace
+  policy: require-ai-workload-namespace-label
+  resources:
+  - regular-app
+  result: skip
+  rule: ""
+- kind: Namespace
+  policy: require-ai-workload-namespace-label
+  resources:
+  - web-frontend
+  result: skip
+  rule: ""

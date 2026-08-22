@@ -1,0 +1,245 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: ai
+    app.kubernetes.io/name: model-server
+  name: ai-model-server
+  namespace: ai-workloads
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ai-model-server
+  template:
+    metadata:
+      labels:
+        app: ai-model-server
+    spec:
+      containers:
+      - image: tensorflow/serving:latest
+        name: model-server
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: ml
+    environment: production
+  name: ml-training-job
+  namespace: ml-platform
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: ml-training-job
+  template:
+    metadata:
+      labels:
+        app: ml-training-job
+    spec:
+      containers:
+      - image: pytorch/pytorch:latest
+        name: trainer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: model-serving
+    tier: backend
+  name: inference-service
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: inference-service
+  template:
+    metadata:
+      labels:
+        app: inference-service
+    spec:
+      containers:
+      - image: onnxruntime/onnxruntime:latest
+        name: inference
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    version: v1.0
+    workload.type: ai
+  name: workload-ai
+  namespace: ai-workloads
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: workload-ai
+  template:
+    metadata:
+      labels:
+        app: workload-ai
+    spec:
+      containers:
+      - image: nvidia/cuda:11.8-runtime-ubuntu20.04
+        name: ai-worker
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: ml-inference
+    workload.type: inference
+  name: ml-inference
+  namespace: production
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: ml-inference
+  template:
+    metadata:
+      labels:
+        app: ml-inference
+    spec:
+      containers:
+      - image: tritonserver:latest
+        name: inference
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    ai.serving/enabled: "true"
+    app.kubernetes.io/name: ai-serving
+  name: ai-serving-enabled
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ai-serving-enabled
+  template:
+    metadata:
+      labels:
+        app: ai-serving-enabled
+    spec:
+      containers:
+      - image: tensorflow/serving:latest
+        name: serving
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: ai
+  name: single-replica-ai
+  namespace: ai-workloads
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: single-replica-ai
+  template:
+    metadata:
+      labels:
+        app: single-replica-ai
+    spec:
+      containers:
+      - image: tensorflow/tensorflow:latest
+        name: ai-worker
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: no-labels-deployment
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: no-labels-deployment
+  template:
+    metadata:
+      labels:
+        app: no-labels-deployment
+    spec:
+      containers:
+      - image: nginx:latest
+        name: web
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: web
+    app.kubernetes.io/name: webapp
+  name: wrong-component-label
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wrong-component-label
+  template:
+    metadata:
+      labels:
+        app: wrong-component-label
+    spec:
+      containers:
+      - image: nginx:latest
+        name: web
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    ai.serving/enabled: "false"
+    app.kubernetes.io/name: disabled-ai
+  name: ai-serving-disabled
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ai-serving-disabled
+  template:
+    metadata:
+      labels:
+        app: ai-serving-disabled
+    spec:
+      containers:
+      - image: nginx:latest
+        name: app
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: ai
+  name: no-replicas-field
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: no-replicas-field
+  template:
+    metadata:
+      labels:
+        app: no-replicas-field
+    spec:
+      containers:
+      - image: tensorflow/tensorflow:latest
+        name: ai-worker

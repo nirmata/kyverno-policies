@@ -1,0 +1,99 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: restrict-gpu-workload-privileges-test
+policies:
+- ../restrict-gpu-workload-privileges.yaml
+resources:
+- resources.yaml
+results:
+- kind: Pod
+  policy: restrict-gpu-workload-privileges
+  resources:
+  - valid-gpu-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: restrict-gpu-workload-privileges
+  resources:
+  - privileged-gpu-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-gpu-workload-privileges
+  resources:
+  - host-network-gpu-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-gpu-workload-privileges
+  resources:
+  - host-pid-gpu-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-gpu-workload-privileges
+  resources:
+  - host-ipc-gpu-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-gpu-workload-privileges
+  resources:
+  - invalid-capabilities-gpu-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-gpu-workload-privileges
+  resources:
+  - invalid-hostpath-gpu-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-gpu-workload-privileges
+  resources:
+  - valid-gpu-hostpath-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: restrict-gpu-workload-privileges
+  resources:
+  - privilege-escalation-gpu-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-gpu-workload-privileges
+  resources:
+  - root-user-gpu-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-gpu-workload-privileges
+  resources:
+  - mixed-containers-gpu-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: restrict-gpu-workload-privileges
+  resources:
+  - multi-gpu-valid-pod
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: restrict-gpu-workload-privileges
+  resources:
+  - non-gpu-pod
+  result: skip
+  rule: ""
+- kind: Pod
+  policy: restrict-gpu-workload-privileges
+  resources:
+  - init-container-gpu-pod
+  result: fail
+  rule: ""
+- kind: Pod
+  policy: restrict-gpu-workload-privileges
+  resources:
+  - valid-allowed-caps-gpu-pod
+  result: pass
+  rule: ""

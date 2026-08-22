@@ -1,0 +1,57 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: audit-ai-sensitive-volume-mounts-test
+policies:
+- ../audit-ai-sensitive-volume-mounts.yaml
+resources:
+- resources.yaml
+results:
+- kind: Pod
+  policy: audit-ai-sensitive-volume-mounts
+  resources:
+  - ai-workloads/ai-training-pod-sensitive
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: audit-ai-sensitive-volume-mounts
+  resources:
+  - ml-platform/ml-inference-pod-sensitive
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: audit-ai-sensitive-volume-mounts
+  resources:
+  - ai-platform/model-serving-pod-sensitive
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: audit-ai-sensitive-volume-mounts
+  resources:
+  - research/ai-research-pod-non-sensitive
+  result: skip
+  rule: ""
+- kind: Pod
+  policy: audit-ai-sensitive-volume-mounts
+  resources:
+  - experiments/ml-experiment-pod-mixed
+  result: pass
+  rule: ""
+- kind: Pod
+  policy: audit-ai-sensitive-volume-mounts
+  resources:
+  - web-apps/regular-web-app-pod
+  result: skip
+  rule: ""
+- kind: Pod
+  policy: audit-ai-sensitive-volume-mounts
+  resources:
+  - ai-workloads/ai-pod-no-volumes
+  result: skip
+  rule: ""
+- kind: Pod
+  policy: audit-ai-sensitive-volume-mounts
+  resources:
+  - ai-platform/ai-pod-edge-case-paths
+  result: pass
+  rule: ""

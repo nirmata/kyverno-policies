@@ -1,0 +1,38 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: restrict-ai-workload-egress
+  annotations:
+    policies.kyverno.io/title: Restrict AI Workload Network Egress
+    policies.kyverno.io/category: AI Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Restricts network egress from AI workloads to approved external data endpoints only, preventing unauthorized data access and exfiltration.
+spec:
+  evaluation:
+    background:
+      enabled: true
+  matchConditions:
+  - name: is-ai-namespace
+    expression: "namespaceObject.metadata.?labels['workload-type'].orValue('') == 'ai' || namespaceObject.metadata.?labels['ai-workload'].orValue('') == 'true' || namespaceObject.metadata.name.contains('ai-') || namespaceObject.metadata.name.contains('-ai')"
+  matchConstraints:
+    resourceRules:
+    - apiGroups: ["networking.k8s.io"]
+      apiVersions: ["v1"]
+      operations: ["CREATE", "UPDATE"]
+      resources: ["networkpolicies"]
+  validationActions: ["Audit"]
+  validations:
+  - expression: "size(variables.egressRules) == 0 || variables.hasValidEgress"
+    messageExpression: "'NetworkPolicy egress rules in AI namespace must only allow traffic to internal workloads or approved internal CIDR ranges. Approved internal CIDRs: ' + variables.approvedCIDRs.join(', ')"
+  - expression: "object.spec.?policyTypes.orValue([]).exists(type, type == 'Egress') || size(variables.egressRules) == 0"
+    message: "NetworkPolicy in AI namespace must explicitly define Egress policy type when egress rules are specified"
+  - expression: "!has(object.spec.egress) || object.spec.egress.all(rule, !has(rule.to) || rule.to.size() > 0)"
+    message: "Empty egress 'to' field allows all traffic - this is not permitted for AI workloads"
+  variables:
+  - name: approvedCIDRs
+    expression: '["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]'
+  - name: egressRules
+    expression: "object.spec.?egress.orValue([])"
+  - name: hasValidEgress
+    expression: "variables.egressRules.all(rule, !has(rule.to) || rule.to.all(peer, has(peer.namespaceSelector) || has(peer.podSelector) || (has(peer.ipBlock) && peer.ipBlock.cidr in variables.approvedCIDRs)))"
