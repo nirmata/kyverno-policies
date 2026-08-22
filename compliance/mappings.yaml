@@ -359,7 +359,7 @@ policies:
     nsa-cisa:       ["Sec.6.3"]
     nist-800-53:    ["SC-6"]
 
-  require-pod-requests-limits:
+  require-requests-limits:
     path: best-practices-k8s/require_pod_requests_limits/
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
     soc2:           ["A1.1"]

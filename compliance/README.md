@@ -231,7 +231,7 @@ Maps to: RBAC (`Art.21(2)(i)` — access control), NetworkPolicy + TLS (`Art.21(
 
 Maps to: RBAC (`Art.9` — ICT system protection), TLS + secret controls (`Art.9` — encryption), probes and rolling update strategy (`Art.9` — resilience), resource limits (`Art.9` — availability), NetworkPolicy (`Art.9` — network segmentation).
 
-Best existing fit is the `best-practices-k8s` library — `require-probes`, `require-pod-requests-limits`, `require-rolling-update-strategy`, and `require-pod-antiaffinity` directly address DORA's operational resilience requirements.
+Best existing fit is the `best-practices-k8s` library — `require-pod-probes`, `require-requests-limits`, `require-rolling-update-strategy`, and `require-pod-antiaffinity` directly address DORA's operational resilience requirements.
 
 **Not enforceable via admission control:** ICT risk management framework, operational resilience testing (TLPT), third-party monitoring, incident classification/reporting.
 
