@@ -198,7 +198,7 @@ The bundles reference these top-level policy sets without moving or duplicating 
 | Library | Path | Controls |
 |---------|------|---------|
 | Pod Security Standards (Baseline) | `pod-security/baseline/` | CIS 5.2.x |
-| Pod Security Standards (Restricted) | `pod-security/restricted/` | CIS 5.2.x, 5.7.x |
+| Pod Security Standards (Restricted) | `pod-security/restricted/` | CIS 5.2.x, 5.6.2 |
 | RBAC Best Practices | `rbac-best-practices/` | CIS 4.1.x / 5.1.x |
 | Kubernetes Best Practices | `best-practices-k8s/` | CIS 4.5.x, 5.x |
 | PCI-DSS | `pci-dss/` | PCI 1.x, 4.x, 7.x, 8.x |

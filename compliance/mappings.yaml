@@ -101,6 +101,7 @@ policies:
 
   require-pss-labels:
     path: compliance/cis/common/require-pss-labels/
+    cluster_scoped: true  # matches Namespace (cluster-scoped resource); must run in cluster-wide scan pass
     standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53, rbi]
     cis-kubernetes: ["5.2.1"]
     cis-gke:        ["4.2.1"]
@@ -608,13 +609,11 @@ policies:
 
   require-namespace-quota:
     path: multitenancy-benchmarks/require-namespace-quota/
-    cluster_scoped: true
     standards:      [rbi]
     rbi:            ["ITGRC.11(a)", "ITGRC.11(b)"]
 
   require-quota-for-all-objects:
     path: multitenancy-benchmarks/require-quota-for-all-objects/
-    cluster_scoped: true
     standards:      [rbi]
     rbi:            ["ITGRC.11(a)", "ITGRC.11(b)"]
 
