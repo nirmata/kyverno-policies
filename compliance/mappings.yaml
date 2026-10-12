@@ -13,399 +13,560 @@ metadata:
 # cis-kubernetes: 1.x (control plane), 2.x (etcd), 3.x (control plane config), 4.x (worker nodes)
 # These controls require aws CLI, SSH, or kubeadm access and are documented in the skills/cis-benchmark-scan skill.
 
+# ── Standard metadata ─────────────────────────────────────────────────────────
+# display_name / prefer_vpol / sources are read by nctl and policies-service; domain / type are
+# used by the Nirmata Control Hub standards picker (ignored by nctl).
+standards:
+  cis-aks:        { display_name: "CIS Azure AKS Benchmark v2.0.0", domain: [kubernetes, cloud-infra] }
+  cis-eks:        { display_name: "CIS Amazon EKS Benchmark v2.0.0", domain: [kubernetes, cloud-infra] }
+  cis-gke:        { display_name: "CIS Google GKE Benchmark v2.0.0", domain: [kubernetes, cloud-infra] }
+  cis-kubernetes: { display_name: "CIS Kubernetes Benchmark v2.0.1", domain: [kubernetes] }
+  iso27001:       { display_name: "ISO 27001", domain: [governance] }
+  nist-800-53:    { display_name: "NIST SP 800-53", domain: [governance] }
+  nsa-cisa:       { display_name: "NSA/CISA Kubernetes Hardening", domain: [kubernetes] }
+  pci-dss:        { display_name: "PCI DSS", domain: [data-protection, governance] }
+  pss-baseline:   { display_name: "Pod Security Standards - Baseline", domain: [kubernetes] }
+  pss-restricted: { display_name: "Pod Security Standards - Restricted", domain: [kubernetes] }
+  rbac-best-practices: { display_name: "RBAC Best Practices", domain: [kubernetes, identity-rbac] }
+  rbi:
+    display_name: "RBI Master Directions (IT Governance + IT Outsourcing)"
+    prefer_vpol: true
+    type: industry
+    domain: [governance]
+    sources:
+      - id: ITGRC
+        title: "RBI (Information Technology Governance, Risk, Controls and Assurance Practices) Directions, 2023"
+        ref: "RBI/DoS/2023-24/107, DoS.CO.CSITEG/SEC.7/31.01.015/2023-24 (07-Nov-2023)"
+        effective: "2024-04-01"
+      - id: ITOS
+        title: "RBI (Outsourcing of Information Technology Services) Directions, 2023"
+        ref: "RBI/2023-24/102, DoS.CO.CSITEG/SEC.1/31.01.015/2023-24 (10-Apr-2023)"
+        effective: "2023-10-01"
+  soc2:           { display_name: "SOC 2 Type II", domain: [governance] }
+
 policies:
   # --- CIS common policies (compliance/cis/) ---
 
   restrict-cluster-admin-binding:
     path: compliance/cis/common/restrict-cluster-admin-binding/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
+    cluster_scoped: true
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53, rbi]
     cis-eks:        ["4.1.1"]
     cis-kubernetes: ["5.1.1"]
+    cis-aks:        ["4.1.1"]
+    cis-gke:        ["4.1.1"]
     soc2:           ["CC6.1", "CC6.3"]
     iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.3.1"]
     nist-800-53:    ["AC-2", "AC-6"]
+    rbi:            ["ITGRC.19(a)", "ITGRC.19(b)", "ITGRC.23(b)"]
 
   restrict-secret-role-access:
     path: compliance/cis/common/restrict-secret-role-access/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
+    cluster_scoped: true
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53, rbi]
     cis-eks:        ["4.1.2"]
     cis-kubernetes: ["5.1.2"]
+    cis-aks:        ["4.1.2"]
+    cis-gke:        ["4.1.2"]
     soc2:           ["CC6.3"]
     nsa-cisa:       ["Sec.1.6", "Sec.3.1"]
     nist-800-53:    ["AC-3", "IA-5"]
+    rbi:            ["ITGRC.19(a)", "ITGRC.23(d)", "ITOS.17(d)"]
 
   restrict-pod-creation-access:
     path: compliance/cis/common/restrict-pod-creation-access/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
+    cluster_scoped: true
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53, rbi]
     cis-eks:        ["4.1.4"]
     cis-kubernetes: ["5.1.4"]
+    cis-aks:        ["4.1.4"]
     soc2:           ["CC6.3"]
     nsa-cisa:       ["Sec.3.1"]
     nist-800-53:    ["AC-3", "AC-6"]
+    rbi:            ["ITGRC.19(a)", "ITGRC.23(b)"]
 
   require-network-policy:
     path: compliance/cis/common/require-network-policy/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
-    cis-eks:        ["4.3.1"]
+    cluster_scoped: true  # matches Namespace (cluster-scoped resource); must run in cluster-wide scan pass
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53, rbi]
+    cis-eks:        ["4.3.2"]
     cis-kubernetes: ["5.3.2"]
+    cis-aks:        ["4.4.2"]
+    cis-gke:        ["4.3.2"]
     soc2:           ["CC6.6", "A1.2"]
     nsa-cisa:       ["Sec.2.1"]
     nist-800-53:    ["SC-7"]
+    rbi:            ["ITGRC.23(d)", "ITOS.17(g)"]
 
   require-pss-labels:
     path: compliance/cis/common/require-pss-labels/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53]
-    cis-eks:        ["4.4.2"]
-    cis-kubernetes: ["5.7.1"]
+    cluster_scoped: true  # matches Namespace (cluster-scoped resource); must run in cluster-wide scan pass
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, nsa-cisa, nist-800-53, rbi]
+    cis-kubernetes: ["5.2.1"]
+    cis-gke:        ["4.2.1"]
     nsa-cisa:       ["Sec.1.1"]
     nist-800-53:    ["CM-6", "CM-7"]
+    rbi:            ["ITGRC.23(a)", "ITGRC.25"]
 
   require-ingress-tls:
     path: compliance/cis/common/require-ingress-tls/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, pci-dss, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.4.5"]
-    cis-kubernetes: ["5.7.5"]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, pci-dss, nsa-cisa, nist-800-53, rbi]
+    cis-eks:        ["5.4.4"]
+    cis-aks:        ["5.4.5"]
+    cis-gke:        ["5.6.7"]
     soc2:           ["CC6.7"]
     pci-dss:        ["4.1"]
     nsa-cisa:       ["Sec.2.2"]
     nist-800-53:    ["SC-8", "AC-17"]
+    rbi:            ["ITGRC.16", "ITGRC.23(d)"]
 
   # --- CIS EKS-specific policies (compliance/cis/eks/) ---
 
   restrict-secrets-as-env-vars:
     path: compliance/cis/eks/restrict-secrets-as-env-vars/
-    standards:      [cis-eks, soc2, iso27001, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.x"]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53, rbi]
+    cis-eks:        ["4.4.1"]
+    cis-kubernetes: ["5.4.1"]
+    cis-aks:        ["4.5.1"]
+    cis-gke:        ["4.4.1"]
     soc2:           ["CC6.7"]
     iso27001:       ["A.10.1.1"]
     nsa-cisa:       ["Sec.1.6"]
     nist-800-53:    ["IA-5", "SC-28"]
+    rbi:            ["ITGRC.23(d)", "ITOS.17(c)"]
 
   # --- Pod Security Standards (pod-security/baseline/) ---
 
   disallow-capabilities:
     path: pod-security/baseline/disallow-capabilities/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.9"]
+    vpol_path:      pod-security-vpol/baseline/disallow-capabilities/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53, rbi, pss-baseline]
     cis-kubernetes: ["5.2.9"]
+    cis-aks:        ["4.6.2"]
+    cis-gke:        ["4.6.3"]
     soc2:           ["CC6.1"]
     iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["AC-6", "CM-7"]
+    rbi:            ["ITGRC.19(b)", "ITGRC.23(a)"]
+    pss-baseline:   ["1"]
 
   disallow-host-namespaces:
     path: pod-security/baseline/disallow-host-namespaces/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.4"]
-    cis-kubernetes: ["5.2.4"]
+    vpol_path:      pod-security-vpol/baseline/disallow-host-namespaces/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53, rbi, pss-baseline]
+    cis-eks:        ["4.2.2", "4.2.3", "4.2.4"]
+    cis-kubernetes: ["5.2.3", "5.2.4", "5.2.5"]
+    cis-aks:        ["4.2.2", "4.2.3", "4.2.4"]
+    cis-gke:        ["4.2.1"]
     soc2:           ["CC6.1"]
     iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.1.3"]
     nist-800-53:    ["SC-39", "CM-7"]
+    rbi:            ["ITGRC.23(c)"]
+    pss-baseline:   ["2"]
 
   disallow-host-path:
     path: pod-security/baseline/disallow-host-path/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.6"]
-    cis-kubernetes: ["5.2.6"]
+    vpol_path:      pod-security-vpol/baseline/disallow-host-path/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53, rbi, pss-baseline]
+    cis-kubernetes: ["5.2.11"]
+    cis-gke:        ["4.2.1"]
     soc2:           ["CC6.1"]
     iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.1.3"]
     nist-800-53:    ["SC-39", "CM-7"]
+    rbi:            ["ITGRC.23(c)", "ITGRC.23(d)"]
+    pss-baseline:   ["3"]
 
   disallow-host-ports:
     path: pod-security/baseline/disallow-host-ports/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.7"]
-    cis-kubernetes: ["5.2.7"]
+    vpol_path:      pod-security-vpol/baseline/disallow-host-ports/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53, rbi, pss-baseline]
+    cis-kubernetes: ["5.2.12"]
+    cis-gke:        ["4.2.1"]
     soc2:           ["CC6.1"]
     iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.2.1"]
     nist-800-53:    ["SC-7", "CM-7"]
+    rbi:            ["ITGRC.23(c)", "ITGRC.23(d)"]
+    pss-baseline:   ["4"]
 
   disallow-host-process:
     path: pod-security/baseline/disallow-host-process/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.4"]
-    cis-kubernetes: ["5.2.4"]
+    vpol_path:      pod-security-vpol/baseline/disallow-host-process/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53, rbi, pss-baseline]
+    cis-kubernetes: ["5.2.10"]
+    cis-gke:        ["4.2.1"]
     soc2:           ["CC6.1"]
     iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.1.3"]
     nist-800-53:    ["SC-39", "CM-7"]
+    rbi:            ["ITGRC.23(c)"]
+    pss-baseline:   ["6"]
 
   disallow-privileged-containers:
     path: pod-security/baseline/disallow-privileged-containers/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.2"]
+    vpol_path:      pod-security-vpol/baseline/disallow-privileged-containers/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53, rbi, pss-baseline]
+    cis-eks:        ["4.2.1"]
     cis-kubernetes: ["5.2.2"]
+    cis-aks:        ["4.2.1"]
+    cis-gke:        ["4.2.1"]
     soc2:           ["CC6.1"]
     iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.1.3"]
     nist-800-53:    ["AC-6", "CM-7"]
+    rbi:            ["ITGRC.19(b)", "ITGRC.23(a)", "ITGRC.23(c)"]
+    pss-baseline:   ["7"]
 
   disallow-proc-mount:
     path: pod-security/baseline/disallow-proc-mount/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.5"]
-    cis-kubernetes: ["5.2.5"]
+    vpol_path:      pod-security-vpol/baseline/disallow-proc-mount/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53, rbi, pss-baseline]
+    cis-kubernetes: ["5.6.3"]
+    cis-aks:        ["4.6.2"]
+    cis-gke:        ["4.6.3"]
     soc2:           ["CC6.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["CM-7"]
+    rbi:            ["ITGRC.23(c)"]
+    pss-baseline:   ["8"]
 
   disallow-selinux:
     path: pod-security/baseline/disallow-selinux/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.3"]
-    cis-kubernetes: ["5.2.3"]
+    vpol_path:      pod-security-vpol/baseline/disallow-selinux/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53, rbi, pss-baseline]
+    cis-kubernetes: ["5.6.3"]
+    cis-aks:        ["4.6.2"]
+    cis-gke:        ["4.6.3"]
     soc2:           ["CC6.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["CM-7"]
+    rbi:            ["ITGRC.23(a)"]
+    pss-baseline:   ["9"]
 
   restrict-apparmor-profiles:
     path: pod-security/baseline/restrict-apparmor-profiles/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.3"]
-    cis-kubernetes: ["5.2.3"]
+    vpol_path:      pod-security-vpol/baseline/restrict-apparmor-profiles/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53, rbi, pss-baseline]
+    cis-kubernetes: ["5.6.3"]
+    cis-aks:        ["4.6.2"]
+    cis-gke:        ["4.6.3"]
     soc2:           ["CC6.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["CM-7"]
+    rbi:            ["ITGRC.23(a)"]
+    pss-baseline:   ["10"]
 
   restrict-seccomp:
     path: pod-security/baseline/restrict-seccomp/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.11"]
-    cis-kubernetes: ["5.2.11"]
+    vpol_path:      pod-security-vpol/baseline/restrict-seccomp/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53, rbi, pss-baseline]
+    cis-kubernetes: ["5.6.2"]
+    cis-aks:        ["4.6.2"]
+    cis-gke:        ["4.6.2"]
     soc2:           ["CC6.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["CM-7", "SI-3"]
+    rbi:            ["ITGRC.23(a)"]
+    pss-baseline:   ["11"]
 
   restrict-sysctls:
     path: pod-security/baseline/restrict-sysctls/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.10"]
-    cis-kubernetes: ["5.2.10"]
+    vpol_path:      pod-security-vpol/baseline/restrict-sysctls/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53, rbi, pss-baseline]
+    cis-kubernetes: ["5.6.3"]
+    cis-aks:        ["4.6.2"]
+    cis-gke:        ["4.6.3"]
     soc2:           ["CC6.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["CM-7"]
+    rbi:            ["ITGRC.23(a)"]
+    pss-baseline:   ["12"]
 
   # --- Pod Security Standards (pod-security/restricted/) ---
 
   disallow-capabilities-strict:
     path: pod-security/restricted/disallow-capabilities-strict/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.9"]
-    cis-kubernetes: ["5.2.9"]
+    vpol_path:      pod-security-vpol/restricted/disallow-capabilities-strict/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53, rbi, pss-restricted]
+    cis-kubernetes: ["5.2.8", "5.2.9"]
+    cis-aks:        ["4.6.2"]
+    cis-gke:        ["4.6.3"]
     soc2:           ["CC6.1"]
     iso27001:       ["A.9.4.1"]
     pci-dss:        ["7.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["AC-6", "CM-7"]
+    rbi:            ["ITGRC.19(b)", "ITGRC.23(a)"]
+    pss-restricted: ["1"]
 
   disallow-privilege-escalation:
     path: pod-security/restricted/disallow-privilege-escalation/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.5"]
-    cis-kubernetes: ["5.2.5"]
+    vpol_path:      pod-security-vpol/restricted/disallow-privilege-escalation/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53, rbi, pss-restricted]
+    cis-eks:        ["4.2.5"]
+    cis-kubernetes: ["5.2.6"]
+    cis-aks:        ["4.2.5"]
+    cis-gke:        ["4.6.3"]
     soc2:           ["CC6.1"]
     iso27001:       ["A.9.4.1"]
     pci-dss:        ["7.1"]
     nsa-cisa:       ["Sec.1.5"]
     nist-800-53:    ["AC-6", "CM-7"]
+    rbi:            ["ITGRC.19(b)", "ITGRC.23(a)"]
+    pss-restricted: ["2"]
 
   require-run-as-non-root-user:
     path: pod-security/restricted/require-run-as-non-root-user/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.6"]
-    cis-kubernetes: ["5.2.6"]
+    vpol_path:      pod-security-vpol/restricted/require-run-as-non-root-user/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53, rbi, pss-restricted]
+    cis-kubernetes: ["5.2.7"]
+    cis-aks:        ["4.6.2"]
+    cis-gke:        ["4.6.3"]
     soc2:           ["CC6.1"]
     iso27001:       ["A.9.4.1"]
     pci-dss:        ["7.1"]
     nsa-cisa:       ["Sec.1.1"]
     nist-800-53:    ["AC-6", "CM-7"]
+    rbi:            ["ITGRC.19(b)", "ITGRC.23(a)"]
+    pss-restricted: ["3"]
 
   require-run-as-nonroot:
     path: pod-security/restricted/require-run-as-nonroot/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.6"]
-    cis-kubernetes: ["5.2.6"]
+    vpol_path:      pod-security-vpol/restricted/require-run-as-nonroot/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53, rbi, pss-restricted]
+    cis-kubernetes: ["5.2.7"]
+    cis-aks:        ["4.6.2"]
+    cis-gke:        ["4.6.3"]
     soc2:           ["CC6.1"]
     iso27001:       ["A.9.4.1"]
     pci-dss:        ["7.1"]
     nsa-cisa:       ["Sec.1.1"]
     nist-800-53:    ["AC-6", "CM-7"]
+    rbi:            ["ITGRC.19(b)", "ITGRC.23(a)"]
+    pss-restricted: ["4"]
 
   restrict-seccomp-strict:
     path: pod-security/restricted/restrict-seccomp-strict/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.2.11"]
-    cis-kubernetes: ["5.2.11"]
+    vpol_path:      pod-security-vpol/restricted/restrict-seccomp-strict/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53, rbi, pss-restricted]
+    cis-kubernetes: ["5.6.2"]
+    cis-aks:        ["4.6.2"]
+    cis-gke:        ["4.6.2"]
     soc2:           ["CC6.1"]
     iso27001:       ["A.9.4.1"]
     pci-dss:        ["7.1"]
     nsa-cisa:       ["Sec.1.4"]
     nist-800-53:    ["CM-7", "SI-3"]
+    rbi:            ["ITGRC.23(a)"]
+    pss-restricted: ["5"]
 
   restrict-volume-types:
     path: pod-security/restricted/restrict-volume-types/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.1.3"]
-    cis-kubernetes: ["5.1.3"]
+    vpol_path:      pod-security-vpol/restricted/restrict-volume-types/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, pci-dss, nsa-cisa, nist-800-53, rbi, pss-restricted]
+    cis-kubernetes: ["5.2.11"]
+    cis-gke:        ["4.2.1"]
     soc2:           ["CC6.1"]
     iso27001:       ["A.9.4.1"]
     pci-dss:        ["7.1"]
     nsa-cisa:       ["Sec.1.3"]
     nist-800-53:    ["SC-39", "CM-7"]
+    rbi:            ["ITGRC.23(c)", "ITGRC.23(d)"]
+    pss-restricted: ["6"]
 
   # --- RBAC Best Practices (rbac-best-practices/) ---
 
   disable-automount-sa-token:
     path: rbac-best-practices/disable-automount-sa-token/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
+    vpol_path:      rbac-best-practices-vpol/disable-automount-sa-token/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53, rbi]
     cis-eks:        ["4.1.6"]
     cis-kubernetes: ["5.1.6"]
+    cis-aks:        ["4.1.6"]
+    cis-gke:        ["4.1.5"]
     soc2:           ["CC6.3"]
     iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.3.2"]
     nist-800-53:    ["IA-5", "AC-3"]
+    rbi:            ["ITGRC.19(a)", "ITGRC.23(d)"]
 
   restrict-automount-sa-token:
     path: rbac-best-practices/restrict-automount-sa-token/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
+    vpol_path:      rbac-best-practices-vpol/restrict-automount-sa-token/
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53, rbi, rbac-best-practices]
     cis-eks:        ["4.1.6"]
     cis-kubernetes: ["5.1.6"]
+    cis-aks:        ["4.1.6"]
+    cis-gke:        ["4.1.5"]
     soc2:           ["CC6.3"]
     iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.3.2"]
     nist-800-53:    ["IA-5", "AC-3"]
+    rbi:            ["ITGRC.19(a)", "ITGRC.23(d)"]
+    rbac-best-practices: ["2.3"]
 
   restrict-binding-system-groups:
     path: rbac-best-practices/restrict-binding-system-groups/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
-    cis-eks:        ["4.1.1"]
-    cis-kubernetes: ["5.1.1"]
+    vpol_path:      rbac-best-practices-vpol/restrict-binding-system-groups/
+    cluster_scoped: true
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53, rbi, rbac-best-practices]
+    cis-kubernetes: ["5.1.7"]
+    cis-gke:        ["4.1.6", "4.1.8", "4.1.9"]
     soc2:           ["CC6.3"]
     iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.3.1"]
     nist-800-53:    ["AC-2", "AC-6"]
+    rbi:            ["ITGRC.19(a)", "ITGRC.23(b)"]
+    rbac-best-practices: ["1.3", "2.1"]
 
   restrict-clusterrole-nodesproxy:
     path: rbac-best-practices/restrict-clusterrole-nodesproxy/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
-    cis-eks:        ["4.1.3"]
-    cis-kubernetes: ["5.1.3"]
+    vpol_path:      rbac-best-practices-vpol/restrict-clusterrole-nodesproxy/
+    cluster_scoped: true
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53, rbi, rbac-best-practices]
+    cis-eks:        ["4.1.10"]
+    cis-kubernetes: ["5.1.10"]
+    cis-aks:        ["4.1.9"]
     soc2:           ["CC6.1"]
     nsa-cisa:       ["Sec.3.1"]
     nist-800-53:    ["AC-6"]
+    rbi:            ["ITGRC.19(a)", "ITGRC.19(b)"]
+    rbac-best-practices: ["3.2"]
 
   restrict-escalation-verbs-roles:
     path: rbac-best-practices/restrict-escalation-verbs-roles/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
-    cis-eks:        ["4.1.2"]
-    cis-kubernetes: ["5.1.2"]
+    vpol_path:      rbac-best-practices-vpol/restrict-escalation-verbs-roles/
+    cluster_scoped: true
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53, rbi, rbac-best-practices]
+    cis-eks:        ["4.1.8"]
+    cis-kubernetes: ["5.1.8"]
+    cis-aks:        ["4.1.7"]
+    cis-gke:        ["4.1.7"]
     soc2:           ["CC6.1"]
     iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.3.1"]
     nist-800-53:    ["AC-3", "AC-6"]
+    rbi:            ["ITGRC.19(a)", "ITGRC.19(b)"]
+    rbac-best-practices: ["1.2", "3.3"]
 
   restrict-wildcard-resources:
     path: rbac-best-practices/restrict-wildcard-resources/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
+    vpol_path:      rbac-best-practices-vpol/restrict-wildcard-resources/
+    cluster_scoped: true
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53, rbi, rbac-best-practices]
     cis-eks:        ["4.1.3"]
     cis-kubernetes: ["5.1.3"]
+    cis-aks:        ["4.1.3"]
+    cis-gke:        ["4.1.3"]
     soc2:           ["CC6.1"]
     nsa-cisa:       ["Sec.3.1"]
     nist-800-53:    ["AC-3", "AC-6"]
+    rbi:            ["ITGRC.19(a)"]
+    rbac-best-practices: ["1.1"]
 
   # --- Best Practices Kubernetes (best-practices-k8s/) ---
 
   disallow-default-namespace:
     path: best-practices-k8s/disallow-default-namespace/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, iso27001, nsa-cisa, nist-800-53]
-    cis-eks:        ["4.5.1"]
-    cis-kubernetes: ["5.7.2"]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, iso27001, nsa-cisa, nist-800-53, rbi]
+    cis-eks:        ["4.5.2"]
+    cis-kubernetes: ["5.6.4"]
+    cis-aks:        ["4.6.3"]
+    cis-gke:        ["4.6.4"]
     iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.3.1"]
     nist-800-53:    ["CM-7", "SC-39"]
+    rbi:            ["ITGRC.9(c)", "ITGRC.19(a)"]
 
   disallow-latest-tag:
     path: best-practices-k8s/disallow_latest_tag/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.1.x"]
-    cis-kubernetes: ["5.1.x"]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53, rbi]
     soc2:           ["CC8.1"]
     iso27001:       ["A.12.5.1"]
     nsa-cisa:       ["Sec.5.1"]
     nist-800-53:    ["SI-7", "CM-11"]
+    rbi:            ["ITGRC.10(f)", "ITGRC.13(c)"]
 
   disallow-empty-ingress-host:
     path: best-practices-k8s/disallow-empty-ingress-host/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53, rbi]
     soc2:           ["CC6.6"]
     nsa-cisa:       ["Sec.2.2"]
     nist-800-53:    ["SC-7"]
+    rbi:            ["ITGRC.23(d)"]
 
   require-labels:
     path: best-practices-k8s/require_labels/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, iso27001, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, iso27001, nsa-cisa, nist-800-53, rbi]
     iso27001:       ["A.8.1.1"]
     nsa-cisa:       ["Sec.3.1"]
     nist-800-53:    ["CM-8"]
+    rbi:            ["ITGRC.9(c)", "ITGRC.23(c)"]
 
   require-pod-antiaffinity:
     path: best-practices-k8s/require_pod_antiaffinity/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53, rbi]
     soc2:           ["A1.3"]
     nsa-cisa:       ["Sec.6.3"]
     nist-800-53:    ["SC-6"]
+    rbi:            ["ITGRC.9(a)", "ITGRC.21(a)"]
 
   require-requests-limits:
     path: best-practices-k8s/require_pod_requests_limits/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53, rbi]
     soc2:           ["A1.1"]
     nsa-cisa:       ["Sec.6.1"]
     nist-800-53:    ["SC-6"]
+    rbi:            ["ITGRC.11(a)", "ITGRC.11(b)"]
 
   require-pod-probes:
     path: compliance/common/require-pod-probes/
-    standards:      [soc2, nsa-cisa, nist-800-53]
+    standards:      [soc2, nsa-cisa, nist-800-53, rbi]
     soc2:           ["CC7.2"]
     nsa-cisa:       ["Sec.6.2"]
     nist-800-53:    ["SI-2"]
+    rbi:            ["ITGRC.9(a)", "ITGRC.21(a)"]
 
   require-ro-rootfs:
     path: best-practices-k8s/require_ro_rootfs/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.1.3"]
-    cis-kubernetes: ["5.1.3"]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, iso27001, nsa-cisa, nist-800-53, rbi]
+    cis-kubernetes: ["5.6.3"]
+    cis-aks:        ["4.6.2"]
+    cis-gke:        ["4.6.3"]
     soc2:           ["CC6.1"]
     iso27001:       ["A.9.4.1"]
     nsa-cisa:       ["Sec.1.2"]
     nist-800-53:    ["CM-7", "SI-7"]
+    rbi:            ["ITGRC.13(c)", "ITGRC.23(c)"]
 
   require-rolling-update-strategy:
     path: best-practices-k8s/require_rolling_update_strategy/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53, rbi]
     soc2:           ["A1.3"]
     nsa-cisa:       ["Sec.5.2"]
     nist-800-53:    ["SI-2"]
+    rbi:            ["ITGRC.9(a)", "ITGRC.13(d)"]
 
   restrict-nodeport:
     path: compliance/common/restrict-nodeport/
-    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53]
-    cis-eks:        ["5.4.1"]
-    cis-kubernetes: ["5.4.1"]
+    standards:      [cis-eks, cis-kubernetes, cis-aks, cis-gke, soc2, nsa-cisa, nist-800-53, rbi]
     soc2:           ["CC6.6", "A1.2"]
     nsa-cisa:       ["Sec.2.1"]
     nist-800-53:    ["SC-7", "CM-7"]
+    rbi:            ["ITGRC.23(c)", "ITGRC.23(d)"]
 
   require-image-digest:
     path: compliance/common/require-image-digest/
-    standards:      [soc2, iso27001, nsa-cisa, nist-800-53]
+    standards:      [soc2, iso27001, nsa-cisa, nist-800-53, rbi]
     soc2:           ["CC7.2"]
     iso27001:       ["A.12.5.1"]
     nsa-cisa:       ["Sec.5.1"]
     nist-800-53:    ["SA-10", "SI-7"]
+    rbi:            ["ITGRC.10(f)", "ITGRC.26"]
 
   # --- PCI DSS (pci-dss/) ---
 
@@ -444,6 +605,24 @@ policies:
     standards:      [pci-dss]
     pci-dss:        ["1.3"]
 
+  # --- RBI-specific policies (ported from go-nctl mappings.yaml, #2023) ---
+
+  require-namespace-quota:
+    path: multitenancy-benchmarks/require-namespace-quota/
+    standards:      [rbi]
+    rbi:            ["ITGRC.11(a)", "ITGRC.11(b)"]
+
+  require-quota-for-all-objects:
+    path: multitenancy-benchmarks/require-quota-for-all-objects/
+    standards:      [rbi]
+    rbi:            ["ITGRC.11(a)", "ITGRC.11(b)"]
+
+  require-resource-quota:
+    path: multitenancy-benchmarks/require-resource-quota/
+    cluster_scoped: true
+    standards:      [rbi]
+    rbi:            ["ITGRC.11(a)", "ITGRC.11(b)", "ITOS.17(g)"]
+
 # ── Non-automatable controls ────────────────────────────────────────────────────
 # Controls in each standard that CANNOT be assessed by Kyverno policy scans.
 # These require organizational processes, cloud provider APIs, or runtime tooling
@@ -475,8 +654,8 @@ non-automatable:
       family: "Physical Access Controls"
       reason: "Data center physical security and environmental protections — requires cloud provider SOC 2 attestation (AWS, GCP, Azure)"
     - id: "CC6.5"
-      family: "Authentication Controls"
-      reason: "MFA, application-level authentication, access control lists for users — requires identity provider configuration review"
+      family: "Asset Disposal"
+      reason: "Discontinuing logical and physical protections only after data on retired assets can no longer be read or recovered — requires media sanitization records and cloud provider SOC 2 attestation"
     - id: "CC7.1"
       family: "Configuration Monitoring"
       reason: "Runtime configuration drift and anomaly detection — requires SIEM or cloud-native monitoring (CloudWatch, Datadog)"
@@ -596,3 +775,89 @@ non-automatable:
     - id: "11.3, 11.4"
       family: "Penetration Testing and IDS/IPS"
       reason: "Penetration testing and intrusion detection — requires external pentest and runtime security tooling"
+
+  # #2098 review: pss-baseline's control 5 (Disallow Host Ports Range, compliancecontrols/
+  # pss-baseline-v1.csv) has no implementing Kyverno policy in this repo's bundle
+  # (disallow-host-ports-range doesn't exist alongside disallow-host-ports) — listed here rather
+  # than silently dropped, so reports and control counts still account for all 13 legacy controls.
+  pss-baseline:
+    - id: "5"
+      family: "Disallow Host Ports Range"
+      reason: "Restricting hostPort to a specific allowed list (rather than disallowing it outright, control 4) has no corresponding Kyverno policy in this bundle"
+
+  rbi:
+    - id: "ITGRC.4–8"
+      family: "IT Governance (Board, ITSC, IT Steering Committee, Head of IT)"
+      reason: "Board-level governance structure, committee charters, and Head of IT appointment — requires governance documentation and board minutes"
+    - id: "ITGRC.9(b)(d)(e)"
+      family: "IT Service Management (SLM, EOS/AMC tracking, technology refresh)"
+      reason: "Service-level management process, end-of-support monitoring, and technology refresh planning — requires ITSM tooling and vendor contracts"
+    - id: "ITGRC.10(a)–(e)"
+      family: "Third-Party Arrangements"
+      reason: "Concentration risk, conflict-of-interest, and single-point-of-failure assessments — requires vendor risk register"
+    - id: "ITGRC.10(f) [signing]"
+      family: "Supply Chain — cryptographic image signing"
+      reason: "Cosign verification requires an RE-specific public key or Fulcio/Rekor identity; the policy library ships a demo-scoped policy with a placeholder key, so it cannot be scanned generically. Registry digest pinning and tag immutability are mapped instead."
+    - id: "ITGRC.11(c)"
+      family: "Capacity Management Review"
+      reason: "ITSC review of capacity assessments and remedial measures — requires committee minutes"
+    - id: "ITGRC.12"
+      family: "Project Management"
+      reason: "Project methodology, enterprise architecture, source-code escrow, and vendor vulnerability-free certificates — requires contracts and SDLC documentation"
+    - id: "ITGRC.13(a)(b)"
+      family: "Change and Patch Management"
+      reason: "Business-impact assessment and approval workflow for patches/changes — requires a change management system (ServiceNow, Jira)"
+    - id: "ITGRC.14"
+      family: "Data Migration Controls"
+      reason: "Documented migration policy with business-user and application-owner signoffs — requires process documentation"
+    - id: "ITGRC.15"
+      family: "Audit Trails"
+      reason: "Application audit logging, forensic sufficiency, and regular log monitoring — requires Kubernetes audit-log configuration and a SIEM (CloudTrail, Splunk)"
+    - id: "ITGRC.16 [at-rest]"
+      family: "Cryptographic Controls — data at rest"
+      reason: "Key length, algorithm, and cipher-suite strength for stored data — requires cloud KMS and etcd encryption-provider review outside the Kubernetes API"
+    - id: "ITGRC.17"
+      family: "Straight Through Processing"
+      reason: "Prevention of manual intervention or modification of in-flight transaction data — application-level control"
+    - id: "ITGRC.18"
+      family: "Physical and Environmental Controls"
+      reason: "Data centre physical security and environmental protections — covered by cloud provider SOC 2 / ISO 27001 attestation"
+    - id: "ITGRC.19(c), 20"
+      family: "Multi-Factor Authentication and Teleworking"
+      reason: "MFA for privileged users and secure remote access — requires identity provider (Okta, AWS IAM, Entra ID) configuration review"
+    - id: "ITGRC.21(b)(c)"
+      family: "Metrics (risk-based metrics, IT maturity scorecard)"
+      reason: "Recovery objectives for non-critical systems and IT performance scorecards — requires DR test results and management reporting"
+    - id: "ITGRC.22, 25"
+      family: "Periodic IT Risk Review and Risk Assessment"
+      reason: "Periodic risk review by the Board/ITSC and asset-level risk assessment — requires GRC tooling and a risk register"
+    - id: "ITGRC.23(b) [SoD]"
+      family: "IT Risk Framework — roles and accountability"
+      reason: "Identification and elimination of role conflicts and accountability gaps across stakeholders including third-party personnel — RBAC policies cover the in-cluster portion only"
+    - id: "ITGRC.24"
+      family: "Information Security Policy, Cyber Security Policy, ISC and CISO"
+      reason: "Policy documents, Information Security Committee constitution, CISO appointment, reporting line, and quarterly Board review — requires organisational documentation"
+    - id: "ITGRC.26 [VA/PT]"
+      family: "Vulnerability Assessment / Penetration Testing"
+      reason: "VA/PT execution before deployment and periodically thereafter — requires image and infrastructure scanners (Trivy, Grype) and pentest reports. The attestation-gating facet of ITGRC.26 IS automated (require-image-digest); this faceted id avoids emitting a duplicate control row for the manual facet, matching the [signing]/[at-rest]/[SoD] convention above"
+    - id: "ITGRC.27"
+      family: "Cyber Incident Response and Recovery Management"
+      reason: "Incident response plan and RBI reporting within prescribed timelines — requires runbooks and incident management tooling"
+    - id: "ITGRC.28, 29"
+      family: "Business Continuity and Disaster Recovery Management"
+      reason: "BCP/DR policy, DR drills, and RTO/RPO validation — requires DR test evidence"
+    - id: "ITGRC.30"
+      family: "Information Systems (IS) Audit"
+      reason: "Independent IS audit charter, plan, and Audit Committee reporting — requires internal audit documentation"
+    - id: "ITOS.4–16"
+      family: "IT Outsourcing — governance, due diligence, and agreements"
+      reason: "Outsourcing policy, Board and Senior Management roles, service-provider due diligence, and contractual audit rights — requires contracts and vendor assessments"
+    - id: "ITOS.17(a)(b)(e)(f)(h)–(j)"
+      family: "IT Outsourcing — risk management framework"
+      reason: "Risk framework documentation, cyber incident reporting to RBI within 6 hours of detection, and concentration-risk assessment — requires process documentation and vendor SLAs"
+    - id: "ITOS.18"
+      family: "IT Outsourcing — service-provider BCP/DR"
+      reason: "Service-provider BCP/DRP testing and data-isolation guarantees on termination — requires vendor attestations"
+    - id: "ITOS.19–22"
+      family: "IT Outsourcing — monitoring, group outsourcing, cross-border, exit strategy"
+      reason: "Ongoing service-provider monitoring structure, cross-border data-access controls, and a documented exit strategy — requires contracts and management reporting"

@@ -13,9 +13,9 @@ metadata:
     policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,soc2,nsa-cisa,nist-800-53"
     policies.nirmata.io/nsa-cisa-control: "Sec.2.1"
     policies.nirmata.io/nist-800-53-control: "SC-7"
-    policies.nirmata.io/cis-eks-control: "4.3.1"
+    policies.nirmata.io/cis-eks-control: "4.3.2"
     policies.kyverno.io/description: >-
-      CIS EKS Benchmark 4.3.1: Configuring Kubernetes network policies ensures that
+      CIS EKS Benchmark 4.3.2: Configuring Kubernetes network policies ensures that
       pod-to-pod communication is restricted and follows the principle of least privilege.
       Without network policies, any pod can communicate with any other pod in the cluster,
       increasing the blast radius in the event of a compromise. This policy audits
@@ -45,7 +45,7 @@ spec:
     validate:
       message: >-
         Namespace '{{ request.object.metadata.name }}' has no NetworkPolicy. At least
-        one NetworkPolicy is required per CIS EKS 4.3.1 to enforce network segmentation.
+        one NetworkPolicy is required per CIS EKS 4.3.2 to enforce network segmentation.
         Apply a default-deny-all NetworkPolicy and allow only required traffic.
       deny:
         conditions:

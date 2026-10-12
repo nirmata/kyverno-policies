@@ -5,16 +5,16 @@ Kustomize-based compliance bundles for deploying Kyverno policies by security st
 ## Quick Start
 
 ```bash
-# CIS Amazon EKS Benchmark v1.7.0
+# CIS Amazon EKS Benchmark v2.0.0
 kubectl apply -k compliance/cis/eks/
 
-# CIS Kubernetes Benchmark v1.8.0
+# CIS Kubernetes Benchmark v2.0.1
 kubectl apply -k compliance/cis/kubernetes/
 
-# CIS AKS Benchmark
+# CIS Azure AKS Benchmark v2.0.0
 kubectl apply -k compliance/cis/aks/
 
-# CIS GKE Benchmark
+# CIS Google GKE Benchmark v2.0.0
 kubectl apply -k compliance/cis/gke/
 
 # SOC 2 Type II
@@ -48,11 +48,11 @@ compliance/
 │   │   ├── require-network-policy/
 │   │   ├── require-pss-labels/
 │   │   └── require-ingress-tls/
-│   ├── eks/                      # CIS EKS Benchmark v1.7.0 (40 policies)
+│   ├── eks/                      # CIS EKS Benchmark v2.0.0 (40 policies)
 │   │   └── restrict-secrets-as-env-vars/
-│   ├── aks/                      # CIS AKS Benchmark (39 policies)
-│   ├── gke/                      # CIS GKE Benchmark (39 policies)
-│   └── kubernetes/               # CIS Kubernetes Benchmark v1.8.0 (39 policies)
+│   ├── aks/                      # CIS AKS Benchmark v2.0.0 (39 policies)
+│   ├── gke/                      # CIS GKE Benchmark v2.0.0 (39 policies)
+│   └── kubernetes/               # CIS Kubernetes Benchmark v2.0.1 (39 policies)
 ├── soc2/                         # SOC 2 Type II (35 policies)
 ├── iso27001/                     # ISO/IEC 27001:2022 (39 policies)
 ├── nsa-cisa/                     # NSA/CISA Kubernetes Hardening Guide v1.2 (39 policies)
@@ -84,24 +84,27 @@ Each platform bundle composes policies from shared libraries. No policy files ar
 
 ### Policies in `cis/common/` (all distributions)
 
-| Policy | CIS EKS | CIS K8s |
-|--------|---------|---------|
-| `restrict-cluster-admin-binding` | 4.1.1 | 5.1.1 |
-| `restrict-secret-role-access` | 4.1.2 | 5.1.2 |
-| `restrict-pod-creation-access` | 4.1.4 | 5.1.4 |
-| `require-network-policy` | 4.3.1 | 5.3.2 |
-| `require-pss-labels` | 4.4.2 | 5.7.1 |
-| `require-ingress-tls` | 5.4.5 | 5.7.5 |
+| Policy | CIS K8s v2.0.1 | CIS EKS v2.0.0 | CIS AKS v2.0.0 | CIS GKE v2.0.0 |
+|--------|---------|---------|---------|---------|
+| `restrict-cluster-admin-binding` | 5.1.1 | 4.1.1 | 4.1.1 | 4.1.1 |
+| `restrict-secret-role-access` | 5.1.2 | 4.1.2 | 4.1.2 | 4.1.2 |
+| `restrict-pod-creation-access` | 5.1.4 | 4.1.4 | 4.1.4 | — |
+| `require-network-policy` | 5.3.2 | 4.3.2 | 4.4.2 | 4.3.2 |
+| `require-pss-labels` | 5.2.1 | — | — | 4.2.1 |
+| `require-ingress-tls` | — | 5.4.4 | 5.4.5 | 5.6.7 |
 
 ### Policies in `cis/eks/` (EKS only)
 
-| Policy | CIS EKS | Notes |
-|--------|---------|-------|
-| `restrict-secrets-as-env-vars` | 5.x | Recommends IRSA over env var secrets |
+| Policy | CIS K8s v2.0.1 | CIS EKS v2.0.0 | CIS AKS v2.0.0 | CIS GKE v2.0.0 | Notes |
+|--------|---------|---------|---------|---------|-------|
+| `restrict-secrets-as-env-vars` | 5.4.1 | 4.4.1 | 4.5.1 | 4.4.1 | Bundled in `cis/eks`; recommends IRSA over env var secrets |
+
+> `—` means the benchmark has no matching recommendation. The full mapping for every policy and
+> standard — including the pod-security, RBAC and best-practices libraries — is in `mappings.yaml`.
 
 ### Controls requiring `aws` CLI or node access (not enforceable via Kyverno)
 
-CIS EKS sections 2.x (control plane config), 3.x (worker node config), and 5.3–5.5 (networking/storage) require AWS API or SSH access. These are assessed by the `cis-benchmark-scan` skill in the Nirmata skills repository.
+CIS EKS v2.0.0 sections 2.x (control plane configuration), 3.x (worker node configuration) and most of 5.x (managed services: ECR, IAM, KMS envelope encryption, control plane endpoint access, access entries) require AWS API or node access. These are assessed by the `cis-benchmark-scan` skill in the Nirmata skills repository.
 
 ## Control ID → Policy Mapping
 
@@ -195,7 +198,7 @@ The bundles reference these top-level policy sets without moving or duplicating 
 | Library | Path | Controls |
 |---------|------|---------|
 | Pod Security Standards (Baseline) | `pod-security/baseline/` | CIS 5.2.x |
-| Pod Security Standards (Restricted) | `pod-security/restricted/` | CIS 5.2.x, 5.7.x |
+| Pod Security Standards (Restricted) | `pod-security/restricted/` | CIS 5.2.x, 5.6.2 |
 | RBAC Best Practices | `rbac-best-practices/` | CIS 4.1.x / 5.1.x |
 | Kubernetes Best Practices | `best-practices-k8s/` | CIS 4.5.x, 5.x |
 | PCI-DSS | `pci-dss/` | PCI 1.x, 4.x, 7.x, 8.x |

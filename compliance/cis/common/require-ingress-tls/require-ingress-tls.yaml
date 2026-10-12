@@ -4,11 +4,11 @@ metadata:
   name: require-ingress-tls
   annotations:
     policies.kyverno.io/title: Require TLS for Ingress Resources
-    policies.kyverno.io/category: CIS EKS Benchmark - 5.4.5
+    policies.kyverno.io/category: CIS EKS Benchmark - 5.4.4
     policies.kyverno.io/severity: high
     policies.kyverno.io/subject: Ingress
     policies.kyverno.io/description: >-
-      CIS EKS Benchmark 5.4.5: Use HTTPS (TLS) for load balancers.
+      CIS EKS Benchmark 5.4.4: Use HTTPS (TLS) for load balancers.
       All Ingress resources must specify TLS configuration to ensure
       traffic is encrypted in transit. Unencrypted HTTP Ingresses expose
       sensitive data to interception and violate transport security
@@ -18,7 +18,7 @@ metadata:
     policies.kyverno.io/standards: "cis-eks,cis-kubernetes,cis-aks,cis-gke,pci-dss,nsa-cisa,nist-800-53"
     policies.nirmata.io/nsa-cisa-control: "Sec.2.2"
     policies.nirmata.io/nist-800-53-control: "SC-8,AC-17"
-    policies.nirmata.io/cis-eks-control: "5.4.5"
+    policies.nirmata.io/cis-eks-control: "5.4.4"
 spec:
   validationFailureAction: Audit
   background: true
@@ -33,7 +33,7 @@ spec:
       message: >-
         Ingress must configure TLS (spec.tls must contain at least one entry).
         Add a spec.tls block with a secretName referencing a TLS Secret.
-        See CIS EKS Benchmark 5.4.5.
+        See CIS EKS Benchmark 5.4.4.
       deny:
         conditions:
           all:
