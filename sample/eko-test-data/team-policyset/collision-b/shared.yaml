@@ -1,0 +1,30 @@
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  name: e2e-shared
+  namespace: team-b
+  annotations:
+    policies.kyverno.io/title: e2e-shared
+    policies.kyverno.io/category: Operator E2E
+    policies.kyverno.io/severity: low
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Operator e2e fixture for namespace-scoped (team) PolicySets. Requires the
+      label `app` on Pods. Audit mode only; do not rename or remove.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: require-app-label
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      validate:
+        message: >-
+          The label `app` is required (owned by set B).
+        pattern:
+          metadata:
+            labels:
+              app: "?*"
